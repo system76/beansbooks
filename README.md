@@ -122,15 +122,11 @@ instance of beans.
 
 **config.php**  
 
-Requires explanation.
-
-**install requires explanation of command line options**
+Copy example.config.php to config.php in application/classes/beans/ and fill in the appropriate information.
 
 The last step is to run the configuration script.  Be sure to put your actual name and 
 email address in, and generate a secure password to put in for your password.
 
     php index.php --uri=/install/manual --name="Your Name" --password="password" --email="you@email.address" --accounts="full"
 
-# Quick 'n Dirty
 
-**TODO - Quick getting started guide for advanced users.**
