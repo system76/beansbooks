@@ -1,0 +1,33 @@
+
+<div class="text-bold text-medium bump-down">Edit Your Account Info</div>
+<div class="form bump-down">
+	<form action=""autocomplete="off" method="POST" enctype="multipart/form-data">
+		<div class="row column-4 labels">
+			<span class="oop-oop">Name</span>
+			<span class="oppa-gangnam-style">Email</span>
+			<span class="oop-oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="name" value="{{#user}}{{name}}{{/user}}" tabindex="1"></span>
+			<span class="oppa-gangnam-style"><input type="text" name="email" value="{{#user}}{{email}}{{/user}}" tabindex="2"></span>
+			<span class="oop-oop inline-label">&nbsp;</span>
+		</div>
+
+		
+		<div class="row column-4 labels">
+			<span class="oop-oop">Current Password</span>
+			<span class="oop-oop">New Password</span>
+			<span class="oop-oop">Repeat New Password</span>
+			<span class="oop-oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-4">
+			<span class="oop-oop"><input type="password" name="current_password" value="" tabindex="3"></span>
+			<span class="oop-oop"><input type="password" name="new_password" value="" tabindex="4"></span>
+			<span class="oop-oop"><input type="password" name="repeat_password" value="" tabindex="5"></span>
+			<span class="oop"><a href="#" class="button myaccount-index-cancel" tabindex="11">Cancel</a></span>
+			<span class="oop"><a href="#" class="button myaccount-index-save" tabindex="12">Save</a></span>
+		</div>
+	</form>
+</div>

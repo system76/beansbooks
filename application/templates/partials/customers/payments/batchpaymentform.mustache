@@ -1,0 +1,15 @@
+<li class="customer-batchpayment" rel="{{id}}">
+	<span class="customer-batchpayment-customer text-left">{{#customer}}{{name}}{{/customer}}</span>
+	<span class="customer-batchpayment-sale text-center">{{sale_number}}</span>
+	<span class="customer-batchpayment-numeric balance text-right" rel="{{balance_flipped}}">{{balance_flipped_formatted}}</span>
+	<span class="customer-batchpayment-numeric amount text-center">
+		<input type="text" name="sale-amount-{{id}}" value="0.00" readonly="readonly">
+	</span>
+	<span class="customer-batchpayment-balancewriteoff text-left">
+		<div class="checkbox manual disabled"><input type="checkbox" disabled="disabled" name="sale-balance-writeoff-{{id}}" value="0.00"></div> Write-Off
+	</span>
+	<span class="customer-batchpayment-numeric balancenew text-right">{{balance_flipped_formatted}}</span>
+	<span class="customer-batchpayment-add text-right">
+		<div class="checkbox manual"><input type="checkbox" value="sale-key" name="{{id}}"></div> Add
+	</span>
+</li>

@@ -1,0 +1,34 @@
+<form action="" method="POST">
+	<div class="form report-form">
+		<div class="row column-10">
+			<span class="oop-oop inline-label text-right">Start Date</span>
+			<span class="oop-oop-oop">
+				<div class="select"><select class="report-budget-select" name="date_start">
+					{{#date_months}}
+						<option value="{{YYYY-MM}}-01" {{#selected}}selected="selected"{{/selected}}>{{text}}</option>
+					{{/date_months}}
+				</select></div>
+			</span>
+			<span class="oop-oop inline-label text-right">Months</span>
+			<span class="oop">
+				<div class="select"><select class="report-budget-select" name="months">
+					{{#months}}
+						<option value="{{value}}" {{#selected}}selected="selected"{{/selected}}>{{value}}</option>
+					{{/months}}
+				</select></div>
+			</span>
+			<span class="yellow-suit-dance-off inline-label"><div class="checkbox manual report-budget-zero-toggle"><input type="checkbox" name="report-budget-zero-toggle"
+				{{#show_zero}}checked="checked"{{/show_zero}}></div>
+			Show Accounts with Zero Balances</span>
+			<span class="oop-oop">&nbsp;</span>
+			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+<div class="clear"></div>
+
+<div id="report-content" style="position: relative; left: -5px; width: 936px;">
+	{{>dash_print_budget}}
+</div>

@@ -1,0 +1,50 @@
+{{{tableopen}}}
+	<tr>
+		<td style="vertical-align: top; padding-left: 5px; width: 36%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
+			{{#vendor}}
+				Vendor: {{name}}<br>
+				{{phone}} {{#phone}}{{#email}}|{{/email}}{{/phone}} {{email}}
+			{{/vendor}}
+		</td>
+		<td style="vertical-align: top; padding-left: 5px; width: 32%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
+			&nbsp;
+		</td>
+		<td style="vertical-align: top; padding-right: 5px; width: 32%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px;">
+			<span style="{{fontsizelarge}} font-weight: bold;">Expense {{expense_number}}</span><br>
+			<span style="float: left; width: 95px; text-align: right;">Expense Date</span> {{expense_date_formatted}}<br>
+			{{#invoice_number}}<span style="float: left; width: 95px; text-align: right;">Invoice Number</span> {{invoice_number}}<br>{{/invoice_number}}
+			{{#so_number}}<span style="float: left; width: 95px; text-align: right;">SO Number</span> {{so_number}}<br>{{/so_number}}
+			{{#check_number}}<span style="float: left; width: 95px; text-align: right;">Check Number</span> {{check_number}}<br>{{/check_number}}
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width:100%; padding-top: 3px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+	</tr>
+{{{tableclose}}}
+{{{tableopen}}}
+	<tr>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 69%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Description</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 9%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">QTY</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 10%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Price</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Total</td>
+	</tr>
+	{{#expense_lines}}
+		<tr>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 69%; {{fontsizenormal}} text-align: left; padding-left: 5px;">{{description}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 9%; {{fontsizenormal}} text-align: center; border-left: 1px solid {{borderdarkgreen}};">{{qty_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 10%; {{fontsizenormal}} text-align: center; border-left: 1px solid {{borderdarkgreen}};">{{price_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 12%; {{fontsizenormal}} text-align: center; border-left: 1px solid {{borderdarkgreen}};">{{total_formatted}}</td>
+		</tr>
+	{{/expense_lines}}
+{{{tableclose}}}
+{{{tableopen}}}
+	<tr>
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top; padding-top: 4px; padding-bottom: 4px; padding-right: 5px; width: 100%; {{fontsizenormal}} font-weight: bold; text-align: right; background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; border: 1px solid {{borderdarkgreen}};">Total {{total_formatted}}</td>
+	</tr>
+{{{tableclose}}}

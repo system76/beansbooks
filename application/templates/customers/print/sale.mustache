@@ -1,0 +1,85 @@
+{{{tableopen}}}
+	<tr>
+		<td style="vertical-align: top; padding-left: 5px; width: 36%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
+			{{#billing}}
+				Bill To: {{company_name}}<br>
+				{{first_name}} {{last_name}}<br>
+				{{address1}} {{address2}}<br>
+				{{city}}, {{state}} {{zip}}<br>
+				{{phone}} {{#phone}}{{#email}}|{{/email}}{{/phone}} {{email}}
+			{{/billing}}
+			{{^billing}}
+				Bill To: {{customer_company_name}}<br>
+				{{customer_name}}
+			{{/billing}}
+		</td>
+		<td style="vertical-align: top; padding-left: 5px; width: 36%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
+			{{#shipping}}
+				Ship To: {{company_name}}<br>
+				{{first_name}} {{last_name}}<br>
+				{{address1}} {{address2}}<br>
+				{{city}}, {{state}} {{zip}}<br>
+				{{phone}} {{#phone}}{{#email}}|{{/email}}{{/phone}} {{email}}
+			{{/shipping}}
+			{{^shipping}}
+				Ship To: {{customer_company_name}}<br>
+				{{customer_name}}
+			{{/shipping}}
+		</td>
+		<td style="vertical-align: top; padding-right: 5px; width: 28%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px;">
+			<span style="{{fontsizelarge}} font-weight: bold;">{{sale_title}}</span><br>
+			{{^invoiced}}
+				<span style="float: left; width: 75px; text-align: right;">Sale Date</span> {{sale_date_formatted}}<br>
+				<span style="float: left; width: 75px; text-align; right;">Total</span> {{sale_total_formatted}}<br>
+			{{/invoiced}}
+			{{#invoiced}}
+				<span style="float: left; width: 75px; text-align: right;">Invoice Date</span> {{sale_date_billed_formatted}}<br>
+				<span style="float: left; width: 75px; text-align: right;">Amount Due</span> {{sale_total_formatted}}<br>
+				<span style="float: left; width: 75px; text-align: right;">Payment Due</span> {{sale_date_due_formatted}}<br>
+			{{/invoiced}}
+			{{#order_number}}<span style="float: left; width: 75px; text-align: right;">Order Num</span> {{order_number}}<br>{{/order_number}}
+			{{#po_number}}<span style="float: left; width: 75px; text-align: right;">PO Num</span> {{po_number}}<br>{{/po_number}}
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width:100%; padding-top: 3px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+	</tr>
+{{{tableclose}}}
+{{{tableopen}}}
+	<tr>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 59%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Description</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 9%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">QTY</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 10%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Price</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 10%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Tax</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Total</td>
+	</tr>
+	{{#sale_lines}}
+		<tr>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 59%; {{fontsizenormal}} text-align: left; padding-left: 5px;">{{description}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 9%; {{fontsizenormal}} text-align: center; border-left: 1px solid {{borderdarkgreen}};">{{qty_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 10%; {{fontsizenormal}} text-align: center; border-left: 1px solid {{borderdarkgreen}};">{{price_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 10%; {{fontsizenormal}} text-align: center; border-left: 1px solid {{borderdarkgreen}};">{{tax_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} width: 12%; {{fontsizenormal}} text-align: center; border-left: 1px solid {{borderdarkgreen}};">{{total_formatted}}</td>
+		</tr>
+	{{/sale_lines}}
+{{{tableclose}}}
+{{{tableopen}}}
+	<tr>
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; idth: 33%; {{fontsizenormal}} font-weight: bold; background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; border-left: 1px solid {{borderdarkgreen}}; border-top: 1px solid {{borderdarkgreen}}; border-bottom: 1px solid {{borderdarkgreen}};">Subtotal: {{subtotal_formatted}}</td>
+		<td style="vertical-align: top; padding-top: 4px; padding-bottom: 4px; width: 34%; {{fontsizenormal}} font-weight: bold; background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; border-top: 1px solid {{borderdarkgreen}}; border-bottom: 1px solid {{borderdarkgreen}};">
+			{{#sale_taxes}}
+				{{name}} {{total_formatted}}<br>
+			{{/sale_taxes}}
+			{{^sale_taxes}}
+				&nbsp;
+			{{/sale_taxes}}
+		</td>
+		<td style="vertical-align: top; padding-top: 4px; padding-bottom: 4px; padding-right: 5px; width: 33%; {{fontsizenormal}} font-weight: bold; text-align: right; background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; border-right: 1px solid {{borderdarkgreen}}; border-top: 1px solid {{borderdarkgreen}}; border-bottom: 1px solid {{borderdarkgreen}};">Amount Due {{total_formatted}}</td>
+	</tr>
+{{{tableclose}}}

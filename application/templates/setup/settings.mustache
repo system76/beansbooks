@@ -1,0 +1,239 @@
+<form action="" method="POST" enctype="multipart/form-data">
+	<input type="hidden" name="MAX_FILE_SIZE" value="10000000">
+	<div id="setup-settings-company" class="form bump-down">
+		
+		<div class="row column-4 labels">
+			<span class="oop-oop">Company Name</span>
+			<span class="oop-oop">Email</span>
+			<span class="oop-oop">Phone</span>
+			<span class="oop-oop">Fax</span>
+		</div>
+
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="company_name" value="{{#settings}}{{company_name}}{{/settings}}" tabindex="1"></span>
+			<span class="oop-oop"><input type="text" name="company_email" value="{{#settings}}{{company_email}}{{/settings}}" tabindex="2"></span>
+			<span class="oop-oop"><input type="text" name="company_phone" value="{{#settings}}{{company_phone}}{{/settings}}" tabindex="3"></span>
+			<span class="oop-oop"><input type="text" name="company_fax" value="{{#settings}}{{company_fax}}{{/settings}}" tabindex="4"></span>
+		</div>
+
+		<div class="row column-6 labels setup-settings-grid-company-cutoff">
+			<span class="oppa-gangnam-style">Address Line 1</span>
+			<span class="oop-oop-oop">State / Province</span>
+		</div>
+
+		<div class="row column-6 setup-settings-grid-company-cutoff">
+			<span class="oppa-gangnam-style"><input type="text" name="company_address_address1" value="{{#settings}}{{company_address_address1}}{{/settings}}" tabindex="6"></span>
+			<span class="oop-oop-oop"><input type="text" name="company_address_state" value="{{#settings}}{{company_address_state}}{{/settings}}" tabindex="9"></span>
+		</div>
+
+		<div class="row column-6 setup-settings-grid-company-logo">
+			<div class="setup-settings-grid-company-logo-wrapper">
+				<a href="#" id="setup-settings-grid-company-logo-link">{{^company_logo_src}}Click to Upload{{/company_logo_src}}{{#company_logo_src}}<img src="data:{{type}};base64,{{data}}">{{/company_logo_src}}</a>
+				<span id="setup-settings-grid-company-logo-pending" class="text-small hidden">Please click &quot;Save&quot; to upload.</span>
+				<input type="file" style="display:none;" name="logo">
+			</div>
+			<div class="setup-settings-grid-company-logo-text text-center text-medium bump-down">
+				<span class="text-bold">Company Logo</span><br>
+				Displayed on Invoices, PO's<br>
+				and Reports. 150 px by 50 px<br>
+				recommended<br>
+			</div>
+		</div>
+
+		<div class="row column-6 labels setup-settings-grid-company-cutoff">
+			<span class="oppa-gangnam-style">Address Line 2</span>
+			<span class="oop-oop-oop">Zip / Postal</span>
+		</div>
+
+		<div class="row column-6 setup-settings-grid-company-cutoff">
+			<span class="oppa-gangnam-style"><input type="text" name="company_address_address2" value="{{#settings}}{{company_address_address2}}{{/settings}}" tabindex="7"></span>
+			<span class="oop-oop-oop"><input type="text" name="company_address_zip" value="{{#settings}}{{company_address_zip}}{{/settings}}" tabindex="10"></span>
+		</div>
+
+		<div class="row column-6 labels setup-settings-grid-company-cutoff">
+			<span class="oppa-gangnam-style">City</span>
+			<span class="oop-oop-oop">Country</span>
+		</div>
+
+		<div class="row column-6 setup-settings-grid-company-cutoff">
+			<span class="oppa-gangnam-style"><input type="text" name="company_address_city" value="{{#settings}}{{company_address_city}}{{/settings}}" tabindex="8"></span>
+			<span class="oop-oop-oop"><div class="select"><select name="company_address_country" value="{{#settings}}{{company_address_country}}{{/settings}}" tabindex="11">
+				<option value="">&nbsp;</option>
+				{{#countries}}
+					<option value="{{code}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>
+				{{/countries}}
+			</select></div></span>
+		</div>
+
+		<div class="clear"></div>
+
+		<div class="row column-6 labels">
+			<span class="oop-oop">Fiscal Year End</span>
+			<span class="oop">Currency</span>
+		</div>
+
+		<div class="row column-6">
+			<span class="oop-oop"><input type="text" name="company_fye" value="{{#settings}}{{company_fye}}{{/settings}}" tabindex="12"></span>
+			<span class="oop-oop"><div class="select"><select name="company_currency" {{#settings}}{{#company_currency}}data-default="{{company_currency}}"{{/company_currency}}{{/settings}}>
+				{{#currencies}}
+					<option value="{{symbol}}" {{#default}}selected="selected"{{/default}}>{{symbol}} - {{name}}</option>
+				{{/currencies}}
+			</select></div></span>
+			<span class="oppa-gangnam-style">&nbsp;</span>
+			<span class="oop-oop">&nbsp;</span>
+			<span class="oop"><a href="#" class="button setup-settings-cancel" tabindex="14">Cancel</a></span>
+			<span class="oop"><a href="#" class="button setup-settings-save" tabindex="15">Save</a></span>
+		</div>
+
+	</div>
+
+	<div class="bump-down-more">
+
+		<div class="text-bold text-medium">Default Accounts</div>
+		<div class="text-medium bump-down">Default accounts make your BeansBooks workflow faster. We configured common accounts already. You may want to make modifications to fit your business needs.</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Deposit Account</div>
+			<div class="default-account-subtext">Where are credit card or check payments deposited from your customers?</div>
+			<select class="account-dropdown" name="account_default_deposit">
+				<option value="">&nbsp;</option>
+				{{#account_default_deposit_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^deposit}}disabled="disabled"{{/deposit}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_deposit_options}}
+			</select>
+		</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Customer Terms/Receivable Account</div>
+			<div class="default-account-subtext">How do you collect funds from customers? You can also set Terms per customer.</div>
+			<select class="account-dropdown" name="account_default_receivable">
+				<option value="">&nbsp;</option>
+				{{#account_default_receivable_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^receivable}}disabled="disabled"{{/receivable}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_receivable_options}}
+			</select>
+		</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Income Account</div>
+			<div class="default-account-subtext">Where is Income recorded? This is usually Product Sales or Service Sales. Choose the Income Account you use most often.</div>
+			<select class="account-dropdown" name="account_default_income">
+				<option value="">&nbsp;</option>
+				{{#account_default_income_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^income}}disabled="disabled"{{/income}} {{#selected}}selected="selected"{{/selected}}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_income_options}}
+			</select>
+		</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Returns Account</div>
+			<div class="default-account-subtext">Where should returns be recorded? This is usually an Income account that offsets Product or Service Sales Income Accounts.</div>
+			<select class="account-dropdown" name="account_default_returns">
+				<option value="">&nbsp;</option>
+				{{#account_default_returns_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^income}}disabled="disabled"{{/income}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_returns_options}}
+			</select>
+		</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Payment Account for Expenses</div>
+			<div class="default-account-subtext">What account do you use for expenses? Usually a credit card or checking account.</div>
+			<select class="account-dropdown" name="account_default_expense">
+				<option value="">&nbsp;</option>
+				{{#account_default_expense_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^payment}}disabled="disabled"{{/payment}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_expense_options}}
+			</select>
+		</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Payment Account for Purchase Orders</div>
+			<div class="default-account-subtext">What account do you use to pay purchase orders? Usually a checking account.</div>
+			<select class="account-dropdown" name="account_default_order">
+				<option value="">&nbsp;</option>
+				{{#account_default_order_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^payment}}disabled="disabled"{{/payment}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_order_options}}
+			</select>
+		</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Cost of Goods Sold Account</div>
+			<div class="default-account-subtext">What account do you use to track cost of goods sold?</div>
+			<select class="account-dropdown" name="account_default_costofgoods">
+				<option value="">&nbsp;</option>
+				{{#account_default_costofgoods_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^costofgoods}}disabled="disabled"{{/costofgoods}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_costofgoods_options}}
+			</select>
+		</div>
+
+		<div class="form default-account text-medium">
+			<div class="text-bold">Default Terms/Payable Account</div>
+			<div class="default-account-subtext">How do you track accounts payable to vendors? You can also set Terms per vendor.</div>
+			<select class="account-dropdown" name="account_default_payable">
+				<option value="">&nbsp;</option>
+				{{#account_default_payable_options}}
+					{{^reserved}}
+						<option value="{{id}}" {{^payable}}disabled="disabled"{{/payable}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/account_default_payable_options}}
+			</select>
+		</div>
+
+		<div class="clear"></div>
+
+	</div>
+
+	<div class="form bump-down-more">
+		<div class="text-medium text-bold bump-down">Write Off Accounts</div>
+		<div class="text-medium bump-down">Sometimes the amount you receive from a customer is less than your invoice amount. This can be due to an early payment discount, credit card merchant fees or simply an incorrect payment. Conversly, sometimes an invoice from a vendor differs from your purchase order. Write Off Accounts make it easy to manage these differences.</div>
+		<div id="setup-settings-writeoff-accounts-container">
+			
+			{{#writeoff_accounts_options_dropdowns}}
+				<select class="account-dropdown" name="writeoff_account_ids[]">
+					<option value="">&nbsp;</option>
+					{{#options}}
+						{{^reserved}}
+							<option value="{{id}}" {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+						{{/reserved}}
+					{{/options}}
+				</select>
+			{{/writeoff_accounts_options_dropdowns}}
+
+			<select class="account-dropdown" name="writeoff_account_ids[]">
+				<option value="">&nbsp;</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}">{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select>
+
+			<div class="clear"></div>
+		</div>
+
+		<div class="row column-6 bump-down-most">
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oppa-gangnam-style">&nbsp;</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oop"><a href="#" class="button setup-settings-cancel">Cancel</a></span>
+			<span class="oop"><a href="#" class="button setup-settings-save">Save</a></span>
+		</div>
+	</div>
+</form>

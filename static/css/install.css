@@ -1,0 +1,68 @@
+/**
+ * Install CSS
+ */
+
+.install-process-step {
+	font-size: 12px;
+	text-align: center;
+	margin-bottom: 30px;
+}
+
+.explanation {
+	width: 60%;
+	margin: 0px auto;
+}
+
+.explanation ul {
+	
+}
+
+.explanation ul li {
+	list-style: disc;
+	margin: 5px 0px 5px 50px;
+	line-height: 14px;
+}
+
+.explanation a.button {
+	min-width: 150px;
+	text-align: center;
+	margin: 5px auto;
+}
+
+.explanation.form {
+	padding-bottom: 15px;
+}
+
+.explanation.form .left-right-row {
+	height: 25px;
+	font-size: 14px;
+	margin: 0px 0px 5px 0px;
+}
+
+.explanation.form .left-right-row span {
+	float: left;
+	margin-left: 5px;
+	height: 100%;
+}
+
+.explanation.form .left-right-row span:first-child {
+	margin-left: 0px;
+}
+
+.explanation.form .left-right-row span.left {
+	width: 25%;
+	text-align: right;
+	padding-top: 5px;
+}
+
+.explanation.form .left-right-row span.right {
+	width: 74%;
+}
+
+.explanation.form .left-right-row span.right.text {
+	padding-top: 2px;
+}
+
+.explanation.form .left-right-row span input[type="text"],.explanation.form .left-right-row span input[type="password"], .explanation.form .left-right-row span .select {
+	width: 100%;
+}

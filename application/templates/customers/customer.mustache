@@ -1,0 +1,170 @@
+<div class="form">
+
+	<div id="customers-customer-edit">
+
+		<input type="hidden" name="customer_id" value="{{#customer}}{{id}}{{/customer}}">
+
+		<input type="hidden" class="first_name" value="{{#customer}}{{first_name}}{{/customer}}">
+		<input type="hidden" class="last_name" value="{{#customer}}{{last_name}}{{/customer}}">
+		<input type="hidden" class="company_name" value="{{#customer}}{{company_name}}{{/customer}}">
+		<input type="hidden" class="default_account_id" value="{{#customer}}{{#default_account}}{{id}}{{/default_account}}{{/customer}}">
+		<input type="hidden" class="email" value="{{#customer}}{{email}}{{/customer}}">
+		<input type="hidden" class="phone_number" value="{{#customer}}{{phone_number}}{{/customer}}">
+		<input type="hidden" class="fax_number" value="{{#customer}}{{fax_number}}{{/customer}}">
+
+		<div class="row column-6 labels">
+			<span class="oop-oop-oop">First Name</span>
+			<span class="oop-oop-oop">Last Name</span>
+			<span class="oop-oop-oop">Company</span>
+			<span class="oop-oop-oop">Terms/Receivable Account</span>
+		</div>
+
+		<div class="row column-6">
+			<span class="oop-oop-oop"><input type="text" name="first_name" value="{{#customer}}{{first_name}}{{/customer}}" tabindex="1"></span>
+			<span class="oop-oop-oop"><input type="text" name="last_name" value="{{#customer}}{{last_name}}{{/customer}}" tabindex="2"></span>
+			<span class="oop-oop-oop"><input type="text" name="company_name" value="{{#customer}}{{company_name}}{{/customer}}" tabindex="3"></span>
+			<span class="oop-oop-oop"><select class="account-dropdown" name="default_account_id" tabindex="4">
+				<option value="">&nbsp;</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}" {{^receivable}}disabled="disabled"{{/receivable}} {{#customer_current}}selected="selected"{{/customer_current}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></span>
+		</div>
+
+		<div class="row column-6 labels">
+			<span class="oop-oop-oop">Email</span>
+			<span class="oop-oop-oop">Phone</span>
+			<span class="oop-oop-oop">Fax</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-6">
+			<span class="oop-oop-oop"><input type="text" name="email" value="{{#customer}}{{email}}{{/customer}}" tabindex="5"></span>
+			<span class="oop-oop-oop"><input type="text" name="phone_number" value="{{#customer}}{{phone_number}}{{/customer}}" tabindex="6"></span>
+			<span class="oop-oop-oop"><input type="text" name="fax_number" value="{{#customer}}{{fax_number}}{{/customer}}" tabindex="7"></span>
+			<span class="oop-oop-oop edit-buttons-placeholder">&nbsp;</span>
+			<span class="oop edit-buttons" style="display:none;">&nbsp;</span>
+			<span class="oop edit-buttons" style="display:none;"><a href="#" id="customers-customer-edit-cancel" class="button" tabindex="8">Cancel</a></span>
+			<span class="oop edit-buttons" style="display:none;"><a href="#" id="customers-customer-edit-save" class="button" tabindex="9">Save</a></span>
+		</div>
+
+	</div>
+	
+	<div id="customers-customer-addresses">
+
+		<div class="row column-4 labels bump-down-most text-bold">
+			Customer Addresses
+		</div>
+
+		<div class="" id="customers-customer-addresses-container">
+			{{#customer_addresses}}
+				{{>customers_customer_address}}
+			{{/customer_addresses}}
+
+			<div class="clear"></div>
+		</div>
+
+		<div class="row column-4 bump-down">
+			<span class="oop"><a href="#" id="customers-customer-address-add" class="button">Add Address</a></span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oppa-gangnam-style">&nbsp;</span>
+		</div>
+
+		<div id="customers-customer-address-form" class="hidden">
+			<input type="hidden" name="customer_id" value="{{#customer}}{{id}}{{/customer}}">
+			<input type="hidden" name="address_id" value="">
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 1</span>
+				<span class="oop-oop">State/Province</span>
+				<span class="oop-oop-oop"><div class="checkbox medium"><input type="checkbox" value="1" name="default-billing"></div> Default Billing Address</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address required" tabindex="8" name="address1" tabindex="10"></span>
+				<span class="oop-oop"><input type="text" class="address" tabindex="11" name="state" tabindex="13"></span>
+				<span class="oop-oop-oop"><div class="checkbox medium"><input type="checkbox" value="1" name="default-shipping"></div> Default Shipping Address</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 2</span>
+				<span class="oop-oop">Zip</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" tabindex="9" name="address2" tabindex="11"></span>
+				<span class="oop-oop"><input type="text" tabindex="12" name="zip" tabindex="14"></span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">City</span>
+				<span class="oop-oop">Country</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" tabindex="10" name="city" tabindex="12"></span>
+				<span class="oop-oop"><div class="select"><select tabindex="13" name="country" tabindex="15">
+					<option value="">&nbsp;</option>
+					{{#countries}}
+						<option value="{{code}}" {{#default}}rel="default" selected="selected"{{/default}}>{{name}}</option>
+					{{/countries}}
+				</select></div></span>
+				<span class="oop-oop"><a href="#" class="button" id="customers-customer-address-form-save" tabindex="16">Save This Address</a></span>
+				<span class="oop"><a href="#" class="button hidden" id="customers-customer-address-form-canceledit" tabindex="17">Cancel Edit</a></span>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+
+<div class="form bump-down-more">
+	<div class="row column-4 no-margin">
+		<span class="oop text-right inline-label">Sales Orders</span>
+		<span class="oop"><input type="text" disabled="disabled" class="text-right" value="{{#customer}}{{sales_count}}{{/customer}}"></span>
+		<span class="oop text-right inline-label">Total Sales</span>
+		<span class="oop"><input type="text" disabled="disabled" class="text-right" value="{{#customer}}{{sales_total_formatted}}{{/customer}}"></span>
+		<span class="oop text-right inline-label">Current Balance</span>
+		<span class="oop"><input type="text" disabled="disabled" class="text-right" value="{{#customer}}{{balance_current_formatted}}{{/customer}}"></span>
+		<span class="oop text-right inline-label">Past Due</span>
+		<span class="oop"><input type="text" disabled="disabled" class="text-right" value="{{#customer}}{{balance_pastdue_formatted}}{{/customer}}"></span>
+	</div>
+</div>
+
+<input type="hidden" id="customers-sales-sales-customer_id" value="{{#customer}}{{id}}{{/customer}}">
+
+<div id="customers-sales-sales" class="row-elements row-elements-alternating-colors text-small bump-down-more">
+	<ul>
+		<li class="text-bold customer-sale">
+			<span class="customer-sale-customer text-left">Customer</span>
+			<span class="customer-sale-sale text-center">Sale</span>
+			<span class="customer-sale-date text-center">Date</span>
+			<span class="customer-sale-status text-center">Status</span>
+			<span class="customer-sale-actions">&nbsp;</span>
+		</li>
+		{{#sales}}
+			{{>customers_sales_sale}}
+		{{/sales}}
+		{{^sales}}
+			<li class="text-bold customer-sale text-center">No sales found.</li>
+		{{/sales}}
+	</ul>
+</div>
+
+<div id="customers-sales-loadsales" class="hidden">
+	<br>
+	<p class="text-medium text-center">Loading additional sales: please wait...</p>
+	<br>
+	<p class="text-center spinme">&nbsp;</p>
+	<br>
+</div>
+
+<div id="customers-sales-endsales" class="hidden">
+	<br>
+	<p class="text-medium text-center">No additional sales found.</p>
+	<br>
+</div>

@@ -1,0 +1,42 @@
+<div class="header">
+	<a href="/"><img src="/static/images/logo.png" class="logo"></a>
+	
+	{{#logged_in}}
+		<div class="links">
+			<ul>
+				<li><a href="/auth/logout">Logout</a></li>
+				<li><a href="/myaccount/">My Account</a></li>
+				<li><a href="/help">Help</a></li>
+			</ul>
+		</div>
+	{{/logged_in}}
+
+	<div class="clear"></div>
+</div>
+<div class="clear"></div>
+
+<div id="masthead" class="masthead">
+	<ul>
+		{{#masthead_links}}
+			<li class="{{class}} {{#current}}current{{/current}}"><a href="{{url}}" class="{{#current}}current{{/current}}">{{text}}</a></li>
+		{{/masthead_links}}
+	</ul>
+</div>
+<div class="clear"></div>
+
+{{#system_messages}}
+	<div class="system-message {{type}} text-medium">{{{text}}}</div>
+{{/system_messages}}
+
+{{#tab_links_defined}}
+	<div class="tabs">
+		<ul>
+			{{#tab_links}}
+				<li class="{{#current}}current{{/current}}{{^current}}{{#shrink}}skinny{{/shrink}}{{/current}}"><a href="{{url}}" class="tab" {{#check_print_queue}}id="vendor-print-check-queue-tab-link"{{/check_print_queue}} title="{{text}}">{{#current}}{{text}}{{/current}}{{^shrink}}{{^current}}{{text}}{{/current}}{{/shrink}}{{^current}}{{#shrink}}{{text_short}}{{/shrink}}{{/current}}</a>{{#removable}}<a href="#" class="remove">x</a>{{/removable}}</li>
+			{{/tab_links}}
+		</ul>
+	</div>
+{{/tab_links_defined}}
+{{^tab_links_defined}}
+	<div class="bump-down null"></div>
+{{/tab_links_defined}}

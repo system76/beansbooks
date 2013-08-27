@@ -1,0 +1,34 @@
+<h2>Testing for some extra UI elements.</h2>
+<div class="clear"></div>
+<p class="text-bold text-medium">Default Styling</p>
+<div class="clear"></div>
+<div style="width: 200px; margin: 20px;">
+	<div class="select" style="width: 100%;"><select id="beans-test">
+			<option value="">&nbsp;</option>
+			{{#countries}}
+				<option value="{{code}}">{{name}}</option>
+			{{/countries}}
+	</select></div>
+</div>
+<div class="clear"></div>
+<p class="text-bold text-medium">Select2 Styling</p>
+<div class="clear"></div>
+<div style="width: 200px; margin: 20px;">
+	<select id="select2-test" style="width: 100%;">
+		<option value="">&nbsp;</option>
+		{{#countries}}
+			<option value="{{code}}">{{name}}</option>
+		{{/countries}}
+	</select>
+</div>
+
+<div class="clear"></div>
+
+<form action="" method="POST">
+	<select multiple name="selector[]" id="selector">
+		<option value="1#2#3">1, 2, and 3.</option>
+		<option value="4#5#6">4!5!6!</option>
+		<option value="7#8#9">last</option>
+	</select>
+	<input type="submit">
+</form>

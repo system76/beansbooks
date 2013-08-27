@@ -1,0 +1,197 @@
+<div class="text-medium">This is your {{#account}}{{name}}{{/account}} account.</div>
+
+<div class="accounts-view-actions">
+	<div class="green-select large float-left" disabled="disabled">
+		<select id="accounts-view-jump" disabled="disabled">
+			<option value="">Jump To Month</option>
+			{{#months_backward_24}}
+				<option value="{{YYYY-MM}}">{{text}}</option>
+			{{/months_backward_24}}
+		</select>
+	</div>
+
+	<a href="#" id="accounts-view-add-transaction" class="button large float-left" disabled="disabled">Add Transaction</a>
+	
+	<a href="/accounts/import/{{#account}}{{id}}{{/account}}" class="button large float-left" disabled="disabled">Import Transactions</a>
+	
+	<a href="/accounts/reconcile/{{#account}}{{id}}{{/account}}" class="button large float-left">Reconcile Account</a>
+
+	<div class="clear"></div>
+</div>
+
+<div class="form bump-down-more" id="accounts-reconcile-prep">
+	<div class="row column-10 labels">
+		<span class="oppa-gangnam-style">
+			Statement Date
+		</span>
+		<span class="oppa-gangnam-style">
+			Starting Balance
+		</span>
+		<span class="oppa-gangnam-style">
+			Ending Balance
+		</span>
+		<span class="oppa-gangnam-style">
+			&nbsp;
+		</span>
+		<span class="oppa-gangnam-style">
+			&nbsp;
+		</span>
+	</div>
+	<div class="row column-10">
+		<span class="oppa-gangnam-style">
+			<input type="text" id="accounts-reconcile-prep-date" value="{{#last_reconcile}}{{date_next}}{{/last_reconcile}}">
+		</span>
+		<span class="oppa-gangnam-style">
+			<input type="text" id="accounts-reconcile-prep-balance_start" {{#last_reconcile}}readonly="readonly"{{/last_reconcile}} value="{{#last_reconcile}}{{balance_end}}{{/last_reconcile}}">
+		</span>
+		<span class="oppa-gangnam-style">
+			<input type="text" id="accounts-reconcile-prep-balance_end">
+		</span>
+		<span class="oppa-gangnam-style">
+			&nbsp;
+		</span>
+		<span class="oop-oop">
+			<a href="/accounts/view/{{#account}}{{id}}{{/account}}" class="button">Cancel</a>
+		</span>
+		<span class="oop-oop">
+			<a href="#" class="button" id="accounts-reconcile-prep-start">Start</a>
+		</span>
+	</div>
+</div>
+
+<form action="/accounts/reconcilecreate" method="POST">
+	
+	<div id="accounts-reconcile-form" class="bump-down-most" style="display: none;">	
+		<input type="hidden" name="account_id" value="{{#account}}{{id}}{{/account}}">
+		<div id="accounts-reconcile-form-in" class=" reconcile-form">
+			<a name="funds-in"></a>
+			<div class="text-bold text-large">Funds In</div>
+			<div class="accounts-reconcile-form-actions">
+				<a href="#" class="button add-transaction">Add Transaction</a>
+				<a href="#" class="button check-all">Check All</a>
+				<a href="#" class="button uncheck-all">Uncheck All</a>
+				<div class="clear"></div>
+			</div>
+			<div class="row-elements row-elements-alternating-colors text-small bump-down-more">
+				<ul>
+					<li class="text-bold account-reconcile-transaction">
+						<span class="account-reconcile-transaction-date text-center">Date</span>
+						<span class="account-reconcile-transaction-number text-center">Num</span>
+						<span class="account-reconcile-transaction-description text-center">Description</span>
+						<span class="account-reconcile-transaction-amount text-center">Amount</span>
+						<span class="account-reconcile-transaction-include"><div class="checkbox manual" id="accounts-reconcile-form-in-checkbox"><input type="checkbox" value="1" name="form-in-checkall"></div></span>
+					</li>
+					{{#transactions_in}}
+						{{>accounts_reconcile_transaction}}
+					{{/transactions_in}}
+					{{^transactions_in}}
+						<li class="text-bold account-transaction text-center">This account does not have any recorded funds in.</li>
+					{{/transactions_in}}
+				</ul>
+			</div>
+		</div>
+
+		<div id="accounts-reconcile-form-out" class="bump-down-most reconcile-form">
+			<a name="funds-out"></a>
+			<div class="text-bold text-large">Funds Out</div>
+			<div class="accounts-reconcile-form-actions">
+				<a href="#" class="button add-transaction">Add Transaction</a>
+				<a href="#" class="button check-all">Check All</a>
+				<a href="#" class="button uncheck-all">Uncheck All</a>
+				<div class="clear"></div>
+			</div>
+			<div class="row-elements row-elements-alternating-colors text-small bump-down-more">
+				<ul>
+					<li class="text-bold account-reconcile-transaction">
+						<span class="account-reconcile-transaction-date text-center">Date</span>
+						<span class="account-reconcile-transaction-number text-center">Num</span>
+						<span class="account-reconcile-transaction-description text-center">Description</span>
+						<span class="account-reconcile-transaction-amount text-center">Amount</span>
+						<span class="account-reconcile-transaction-include"><div class="checkbox manual" id="accounts-reconcile-form-out-checkbox"><input type="checkbox" value="1" name="form-out-checkall"></div></span>
+					</li>
+					{{#transactions_out}}
+						{{>accounts_reconcile_transaction}}
+					{{/transactions_out}}
+					{{^transactions_out}}
+						<li class="text-bold account-transaction text-center">This account does not have any recorded funds out.</li>
+					{{/transactions_out}}
+				</ul>
+			</div>
+		</div>
+
+		<div class="clear"></div>
+
+	</div>
+
+	<div id="accounts-reconcile-status" class="form" style="display: none;">
+		<a href="#funds-out" id="accounts-reconcile-status-jump-out"><span class="text-large">&darr;</span> Jump to Funds Out</a> 
+		<a href="#funds-in" id="accounts-reconcile-status-jump-in" class="hidden"><span class="text-large">&uarr;</span> Jump to Funds In</a> 
+		<br>
+		Statement Date<br>
+		<input type="text" name="date" readonly="readonly"><br>
+		Starting Balance<br>
+		<input type="text" name="balance_start" readonly="readonly"><br>
+		Ending Balance<br>
+		<input type="text" name="balance_end" readonly="readonly"><br>
+		Reconciled Balance<br>
+		<input type="text" name="balance_reconciled" readonly="readonly"><br>
+		Difference<br>
+		<input type="text" name="balance_difference" readonly="readonly"><br>
+		<div class="accounts-reconcile-status-actions">
+			<a href="/accounts/view/{{#account}}{{id}}{{/account}}" class="button">Cancel</a>
+			<a href="#" class="button" id="accounts-reconcile-status-save">Save</a>
+			<div class="clear"></div>
+		</div>
+	</div>
+
+	<div class="clear"></div>
+
+</form>
+
+<div id="accounts-reconcile-new-split-template" class="hidden">
+	<li class="account-reconcile-transaction split new selected">
+		<span class="account-reconcile-transaction-number text-center">&nbsp;</span>
+		<span class="account-reconcile-transaction-description text-left">&nbsp;</span>
+		<span class="account-reconcile-transaction-transfer text-left"><div class="select"><select name="transaction-split-transfer">
+			<option value="">Select transfer account.</option>
+			{{#all_accounts_chart_flat}}
+				{{^reserved}}
+					<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/all_accounts_chart_flat}}
+		</select></div></span>
+		<span class="account-reconcile-transaction-split text-center">&nbsp;</span>
+		<span class="account-reconcile-transaction-credit text-left"><input type="text" name="transaction-split-credit" placeholder=""></span>
+		<span class="account-reconcile-transaction-debit text-left"><input type="text" name="transaction-split-debit" placeholder=""></span>
+	</li>
+</div>
+
+<div id="accounts-reconcile-new-transaction-template" class="hidden">
+	<li class="account-reconcile-transaction new color-force-green">
+		<input type="hidden" name="transaction-account-id" value="{{#account}}{{id}}{{/account}}">
+		<input type="hidden" name="transaction-account-table_sign" value="{{#account}}{{table_sign}}{{/account}}">
+		<input type="hidden" name="transaction-id" value="">
+		<span class="account-reconcile-transaction-date text-center"><input type="text" name="transaction-date" placeholder="{{dateYYYYMMDD}}"></span>
+		<span class="account-reconcile-transaction-number text-center"><input type="text" name="transaction-number" placeholder="Optional"></span>
+		<span class="account-reconcile-transaction-description text-center"><input type="text" name="transaction-description" placeholder="Description"></span>
+		<span class="account-reconcile-transaction-transfer text-center"><div class="select"><select name="transaction-transfer">
+			<option value="">Select transfer account.</option>
+			{{#all_accounts_chart_flat}}
+				{{^reserved}}
+					<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/all_accounts_chart_flat}}
+		</select></div></span>
+		<span class="account-reconcile-transaction-split text-center"><a href="#">&nbsp;</a></span>
+		<span class="account-reconcile-transaction-credit text-center"><input type="text" name="transaction-credit" placeholder="Increase"></span>
+		<span class="account-reconcile-transaction-debit text-center"><input type="text" name="transaction-debit" placeholder="Decrease"></span>
+	</li>
+	<li class="account-reconcile-transaction new color-force-green account-reconcile-transaction-actions">
+		<a href="#" class="account-reconcile-transaction-new-save button green short">Save</a>
+		<a href="#" class="account-reconcile-transaction-new-cancel button green short">Cancel</a>
+	</li>
+</div>
+
+<div id="accounts-reconcile-transaction-template" class="hidden">
+	{{>accounts_reconcile_transaction}}
+</div>

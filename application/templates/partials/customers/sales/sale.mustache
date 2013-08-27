@@ -1,0 +1,59 @@
+<li class="customer-sale" rel="{{id}}">
+	{{#invoice_view}}
+		<input type="hidden" class="email" value="{{#customer}}{{email}}{{/customer}}">
+			<span class="customer-sale-customer text-left">{{#customer}}{{name}}{{/customer}}</span>
+			<span class="customer-sale-sale text-center">{{sale_number}}</span>
+			<span class="customer-sale-date text-center">{{date_created}}</span>
+			<span class="customer-sale-status text-center">{{status}}</span>
+			<span class="customer-sale-total text-right">{{total_formatted}}</span>
+			<span class="customer-sale-actions text-right">
+				{{^paid}}
+					<a href="#" class="cancel">Delete</a> |
+				{{/paid}}
+				{{#paid}}
+					{{#can_refund}}
+						<a href="#" class="refund">Refund</a> |
+					{{/can_refund}}
+				{{/paid}}
+				{{^cancelled}}
+					<a href="#" class="send">Send Invoice</a> |
+				{{/cancelled}}
+				<a href="#" class="print">Print</a> |
+				{{#invoiced}}
+					<a href="/customers/invoices/{{id}}" class="view-invoice">View</a>
+				{{/invoiced}}
+				{{^invoiced}}
+					<a href="/customers/sales/{{id}}" class="view-sale">View</a>
+				{{/invoiced}}
+			</span>
+	{{/invoice_view}}
+	{{^invoice_view}}
+		<input type="hidden" class="email" value="{{#customer}}{{email}}{{/customer}}">
+		<span class="customer-sale-customer text-left">{{#customer}}{{name}}{{/customer}}</span>
+		<span class="customer-sale-sale text-center">{{sale_number}}</span>
+		<span class="customer-sale-date text-center">{{date_created}}</span>
+		<span class="customer-sale-status text-center">{{status}}</span>
+		<span class="customer-sale-total text-right">{{total_formatted}}</span>
+		<span class="customer-sale-actions text-right">
+			{{#can_cancel}}
+				<a href="#" class="cancel">Delete</a> |
+			{{/can_cancel}}
+			{{#invoiced}}
+				<a href="/customers/invoices/{{id}}">View Invoice</a> |
+			{{/invoiced}}
+			{{^invoiced}}
+				{{^cancelled}}
+					<a href="#" class="invoice">Convert to Invoice</a> |
+				{{/cancelled}}
+			{{/invoiced}}
+			<a href="#" class="send">Send</a> |
+			<a href="#" class="print">Print</a> |
+			{{#invoiced}}
+				<a href="/customers/invoices/{{id}}" class="view-invoice">View</a>
+			{{/invoiced}}
+			{{^invoiced}}
+				<a href="/customers/sales/{{id}}" class="view-sale">View</a>
+			{{/invoiced}}
+		</span>
+	{{/invoice_view}}
+</li>

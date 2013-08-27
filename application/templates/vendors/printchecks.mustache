@@ -1,0 +1,59 @@
+<div class="text-medium">
+	<span class="text-bold float-left bump-down">Check Payments</span>
+	<input type="text" class="search float-right" id="vendors-printchecks-checks-search" placeholder="Search by Check Number">
+	<div class="clear"></div>
+</div>
+
+<div id="vendors-printchecks-checks" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="text-bold vendor-check">
+			<span class="vendor-check-date text-left text-bold">Payment Date<span id="vendors-printchecks-checks-paging">{{#vendor_checks_more}}|&nbsp;&nbsp;<a href="#" rel="1">View More &gt;</a>{{/vendor_checks_more}}{{^vendor_checks_more}}&nbsp;{{/vendor_checks_more}}</span>
+			</span>
+			<span class="vendor-check-vendor text-left">Vendor</span>
+			<span class="vendor-check-amount text-center text-bold">Payment Amount</span>
+			<span class="vendor-check-number text-center text-bold">Check Number</span>
+			<span class="vendor-check-actions text-right">&nbsp;</span>
+		</li>
+		{{#vendor_checks}}
+			{{>vendors_checks_check}}
+		{{/vendor_checks}}
+		{{^vendor_checks}}
+			<li class="text-bold vendor-check text-center">No payments found.</li>
+		{{/vendor_checks}}
+	</ul>
+</div>
+
+<div id="vendors-printchecks-newchecks">
+	<form id="vendors-printchecks-newchecks-form" action="/vendors/renderprintchecks" method="POST">
+		<div class="text-medium text-bold bump-down-more">Checks to Print</div>
+
+		<div class="form bump-down-more">
+			<div class="row column-6 bump-down">
+				<span class="oop-oop-oop inline-label">First Check Number in Printer</span>
+				<span class="oop"><input type="text" name="check_number_start" value="{{next_check_number}}"></span>
+				<span class="oop-oop-oop inline-label">&nbsp;&nbsp;&nbsp;&nbsp;<a target="_BLANK" class="green-black" href="https://www.deluxe.com/shopdeluxe/laser-top-checks-lined/DLT103/product">Check Format?</a></span>
+				<span class="oop-oop">&nbsp;</span>
+				<span class="oop-oop"><a href="#" id="vendors-printchecks-newchecks-clear" class="button">Clear Queue</a></span>
+				<span class="oop"><a href="#" id="vendors-printchecks-newchecks-print" class="button">Print</a></span>
+			</div>
+		</div>
+
+		<div class="row-elements row-elements-alternating-colors text-small">
+			<ul>
+				<li id="vendors-printchecks-newchecks-header" class="text-bold vendor-check">
+					<span class="vendor-check-date text-left text-bold">Payment Date</span>
+					<span class="vendor-check-vendor text-left">Vendor</span>
+					<span class="vendor-check-amount text-center text-bold">Payment Amount</span>
+					<span class="vendor-check-number text-center text-bold">&nbsp;</span>
+					<span class="vendor-check-actions text-right">&nbsp;</span>
+				</li>
+				{{#vendor_newchecks}}
+					{{>vendors_checks_newcheck}}
+				{{/vendor_newchecks}}
+				{{^vendor_newchecks}}
+					<li class="text-bold vendor-check text-center">You don't have any checks queued for printing.</li>
+				{{/vendor_newchecks}}
+			</ul>
+		</div>
+	</form>
+</div>

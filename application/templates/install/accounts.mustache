@@ -1,0 +1,37 @@
+<div class="install-process-step">
+	Installation Progress: Step 4 of 5
+</div>
+<div class="clear"></div>
+
+<h3 class="text-center">Accounts Configuration</h3>
+<div class="clear"></div>
+
+<div class="explanation text-medium bump-down-most">
+	Your chart of accounts is the structure of your accounting system.  BeansBooks will automatically 
+	configure several high level accounts and, optionally, create a set of default accounts that can 
+	help your organize your business more easily.
+</div>
+
+<form action="" method="POST">
+	<input type="hidden" name="install-step" value="4">
+
+	<div class="explanation form text-medium bump-down-most">
+		<div class="text-medium">Please select the best default option for you:</div>
+		
+		{{#accounts_options}}
+			<div class="left-right-row bump-down-most">
+				<span class="left">{{name}}<input type="radio" name="accounts_options_choice" value="{{key}}"></span>
+				<span class="right text">{{description}}</span>
+			</div>
+		{{/accounts_options}}
+
+	</div>
+
+	<div class="explanation text-small bump-down-most">
+		<span class="text-bold">Tip:</span> You can always change your chart of accounts later on, however this step is meant to create as little initial setup for you as possible.  If you're unsure of which option to select, choose &quot;Full&quot;.
+	</div>
+
+	<div class="explanation text-center bump-down-most">
+		<a href="#" class="button process-step">Save Default Accounts</a>
+	</div>
+</form>

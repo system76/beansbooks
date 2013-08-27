@@ -1,0 +1,18 @@
+<li class="vendor-expense" rel="{{id}}">
+	<span class="vendor-expense-vendor text-left">{{#vendor}}{{company_name}}{{/vendor}}</span>
+	<span class="vendor-expense-invoice text-center">{{invoice_number}}{{^invoice_number}}&nbsp;{{/invoice_number}}</span>
+	<span class="vendor-expense-so text-center">{{so_number}}{{^so_number}}&nbsp;{{/so_number}}</span>
+	<span class="vendor-expense-date text-center">{{date_created}}{{^date_created}}&nbsp;{{/date_created}}</span>
+	<span class="vendor-expense-check text-center">{{check_number}}{{^check_number}}&nbsp;{{/check_number}}</span>
+	<span class="vendor-expense-total text-right">{{total_formatted}}</span>
+	<span class="vendor-expense-actions text-right">
+		{{#can_cancel}}
+			<a href="#" class="cancel">Delete</a> | 
+		{{/can_cancel}}
+		{{#can_refund}}
+			<a href="#" class="refund">Return</a> |
+		{{/can_refund}}
+		<a href="#" class="print">Print</a> | 
+		<a href="/vendors/expenses/{{id}}" class="view">View</a>
+	</span>
+</li>

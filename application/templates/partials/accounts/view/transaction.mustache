@@ -1,0 +1,24 @@
+<li rel="{{id}}" class="account-transaction {{#cancelled}}cancelled{{/cancelled}} account-transaction-month-{{month}}">
+	<span class="account-transaction-edit {{#edit}}account-transaction-form{{/edit}}"><a rel="{{#edit}}{{type}}{{/edit}}" href="{{#edit}}{{url}}{{/edit}}{{^edit}}#{{/edit}}">&nbsp;</a></span>
+	<span class="account-transaction-date text-center">{{date}}</span>
+	<span class="account-transaction-number text-center">{{#check_number}}{{check_number}}{{/check_number}}{{^check_number}}{{number}}{{/check_number}}</span>
+	<span class="account-transaction-description text-left">{{{description}}}</span>
+	<span class="account-transaction-transfer text-left" rel="{{#transfer_account}}{{id}}{{/transfer_account}}">
+		{{#transfer_account}}{{name}}{{/transfer_account}}{{^transfer_account}}Split Transaction{{/transfer_account}}
+	</span>
+	<span class="account-transaction-jump text-center">{{#transfer_account}}<a href="/accounts/view/{{id}}">&nbsp;</a>{{/transfer_account}}{{^transfer_account}}&nbsp;{{/transfer_account}}</span>
+	<span class="account-transaction-split text-center">{{#transfer_account}}&nbsp;{{/transfer_account}}{{^transfer_account}}<a href="#">&nbsp;</a>{{/transfer_account}}</span>
+	<span class="account-transaction-reconcile text-center text-darkgray">{{#reconciled}}R{{/reconciled}}{{^reconciled}}&nbsp;{{/reconciled}}</span>
+	<span class="account-transaction-credit text-left">{{amount_credit}}{{^amount_credit}}&nbsp;{{/amount_credit}}</span>
+	<span class="account-transaction-debit text-left">{{amount_debit}}{{^amount_debit}}&nbsp;{{/amount_debit}}</span>
+	<span class="account-transaction-balance text-left">${{balance}}</span>
+</li>
+{{^transfer_account}}
+	<li class="list-container split-transaction hidden">
+		<ul>
+			{{#transaction_splits}}
+				{{>accounts_view_transactionsplit}}
+			{{/transaction_splits}}
+		</ul>
+	</li>
+{{/transfer_account}}

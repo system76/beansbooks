@@ -1,0 +1,175 @@
+<input type="hidden" id="vendors-taxpayments-create-requested_payment_id" value="{{requested_payment_id}}">
+<input type="hidden" id="vendors-taxpayments-create-requested_tax_id" value="{{requested_tax_id}}">
+<input type="hidden" id="vendors-taxpayments-create-requested_tax_name" value="{{requested_tax_name}}">
+
+<div id="vendors-taxpayments-create" class="bump-down">
+	<input type="hidden" name="replace_transaction_id" value="">
+	<div class="text-medium text-bold bump-down">Remit Sales Tax</div>
+
+	<div class="form bump-down">
+		<div class="row labels column-10">
+			<span class="oop-oop-oop">Payment Date</span>
+			<span class="ehhh-sexy-lady">Payment Account</span>
+			<span class="ehhh-sexy-lady">Write Off Account</span>
+			<span class="oop-oop-oop">Check Number</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			
+			<span class="oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-10">
+			<span class="oop-oop-oop"><input type="text" name="date" placeholder="{{dateYYYYMMDD}}"></span>
+			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="payment_account_id" {{#payment_payment_account_default}}rel="{{id}}"{{/payment_payment_account_default}}>
+				<option value="">&nbsp;</option>
+				{{#payment_payment_accounts}}
+					{{^reserved}}
+						<option value="{{id}}" {{^payment}}disabled="disabled"{{/payment}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/payment_payment_accounts}}
+			</select></span>
+			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="writeoff_account_id">
+				<option value="">No Write Off</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}" {{^writeoff}}disabled="disabled"{{/writeoff}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></span>
+			<span class="oop-oop-oop"><input type="text" name="check_number"></span>
+			<span class="oop-oop-oop inline-label text-center"><div class="checkbox"><input type="checkbox" name="print_check" value="1"></div>&nbsp;&nbsp;Print Check?</span>
+			
+			<span class="oop">&nbsp;</span>
+		</div>
+
+		<div class="row labels column-10">
+			<span class="ehhh-sexy-lady">Tax Jurisdiction</span>
+			<span class="oop-oop-oop">Sales Date Start</span>
+			<span class="oop-oop-oop">Sales Date End</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+			<span class="oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-10">
+			<span class="ehhh-sexy-lady"><input type="hidden" name="tax_id"></span>
+			<span class="oop-oop-oop"><input type="text" name="date_start"></span>
+			<span class="oop-oop-oop"><input type="text" name="date_end"></span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+			<span class="oop">&nbsp;</span>
+		</div>
+
+		<div class="row break">&nbsp;</div>
+
+		<div class="row column-10 labels text-small">
+			<span class="oop-oop inline-label">Total Sales</span>
+			<span class="oop-oop inline-label">Taxed Sales</span>
+			<span class="oop-oop-oop inline-label">Tax Collected</span>
+			<!-- FILL -->
+		</div>
+
+		<div class="row column-10 text-small">
+			<span class="oop-oop"><input type="text" class="clearinput" readonly="readonly" name="total_sales"></span>
+			<span class="oop-oop"><input type="text" class="clearinput" readonly="readonly" name="taxable_sales"></span>
+			<span class="oop-oop"><input type="text" class="clearinput" readonly="readonly" name="tax_collected"></span>
+			<span class="oop inline-label">&nbsp;</span>
+			<span class="oop-oop inline-label">Total</span>
+			<span class="oop-oop inline-label">Previously Paid</span>
+			<span class="oop-oop inline-label">Payment Due</span>
+			<span class="oop">&nbsp;</span>
+			<span class="oop-oop-oop inline-label">Payment Amount</span>
+			<span class="oop-oop-oop inline-label">Write-Off Amount</span>
+		</div>
+
+		<div class="row column-10 labels text-small">
+			<span class="oop-oop inline-label">Total Returns</span>
+			<span class="oop-oop inline-label">Taxed Returns</span>
+			<span class="oop-oop-oop inline-label">Tax Returned</span>
+			<span class="oop-oop"><input type="text" class="clearinput" name="tax_expected" readonly="readonly"></span>
+			<span class="oop-oop"><input type="text" class="clearinput" name="tax_paid" readonly="readonly"></span>
+			<span class="oop-oop"><input type="text" class="clearinput" name="tax_expected" readonly="readonly"></span>
+			<span class="oop">&nbsp;</span>
+			<span class="oop-oop"><input type="text" name="amount"></span>
+			<span class="oop">&nbsp;</span>
+			<span class="oop-oop"><input type="text" name="writeoff_amount"></span>
+			<span class="oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-10 text-small">
+			<span class="oop-oop"><input type="text" class="clearinput" readonly="readonly" name="total_returns"></span>
+			<span class="oop-oop"><input type="text" class="clearinput" readonly="readonly" name="taxable_returns"></span>
+			<span class="oop-oop"><input type="text" class="clearinput" readonly="readonly" name="tax_returned"></span>
+		</div>
+
+		<div class="row column-10 labels text-small">
+			<span class="oop-oop inline-label">Net Sales</span>
+			<span class="oop-oop inline-label">Net Taxable</span>
+			<!-- FILL -->
+		</div>
+
+		<div class="row column-10 ">
+			<span class="oop-oop inline-label text-small"><input type="text" class="clearinput" readonly="readonly" name="net_sales"></span>
+			<span class="oop-oop inline-label text-small"><input type="text" class="clearinput" readonly="readonly" name="net_taxable"></span>
+			
+			<span class="elevator-dance">&nbsp;</span>
+
+			<span class="oop-oop vendors-taxpayments-create-cancelsave">&nbsp;</span>
+			<span class="oop-oop vendors-taxpayments-create-cancelsave"><a href="#" class="button vendors-taxpayments-create-cancel">Cancel</a></span>
+			<span class="oop-oop vendors-taxpayments-create-cancelsave"><a href="#" class="button vendors-taxpayments-create-save">Save</a></span>
+
+			<span class="oop-oop hidden vendors-taxpayments-create-canceledit"><a href="#" class="button vendors-taxpayments-create-delete">Delete</a></span>
+			<span class="oop-oop hidden vendors-taxpayments-create-canceledit"><a href="#" class="button vendors-taxpayments-create-cancel">Cancel</a></span>
+			<span class="oop-oop hidden vendors-taxpayments-create-canceledit"><a href="#" class="button vendors-taxpayments-create-edit">Edit</a></span>
+		</div>
+
+	</div>
+
+	<div id="vendors-taxpayments-create-actions" class="bump-down hidden">
+		<div class="clear"></div>
+	</div>
+
+	<div id="vendors-taxpayments-create-invoices" class="row-elements row-elements-alternating-colors text-small bump-down hidden">
+		<ul>
+			<li class="vendor-taxpayments-invoice text-bold">
+				TODO !
+				Invoice
+				Total
+				Taxable
+				Tax Collected
+			</li>
+			
+		</ul>
+		
+	</div>
+
+</div>
+
+<div class="text-medium bump-down">
+	<span class="text-bold float-left bump-down">Tax Payments</span>
+	<input type="text" class="search float-right" id="vendors-taxpayments-payments-search" placeholder="Search Tax Name / Amount / Number">
+	<div class="clear"></div>
+</div>
+
+
+<div id="vendors-taxpayments-payments" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="text-bold vendor-taxpayment">
+			<span class="vendor-taxpayment-name text-left">Tax Jurisdiction</span>
+			<span class="vendor-taxpayment-date text-center">Date Paid</span>
+			<span class="vendor-taxpayment-daterange text-center">Date Range</span>
+			<span class="vendor-taxpayment-account text-center">Payment Account</span>
+			<span class="vendor-taxpayment-amount text-center">Amount Paid</span>
+			<span class="vendor-taxpayment-actions">&nbsp;</span>
+		</li>
+		{{#tax_payments}}
+			{{>taxes_payments_payment}}
+		{{/tax_payments}}
+		{{^tax_payments}}
+			<li class="vendor-taxpayment text-bold text-center">No payments found.</li>
+		{{/tax_payments}}
+	</ul>
+</div>
+
+
+
+<div class="modal-dialog" id="vendors-taxpayments-duplicate-dialog">&nbsp;</div>

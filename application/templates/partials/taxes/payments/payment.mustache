@@ -1,0 +1,10 @@
+<li class="vendor-taxpayment" rel="{{id}}">
+	<span class="vendor-taxpayment-name text-left">{{#tax}}{{name}}{{/tax}}</span>
+	<span class="vendor-taxpayment-date text-center">{{date}}</span>
+	<span class="vendor-taxpayment-daterange text-center">{{date_start}} -- {{date_end}}</span>
+	<span class="vendor-taxpayment-account text-center">{{#payment_account}}{{name}}{{/payment_account}}</span>
+	<span class="vendor-taxpayment-amount text-right">{{amount_formatted}}</span>
+	<span class="vendor-taxpayment-actions">
+		<a href="#" class="view">View</a>
+	</span>
+</li>

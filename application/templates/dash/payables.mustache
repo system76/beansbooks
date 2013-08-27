@@ -1,0 +1,22 @@
+<input type="hidden" id="report-payables-vendor-defaultname" value="{{report_vendor_name}}">
+
+<form action="" method="POST">
+	<div class="form report-form">
+		<div class="row column-10">
+			<span class="oop-oop inline-label text-right">Vendor</span>
+			<span class="ehhh-sexy-lady">
+				<input type="hidden" id="report-payables-vendor" name="vendor_id" value="{{report_vendor_id}}">
+			</span>
+			<span class="yellow-suit-dance-off inline-label">&nbsp;</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+<div class="clear"></div>
+
+<div id="report-content">
+	{{>dash_print_payables}}
+</div>

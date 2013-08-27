@@ -1,0 +1,13 @@
+<li class="static-row account-transaction">
+	<input type="hidden" class="amount" value="{{amount}}">
+	<input type="hidden" class="table_sign" value="{{table_sign}}">
+	<span class="account-transaction-number text-center">&nbsp;</span>
+	<span class="account-transaction-description text-left">&nbsp;</span>
+	<span class="account-transaction-transfer text-left" rel="{{id}}">{{name}}</span>
+	<span class="account-transaction-jump text-center"><a href="/accounts/view/{{id}}">&nbsp;</a></span>
+	<span class="account-transaction-split text-center">&nbsp;</span>
+	<span class="account-transaction-reconcile text-center text-darkgray">{{#reconciled}}R{{/reconciled}}{{^reconciled}}&nbsp;{{/reconciled}}</span>
+	<span class="account-transaction-credit text-left">{{amount_credit}}{{^amount_credit}}&nbsp;{{/amount_credit}}</span>
+	<span class="account-transaction-debit text-left">{{amount_debit}}{{^amount_debit}}&nbsp;{{/amount_debit}}</span>
+	<span class="account-transaction-balance text-left">&nbsp;</span>
+</li>

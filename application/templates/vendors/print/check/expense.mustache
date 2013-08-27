@@ -1,0 +1,143 @@
+{{^nopagebreak}}
+	{{{tableopenpage}}}
+		<tr>
+			<td style="width: 850px; height: 7px; font-size: 1px;">&nbsp;</td>
+		</tr>
+	{{{tableclose}}}
+{{/nopagebreak}}
+
+{{{tableopen}}}
+	<tr>
+		<td style="height: 95px; vertical-align: bottom; text-align: left; width: 685px; font-size: 14px;">&nbsp;</td>
+		<td style="height: 95px; vertical-align: bottom; text-align: left: width: 165px; font-size: 16px; text-indent: 10px;">{{date}}</td>
+	</tr>
+	<tr>
+		<td style="height: 50px; vertical-align: bottom; text-align: left; width: 685px; font-size: 24px; text-indent: 100px;">{{#vendor}}{{name}}{{/vendor}}</td>
+		<td style="height: 50px; vertical-align: bottom; text-align: left: width: 165px; font-size: 16px; text-indent: 5px;">{{total_formatted}}</td>
+	</tr>
+	<tr>
+		<td style="height: 30px; vertical-align: bottom; text-align: left; width: 850px; font-size: 14px; text-indent: 40px;" colspan="2">{{total_written}} {{total_written_filler}}</td>
+	</tr>
+
+	<tr>
+		<td style="height: 30px; vertical-align: bottom; text-align: left; width: 450px; font-size: 12px; text-indent: 90px;">{{#remit_address}}{{first_name}} {{last_name}} {{company_name}}{{/remit_address}}</td>
+		<td style="height: 30px; vertical-align: bottom; text-align: left; width: 400px; font-size: 12px;">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="height: 13px; vertical-align: bottom; text-align: left; width: 450px; font-size: 12px; text-indent: 90px;">{{#remit_address}}{{address1}}{{^address1}}&nbsp;{{/address1}}{{/remit_address}}</td>
+		<td style="height: 13px; vertical-align: bottom; text-align: left; width: 400px; font-size: 12px;">&nbsp;</td>
+	</tr>
+	{{#remit_address}}{{#address2}}
+		<tr>
+			<td style="height: 13px; vertical-align: bottom; text-align: left; width: 450px; font-size: 12px; text-indent: 90px;">{{address2}}</td>
+			<td style="height: 13px; vertical-align: bottom; text-align: left; width: 400px; font-size: 12px;">&nbsp;</td>
+		</tr>
+	{{/address2}}{{/remit_address}}
+	<tr>
+		<td style="height: 13px; vertical-align: bottom; text-align: left; width: 450px; font-size: 12px; text-indent: 90px;">{{#remit_address}}{{city}}, {{state}} {{zip}}{{^city}}{{^state}}{{^zip}}&nbsp;{{/zip}}{{/state}}{{/city}}{{/remit_address}}</td>
+		<td style="height: 13px; vertical-align: bottom; text-align: left; width: 400px; font-size: 12px;">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="height: 13px; vertical-align: bottom; text-align: left; width: 450px; font-size: 12px; text-indent: 90px;">{{#remit_address}}{{country}}{{^country}}&nbsp;{{/country}}{{/remit_address}}</td>
+		<td style="height: 13px; vertical-align: bottom; text-align: left; width: 400px; font-size: 12px;">&nbsp;</td>
+	</tr>
+	{{#remit_address}}{{^address2}}
+		<tr>
+			<td style="height: 13px; vertical-align: bottom; text-align: left; width: 450px; font-size: 12px; text-indent: 90px;">&nbsp;</td>
+			<td style="height: 13px; vertical-align: bottom; text-align: left; width: 400px; font-size: 12px;">&nbsp;</td>
+		</tr>
+	{{/address2}}{{/remit_address}}
+
+	<tr>
+		<td style="height: 105px; vertical-align: bottom; text-align: left; width: 850px; font-size: 14px;" colspan="2">&nbsp;</td>
+	</tr>
+	
+{{{tableclose}}}
+
+{{{tableopen}}}
+	<tr>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">Description</td>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">Quantity</td>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">Price</td>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">Amount Paid</td>
+	</tr>
+	{{#expense_lines}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">{{description}}</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">{{quantity}}</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">{{price_formatted}}</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">{{total_formatted}}</td>
+		</tr>
+	{{/expense_lines}}
+	{{#expense_lines_extra}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">{{linecount}} Not Shown</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">{{total_formatted}}</td>
+		</tr>
+	{{/expense_lines_extra}}
+	{{#expense_lines_buffer}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">&nbsp;</td>
+		</tr>
+	{{/expense_lines_buffer}}
+	{{#expense_lines_total}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">Total</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">{{total_formatted}}</td>
+		</tr>
+	{{/expense_lines_total}}
+{{{tableclose}}}
+
+{{{tableopen}}}
+	<tr>
+		<td style="height: 45px; width: 850px;">&nbsp;</td>
+	</tr>
+{{{tableclose}}}
+
+{{{tableopen}}}
+	<tr>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">Description</td>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">Quantity</td>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">Price</td>
+		<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">Amount Paid</td>
+	</tr>
+	{{#expense_lines}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">{{description}}</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">{{quantity}}</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">{{price_formatted}}</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">{{total_formatted}}</td>
+		</tr>
+	{{/expense_lines}}
+	{{#expense_lines_extra}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">{{linecount}} Not Shown</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">{{total_formatted}}</td>
+		</tr>
+	{{/expense_lines_extra}}
+	{{#expense_lines_buffer}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">&nbsp;</td>
+		</tr>
+	{{/expense_lines_buffer}}
+	{{#expense_lines_total}}
+		<tr>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 427px; border-right: 1px solid #000000; text-align: left; text-indent: 35px;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">&nbsp;</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 139px; border-right: 1px solid #000000; text-align: center;">Total</td>
+			<td style="height: 18px; font-size: 12px; text-align: left; width: 120px; padding-right: 20px; text-align: right;">{{total_formatted}}</td>
+		</tr>
+	{{/expense_lines_total}}
+{{{tableclose}}}

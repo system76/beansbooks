@@ -1,0 +1,82 @@
+<div id="accounts-chart-accounts" class="row-elements row-elements-alternating-colors text-small">
+	<ul>
+		{{#accounts}}
+			{{>accounts_chart_account}}
+		{{/accounts}}
+		{{^accounts}}
+			<li>
+				<span class="text-bold">No top-level accounts found. Please configure them in "Setup".</span>
+			</li>
+		{{/accounts}}
+	</ul>
+</div>
+
+<div id="accounts-chart-edit-template" class="hidden">
+	<li class="selected account-edit text-small">
+		<span class="account-edit-name">
+			<input type="text" name="name" placeholder="Account Name">
+		</span>
+		<span class="account-edit-actions">
+			<a href="#" class="cancel">Cancel</a> | <a href="#" class="save">Save</a>
+		</span>
+		<span class="account-edit-parent">
+			<div class="select"><select name="parent_account_id">
+				<option value="">Parent Account</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}">{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></div>
+		</span>
+		<span class="account-edit-terms">
+			<div class="select"><select name="terms">
+				<option value="">Terms</option>
+				{{#integers0to90}}
+					<option value="{{.}}">{{.}} Days</option>
+				{{/integers0to90}}
+			</select></div>
+		</span>
+		<span class="account-edit-type">
+			<div class="select"><select name="account_type_id">
+				<option value="">Account Type</option>
+				{{#account_types}}
+					<option value="{{id}}">{{name}}</option>
+				{{/account_types}}
+			</select></div>
+		</span>
+	</li>
+</div>
+
+<div id="accounts-chart-delete-form-template" class="hidden">
+	<li class="color-force-yellow account-delete text-small">
+		<span class="float-left">
+			Where would you like to move the transactions in this account?
+		</span>
+		<span class="account-delete-actions">
+			<a href="#" class="cancel">Cancel</a> | 
+			<a href="#" class="delete">Move Transactions &amp; Delete</a>
+		</span>
+		<span class="account-delete-transfer">
+			<div class="select"><select name="transfer_account_id">
+				<option value="">Select Transfer Account</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}">{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></div>
+		</span>
+	</li>
+</div>
+
+<div id="accounts-chart-delete-children-template" class="hidden">
+	<li class="color-force-yellow account-delete text-small">
+		<span class="float-left">
+			This account contains sub-accounts. Please delete sub-accounts first.
+		</span>
+		<span class="account-delete-actions">
+			<a href="#" class="cancel">Cancel</a>
+		</span>
+	</li>
+</div>

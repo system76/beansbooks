@@ -1,0 +1,194 @@
+<input type="hidden" id="accounts-view-fields-account_id" value="{{#account}}{{id}}{{/account}}">
+
+<div class="accounts-view-actions">
+	<div class="green-select large float-left">
+		<select id="accounts-view-jump">
+			<option value="">Jump To Month</option>
+			{{#months_backward_24}}
+				<option value="{{YYYY-MM}}">{{text}}</option>
+			{{/months_backward_24}}
+		</select>
+	</div>
+
+	<a href="#" id="accounts-view-add-transaction" class="button large float-left" {{#account}}{{#top_level}}disabled="disabled"{{/top_level}}{{/account}}>Add Transaction</a>
+
+	<a href="/accounts/import/{{#account}}{{id}}{{/account}}" class="button large float-left">Import Transactions</a>
+	
+	<a href="/accounts/reconcile/{{#account}}{{id}}{{/account}}" class="button large float-left" {{#account}}{{^reconcilable}}disabled="disabled"{{/reconcilable}}{{/account}}>Reconcile Account</a>
+
+	<div class="clear"></div>
+</div>
+
+<div id="accounts-view-transactions" class="row-elements row-elements-alternating-colors text-small">
+	<ul>
+		<li class="text-bold account-transaction">
+			<span class="account-transaction-edit"><a href="#">&nbsp;</a></span>
+			<span class="account-transaction-date text-center">Date</span>
+			<span class="account-transaction-number text-center">Num</span>
+			<span class="account-transaction-description text-center">Description</span>
+			<span class="account-transaction-transfer text-center">Transfer</span>
+			<span class="account-transaction-jump text-center"><a href="#">&nbsp;</a></span>
+			<span class="account-transaction-split text-center"><a href="#">&nbsp;</a></span>
+			<span class="account-transaction-reconcile text-center text-darkgray">R</span>
+			<span class="account-transaction-credit text-center">Increase</span>
+			<span class="account-transaction-debit text-center">Decrease</span>
+			<span class="account-transaction-balance text-center">Balance</span>
+		</li>
+		{{#transactions}}
+			{{>accounts_view_transaction}}
+		{{/transactions}}
+		{{^transactions}}
+			<li class="text-bold account-transaction text-center">This account does not have any recorded transactions.</li>
+		{{/transactions}}
+	</ul>
+</div>
+
+<div id="accounts-view-loadtransactions" class="hidden">
+	<br>
+	<p class="text-medium text-center">Loading additional transactions: please wait...</p>
+	<br>
+	<p class="text-center spinme">&nbsp;</p>
+	<br>
+</div>
+
+<div id="accounts-view-endtransactions" class="hidden">
+	<br>
+	<p class="text-medium text-center">No additional transactions found.</p>
+	<br>
+</div>
+
+{{! These are used for adding new transactions }}
+<div id="accounts-view-add-transaction-template" class="hidden">
+	<li class="account-transaction new color-force-green">
+		<input type="hidden" name="transaction-account-id" value="{{#account}}{{id}}{{/account}}">
+		<input type="hidden" name="transaction-account-table_sign" value="{{#account}}{{table_sign}}{{/account}}">
+		<span class="account-transaction-edit">&nbsp;</span>
+		<span class="account-transaction-date text-center"><input type="text" name="transaction-date" placeholder="{{dateYYYYMMDD}}"></span>
+		<span class="account-transaction-number text-center"><input type="text" name="transaction-number" placeholder="Auto Create"></span>
+		<span class="account-transaction-description text-center"><input type="text" name="transaction-description" placeholder="Optional"></span>
+		<span class="account-transaction-transfer text-center"><div class="select"><select name="transaction-transfer">
+			<option value="">Select transfer account.</option>
+			{{#all_accounts_chart_flat}}
+				{{^reserved}}
+					<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/all_accounts_chart_flat}}
+		</select></div></span>
+		<span class="account-transaction-jump text-center">&nbsp;</span>
+		<span class="account-transaction-split text-center"><a href="#">&nbsp;</a></span>
+		<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+		<span class="account-transaction-credit text-center"><input type="text" name="transaction-credit" placeholder="Increase"></span>
+		<span class="account-transaction-debit text-center"><input type="text" name="transaction-debit" placeholder="Decrease"></span>
+		<span class="account-transaction-balance text-center">&nbsp;</span>
+	</li>
+	<li class="list-container split-transaction new">
+		<ul>
+			<li class="static-row account-transaction new actions color-force-green">
+				<span class="account-transaction-number text-center">&nbsp;<!-- <a href="#" class="delete button short">Delete</a> --></span>
+				<span class="account-transaction-description text-left">&nbsp;</span>
+				<span class="account-transaction-transfer text-left">&nbsp;</span>
+				<span class="account-transaction-jump text-center">&nbsp;</span>
+				<span class="account-transaction-split text-center">&nbsp;</span>
+				<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+				<span class="account-transaction-credit text-left">&nbsp;</span>
+				<span class="account-transaction-debit text-center"><a href="#" class="cancel button short accounts-view-add-transaction-cancel">Cancel</a></span>
+				<span class="account-transaction-balance text-center"><a href="#" class="accounts-view-add-transaction-save save button short">Save</a></span>
+				<!-- <a href="#" class="delete button short">Delete</a>
+				<a href="#" class="save button short">Save</a>
+				<a href="#" class="cancel button short">Cancel</a>
+				<div class="clear"></div> -->
+			</li>
+		</ul>
+	</li>
+</div>
+
+<div id="accounts-view-add-split-template" class="hidden">
+	<li class="static-row account-transaction new selected">
+		<span class="account-transaction-number text-center">&nbsp;</span>
+		<span class="account-transaction-description text-left">&nbsp;</span>
+		<span class="account-transaction-transfer text-left"><div class="select"><select name="transaction-split-transfer">
+			<option value="">Select transfer account.</option>
+			{{#all_accounts_chart_flat}}
+				{{^reserved}}
+					<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/all_accounts_chart_flat}}
+		</select></div></span>
+		<span class="account-transaction-jump text-center">&nbsp;</span>
+		<span class="account-transaction-split text-center">&nbsp;</span>
+		<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+		<span class="account-transaction-credit text-left"><input type="text" name="transaction-split-credit" placeholder=""></span>
+		<span class="account-transaction-debit text-left"><input type="text" name="transaction-split-debit" placeholder=""></span>
+		<span class="account-transaction-balance text-left">&nbsp;</span>
+	</li>
+</div>
+
+{{! These are used for editing transactions }}
+<div id="accounts-view-edit-transaction-template" class="hidden">
+	<li class="account-transaction edit color-force-green">
+		<input type="hidden" name="transaction-account-id" value="{{#account}}{{id}}{{/account}}">
+		<input type="hidden" name="transaction-account-table_sign" value="{{#account}}{{table_sign}}{{/account}}">
+		<input type="hidden" name="transaction-id" value="">
+		<span class="account-transaction-edit">&nbsp;</span>
+		<span class="account-transaction-date text-center"><input type="text" name="transaction-date" placeholder=""></span>
+		<span class="account-transaction-number text-center"><input type="text" name="transaction-number" placeholder=""></span>
+		<span class="account-transaction-description text-center"><input type="text" name="transaction-description" placeholder=""></span>
+		<span class="account-transaction-transfer text-center"><div class="select"><select name="transaction-transfer">
+			<option value="">Select transfer account.</option>
+			{{#all_accounts_chart_flat}}
+				{{^reserved}}
+					<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/all_accounts_chart_flat}}
+		</select></div></span>
+		<span class="account-transaction-jump text-center">&nbsp;</span>
+		<span class="account-transaction-split text-center"><a href="#">&nbsp;</a></span>
+		<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+		<span class="account-transaction-credit text-center"><input type="text" name="transaction-credit" placeholder="Increase"></span>
+		<span class="account-transaction-debit text-center"><input type="text" name="transaction-debit" placeholder="Decrease"></span>
+		<span class="account-transaction-balance text-center">&nbsp;</span>
+	</li>
+</div>
+
+<div id="accounts-view-edit-transaction-container-template" class="hidden">
+	<li class="list-container split-transaction edit">
+		<ul>
+			<li class="static-row account-transaction edit actions color-force-green">
+				<span class="account-transaction-number text-center"><a href="#" class="delete button short accounts-view-edit-transaction-delete">Delete</a></span>
+				<span class="account-transaction-description text-left">&nbsp;</span>
+				<span class="account-transaction-transfer text-left">&nbsp;</span>
+				<span class="account-transaction-jump text-center">&nbsp;</span>
+				<span class="account-transaction-split text-center">&nbsp;</span>
+				<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+				<span class="account-transaction-credit text-left">&nbsp;</span>
+				<span class="account-transaction-debit text-center"><a href="#" class="cancel button short accounts-view-edit-transaction-cancel">Cancel</a></span>
+				<span class="account-transaction-balance text-center"><a href="#" class="accounts-view-edit-transaction-save save button short">Save</a></span>
+				<!-- <a href="#" class="delete button short">Delete</a>
+				<a href="#" class="save button short">Save</a>
+				<a href="#" class="cancel button short">Cancel</a>
+				<div class="clear"></div> -->
+			</li>
+		</ul>
+	</li>
+</div>
+
+<div id="accounts-view-edit-split-template" class="hidden">
+	<li class="static-row account-transaction edit selected">
+		<span class="account-transaction-number text-center">&nbsp;</span>
+		<span class="account-transaction-description text-left">&nbsp;</span>
+		<span class="account-transaction-transfer text-left"><div class="select"><select name="transaction-split-transfer">
+			<option value="">Select transfer account.</option>
+			{{#all_accounts_chart_flat}}
+				{{^reserved}}
+					<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/all_accounts_chart_flat}}
+		</select></div></span>
+		<span class="account-transaction-jump text-center">&nbsp;</span>
+		<span class="account-transaction-split text-center">&nbsp;</span>
+		<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+		<span class="account-transaction-credit text-left"><input type="text" name="transaction-split-credit" placeholder=""></span>
+		<span class="account-transaction-debit text-left"><input type="text" name="transaction-split-debit" placeholder=""></span>
+		<span class="account-transaction-balance text-left">&nbsp;</span>
+	</li>
+</div>

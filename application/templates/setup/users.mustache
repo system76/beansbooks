@@ -1,0 +1,86 @@
+<div>
+	<div class="text-bold text-medium bump-down">Create and Manage Users</div>
+
+	<div class="text-center text-small bump-down-more">Users for this company can login at <a class="green-black" href="{{domain}}">{{domain}}</a></div>
+	<div class="text-center text-small bump-down"><font class="text-bold">Please note:</font> to change your own password, please click the "My Account" link at the top right.</div>
+
+	<div class="setup-users-users bump-down">
+		<div class="text-medium text-bold">Users and Permissions</div>
+		<div class="setup-users-users-user header text-bold bump-down">
+			<span class="setup-users-users-user-name">Name</span>
+			<span class="setup-users-users-user-email">Email Address (Login)</span>
+			<span class="setup-users-users-user-role">User Role</span>
+			<span class="setup-users-users-user-actions">&nbsp;</span>
+		</div>
+		{{#users}}
+			{{>setup_users_user}}
+		{{/users}}
+		<div class="setup-users-users-user add">
+			<span class="setup-users-users-user-actions">
+				<a href="#" class="button short add">Add</a>
+			</span>
+			<div class="clear"></div>
+		</div>
+	</div>
+
+	<br>
+
+	<div class="text-center text-small">API Location: <a class="green-black" href="{{domain}}api/">{{domain}}api/</a></div>
+
+	<div class="setup-users-api">
+		<div class="text-medium text-bold">API Access</div>
+
+		<div class="setup-users-api-row bump-down">
+			<span class="setup-users-api-row-field">Auth UID</span>
+			<span class="setup-users-api-row-field">Expiration</span>
+			<span class="setup-users-api-row-field">Key</span>
+			<span class="setup-users-api-row-actions">
+				&nbsp;
+			</span>
+		</div>
+		{{#api_user}}
+			{{>setup_users_api}}
+		{{/api_user}}
+		{{^api_user}}
+			<div class="setup-users-api-row dark">
+				<span class="setup-users-api-row-message">
+					API Access is disabled by default.  To enable it, generate an API key.
+				</span>
+				<span class="setup-users-api-row-actions">
+					<a href="#" class="button short generate-build">Generate API Key</a>
+				</span>
+			</div>
+		{{/api_user}}
+	</div>
+</div>
+
+<div id="setup-users-users-user-edit-template" class="hidden">
+	<div class="setup-users-users-user edit">
+		<span class="setup-users-users-user-name"><input type="text" name="name" placeholder="Name"></span>
+		<span class="setup-users-users-user-email"><input type="text" name="email" placeholder="E-mail"></span>
+		<span class="setup-users-users-user-role"><div class="select short"><select name="role_id"><option value="">Select a Role.</option>
+			{{#user_roles}}
+				<option value="{{id}}">{{name}}</option>
+			{{/user_roles}}
+		</select></div></span>
+		<span class="setup-users-users-user-password"><input type="password" name="password" placeholder="Password"></span>
+		<span class="setup-users-users-user-actions">
+			<a href="#" class="button short save">Save</a>
+			<a href="#" class="button short cancel">Cancel</a>
+		</span>
+		<div class="clear"></div>
+	</div>
+</div>
+
+<div id="setup-users-user-delete-template" class="hidden">
+	<div class="setup-users-users-user delete">
+		<span class="setup-users-users-user-message">
+			Are you sure you want to remove the account for <span class="name text-bold"></span>?
+		</span>
+		<span class="setup-users-users-user-actions">
+			<a href="#" class="button short remove">Remove</a>
+			<a href="#" class="button short cancel">Cancel</a>
+		</span>
+		<div class="clear"></div>
+	</div>
+</div>

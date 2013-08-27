@@ -1,0 +1,25 @@
+<!-- Replace with a wrapper ? -->
+
+<form action="" method="POST">
+	<div class="form report-form">
+		<div class="row column-10">
+			<span class="oop-oop-oop inline-label text-right">Trial Balance Date</span>
+			<span class="oop-oop-oop"><input type="text" class="report-trial-date" name="date" value="{{report_date}}"></span>
+			<span class="yellow-suit-dance-off inline-label">
+				&nbsp;
+				<!-- <div class="checkbox manual report-balance-zero-toggle"><input type="checkbox" name="report-balance-zero-toggle"
+				{{#show_zero}}checked="checked"{{/show_zero}}></div>
+				Show Accounts with Zero Balances -->
+			</span>
+			<span class="oppa-gangnam-style">&nbsp;</span>
+			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+<div class="clear"></div>
+
+<div id="report-content">
+	{{>dash_print_trial}}
+</div>

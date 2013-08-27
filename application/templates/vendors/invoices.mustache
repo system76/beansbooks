@@ -1,0 +1,53 @@
+<div id="vendors-invoices-receive">
+	<div class="text-bold text-medium bump-down">
+		Use Age Invoices to record receipt of an invoice and pay at a later date. 
+		Aging an invoice requires a purchase order first be created.
+	</div>
+	
+	<div class="form bump-down-more">
+		<div class="row column-10">
+			<span class="ehhh-sexy-lady">Invoices Recorded</span>
+		</div>
+		<div class="row column-10">
+			<span class="oop-oop-oop"><input type="text" id="vendors-invoices-receive-count" value="" readonly="readonly"></span>
+			<span class="elevator-dance">&nbsp;</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oop-oop"><a href="#" class="button" id="vendors-invoices-receive-cancel">Cancel</a></span>
+			<span class="oop-oop"><a href="#" class="button" id="vendors-invoices-receive-save">Save</a></span>
+		</div>
+	</div>
+
+	<div class="bump-down">
+		<input class="search float-right active" type="text" id="vendors-invoices-receive-search" value="" placeholder="Search Name / Amount / Date / Number">
+		<div class="clear"></div>
+	</div>
+
+	<div id="vendors-invoices-receive-purchases" class="bump-down row-elements row-elements-alternating-colors">
+		<ul>
+			<li class="vendor-invoice-purchase text-bold">
+				<span class="vendor-invoice-purchase-vendor">Vendor</span>
+				<span class="vendor-invoice-purchase-po">PO Number</span>
+				<span class="vendor-invoice-purchase-so">Vendor SO #</span>
+				<span class="vendor-invoice-purchase-invoice_number">Vendor Invoice #</span>
+				<span class="vendor-invoice-purchase-date_billed">Vendor Invoice Date</span>
+				<span class="vendor-invoice-purchase-total">PO Amount</span>
+				<span class="vendor-invoice-purchase-invoice_amount">Invoice Amount</span>
+				<span class="vendor-invoice-purchase-add">&nbsp;</span>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div id="vendor-invoice-purchase-difference-template" class="hidden">
+	<li class="vendor-invoice-purchase vendor-invoice-purchase-difference selected color-force-yellow hidden">
+		<span class="vendor-invoice-purchase-difference-description-label">Reason for PO and Invoice Difference</span>
+		<span class="vendor-invoice-purchase-difference-description"><input type="text" name="purchase-adjustment_description-"></span>
+		<span class="vendor-invoice-purchase-difference-writeoff-label">Write Off Account</span>
+		<span class="vendor-invoice-purchase-difference-writeoff"><div class="select"><select name="purchase-adjustment_account_id-">
+			<option value="">&nbsp;</option>
+			{{#all_accounts_chart_flat}}
+				<option value="{{id}}" {{^writeoff}}disabled="disabled"{{/writeoff}}>{{{name_print}}}</option>
+			{{/all_accounts_chart_flat}}
+		</select></div></span>
+	</li>
+</div>

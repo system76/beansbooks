@@ -1,0 +1,91 @@
+{{{tableopen}}}
+	<tr>
+		<td style="padding-left: 3px; width: 40%; text-align: left; min-height: 50px; padding-bottom: 5px; vertical-align: bottom;">
+			<div style="widows: 100; font-size: 24px; vertical-align: bottom;">
+				{{#companylogo}}
+					{{{companylogo}}}
+				{{/companylogo}}
+				{{^companylogo}}
+					{{#companyname}}
+						{{companyname}}
+					{{/companyname}}
+					{{^companyname}}
+						<span style="font-size: 14px;">No Company Name!<br><span style="font-size: 12px;">Please <a href="/setup" style="font-weight: bold;">click here</a> to setup your company.</span></span>
+					{{/companyname}}
+				{{/companylogo}}
+			</div>
+		</td>
+		<td style="padding-right: 2px; width: 60%; {{fontsizelarge}} text-align: right; min-height: 50px; padding-bottom: 5px; padding-top: 15px;">
+			Income Statement: {{report_date_start}} - {{report_date_end}}
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="2">
+			&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="2">
+			&nbsp;
+		</td>
+	</tr>
+{{{tableclose}}}
+
+
+{{#account_types}}
+
+	{{{tableopen}}}
+		<tr>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: left; width: 50%; padding-left: 10px; height: 30px; line-height: 30px; font-size: 14px;">
+				{{name}}
+			</td>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 50%; padding-right: 10px; height: 30px; line-height: 30px; font-size: 14px;">
+				{{{balance_formatted}}}
+			</td>
+		</tr>
+		<tr>
+			<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="2">
+				&nbsp;
+			</td>
+		</tr>
+	{{{tableclose}}}
+
+	{{{tableopen}}}
+		{{#account_type_lines}}
+			<tr class="{{#zero}}report-zero hidden{{/zero}}" {{#zero}}style="display:none;"{{/zero}}>
+				<td style="{{fontsizenormal}} {{#total_formatted}}font-weight:bold;{{/total_formatted}} text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 350px; padding-left: 125px; text-indent: {{indent_level_px}}px;">
+					{{name}}
+				</td>
+				<td style="{{fontsizenormal}} {{#total_formatted}}font-weight:bold;{{/total_formatted}}text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 150px;">
+					{{{balance_formatted}}}
+				</td>
+				<td style="{{fontsizenormal}} {{#total_formatted}}font-weight:bold;{{/total_formatted}}text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 150px;">
+					{{{total_formatted}}}
+				</td>
+				<td style="{{fontsizenormal}} {{#total_formatted}}font-weight:bold;{{/total_formatted}}text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 85px;">
+					&nbsp;
+				</td>
+			</tr>
+		{{/account_type_lines}}
+
+		{{#show_type_total}}
+			<tr>
+				<td style="{{fontsizenormal}} font-weight: bold; text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 350px; padding-left: 125px; text-indent: {{indent_level_px}}px;">
+					Total
+				</td>
+				<td style="{{fontsizenormal}} {{#total_formatted}}font-weight:bold;{{/total_formatted}}text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 150px;">
+					&nbsp;
+				</td>
+				<td style="{{fontsizenormal}} font-weight:bold; text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 150px;">
+					{{{balance_formatted}}}
+				</td>
+				<td style="{{fontsizenormal}} {{#total_formatted}}font-weight:bold;{{/total_formatted}}text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 85px;">
+					&nbsp;
+				</td>
+			</tr>
+		{{/show_type_total}} 
+
+	{{{tableclose}}}
+	<br>
+
+{{/account_types}}

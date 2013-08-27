@@ -1,0 +1,20 @@
+<li class="vendor-purchase" rel="{{id}}">
+	<input type="hidden" class="email" value="{{#vendor}}{{email}}{{/vendor}}">
+	<span class="vendor-purchase-vendor text-left">{{#vendor}}{{company_name}}{{/vendor}}</span>
+	<span class="vendor-purchase-po text-center">{{purchase_number}}{{^purchase_number}}&nbsp;{{/purchase_number}}</span>
+	<span class="vendor-purchase-so text-center">{{so_number}}{{^so_number}}&nbsp;{{/so_number}}</span>
+	<span class="vendor-purchase-quote text-center">{{quote_number}}{{^quote_number}}&nbsp;{{/quote_number}}</span>
+	<span class="vendor-purchase-status text-center">{{status}}{{^status}}&nbsp;{{/status}}</span>
+	<span class="vendor-purchase-total text-right">{{total_formatted}}{{^total_formatted}}&nbsp;{{/total_formatted}}</span>
+	<span class="vendor-purchase-actions text-right">
+		{{#can_refund}}
+			<a href="#" class="refund">Return</a> |
+		{{/can_refund}}
+		{{#can_cancel}}
+			<a href="#" class="cancel">Delete</a> | 
+		{{/can_cancel}}
+		<a href="#" class="send">Send PO</a> | 
+		<a href="#" class="print">Print</a> | 
+		<a href="/vendors/purchases/{{id}}" class="view">View</a>
+	</span>
+</li>

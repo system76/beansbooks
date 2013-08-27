@@ -1,0 +1,173 @@
+<div class="form">
+
+	<div id="vendors-vendor-edit">
+
+		<input type="hidden" name="vendor_id" value="{{#vendor}}{{id}}{{/vendor}}">
+
+		<input type="hidden" class="first_name" value="{{#vendor}}{{first_name}}{{/vendor}}">
+		<input type="hidden" class="last_name" value="{{#vendor}}{{last_name}}{{/vendor}}">
+		<input type="hidden" class="company_name" value="{{#vendor}}{{company_name}}{{/vendor}}">
+		<input type="hidden" class="default_account_id" value="{{#vendor}}{{#default_account}}{{id}}{{/default_account}}{{/vendor}}">
+		<input type="hidden" class="email" value="{{#vendor}}{{email}}{{/vendor}}">
+		<input type="hidden" class="phone_number" value="{{#vendor}}{{phone_number}}{{/vendor}}">
+		<input type="hidden" class="fax_number" value="{{#vendor}}{{fax_number}}{{/vendor}}">
+
+		<div class="row column-6 labels">
+			<span class="oop-oop-oop">First Name</span>
+			<span class="oop-oop-oop">Last Name</span>
+			<span class="oop-oop-oop">Company</span>
+			<span class="oop-oop-oop">Terms/Payable Account</span>
+		</div>
+
+		<div class="row column-6">
+			<span class="oop-oop-oop"><input type="text" name="first_name" value="{{#vendor}}{{first_name}}{{/vendor}}" tabindex="1"></span>
+			<span class="oop-oop-oop"><input type="text" name="last_name" value="{{#vendor}}{{last_name}}{{/vendor}}" tabindex="2"></span>
+			<span class="oop-oop-oop"><input type="text" name="company_name" value="{{#vendor}}{{company_name}}{{/vendor}}" tabindex="3"></span>
+			<span class="oop-oop-oop"><select class="account-dropdown" name="default_account_id" tabindex="4">
+				<option value="">&nbsp;</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}" {{^payable}}disabled="disabled"{{/payable}} {{#vendor_current}}selected="selected"{{/vendor_current}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></span>
+		</div>
+
+		<div class="row column-6 labels">
+			<span class="oop-oop-oop">Email</span>
+			<span class="oop-oop-oop">Phone</span>
+			<span class="oop-oop-oop">Fax</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-6">
+			<span class="oop-oop-oop"><input type="text" name="email" value="{{#vendor}}{{email}}{{/vendor}}" tabindex="5"></span>
+			<span class="oop-oop-oop"><input type="text" name="phone_number" value="{{#vendor}}{{phone_number}}{{/vendor}}" tabindex="6"></span>
+			<span class="oop-oop-oop"><input type="text" name="fax_number" value="{{#vendor}}{{fax_number}}{{/vendor}}" tabindex="7"></span>
+			<span class="oop-oop-oop edit-buttons-placeholder">&nbsp;</span>
+			<span class="oop edit-buttons" style="display:none;">&nbsp;</span>
+			<span class="oop edit-buttons" style="display:none;"><a href="#" id="vendors-vendor-edit-cancel" class="button" tabindex="8">Cancel</a></span>
+			<span class="oop edit-buttons" style="display:none;"><a href="#" id="vendors-vendor-edit-save" class="button" tabindex="9">Save</a></span>
+		</div>
+
+	</div>
+	
+	<div id="vendors-vendor-addresses">
+
+		<div class="row column-4 labels bump-down-most text-bold">
+			Vendor Addresses
+		</div>
+
+		<div class="" id="vendors-vendor-addresses-container">
+			{{#vendor_addresses}}
+				{{>vendors_vendor_address}}
+			{{/vendor_addresses}}
+
+			<div class="clear"></div>
+		</div>
+
+		<div class="row column-4 bump-down">
+			<span class="oop"><a href="#" id="vendors-vendor-address-add" class="button">Add Address</a></span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oppa-gangnam-style">&nbsp;</span>
+		</div>
+
+		<div id="vendors-vendor-address-form" class="hidden">
+			<input type="hidden" name="vendor_id" value="{{#vendor}}{{id}}{{/vendor}}">
+			<input type="hidden" name="address_id" value="">
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 1</span>
+				<span class="oop-oop">State/Province</span>
+				<span class="oop-oop-oop"><div class="checkbox medium"><input type="checkbox" value="1" name="default-remit"></div> Default Remit Address</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address required" tabindex="8" name="address1" tabindex="10"></span>
+				<span class="oop-oop"><input type="text" class="address" tabindex="11" name="state" tabindex="13"></span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 2</span>
+				<span class="oop-oop">Zip</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" tabindex="9" name="address2" tabindex="11"></span>
+				<span class="oop-oop"><input type="text" tabindex="12" name="zip" tabindex="14"></span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">City</span>
+				<span class="oop-oop">Country</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" tabindex="10" name="city" tabindex="12"></span>
+				<span class="oop-oop"><div class="select"><select tabindex="13" name="country" tabindex="15">
+					<option value="">&nbsp;</option>
+					{{#countries}}
+						<option value="{{code}}">{{name}}</option>
+					{{/countries}}
+				</select></div></span>
+				<span class="oop-oop"><a href="#" class="button" id="vendors-vendor-address-form-save" tabindex="16">Save This Address</a></span>
+				<span class="oop"><a href="#" class="button hidden" id="vendors-vendor-address-form-canceledit" tabindex="17">Cancel Edit</a></span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="form bump-down-more">
+	<div class="row column-10 no-margin">
+		<span class="oop-oop-oop text-right inline-label">Total Invoices</span>
+		<span class="oop"><input type="text" disabled="disabled" class="text-right" value="{{#vendor}}{{total_invoices}}{{/vendor}}"></span>
+		<span class="oppa-gangnam-style text-right inline-label">Total Account Payments</span>
+		<span class="oop-oop-oop"><input type="text" disabled="disabled" class="text-right" value="{{#vendor}}{{total_sales_formatted}}{{/vendor}}"></span>
+		<span class="oppa-gangnam-style text-right inline-label">Current Account Balance</span>
+		<span class="oop-oop-oop"><input type="text" disabled="disabled" class="text-right" value="{{#vendor}}{{balance_current_formatted}}{{/vendor}}"></span>
+		<span class="oop-oop">&nbsp;</span>
+	</div>
+</div>
+
+<input type="hidden" id="vendors-payments-payments-vendor_id" value="{{#vendor}}{{id}}{{/vendor}}">
+
+<div class="vendors-vendor-actions bump-down-more">
+	<span class="text-bold text-medium bump-down float-left">Payment Records</span>
+	<input type="text" class="search float-right" id="vendors-vendor-payments-search" placeholder="Search for PO, SO, Check, or Invoice Num">
+	<div class="clear"></div>
+</div>
+
+<div id="vendors-payments-payments" class="row-elements row-elements-alternating-colors text-small bump-down-more">
+	<ul>
+		<li class="text-bold vendor-payment">
+			<span class="vendor-payment-date text-left text-bold">Payment Date</span>
+			<span class="vendor-payment-vendor text-center text-bold">Vendor</span>
+			<span class="vendor-payment-amount text-center text-bold">Payment Amount</span>
+			<span class="vendor-payment-check text-center text-bold">Check Number</span>
+			<span class="vendor-payment-actions text-right">&nbsp;</span>
+		</li>
+		{{#vendor_checks}}
+			{{>vendors_checks_check}}
+		{{/vendor_checks}}
+		{{^vendor_checks}}
+			<li class="text-bold vendor-check text-center">No payments found.</li>
+		{{/vendor_checks}}
+	</ul>
+</div>
+
+<div id="vendors-payments-loadpayments" class="hidden">
+	<br>
+	<p class="text-medium text-center">Searching payments: please wait...</p>
+	<br>
+	<p class="text-center spinme">&nbsp;</p>
+	<br>
+</div>
+
+<div id="vendors-payments-endpayments" class="hidden">
+	<br>
+	<p class="text-medium text-center">No payments found.</p>
+	<br>
+</div>

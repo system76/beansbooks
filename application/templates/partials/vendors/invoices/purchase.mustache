@@ -1,0 +1,23 @@
+{{#invoiced}}
+	<li class="vendor-invoice-purchase invoiced">
+		<span class="vendor-invoice-purchase-vendor">{{vendor_name}}</span>
+		<span class="vendor-invoice-purchase-po">{{purchase_number}}</span>
+		<span class="vendor-invoice-purchase-so">{{so_number}}{{^so_number}}&nbsp;{{/so_number}}</span>
+		<span class="vendor-invoice-purchase-invoice_number">{{invoice_number}}</span>
+		<span class="vendor-invoice-purchase-date_billed">{{date_billed}}</span>
+		<span class="vendor-invoice-purchase-total">{{total_formatted}}</span>
+		<span class="vendor-invoice-purchase-message">Vendor Invoice Received</span>
+	</li>
+{{/invoiced}}
+{{^invoiced}}
+	<li class="vendor-invoice-purchase" rel="{{id}}">
+		<span class="vendor-invoice-purchase-vendor">{{vendor_name}}</span>
+		<span class="vendor-invoice-purchase-po">{{purchase_number}}</span>
+		<span class="vendor-invoice-purchase-so"><input type="text" name="purchase-so_number-{{id}}" value="{{so_number}}" rel="{{so_number}}" readonly="readonly"></span>
+		<span class="vendor-invoice-purchase-invoice_number"><input type="text" name="purchase-invoice_number-{{id}}" value="" readonly="readonly"></span>
+		<span class="vendor-invoice-purchase-date_billed"><input type="text" name="purchase-date_billed-{{id}}" value="" placeholder="{{dateYYYYMMDD}}" readonly="readonly"></span>
+		<span class="vendor-invoice-purchase-total">{{total_formatted}}</span>
+		<span class="vendor-invoice-purchase-invoice_amount"><input type="text" name="purchase-invoice_amount-{{id}}" value="{{total}}" rel="{{total}}" readonly="readonly"></span>
+		<span class="vendor-invoice-purchase-add"><div class="checkbox"><input type="checkbox" value="purchase-key" name="{{id}}"></div> Add</span>
+	</li>
+{{/invoiced}}

@@ -1,0 +1,25 @@
+<form action="" method="POST">
+	<div class="form report-form">
+		<div class="row column-10">
+			<span class="oop-oop inline-label text-right">Account</span>
+			<span class="ehhh-sexy-lady"><div class="select"><select name="account_id" class="report-ledger-account">
+				<option value="">Please Choose an Account</option>
+				{{#all_accounts_chart_flat}}
+					<option value="{{id}}" {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+				{{/all_accounts_chart_flat}}
+			</select></div></span>
+			<span class="oop-oop inline-label text-right">Start Date</span>
+			<span class="oop-oop-oop"><input type="text" class="report-ledger-date" name="date_start" value="{{report_date_start}}"></span>
+			<span class="oop-oop inline-label text-right">End Date</span>
+			<span class="oop-oop-oop"><input type="text" class="report-ledger-date" name="date_end" value="{{report_date_end}}"></span>
+			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+<div class="clear"></div>
+
+<div id="report-content">
+	{{>dash_print_ledger}}
+</div>

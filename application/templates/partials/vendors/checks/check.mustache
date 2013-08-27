@@ -1,0 +1,12 @@
+<li class="vendor-check" rel="{{type}}-{{id}}">
+	<span class="vendor-check-date text-left">{{date}}</span>
+	<span class="vendor-check-vendor text-left">{{vendor}}</span>
+	<span class="vendor-check-amount text-center">{{amount_formatted}}</span>
+	<span class="vendor-check-number text-center">{{check_number}}{{^check_number}}&nbsp;{{/check_number}}</span>
+	{{#noprintchecks}}
+		<span class="vendor-check-actions text-right"><a href="/vendors/{{type}}s/{{id}}">View {{typeformatted}}</a></span>
+	{{/noprintchecks}}
+	{{^noprintchecks}}
+		<span class="vendor-check-actions text-right">{{#reconciled}}Reconciled{{/reconciled}}{{^reconciled}}{{#can_print}}<a href="#" class="reprint" rel="{{type}}-{{id}}">Reprint Check</a>{{/can_print}}{{/reconciled}}</span>
+	{{/noprintchecks}}
+</li>

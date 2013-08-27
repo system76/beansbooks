@@ -1,0 +1,748 @@
+/**
+ * Accounts CSS
+ */
+
+.account-actions {
+	float: right;
+	text-align: right;
+	width: 460px;
+	padding-right: 5px;
+}
+
+.account-balance {
+	float: right;
+	text-align: right;
+	width: 150px;
+}
+
+li.account-delete {
+	line-height: 12px;
+	height: 26px;
+}
+
+li.account-delete > span {
+	margin-right: 2px;
+}
+
+li.account-delete > span .select {
+	height: 20px;
+	position: relative;
+	top: 2px;
+	width: 100%;
+}
+
+li.account-delete > span .select select {
+	padding-top: 0px;
+	height: 100%;
+}
+
+li.account-delete > span.float-left {
+	height: 26px;
+	line-height: 24px;
+}
+
+.account-delete-actions {
+	float: right;
+	width: 235px;
+	text-align: right;
+	height: 26px;
+	line-height: 24px;
+}
+
+.account-delete-transfer {
+	float: left;
+	margin-left: 5px;
+	width: 165px;
+}
+
+li.account-edit {
+	line-height: 12px;
+	height: 26px;
+}
+
+li.account-edit > span {
+	margin-right: 2px;
+}
+
+li.account-edit > span input[type="text"] {
+	height: 20px;
+	margin-top: 0px;
+	width: 100%;
+	position: relative;
+	top: 2px;
+	line-height: 20px;
+}
+
+li.account-edit > span .select {
+	height: 20px;
+	position: relative;
+	top: 2px;
+	width: 100%;
+}
+
+li.account-edit > span .select select {
+	padding-top: 0px;
+	height: 100%;
+}
+
+.account-edit-name {
+	width:200px;
+	float:left;
+}
+
+.account-edit-actions {
+	float: right;
+	width: 95px;
+	padding-right: 0px;
+	text-align: right;
+	height: 26px;
+	line-height: 24px;
+}
+
+.account-edit-parent {
+	float: right;
+	width: 165px;
+}
+
+.account-edit-terms {
+	float: right;
+	width: 65px;
+}
+
+.account-edit-type {
+	float: right;
+	width: 165px;
+}
+
+li.account-transaction {
+	padding-left: 0;
+	height: 25px!important;
+	overflow: hidden;
+}
+
+
+
+li.account-transaction.cancelled {
+	background-color: #f1e1e1!important;
+	text-decoration: line-through;
+}
+
+li.account-transaction.cancelled span.account-transaction-number, li.account-transaction.cancelled span.account-transaction-description {
+	text-decoration: line-through;
+}
+
+li.account-transaction.new, li.account-transaction.new input[type="text"], li.account-transaction.new div.select {
+	background-color: #b1d5ab!important;
+}
+li.account-transaction.new {
+	border-bottom: 1px solid #e8e8e8;
+}
+li.account-transaction.new input[type="text"], li.account-transaction.new div.select {
+	width: 100%;
+	border: none;
+	outline:none!important;
+	box-shadow: none!important;
+}
+
+li.account-transaction.edit, li.account-transaction.edit input[type="text"], li.account-transaction.edit div.select {
+	background-color: #b1d5ab!important;
+}
+li.account-transaction.edit {
+	border-bottom: 1px solid #e8e8e8;
+}
+li.account-transaction.edit input[type="text"], li.account-transaction.edit div.select {
+	width: 100%;
+	border: none;
+	outline:none!important;
+	box-shadow: none!important;
+}
+
+li.account-transaction.unclassified, li.account-transaction.unclassified div.select {
+	/* Bolder & darker yellow */
+	/* background-color: #e7e24d!important; */ 
+
+	/* Matches splits in add transactions - cascades nicely w/ red & green */
+	background-color: #f3f09a!important;
+}
+
+li.account-transaction.classified, li.account-transaction.classified div.select {
+	background-color: #b1d5ad!important;
+}
+
+li.account-transaction.duplicate, li.account-transaction.duplicate div.select {
+	background-color: #eab3b3!important;
+}
+
+li.account-transaction > span {
+	float: left;
+	border-right: 1px solid #e8e8e8;
+}
+
+li.account-transaction.actions > span {
+	border-right: none;
+}
+
+li.account-transaction.classified > span {
+	border-right: 1px solid #e8e8e8;
+}
+
+li.account-transaction > span:last-child {
+	border-right: none;
+}
+
+li.account-transaction > span.text-left {
+	text-indent: 5px;
+}
+
+.account-transaction-date {
+	width: 75px;
+}
+
+.account-transaction-number {
+	width: 80px;
+}
+
+.account-transaction-description {
+	width: 254px;
+}
+
+.account-transaction-description > a {
+	color: #003399;
+}
+
+.account-transaction-description > a:hover {
+	color: #417741;
+}
+
+.account-transaction-transfer {
+	width: 185px;
+}
+
+.account-transaction-transfer .select {
+	height: 25px;
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+	border: none;
+}
+
+.account-transaction-edit {
+	width: 20px;
+}
+
+.account-transaction-edit > a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAASCAYAAABmQp92AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFHSURBVCiRdVK9TsJgFD1fadOkBdOJH0NLPsPgwGKMI/AQ+AS6EKN9AF+khoRFE30ANwcSEhwcYGK1slTDJBCGmlqPixBo8SZ3uefk5NxzL0gi2Y1G43A4HE76/f6TIIlktdvtW5KtbDY7UVIogNFotJ/L5YIgCMYpeU3TTqSUdByHAGophXK5fLVYLCCEeCE53iIIIfaWy2XLNE3M5/MbAFA3CaVS6TyTyRhxHH/OZrOHFEHTtDOSMAzjnuQXAKzNATh2HIdSyh8AB6v5WsG27cswDKGq6oCkv5orf+bMKIpOLctCHMfe1lokYdv2RaVSYaFQ+ACgbuaiAIBlWW4URdB1/Y7k95aC67q16XQadjqddwAymazSbDZP8vm8Xq1WH0m+JZNVisXike/7r91u93rX4dDr9Z49z2vt+guSQL1eH/wHksQv0S3YlcK9YvAAAAAASUVORK5CYII=');
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.account-transaction-edit.account-transaction-form > a {
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAARCAYAAADpPU2iAAAABmJLR0QAcgByAHKTL6T+AAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3AwaFBoXe61YvgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAABTSURBVCjP7Y+xDcAwCASPyIs8KzKHV/QqpLDcpHBIE6XISUiAnn9hkpIHNIAxRkns7vNgDTuWabsu7rD3foiIrbj3PhtJWUVS/gnfSDgAzKxUACfatvKxP/Es6AAAAABJRU5ErkJggg==');
+}
+
+
+.account-transaction-jump {
+	width: 20px;
+}
+
+.account-transaction-jump > a {
+	display: inline-block;
+	width: 20px;
+	height: 100%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKCAYAAABv7tTEAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEhSURBVCiRjZG9SgNhEEXPfFlt4zZa+AjaKmKRxm9ArIJFCrETFBEsbJVAsBcWrHyE4A9WgrOIbQobLQRbRbAQX2CzY5FdCak81TBz5w7cEXenRlWXgH1gAwhACdwB52b2VOukXlLVU+AEeAdugW+gCWwC88C6meWdTqch7o6qrgH3wCWwZWbDseuNqt8CFoBuvfQCTAGLZlYwgarOAB/AAFhNVHWuctg1s0JVmyLSLctyVkTO3H0oIgNARKTl7p8BaAMOXAG4+6G7H4nItrv38jx/BrLRyBMRKQOwDLya2Q8ju+m/lKo6TdNj4K0y9QCsAA+1sCiKDLgArpMk6QH0+/1hCKENfAGlxBgfgczMbiYDmCTGuCciBzL+3P8QY9z5Bd4qdCSGZpU+AAAAAElFTkSuQmCC');
+	background-position: center;
+	background-repeat: no-repeat;
+	text-decoration: none;
+}
+
+.account-transaction-split {
+	width: 20px;
+}
+
+.account-transaction-split > a {
+	display: inline-block;
+	width: 20px;
+	height: 100%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEASURBVCiRjdIhS4NhFMXx37sN/QCGVbEIahMUwWDYEwQxuaDsGyw5VEQ0imkoWLQIa0ZFEOEBsQhi9xsYrAZNymvYIwzcfHfquf97LvfeLM9zRQohTKCNZVyhVSmkutrDKkqo47U0RFoVKwmCHLMDE0MIM9hMCS+oJquM8z+Joas7POANkzHGBSziEHMxxsssz3MhhBFsoIVRnKATY/wcNFFWq9Wa2McXmriJMRauuoQOjhJ4gHoIoVwEZr93TMVr2MIYjnERY/xI/jQaeMRt1u8BQghL2MY8zvCM656Sdl+wp8FUmqCBCrJkvf8L9jTY1d0DfON+2Jc7xTjW8YSdH/c/TcrlpR18AAAAAElFTkSuQmCC');
+	background-position: center;
+	background-repeat: no-repeat;
+	text-decoration: none;
+}
+
+.account-transaction-reconcile {
+	width: 20px;
+	font-weight: bold;
+	padding-top: 2px;
+}
+
+.account-transaction-credit {
+	width: 80px;
+}
+
+.account-transaction-debit {
+	width: 80px;
+}
+
+.account-transaction-balance {
+	width: 90px;
+}
+
+.split-transaction li.static-row {
+	margin-left: 74px;
+}
+
+.split-transaction li.static-row.import {
+	margin-left: 54px;
+}
+
+.split-transaction.new {
+	background-color: #ffffff!important;
+}
+
+.split-transaction.edit {
+	background-color: #ffffff!important;
+}
+
+.row-elements .list-container li.static-row.new {
+	border-bottom: 1px solid #E8F1E8!important;
+}
+
+.row-elements .list-container li.static-row.edit {
+	border-bottom: 1px solid #E8F1E8!important;
+}
+
+.split-transaction.new li.static-row {
+	background-color: #b1d5ab!important
+}
+
+.split-transaction.new li.static-row:first-child {
+	border-top: none;
+}
+
+.split-transaction.new li.static-row input[type="text"], .split-transaction.new li.static-row div.select {
+	background-color: #b1d5ab!important;
+}
+
+.split-transaction.new input[type="text"], .split-transaction.new div.select {
+	width: 100%;
+	border: none;
+}
+
+.split-transaction.edit li.static-row {
+	background-color: #b1d5ab!important
+}
+
+.split-transaction.edit li.static-row:first-child {
+	border-top: none;
+}
+
+.split-transaction.edit li.static-row input[type="text"], .split-transaction.edit li.static-row div.select {
+	background-color: #b1d5ab!important;
+}
+
+.split-transaction.edit input[type="text"], .split-transaction.edit div.select {
+	width: 100%;
+	border: none;
+}
+
+.split-transaction.new.import li.static-row {
+	background-color: #f3f09a!important;
+}
+
+.split-transaction.new.import li.static-row input[type="text"], .split-transaction.new.import li.static-row div.select {
+	background-color: #f3f09a!important;
+}
+
+.split-transaction.new.import.classified li.static-row {
+	background-color: #b1d5ab!important;
+}
+
+.split-transaction.new.import.classified li.static-row input[type="text"], .split-transaction.new.import.classified li.static-row div.select {
+	background-color: #b1d5ab!important;
+}
+
+.split-transaction.new span.text-left {
+	text-indent: 0px;
+}
+
+.split-transaction.edit span.text-left {
+	text-indent: 0px;
+}
+
+.split-transaction span.account-transaction-number {
+	border-left: 1px solid #B6D2B7;
+	width: 81px;
+}
+
+.accounts-view-actions {
+	margin: 5px 0px;
+}
+
+.accounts-view-actions > * {
+	margin-right: 5px;
+}
+
+#accounts-view-loadtransactions, #accounts-view-endtransactions {
+	border: 1px solid #e8f1e8;
+}
+
+li.split-transaction.list-container li.account-transaction.actions a.button.short {
+	width: 65px;
+	text-align: center;
+}
+/*
+li.split-transaction.list-container li.account-transaction.actions a.delete {
+	float: left;
+	margin: 2px 5px;
+}
+
+li.split-transaction.list-container li.account-transaction.actions a.cancel {
+	float: right;
+	margin: 2px 5px;
+}
+
+li.split-transaction.list-container li.account-transaction.actions a.save {
+	float: right;
+	margin: 2px 20px 2px 5px;
+}
+*/
+
+/**
+ * Import Transactions
+ */
+
+#accounts-import-upload {
+	margin: 10px 0px;
+	padding: 10px 5px;
+}
+
+#accounts-import-upload div.file {
+	width: 400px;
+}
+
+#accounts-import-upload div.file div.path {
+	width: 325px;
+}
+
+#accounts-import-upload a.button {
+	width: 80px;
+	text-align: center;
+	margin-left: 5px;
+}
+
+#accounts-import-classify {
+	margin: 10px 0px;
+	padding: 10px 5px;
+}
+
+#accounts-import-classify div.fields {
+	background-color: #ffffff;
+	margin: 10px 0px 0px 0px;
+	float: left;
+}
+
+#accounts-import-classify div.fields > span {
+	float: left;
+	border-right: 1px solid #b6d2b7;
+	height: 25px;
+	line-height: 25px;
+}
+
+#accounts-import-classify div.fields > span.date {
+	width: 90px;
+}
+
+#accounts-import-classify div.fields > span.description {
+	width: 200px;
+}
+
+#accounts-import-classify div.fields > span.number {
+	width: 90px;
+}
+
+#accounts-import-classify div.fields > span.amount {
+	width: 90px;
+	border-right: none;
+}
+
+#accounts-import-classify div.fields > span > .select {
+	width: 100%;
+	border: none;
+}
+
+#accounts-import-classify a.button {
+	width: 100px;
+	margin-left: 5px;
+	position: relative;
+	top: 35px;
+}
+
+#accounts-import-save {
+	margin-bottom: 10px;
+}
+
+/**
+ * Reconcile Process
+ */
+
+#accounts-reconcile-form {
+	width: 735px;
+	float: left;
+}
+
+#accounts-reconcile-form .accounts-reconcile-form-actions a.button {
+	float: left;
+	width: 150px;
+	text-align: center;
+	margin-right: 10px;
+}
+
+li.account-reconcile-transaction {
+	padding-left: 0px;
+}
+
+li.account-reconcile-transaction > span {
+	float: left;
+	border-right: 1px solid #b6d2b7;
+}
+
+li.account-reconcile-transaction.selected > span {
+	border-right: 1px solid #e8e8e8;
+}
+
+li.account-reconcile-transaction > span:last-child {
+	border-right: none;
+}
+
+span.account-reconcile-transaction-delete {
+	width: 15px;
+}
+
+span.account-reconcile-transaction-delete > a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAICAYAAAA1BOUGAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACFSURBVAiZTc89jkFhAIXh5xOVzE20lqDRWYBqIqJQKcRCzBrotBYy65hCT0JiRkt5FPcyTvmen+SUsEIl+fJUKVvshV74DdMkwjIcQlcDZuEcBuEaRknUZh3YhXvYPFnLv25oo/MiTWscLmEY/sJnPUsVTmHeBBfhGD5KWKMvmbxd+cbPAwltT0tztmjbAAAAAElFTkSuQmCC');
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+span.account-reconcile-transaction-edit {
+	width: 20px;
+	display: none;
+}
+
+span.account-reconcile-transaction-edit > a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAASCAYAAABmQp92AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFHSURBVCiRdVK9TsJgFD1fadOkBdOJH0NLPsPgwGKMI/AQ+AS6EKN9AF+khoRFE30ANwcSEhwcYGK1slTDJBCGmlqPixBo8SZ3uefk5NxzL0gi2Y1G43A4HE76/f6TIIlktdvtW5KtbDY7UVIogNFotJ/L5YIgCMYpeU3TTqSUdByHAGophXK5fLVYLCCEeCE53iIIIfaWy2XLNE3M5/MbAFA3CaVS6TyTyRhxHH/OZrOHFEHTtDOSMAzjnuQXAKzNATh2HIdSyh8AB6v5WsG27cswDKGq6oCkv5orf+bMKIpOLctCHMfe1lokYdv2RaVSYaFQ+ACgbuaiAIBlWW4URdB1/Y7k95aC67q16XQadjqddwAymazSbDZP8vm8Xq1WH0m+JZNVisXike/7r91u93rX4dDr9Z49z2vt+guSQL1eH/wHksQv0S3YlcK9YvAAAAAASUVORK5CYII=');
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+span.account-reconcile-transaction-date {
+	width: 70px;
+}
+
+span.account-reconcile-transaction-number {
+	width: 70px;
+}
+
+span.account-reconcile-transaction-description {
+	width: 444px;
+	padding-left: 5px;
+}
+
+span.account-reconcile-transaction-amount {
+	width: 124px;
+}
+
+span.account-reconcile-transaction-amount.text-right {
+	padding-right: 5px;
+}
+
+span.account-reconcile-transaction-include {
+	width: 24px;
+}
+
+span.account-reconcile-transaction-include div.checkbox {
+	font-size: 16px;
+	position: relative;
+	top: 4px;
+	left: 4px;
+}
+
+/**
+ * New Transaction Overrides
+ */
+/* XYZXYZ */
+li.account-reconcile-transaction.new, li.account-reconcile-transaction.new input[type="text"], li.account-reconcile-transaction.new div.select {
+	background-color: #b1d5ab!important;
+}
+li.account-reconcile-transaction.new {
+	border-bottom: 1px solid #e8e8e8;
+}
+li.account-reconcile-transaction.new input[type="text"], li.account-reconcile-transaction.new div.select {
+	width: 100%;
+	border: none;
+	outline:none!important;
+	box-shadow: none!important;
+}
+
+li.account-reconcile-transaction.new > span {
+	float: left;
+	border-right: 1px solid #e8e8e8;
+}
+
+/* Sample Path */
+li.account-reconcile-transaction.new span.account-reconcile-transaction-date input {
+	padding-left: 3px;
+	padding-right: 2px;
+	text-align: left;
+	width: 70px;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-number input {
+	text-align: center;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-description {
+	width: 230px;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-transfer {
+	width: 194px;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-split {
+	width: 20px;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-split a {
+	display: inline-block;
+	width: 20px;
+	height: 100%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEASURBVCiRjdIhS4NhFMXx37sN/QCGVbEIahMUwWDYEwQxuaDsGyw5VEQ0imkoWLQIa0ZFEOEBsQhi9xsYrAZNymvYIwzcfHfquf97LvfeLM9zRQohTKCNZVyhVSmkutrDKkqo47U0RFoVKwmCHLMDE0MIM9hMCS+oJquM8z+Joas7POANkzHGBSziEHMxxsssz3MhhBFsoIVRnKATY/wcNFFWq9Wa2McXmriJMRauuoQOjhJ4gHoIoVwEZr93TMVr2MIYjnERY/xI/jQaeMRt1u8BQghL2MY8zvCM656Sdl+wp8FUmqCBCrJkvf8L9jTY1d0DfON+2Jc7xTjW8YSdH/c/TcrlpR18AAAAAElFTkSuQmCC');
+	background-position: center;
+	background-repeat: no-repeat;
+	text-decoration: none;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-credit, 
+li.account-reconcile-transaction.new span.account-reconcile-transaction-debit {
+	width: 73px;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-debit {
+	border-right: none;
+}
+
+li.account-reconcile-transaction.new span.account-reconcile-transaction-credit input, 
+li.account-reconcile-transaction.new span.account-reconcile-transaction-debit  input{
+	padding-right: 1px;
+}
+
+li.account-reconcile-transaction.new.account-reconcile-transaction-actions {
+	height: 25px;
+}
+
+li.account-reconcile-transaction.new.account-reconcile-transaction-actions a {
+	float: right;
+	width: 65px;
+	text-align: center;
+	margin: 3px 6px 0px 3px;
+}
+
+li.account-reconcile-transaction.new.split span.account-reconcile-transaction-description {
+	width: 300px;
+}
+
+
+#accounts-reconcile-status {
+	position: absolute;
+	width: 180px;
+	min-height: 200px;
+	top: 120px;
+	right: 10px;
+	font-size: 14px;
+}
+#accounts-reconcile-status input[type="text"] {
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+.accounts-reconcile-status-actions a.button {
+	float: right;
+	width: 77px;
+	text-align: center;
+}
+
+.accounts-reconcile-status-actions a.button:first-child {
+	float: left;
+}
+
+/**
+ * STARTING BALANCE
+ */
+
+#accounts-startingbalance-form {
+	/* border: 1px solid #e8f1e8; */
+	margin-top: 20px;
+	width: 735px;
+	float: left;
+}
+
+
+.accounts-startingbalance-form-account > span {
+	float: left;
+	width: 100px;
+	margin-left: 10px;
+	height: 24px;
+	line-height: 24px;
+	font-size: 12px;
+	text-align: right;
+	margin-right: 5px;
+}
+
+.accounts-startingbalance-form-account > span.accounts-startingbalance-form-account-name {
+	width: 440px;
+	text-align: left;
+}
+
+.accounts-startingbalance-form-account > span > input[type="text"] {
+	width: 90%;
+	height: 20px;
+	text-align: right;
+	line-height: 20px;
+}
+
+#accounts-startingbalance-status {
+	position: absolute;
+	width: 180px;
+	min-height: 150px;
+	top: 87px;
+	right: 10px;
+	font-size: 14px;
+}
+
+#accounts-startingbalance-status input[type="text"] {
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+.accounts-startingbalance-status-actions {
+	margin-top: 5px;
+}
+
+.accounts-startingbalance-status-actions a.button {
+	float: right;
+	width: 77px;
+	text-align: center;
+}
+
+.accounts-startingbalance-status-actions a.button:first-child {
+	float: left;
+}

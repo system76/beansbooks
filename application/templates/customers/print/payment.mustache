@@ -1,0 +1,56 @@
+{{{tableopen}}}
+	<tr>
+		<td style="vertical-align: top; padding-left: 5px; width: 36%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
+			{{#deposit_account}}
+				Deposit Account:<br>
+				{{name}}
+			{{/deposit_account}}
+		</td>
+		<td style="vertical-align: top; padding-left: 5px; width: 36%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
+			{{#writeoff_account}}
+				Writeoff Account:<br>
+				{{name}}
+			{{/writeoff_account}}
+		</td>
+		<td style="vertical-align: top; padding-right: 5px; width: 28%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px;">
+			<span style="{{fontsizelarge}} font-weight: bold;">Payment {{payment_number}}</span><br>
+			<span style="float: left; width: 80px; text-align: right;">Payment Date</span> {{payment_date_formatted}}<br>
+			<span style="float: left; width: 80px; text-align: right;">Amount</span> {{total_formatted}}<br>
+			<span style="float: left; width: 80px; text-align: right;">Writeoff</span> {{writeoff_total_formatted}}
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="width:100%; padding-top: 3px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+	</tr>
+{{{tableclose}}}
+{{{tableopen}}}
+	<tr>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Customer</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Quote Num</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Invoice Num</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">PO Num</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Due Date</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Amount Paid</td>
+	</tr>
+	{{#payment_lines}}
+		<tr>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: left; min-height: 24px; padding-left: 5px;">{{customer_name}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{quote_number}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{sale_number}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{po_number}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{date_due}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{amount_formatted}}</td>
+		</tr>
+	{{/payment_lines}}
+{{{tableclose}}}
+{{{tableopen}}}
+	<tr>
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top; padding-top: 4px; padding-bottom: 4px; padding-right: 5px; width: 100%; {{fontsizenormal}} font-weight: bold; text-align: right; background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; border: 1px solid {{borderdarkgreen}};">Total {{total_formatted}}</td>
+	</tr>
+{{{tableclose}}}

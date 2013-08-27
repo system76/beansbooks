@@ -1,0 +1,10 @@
+<div class="dash-index-message">
+	<div class="text-bold text-medium">{{title}}</div>
+	<div class="text-medium bump-down pad-right-more pad-left-more">{{{text}}}</div>
+	<div class="dash-index-message-actions">
+		{{#actions}}
+			<a href="{{url}}{{^url}}#{{/url}}" {{#id}}id="{{id}}"{{/id}} class="button">{{text}}</a>
+		{{/actions}}
+		<div class="clear"></div>
+	</div>
+</div>

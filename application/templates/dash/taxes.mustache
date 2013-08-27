@@ -1,0 +1,29 @@
+<input type="hidden" id="report-taxes-tax-defaultname" value="{{report_tax_name}}">
+
+<form action="" method="POST">
+	<div class="form report-form">
+		<div class="row column-10">
+			<span class="oop-oop inline-label text-right">Start Date</span>
+			<span class="oop-oop-oop"><input type="text" class="report-taxes-date" name="date_start" value="{{report_date_start}}"></span>
+			<span class="oop-oop inline-label text-right">End Date</span>
+			<span class="oop-oop-oop"><input type="text" class="report-taxes-date" name="date_end" value="{{report_date_end}}"></span>
+			<span class="oop-oop inline-label text-right">Tax</span>
+			<span class="ehhh-sexy-lady">
+				<input type="hidden" id="report-taxes-tax" name="tax_id" value="{{report_tax_id}}">
+			</span>
+			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+<div class="clear"></div>
+
+{{^report_run}}
+	<div class="text-center text-medium">Select a Tax above.</div>
+{{/report_run}}
+{{#report_run}}
+	<div id="report-content">
+		{{>dash_print_taxes}}	
+	</div>
+{{/report_run}}

@@ -1,0 +1,182 @@
+<div class="accounts-view-actions">
+	<div class="green-select large float-left" disabled="disabled">
+		<select id="accounts-view-jump" disabled="disabled">
+			<option value="">Jump To Month</option>
+			{{#months_backward_24}}
+				<option value="{{YYYY-MM}}">{{text}}</option>
+			{{/months_backward_24}}
+		</select>
+	</div>
+
+	<a href="#" id="accounts-view-add-transaction" class="button large float-left" disabled="disabled">Add Transaction</a>
+
+	<a href="/accounts/import/{{#account}}{{id}}{{/account}}" class="button large float-left">Import Transactions</a>
+	
+	<a href="#" class="button large float-left" disabled="disabled">Reconcile Account</a>
+
+	<div class="clear"></div>
+</div>
+
+<input type="hidden" id="accounts-view-fields-account_id" value="{{#account}}{{id}}{{/account}}">
+
+{{^transactions}}
+	<div class="text-medium">Import transactions into your {{#account}}{{name}}{{/account}} account by uploading a OFX, QBO, QFX, or CSV file. You can download the file ( Comma Separated Values ) from your bank website. After uploading your file, categorize each transaction and click Save Transactions.</div>
+{{/transactions}}
+
+{{^transactionsfile}}{{^transactions}}
+	<div id="accounts-import-upload" class="form">
+		<form action="" method="POST" enctype="multipart/form-data">
+			<p class="text-medium">Upload Bank Transactions. Choose your Quickbooks or CSV file.</p>
+			<br>
+			<div class="file extra-large">
+				<div class="path">Choose a file...</div>
+				<a class="button" href="#">Browse</a>
+				<input type="file" name="transactionsfile">
+			</div>
+			<a href="#" id="accounts-import-upload-button" class="button float-right">Upload</a>
+			<a href="/accounts/view/{{#account}}{{id}}{{/account}}" class="button float-right">Cancel</a>
+			<div class="clear"></div>
+		</form>
+	</div>
+{{/transactions}}{{/transactionsfile}}
+
+{{^transactions}}{{#transactionsfile}}
+	<div id="accounts-import-classify" class="form">
+		<p class="text-medium">Map your CSV file transactions to the appropriate fields.</p>
+		<form action="" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="account_table_sign" value="{{#account}}{{table_sign}}{{/account}}">
+			<input type="hidden" name="transactionsfilestring" value="{{transactionsfile}}">
+			<div class="fields">
+				<span class="date text-center text-bold">Date</span>
+				<span class="description text-center text-bold">Description</span>
+				<span class="number text-center text-bold">Number</span>
+				<span class="amount text-center text-bold">Amount</span>
+				<div class="clear"></div>
+				<span class="date">
+					<div class="select">
+						<select name="date_index">
+							{{#samplecolumns}}
+								<option value="{{index}}" {{#coldate}}selected="selected"{{/coldate}}>{{value}}</option>
+							{{/samplecolumns}}
+						</select>
+					</div>
+				</span>
+				<span class="description">
+					<div class="select">
+						<select name="description_index">
+							{{#samplecolumns}}
+								<option value="{{index}}" {{#coldesc}}selected="selected"{{/coldesc}}>{{value}}</option>
+							{{/samplecolumns}}
+						</select>
+					</div>
+				</span>
+				<span class="number">
+					<div class="select">
+						<select name="number_index">
+							{{#samplecolumns}}
+								<option value="{{index}}" {{#colnum}}selected="selected"{{/colnum}}>{{value}}</option>
+							{{/samplecolumns}}
+						</select>
+					</div>
+				</span>
+				<span class="amount">
+					<div class="select">
+						<select name="amount_index">
+							{{#samplecolumns}}
+								<option value="{{index}}" {{#colamount}}selected="selected"{{/colamount}}>{{value}}</option>
+							{{/samplecolumns}}
+						</select>
+					</div>
+				</span>
+				<div class="clear"></div>
+			</div>
+			<a href="#" class="button float-right" id="accounts-import-classify-import">Import</a>
+			<a href="/accounts/import/{{#account}}{{id}}{{/account}}" class="button float-right">Cancel</a>
+			<div class="clear"></div>
+		</form>
+	</div>
+{{/transactionsfile}}{{/transactions}}
+
+{{#transactions}}
+	<div class="text-medium float-left">Categorize your transactions by selecting the appropriate transfer account.  Click "save transactions" when you're  done.</div>
+
+	<a id="accounts-import-save" href="#" class="button float-right">Save Transactions</a>
+	<div class="clear"></div>
+
+	<form id="accounts-import-save-form" action="/accounts/importtransactions/{{#account}}{{id}}{{/account}}" method="POST">
+		<input type="hidden" name="account_id" value="{{#account}}{{id}}{{/account}}">
+		<input type="hidden" name="account_table_sign" value="{{#account}}{{table_sign}}{{/account}}">
+		<input type="hidden" name="importdata" value="">
+	</form>
+	
+	<div id="accounts-view-transactions" class="row-elements row-elements-alternating-colors text-small">
+		
+		<ul>
+			<li class="text-bold account-transaction">
+				<span class="account-transaction-date text-center">Date</span>
+				<span class="account-transaction-number text-center">Num</span>
+				<span class="account-transaction-description text-center">Description</span>
+				<span class="account-transaction-transfer text-center">Transfer</span>
+				<span class="account-transaction-jump text-center"><a href="#">&nbsp;</a></span>
+				<span class="account-transaction-split text-center"><a href="#">&nbsp;</a></span>
+				<span class="account-transaction-reconcile text-center text-darkgray">R</span>
+				<span class="account-transaction-credit text-center">Increase</span>
+				<span class="account-transaction-debit text-center">Decrease</span>
+				<span class="account-transaction-balance text-center">Balance</span>
+			</li>
+			{{#account_transactions}}
+				<li rel="{{hash}}" class="account-transaction import">
+					{{! Add hidden fields marked by hash in here }}
+					<input type="hidden" name="{{hash}}" value="TRANSACTIONKEY">
+					<input type="hidden" name="import-transaction-{{hash}}-number" value="{{number}}">
+					<input type="hidden" name="import-transaction-{{hash}}-description" value="{{description}}">
+					<input type="hidden" name="import-transaction-{{hash}}-date" value="{{date}}">
+					<input type="hidden" name="import-transaction-{{hash}}-amount" value="{{amount}}">
+					<input type="hidden" name="import-transaction-{{hash}}-transfer_account" value="{{#duplicate}}duplicate{{/duplicate}}{{^duplicate}}{{transfer_account}}{{/duplicate}}">
+					<span class="account-transaction-date text-center">{{date}}</span>
+					<span class="account-transaction-number text-center">{{number}}</span>
+					<span class="account-transaction-description text-left">{{description}}</span>
+					<span class="account-transaction-transfer"><div class="select"><select name="import-transaction-{{hash}}-transaction-transfer">
+						<option value="">Select transfer account.</option>
+						<option value="ignore">Do Not Import</option>
+						<option value="duplicate">Duplicate Transaction</option>
+						{{#all_accounts_chart_flat}}
+							{{^reserved}}
+								<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+							{{/reserved}}
+						{{/all_accounts_chart_flat}}
+					</select></div></span>
+					<span class="account-transaction-jump text-center">&nbsp;</span>
+					<span class="account-transaction-split text-center"><a href="#">&nbsp;</a></span>
+					<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+					<span class="account-transaction-credit text-left">{{amount_credit_formatted}}{{^amount_credit_formatted}}&nbsp;{{/amount_credit_formatted}}</span>
+					<span class="account-transaction-debit text-left">{{amount_debit_formatted}}{{^amount_debit_formatted}}&nbsp;{{/amount_debit_formatted}}</span>
+					<span class="account-transaction-balance text-left">&nbsp;</span>
+				</li>
+			{{/account_transactions}}
+		</ul>
+		
+	</div>
+{{/transactions}}
+
+<div id="accounts-view-add-splitcontainer-template" class="hidden">
+	<li class="list-container split-transaction new import">
+		<ul>
+		</ul>
+	</li>
+</div>
+
+<div id="accounts-view-add-split-template" class="hidden">
+	<li class="static-row account-transaction new import">
+		<input type="hidden" class="split-key" name="keygoeshere" value="import-transaction--split-key">
+		<span class="account-transaction-number text-center">&nbsp;</span>
+		<span class="account-transaction-description text-left">&nbsp;</span>
+		<span class="account-transaction-transfer text-left"><div class="select"><select name="import-transaction--split-transaction-transfer"><option value="">Select transfer account.</option>{{#all_accounts_chart_flat}}<option value="{{id}}" {{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>{{/all_accounts_chart_flat}}</select></div></span>
+		<span class="account-transaction-jump text-center">&nbsp;</span>
+		<span class="account-transaction-split text-center">&nbsp;</span>
+		<span class="account-transaction-reconcile text-center text-darkgray">&nbsp;</span>
+		<span class="account-transaction-credit text-left"><input type="text" name="import-transaction--split-credit" placeholder=""></span>
+		<span class="account-transaction-debit text-left"><input type="text" name="import-transaction--split-debit" placeholder=""></span>
+		<span class="account-transaction-balance text-left">&nbsp;</span>
+	</li>
+</div>

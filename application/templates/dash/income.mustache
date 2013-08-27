@@ -1,0 +1,21 @@
+<form action="" method="POST">
+	<div class="form report-form">
+		<div class="row column-10">
+			<span class="oop-oop inline-label text-right">Start Date</span>
+			<span class="oop-oop-oop"><input type="text" class="report-income-date" name="date_start" value="{{report_date_start}}"></span>
+			<span class="oop-oop inline-label text-right">End Date</span>
+			<span class="oop-oop-oop"><input type="text" class="report-income-date" name="date_end" value="{{report_date_end}}"></span>
+			<span class="yellow-suit-dance-off inline-label"><div class="checkbox manual report-income-zero-toggle"><input type="checkbox" name="report-income-zero-toggle"
+				{{#show_zero}}checked="checked"{{/show_zero}}></div>
+			Show Accounts with Zero Balances</span>
+			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
+		</div>
+		<div class="clear"></div>
+	</div>
+</form>
+
+<div class="clear"></div>
+
+<div id="report-content">
+	{{>dash_print_income}}
+</div>

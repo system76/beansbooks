@@ -1,0 +1,27 @@
+<div class="login-form form text-center">
+	<form action="" method="POST">
+		{{^resetkey}}
+			<div class="text-large">Please enter your email address:</div>
+			<input type="text" name="email" placeholder="Email Address">
+			<div class="clear"></div>
+			<a href="#" class="button" onclick="$(this).closest('form').submit();">Reset Password</a>
+		{{/resetkey}}
+		{{#resetkey}}
+			<input type="hidden" name="resetkey" value="{{resetkey}}">
+			<div class="text-large">Please update your password:</div>
+			<input type="text" name="email" placeholder="Email Address">
+			<div class="clear"></div>
+			<input type="password" name="password" placeholder="New Password">
+			<div class="clear"></div>
+			<input type="password" name="password_repeat" placeholder="Repeat Password">
+			<div class="clear"></div>
+			<a href="#" class="button" onclick="showPleaseWait(); $(this).closest('form').submit();">Save Password</a>
+		{{/resetkey}}
+	</form>
+</div>
+
+{{#resetkey}}
+	<div class="text-center">
+		<a href="/auth/reset/">Send Reset Email Again</a>
+	</div>
+{{/resetkey}}

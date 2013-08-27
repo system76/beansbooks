@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--[if IE 8]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang='en'>
+<!--<![endif]-->
+	<head>
+		<title>Install BeansBooks</title>
+		<meta charset='utf-8' />
+		<meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible' />
+		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1' name='viewport' />
+
+		<link rel="apple-touch-icon" href="/static/images/favicon-144.png" />
+		<link rel="icon" type="image/png" href="/static/images/favicon.png">
+		<!--[if IE]><link rel="SHORTCUT ICON" href="/static/images/favicon.ico"/><![endif]-->
+		
+		<!-- Google Web Font - Ubuntu -->
+		<!-- <link href="//fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,400italic" rel="stylesheet" type="text/css"> -->
+		<!-- Locally hosted Web Font - Ubuntu -->
+		<link href="/static/css/ubuntu-webfont/ubuntu-webfont.css"rel="stylesheet" type="text/css" charset="utf-8">
+		
+		<!-- Custom jQuery UI Theme -->
+		<link href="/static/css/jqueryui/jquery-ui-1.8.22.custom.css" rel="stylesheet" type="text/css">
+
+		<!-- Select2 Custom Theme -->
+		<link href="/static/css/select2/select2.3.2.2.css" rel="stylesheet" type="text/css">
+
+		<!-- Good resets -->
+		<link href="/static/css/h5bp.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/main.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/form.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/dash.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/accounts.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/customers.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/vendors.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/setup.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/install.css" type="text/css" rel="stylesheet" charset="utf-8">
+		
+		<!-- use the html5shiv for older IE versions -->
+		<!--[if lt IE 9]>
+		<script src="/static/js/libs/html5shiv.js"></script>
+		<![endif]-->
+		<!--[if lte IE 8]>
+		<script language="javascript" type="text/javascript" src="/static/js/libs/excanvas.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+
+		<div class="wrapper">
+
+			<div class="header">
+				<div class="text-large text-center bump-down">Beans Installation Process</div>
+				<div class="clear"></div>
+			</div>
+			<div class="clear"></div>
+
+			<div class="bump-down null"></div>
+			
+			<div class="clear"></div>
+			{{#system_messages}}
+				<div class="system-message {{type}} text-medium">{{{text}}}</div>
+			{{/system_messages}}
+
+			<div class="content">
+				
+				{{>content}}
+
+			</div>
+			<div class="clear"></div>
+
+		</div>
+
+		<!-- Used for various warning / error / confirmation messages. -->
+		<div class="modal-dialog" id="interface-dialog-confirm">&nbsp;</div>
+		<div class="modal-dialog" id="interface-dialog-success">&nbsp;</div>
+		<div class="modal-dialog" id="interface-dialog-error">&nbsp;</div>
+		<div class="modal-dialog" id="please-wait-dialog">
+			<p class="text-large text-center" style="margin-top: 10px;">Please wait...</p>
+			<br>
+			<p class="text-center spinme">&nbsp;</p>
+		</div>
+
+		<script type="text/javascript" src="/static/js/libs/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/static/js/libs/jquery-ui-1.8.24.min.js"></script>
+		<!--
+		<script type="text/javascript" src="/static/js/libs/jquery.flot.js"></script>
+		<script type="text/javascript" src="/static/js/libs/jquery.flot.pie.js"></script>
+		-->
+		<script type="text/javascript" src="/static/js/libs/chart.min.js"></script>
+		<script type="text/javascript" src="/static/js/libs/spin.min.js"></script>
+		<script type="text/javascript" src="/static/js/libs/jquery.modaldialog.js"></script>
+		<script type="text/javascript" src="/static/js/libs/jquery.spin.js"></script>
+		<script type="text/javascript" src="/static/js/libs/jquery.ezpz_hint.js"></script>
+		<script type="text/javascript" src="/static/js/libs/json2.js"></script> 
+		<script type="text/javascript" src="/static/js/libs/select2.3.2.2.min.js"></script>
+
+		<!-- Specific Beans JS -->
+		<script src="/static/js/script.js" type="text/javascript"></script>
+		<script src="/static/js/interface.js" type="text/javascript"></script>
+		<script src="/static/js/dash.js" type="text/javascript"></script>
+		<script src="/static/js/accounts.js" type="text/javascript"></script>
+		<script src="/static/js/customers.js" type="text/javascript"></script>
+		<script src="/static/js/vendors.js" type="text/javascript"></script>
+		<script src="/static/js/setup.js" type="text/javascript"></script>
+		<script src="/static/js/install.js" type="text/javascript"></script>
+
+	</body>
+</html>

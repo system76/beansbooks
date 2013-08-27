@@ -1,0 +1,161 @@
+<div id="customers-customers-create">
+	<div class="text-bold text-medium bump-down">Create Customer</div>
+
+	<div class="form bump-down-more">
+		<div id="customers-customers-create-form">
+			<div class="row column-4 labels">
+				<span class="oop-oop">First Name</span>
+				<span class="oop-oop">Last Name</span>
+				<span class="oppa-gangnam-style">Email Address</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop"><input type="text" tabindex="1" class="required customer first_name" name="first_name"></span>
+				<span class="oop-oop"><input type="text" tabindex="2" class="required customer last_name" name="last_name"></span>
+				<span class="oppa-gangnam-style"><input type="text" tabindex="3" class="customer email" name="email"></span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop">Company Name</span>
+				<span class="oop-oop">Phone Number</span>
+				<span class="oop-oop">Fax Number</span>
+				<span class="oop-oop">Terms/Receivable Account</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop"><input type="text" tabindex="4" class="customer company_name" name="company_name"></span>
+				<span class="oop-oop"><input type="text" tabindex="5" class="customer phone_number" name="phone_number"></span>
+				<span class="oop-oop"><input type="text" tabindex="6" class="customer fax_number" name="fax_number"></span>
+				<span class="oop-oop"><select tabindex="7" class="account-dropdown" class="customer default_account_id" name="default_account_id" {{#customer_receivable_account_default}}rel="{{id}}"{{/customer_receivable_account_default}}>
+					<option value="">&nbsp;</option>
+					{{#customer_receivable_accounts}}
+						{{^reserved}}
+							<option value="{{id}}" {{^receivable}}disabled="disabled"{{/receivable}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+						{{/reserved}}
+					{{/customer_receivable_accounts}}
+				</select></span>
+			</div>
+
+			<div class="row text-bold bump-down-most">
+				Customer Addresses
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 1</span>
+				<span class="oop-oop">State/Province</span>
+				<span class="oop-oop-oop"><div class="checkbox medium"><input type="checkbox" value="1" checked="checked" class="address" rel="default-billing"></div> Default Billing Address</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address required" tabindex="8" rel="address1"></span>
+				<span class="oop-oop"><input type="text" class="address" tabindex="11" rel="state"></span>
+				<span class="oop-oop-oop"><div class="checkbox medium"><input type="checkbox" value="1" checked="checked" class="address" rel="default-shipping"></div> Default Shipping Address</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 2</span>
+				<span class="oop-oop">Zip</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address" tabindex="9" rel="address2"></span>
+				<span class="oop-oop"><input type="text" class="address required" tabindex="12" rel="zip"></span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">City</span>
+				<span class="oop-oop">Country</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address required" tabindex="10" rel="city"></span>
+				<span class="oop-oop"><div class="select"><select class="address required" tabindex="13" rel="country">
+					<option value="">&nbsp;</option>
+					{{#countries}}
+						<option value="{{code}}" {{#default}}rel="default" selected="selected"{{/default}}>{{name}}</option>
+					{{/countries}}
+				</select></div></span>
+				<span class="oop-oop"><a href="#" class="button" id="customers-customers-create-form-address-save" tabindex="14">Save This Address</a></span>
+				<span class="oop"><a href="#" class="button" id="customers-customers-create-form-address-canceledit" disabled="disabled" tabindex="15">Cancel Edit</a></span>
+			</div>
+
+			<div id="customers-customers-create-form-addresses" class="bump-down-more">
+				<div class="clear"></div>
+				<a href="#" class="button" id="customers-customers-create-form-save" tabindex="17">Save</a>
+				<a href="#" class="button" id="customers-customers-create-form-cancel" tabindex="16">Cancel</a>
+			</div>
+
+		</div>
+	</div>
+
+</div>
+
+<div class="customers-customers-actions bump-down">
+	<span class="text-bold text-medium float-left bump-down">Customers</span>
+	<input type="text" class="search float-right" id="customers-customers-customers-search" placeholder="Search Name / Email / Phone / Fax">
+	<!-- <a href="#" id="customers-customers-create-button" class="button float-right">Create Customer</a> -->
+	<div class="clear"></div>
+</div>
+
+<div id="customers-customers-customers" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="customer-customer" rel="{{id}}">
+			<span class="customer-customer-name text-bold text-left">Customer</span>
+			<span class="customer-customer-phone text-bold text-center">Phone</span>
+			<span class="customer-customer-email text-bold text-center">Email</span>
+			<span class="customer-customer-balance_current text-bold text-right">Account Balance</span>
+			<span class="customer-customer-balance_pastdue text-bold text-right">Past Due Balance</span>
+			<span class="customer-customer-actions text-bold text-right">
+				&nbsp;
+			</span>
+		</li>
+		{{#customers}}
+			{{>customers_customer_customer}}
+		{{/customers}}
+		{{^customers}}
+			<li class="text-bold customer-sale text-center">No customers found.</li>
+		{{/customers}}
+	</ul>
+</div>
+
+<div id="customers-customers-loadcustomers" class="hidden">
+	<br>
+	<p class="text-medium text-center">Loading additional customers: please wait...</p>
+	<br>
+	<p class="text-center spinme">&nbsp;</p>
+	<br>
+</div>
+
+<div id="customers-customers-endcustomers" class="hidden">
+	<br>
+	<p class="text-medium text-center">No additional customers found.</p>
+	<br>
+</div>
+
+
+<div id="customers-customers-create-form-addresses-address-template" class="hidden">
+	<div class="customers-customers-create-form-addresses-address hidden">
+		<input type="hidden" class="address-key" name="address-key" value="ADDRESSKEY">
+		<input type="hidden" class="address1" name="address1" value="">
+		<input type="hidden" class="address2" name="address2" value="">
+		<input type="hidden" class="city" name="city" value="">
+		<input type="hidden" class="state" name="state" value="">
+		<input type="hidden" class="zip" name="zip" value="">
+		<input type="hidden" class="country" name="country" value="">
+		<input type="hidden" class="default-billing" name="default-billing" value="">
+		<input type="hidden" class="default-shipping" name="default-shipping" value="">
+		<div><span class="address1">&nbsp;</span> (<a href="#" class="edit">edit</a>)</div>
+		<div><span class="address2">&nbsp;</span></div>
+		<div>
+			<span class="city">&nbsp;</span>,
+			<span class="state">&nbsp;</span>
+			<span class="zip">&nbsp;</span>
+		</div>
+		<div><span class="country">&nbsp;</span></div>
+		<span class="default-billing"><div>Default Billing Address</div></span>
+		<span class="default-shipping"><div>Default Shipping Address</div></span>
+	</div>
+</div>

@@ -1,0 +1,246 @@
+<input type="hidden" id="vendors-expenses-create-requested_expense_id" value="{{requested_expense_id}}">
+
+<div id="vendors-expenses-create">
+	<div class="text-bold text-medium bump-down" id="vendors-expenses-create-title">Enter An Expense</div>
+	<input type="hidden" name="refund_expense_id" value="">
+	
+	<div class="form bump-down-more">
+		
+		<div class="row column-10 labels">
+			<span class="oppa-gangnam-style">Date</span>
+			<span class="ehhh-sexy-lady">
+				Vendor
+				<span class="text-small">( <a href="#" id="vendors-expenses-dialog-vendor-create-link">new</a> )</span>
+			</span>
+			<span class="ehhh-sexy-lady">
+				Vendor Remit Address
+				<span class="text-small">( <a href="#" id="vendors-expenses-dialog-address-create-link">new</a> )</span>
+			</span>
+			<span class="oop-oop-oop">Invoice Number</span>
+			<span class="oop-oop-oop">SO Number</span>
+		</div>
+
+		<div class="row column-10">
+			<span class="oppa-gangnam-style"><input type="text" name="date_created" class="datepicker" value="{{dateYYYYMMDD}}"></span>
+			<span class="ehhh-sexy-lady"><input type="hidden" name="vendor"></span>
+			<span class="ehhh-sexy-lady"><div class="select"><select name="remit_address_id">
+				<option value="">&nbsp;</option>
+			</select></div></span>
+			<span class="oop-oop-oop"><input type="text" name="invoice_number" placeholder="Optional"></span>
+			<span class="oop-oop-oop"><input type="text" name="so_number" placeholder="Optional"></span>
+		</div>
+
+		<div class="row column-10 labels">
+			<span class="ehhh-sexy-lady">Payment Account</span>
+			<span class="oop-oop-oop">Check Number</span>
+			<span class="elevator-dance">&nbsp;</span>
+			<span class="oop-oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-10">
+			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="account" {{#expense_payment_account_default}}data-default="{{id}}#{{terms}}" rel="{{id}}#{{terms}}"{{/expense_payment_account_default}}>
+				{{#expense_payment_accounts}}
+					{{^reserved}}
+						<option value="{{id}}#{{terms}}" {{^payment}}disabled="disabled"{{/payment}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/expense_payment_accounts}}
+			</select></span>
+			<span class="oop-oop-oop"><input type="text" name="check_number" placeholder="Optional"></span>
+			<span class="oop-oop-oop inline-label"><div class="checkbox"><input type="checkbox" name="print_check" value="1"></div>&nbsp;&nbsp;Print Check?</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+			<span class="oop-oop">&nbsp;</span>
+		</div>
+
+		<div class="row column-10 labels">
+			<span class="elevator-dance">Description</span>
+			<span class="ehhh-sexy-lady">Expense Account</span>
+			<span class="oop">QTY</span>
+			<span class="oop-oop">Price</span>
+			<span class="oop-oop">Total</span>
+		</div>
+
+		<div id="vendors-expenses-create-form-lines">
+			
+		</div>
+
+		<div class="row column-6">
+			<span class="oop-oop wrapper text-small">
+				<span class="vendors-expenses-create-form-total-label text-bold">Total:</span>
+				<span class="vendors-expenses-create-form-total-value" id="vendors-expenses-create-form-total">{{currency_symbol}}0.00</span>
+			</span>
+			
+			<span class="ehhh-sexy-lady">
+				&nbsp;
+			</span>
+			
+			<span class="oop-oop-oop vendor-expenses-create-new-buttons">&nbsp;</span>
+			<span class="oop vendor-expenses-create-new-buttons">
+				<a href="#" id="vendors-expenses-create-form-cancel" class="button">Cancel</a>
+			</span>
+			<span class="oop vendor-expenses-create-new-buttons">
+				<a href="#" id="vendors-expenses-create-form-save" class="button">Save</a>
+			</span>
+
+			<span class="oop vendor-expenses-create-edit-buttons" style="display:none;">
+				<a href="#" id="vendors-expenses-create-form-editcancel" class="button">Cancel</a>
+			</span>
+			<span class="oop vendor-expenses-create-edit-buttons" style="display:none;">
+				<a href="#" id="vendors-expenses-create-form-delete" class="button">Delete</a>
+			</span>
+			<span class="oop vendor-expenses-create-edit-buttons" style="display:none;">
+				<a href="#" id="vendors-expenses-create-form-return" class="button">Return</a>
+			</span>
+			<span class="oop vendor-expenses-create-edit-buttons" style="display:none;">
+				<a href="#" id="vendors-expenses-create-form-print" class="button">Print</a>
+			</span>
+			<span class="oop vendor-expenses-create-edit-buttons" style="display:none;">
+				<a href="#" id="vendors-expenses-create-form-edit" class="button">Edit</a>
+			</span>
+			
+		</div>
+
+	</div>
+
+</div>
+
+<div class="vendors-expenses-actions bump-down">
+	<span class="text-bold text-medium float-left bump-down">Expenses</span>
+	<input type="text" class="search float-right" id="vendors-expenses-expenses-search" placeholder="Search Name / Amount / Date / Number">
+	<div class="clear"></div>
+</div>
+
+<div id="vendors-expenses-expenses" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="text-bold vendor-expense">
+			<span class="vendor-expense-vendor text-left">Vendor</span>
+			<span class="vendor-expense-invoice text-center">Invoice</span>
+			<span class="vendor-expense-so text-center">SO Num</span>
+			<span class="vendor-expense-date text-center">Date</span>
+			<span class="vendor-expense-check text-center">Check Num</span>
+			<span class="vendor-expense-total text-right">Total</span>
+			<span class="vendor-expense-actions text-right">&nbsp;</span>
+		</li>
+		{{#expenses}}
+			{{>vendors_expenses_expense}}
+		{{/expenses}}
+		{{^expenses}}
+			<li class="text-bold vendor-expense text-center">No expenses found.</li>
+		{{/expenses}}
+	</ul>
+</div>
+
+
+<div id="vendors-expenses-loadexpenses" class="hidden">
+	<br>
+	<p class="text-medium text-center">Loading additional expenses: please wait...</p>
+	<br>
+	<p class="text-center spinme">&nbsp;</p>
+	<br>
+</div>
+
+<div id="vendors-expenses-endexpenses" class="hidden">
+	<br>
+	<p class="text-medium text-center">No additional expenses found.</p>
+	<br>
+</div>
+
+<div id="vendors-expenses-create-form-lines-line-template" class="hidden">
+	<div class="vendors-expenses-create-form-lines-line row column-10">
+		<span class="elevator-dance"><input type="text" class="line-description" name="line-description"></span>
+		<span class="ehhh-sexy-lady"><select name="line-account_id" class="account_id">
+			<option value="">&nbsp;</option>
+			{{#all_accounts_chart_flat}}
+				{{^reserved}}
+					<option value="{{id}}" 
+					{{#type_income}}disabled="disabled"{{/type_income}}
+					{{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/all_accounts_chart_flat}}
+		</select></span>
+		<span class="oop"><input type="text" class="line-quantity" name="line-quantity" val="0"></span>
+		<span class="oop-oop"><input type="text" class="line-price" name="line-price" val="0.00"></span>
+		<span class="oop-oop"><input type="text" class="line-total" name="line-total" readonly="readonly" value="0.00"></span>
+		<input type="hidden" name="expense-line-key" value="EXPENSELINEKEY">
+	</div>
+</div>
+
+<div class="modal-dialog" id="vendors-expenses-dialog-vendor-create">
+	<div class="text-bold text-medium">Create New Vendor</div>
+	<div class="form bump-down">
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Company Name</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="company_name"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">First Name</span>
+			<span class="oop-oop">Last Name</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="first_name"></span>
+			<span class="oop-oop"><input type="text" name="last_name"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">Email Address</span>
+			<span class="oop-oop">Terms/Payable Account</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="email"></span>
+			<span class="oop-oop"><div class="select"><select name="default_account_id" {{#vendor_payable_account_default}}data-default="{{id}}"{{/vendor_payable_account_default}}>
+				<option value="">&nbsp;</option>
+				{{#vendor_payable_accounts}}
+					<option value="{{id}}" {{^payable}}{{^payment}}disabled="disabled"{{/payment}}{{/payable}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+				{{/vendor_payable_accounts}}
+			</select></div></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">Phone Number</span>
+			<span class="oop-oop">Fax Number</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="phone_number"></span>
+			<span class="oop-oop"><input type="text" name="fax_number"></span>
+		</div>
+	</div>
+</div>
+
+<div class="modal-dialog" id="vendors-expenses-dialog-address-create">
+	<input type="hidden" name="vendor_id" value="">
+	<div class="text-bold text-medium">Create New Address</div>
+	<div class="form bump-down">
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Address Line 1</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="address1"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Address Line 2</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="address2"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">City</span>
+			<span class="oop-oop">State</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="city"></span>
+			<span class="oop-oop"><input type="text" name="state"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">Zip</span>
+			<span class="oop-oop">Country</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="zip"></span>
+			<span class="oop-oop"><div class="select"><select tabindex="13" name="country" tabindex="15" {{#default_country}}data-default="{{code}}"{{/default_country}}>
+				<option value="">&nbsp;</option>
+				{{#countries}}
+					<option value="{{code}}" {{#default}}selected="selected"{{/default}}>{{name}}</option>
+				{{/countries}}
+			</select></div></span>
+		</div>
+	</div>
+</div>

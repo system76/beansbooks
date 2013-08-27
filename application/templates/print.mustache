@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+	<body style="font-family: {{#monofont}}Courier, Courier New{{/monofont}}{{^monofont}}Helvetica, Verdana, Arial, sans-serif{{/monofont}};">
+		{{^noheader}}
+			{{{tableopen}}}
+				<tr>
+					<td style="padding-left: 3px; width: 50%; text-align: left; min-height: 50px; padding-bottom: 5px; font-size: 24px; vertical-align: bottom;">
+						{{#companylogo}}
+							{{{companylogo}}}
+						{{/companylogo}}
+						{{^companylogo}}
+							{{companyname}}
+						{{/companylogo}}
+					</td>
+					<td style="padding-right: 2px; width: 50%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 5px;">
+						{{#companyinfo}}
+							{{address1}} {{address2}}<br>
+							{{city}}, {{state}} {{zip}}<br>
+							{{phone}} | {{email}}
+						{{/companyinfo}}
+					</td>
+				</tr>
+				<tr>
+					<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="2">&nbsp;</td>
+				</tr>
+				<tr>
+					<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="2">&nbsp;</td>
+				</tr>
+			{{{tableclose}}}
+		{{/noheader}}
+		{{>content}}
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				border: 0;
+			}
+		</style>
+	</body>
+</html>

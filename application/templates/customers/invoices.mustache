@@ -1,0 +1,390 @@
+<input type="hidden" id="customers-sales-create-requested_sale_id" value="{{requested_sale_id}}">
+
+<input type="hidden" id="customers-sales-refund-default_account_id" value="{{default_refund_account_id}}">
+
+<input type="hidden" id="customers-sales-search-invoiced" value="1">
+
+<div id="customers-sales-create" class="notsohidden">
+	<div class="text-bold text-medium bump-down float-left" id="customers-sales-create-title" rel="Create Invoice">Create Customer Invoice</div>
+	<div class="bump-down text-medium float-right" id="customers-sales-create-status" rel="Invoice Not Saved"><span class="text-bold">Invoice Not Saved</span></div>
+	<div class="clear"></div>
+
+	<input type="hidden" name="refund_sale_id" value="">
+	<input type="hidden" name="invoice_view" value="1">
+	
+	<div class="form bump-down-more">
+		
+		<div class="row column-4 labels">
+			<span class="oop-oop">Invoice Date</span>
+			<span class="oop-oop">
+				Customer
+				<span class="text-small">( <a href="#" id="customers-sales-dialog-customer-create-link">new</a> )</span>
+			</span>
+			<span class="oop-oop">
+				Billing Address
+				<span class="text-small">( <a href="#" id="customers-sales-dialog-address-create-link-billing">new</a> )</span>
+			</span>
+			<span class="oop-oop">
+				Shipping Address
+				<span class="text-small">( <a href="#" id="customers-sales-dialog-address-create-link-shipping">new</a> )</span>
+			</span>
+		</div>
+
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" class="datepicker" name="date_billed" value="{{dateYYYYMMDD}}"></span>
+			<span class="oop-oop"><input type="hidden" name="customer"></span>
+			<span class="oop-oop"><div class="select"><select name="billing_address_id">
+				<option value="">&nbsp;</option>
+			</select></div></span>
+			<span class="oop-oop"><div class="select"><select name="shipping_address_id">
+				<option value="">&nbsp;</option>
+			</select></div></span>
+		</div>
+
+		<div class="row column-6 labels">
+			<span class="oop-oop-oop">Terms/Receivable Account</span>
+			<span class="oop-oop">Due Date</span>
+			<span class="oop-oop">Invoice Number</span>
+			<span class="oop-oop">Quote Number</span>
+			<span class="oop-oop">Customer PO #</span>
+		</div>
+
+		<div class="row column-6">
+			<span class="oop-oop-oop"><select class="account-dropdown" name="account" {{#sale_receivable_account_default}}rel="{{id}}#{{terms}}"{{/sale_receivable_account_default}}>
+				<option value="">&nbsp;</option>
+				{{#sale_receivable_accounts}}
+					{{^reserved}}
+						<option value="{{id}}#{{terms}}" {{^receivable}}disabled="disabled"{{/receivable}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/sale_receivable_accounts}}
+			</select></span>
+			<span class="oop-oop"><input type="text" name="date_due" placeholder="Auto Generate"></span>
+			<span class="oop-oop"><input type="text" name="sale_number" placeholder="Auto Generate"></span>
+			<span class="oop-oop"><input type="text" name="quote_number" placeholder="Optional"></span>
+			<span class="oop-oop"><input type="text" name="po_number" placeholder="Optional"></span>
+		</div>
+
+		
+		<div class="row column-6 labels">
+			<span class="ehhh-sexy-lady">Description</span>
+			<span class="oop-oop-oop">Income Account</span>
+			<span class="oop">Quantity</span>
+			<span class="oop">Price</span>
+			<span class="oop">Sales Tax</span>
+			<span class="oop">Total</span>
+		</div>
+		
+		<div id="customers-sales-create-form-lines">
+			
+		</div>
+
+		<div class="row column-6">
+			<span class="sauna-cuddle wrapper text-small">
+				<span class="customers-sales-create-form-subtotal-label text-bold">Sub:</span>
+				<span class="customers-sales-create-form-subtotal-value" id="customers-sales-create-form-subtotal">$0.00</span>
+				<span class="customers-sales-create-form-taxes-label text-bold">Tax:</span>
+				<span class="customers-sales-create-form-taxes-value" id="customers-sales-create-form-taxes">$0.00</span>
+				<span class="customers-sales-create-form-total-label text-bold">Total:</span>
+				<span class="customers-sales-create-form-total-value" id="customers-sales-create-form-total">$0.00</span>
+				<span class="customers-sales-create-form-balance-label text-bold">Balance:</span>
+				<span class="customers-sales-create-form-balance-value" id="customers-sales-create-form-balance">$0.00</span>
+			</span>
+
+			<span class="oop-oop customer-sales-create-new-buttons">&nbsp;</span>
+			<span class="oop customer-sales-create-new-buttons">
+				<a href="#" id="customers-sales-create-form-cancel" class="button">Cancel</a>
+			</span>
+			<span class="oop-oop customer-sales-create-new-buttons">
+				<a href="#" id="customers-sales-create-form-savesend" class="button">Save &amp; Send</a>
+			</span>
+			<span class="oop customer-sales-create-new-buttons">
+				<a href="#" id="customers-sales-create-form-save" class="button">Save</a>
+			</span>
+			
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-editcancel" class="button">Cancel</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-delete" class="button">Delete</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-refund" class="button">Refund</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-onlysend" class="button">Send</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-print" class="button">Print</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-edit" class="button">Edit</a>
+			</span>
+
+			<!--
+			<span class="oop-oop customer-sales-create-new-buttons">&nbsp;</span>
+			<span class="oop customer-sales-create-new-buttons">
+				<a href="#" id="customers-sales-create-form-cancel" class="button">Cancel</a>
+			</span>
+			<span class="oop-oop customer-sales-create-new-buttons">
+				<a href="#" id="customers-sales-create-form-savesend" class="button">Save &amp; Send</a>
+			</span>
+			<span class="oop customer-sales-create-new-buttons">
+				<a href="#" id="customers-sales-create-form-save" class="button">Save</a>
+			</span>
+			
+			<span class="oop-oop customer-sales-create-edit-buttons" style="display:none;">&nbsp;</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-editcancel" class="button">Cancel</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-onlysend" class="button">Send</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-print" class="button">Print</a>
+			</span>
+			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
+				<a href="#" id="customers-sales-create-form-refund" class="button">Refund</a>
+			</span>
+			-->
+
+		</div>
+
+	</div>
+
+	<div id="customers-sales-create-form-send" class="form bump-down color-force-green hidden" rel="save"><!-- Toggle "save" / "send" -->
+		<div class="row single column-6">
+			<span class="oop inline-label text-center">
+				<div class="checkbox manual"><input type="checkbox" class="send-form" name="send-email" value="1"></div> Email
+			</span>
+			<span class="oop-oop-oop">
+				<input type="text" name="email" class="send-form" value="">
+			</span>
+			<span class="oop-oop-oop inline-label text-center">
+				<div class="checkbox manual"><input type="checkbox" class="send-form" name="send-mail" value="1"></div> Print and Send by Mail
+			</span>
+			<span class="oop-oop-oop inline-label text-center">
+				<div class="checkbox manual"><input type="checkbox" class="send-form" name="send-done" value="1"></div> Already Sent to Customer
+			</span>
+			<span class="oop"><a href="#" class="button" id="customers-sales-create-form-send-cancel">Cancel</a></span>
+			<span class="oop"><a href="#" class="button" id="customers-sales-create-form-send-submit">Submit</a></span>
+		</div>
+	</div>
+	
+</div>
+
+
+<div class="customers-sales-actions bump-down">
+	<span class="text-bold text-medium float-left bump-down">Customer Invoices</span>
+	<input type="text" class="search float-right" id="customers-sales-sales-search" placeholder="Search Name / Amount / Date / Number">
+	<a href="#" id="customers-sales-sales-show-pastdue" class="button float-right">Show Past Due</a>
+	<a href="#" id="customers-sales-sales-show-all" class="button float-right" style="display:none;">Show All</a>
+	<input type="hidden" id="customers-sales-sales-pastdue" value="0">
+	<!-- <a href="#" id="customers-sales-create-button" class="button float-right">Create New Sale</a> -->
+	<div class="clear"></div>
+</div>
+
+<div id="customers-sales-sales" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="text-bold customer-sale">
+			<span class="customer-sale-customer text-left">Customer</span>
+			<span class="customer-sale-sale text-center">Invoice</span>
+			<span class="customer-sale-date text-center">Date</span>
+			<span class="customer-sale-status text-center">Status</span>
+			<span class="customer-sale-total text-center">Total</span>
+			<span class="customer-sale-actions">&nbsp;</span>
+		</li>
+		{{#sales}}
+			{{>customers_sales_sale}}
+		{{/sales}}
+		{{^sales}}
+			<li class="text-bold customer-sale text-center">No sales found.</li>
+		{{/sales}}
+	</ul>
+</div>
+
+
+<div id="customers-sales-loadsales" class="hidden">
+	<br>
+	<p class="text-medium text-center">Loading additional sales: please wait...</p>
+	<br>
+	<p class="text-center spinme">&nbsp;</p>
+	<br>
+</div>
+
+<div id="customers-sales-endsales" class="hidden">
+	<br>
+	<p class="text-medium text-center">No additional sales found.</p>
+	<br>
+</div>
+
+<div id="customers-sales-create-form-lines-line-template" class="hidden">
+	<div class="customers-sales-create-form-lines-line row column-6">
+		<span class="ehhh-sexy-lady"><input type="text" class="line-description" name="line-description"></span>
+		<span class="oop-oop-oop"><select name="line-account_id" class="account_id">
+			<option value="">&nbsp;</option>
+			{{#sale_income_accounts}}
+				{{^reserved}}
+					<option value="{{id}}" {{^type_income}}disabled="disabled"{{/type_income}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+				{{/reserved}}
+			{{/sale_income_accounts}}
+		</select></span>
+		<span class="oop"><input type="text" class="line-quantity" name="line-quantity" val="0.00"></span>
+		<span class="oop"><input type="text" class="line-price" name="line-price" val="0.00"></span>
+		<span class="oop">
+			<div class="select-checkbox line-taxes">
+				<div class="value" title="Taxes"></div>
+				<div class="dropdown">
+					{{#taxes}}
+						<div class="option"><input type="checkbox" class="line-tax" value="{{id}}#{{fee}}{{^fee}}0{{/fee}}#{{percent}}{{^percent}}0{{/percent}}" title="{{name}}"><span class="label"> {{name}}</span></div>
+					{{/taxes}}
+				</div>
+			</div>
+		</span>
+		<span class="oop"><input type="text" class="line-total" name="line-total" readonly="readonly" value="0.00"></span>
+		<input type="hidden" class="line-tax_ids" name="line-tax_ids" value="">
+		<input type="hidden" name="sale-line-key" value="SALELINEKEY">
+	</div>
+</div>
+
+<div id="customers-sales-send-template" class="hidden">
+	<li class="customer-sale customer-sale-send color-force-green">
+		<span class="customer-sale-send-email">
+			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email 
+			<input type="text" name="email" value="">
+		</span>
+		<span class="customer-sale-send-mail">
+			<div class="checkbox manual"><input type="checkbox" name="send-mail" value="1"></div> Print and Send by Mail
+		</span>
+		<span class="customer-sale-send-done">
+			<div class="checkbox manual"><input type="checkbox" name="send-done" value="1"></div> Already provided.
+		</span>
+		<span class="customer-sale-send-actions">
+			<a href="#" class="send-cancel">Cancel</a> |
+			<a href="#" class="send-submit">Submit</a>
+		</span>
+	</li>
+</div>
+
+<div id="customers-sales-invoice-template" class="hidden">
+	<li class="customer-sale customer-sale-invoice color-force-green">
+		<span class="customer-sale-send-none">
+			<div class="checkbox manual"><input type="checkbox" name="send-none" value="1"></div> Don't send to customer
+		</span>
+		<span class="customer-sale-send-email">
+			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email 
+			<input type="text" name="email" value="">
+		</span>
+		<span class="customer-sale-send-mail">
+			<div class="checkbox manual"><input type="checkbox" name="send-mail" value="1"></div> Print and Send by Mail
+		</span>
+		<span class="customer-sale-send-done">
+			<div class="checkbox manual"><input type="checkbox" name="send-done" value="1"></div> Already provided.
+		</span>
+		<span class="customer-sale-send-actions">
+			<a href="#" class="send-cancel">Cancel</a> |
+			<a href="#" class="send-submit">Submit</a>
+		</span>
+	</li>
+</div>
+
+<div class="modal-dialog" id="customers-sales-dialog-customer-create">
+	<div class="text-bold text-medium">Create New Customer</div>
+	<div class="form bump-down">
+		<div class="row column-4 labels">
+			<span class="oop-oop">First Name</span>
+			<span class="oop-oop">Last Name</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="first_name"></span>
+			<span class="oop-oop"><input type="text" name="last_name"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Email Address</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="email"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">Phone Number</span>
+			<span class="oop-oop">Fax Number</span>
+		</div>
+		<div class="row column-4">
+			
+			<span class="oop-oop"><input type="text" name="phone_number"></span>
+			<span class="oop-oop"><input type="text" name="fax_number"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">Company Name</span>
+			<span class="oop-oop">Terms/Receivable Account</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="company_name"></span>
+			<span class="oop-oop"><div class="select"><select name="default_account_id" {{#customer_receivable_account_default}}data-default="{{id}}"{{/customer_receivable_account_default}}>
+				<option value="">&nbsp;</option>
+				{{#customer_receivable_accounts}}
+					{{^reserved}}
+						<option value="{{id}}" {{^receivable}}disabled="disabled"{{/receivable}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/customer_receivable_accounts}}
+			</select></div></span>
+		</div>
+		<!-- Email Phone Fax Account -->
+	</div>
+</div>
+
+<div class="modal-dialog" id="customers-sales-dialog-address-create">
+	<input type="hidden" name="customer_id" value="">
+	<div class="text-bold text-medium">Create New Address</div>
+	<div class="form bump-down">
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Address Line 1</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="address1"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Address Line 2</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="address2"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">City</span>
+			<span class="oop-oop">State</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="city"></span>
+			<span class="oop-oop"><input type="text" name="state"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">Zip</span>
+			<span class="oop-oop">Country</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="zip"></span>
+			<span class="oop-oop"><div class="select"><select tabindex="13" name="country" tabindex="15" {{#default_country}}data-default="{{code}}"{{/default_country}}>
+				<option value="">&nbsp;</option>
+				{{#countries}}
+					<option value="{{code}}" {{#default}}selected="selected"{{/default}}>{{name}}</option>
+				{{/countries}}
+			</select></div></span>
+		</div>
+	</div>
+</div>
+
+<!--
+$('#customers-sales-dialog-customer-create').modaldialog({
+	width: 500,
+	buttons: { 
+		"Cancel": function() { $(this).dialog("close"); },
+		"Save Customer": function() { $(this).dialog("close"); }
+	}
+});
+$('#customers-sales-dialog-address-create').modaldialog({
+	width: 500,
+	buttons: { 
+		"Cancel": function() { $(this).dialog("close"); },
+		"Save Address": function() { $(this).dialog("close"); }
+	}
+});
+-->

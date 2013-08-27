@@ -1,0 +1,58 @@
+
+<div class="text-bold text-medium bump-down">Starting Balance</div>
+
+<div class="text-medium bump-down">
+	Use this tool to enter the starting balances for all of your accounts. 
+	If you are transitioning from another accounting program, you can use 
+	its &quot;Trial Balance&quot; report. You likely want to set the report 
+	date to the last time you reconciled your cash accounts.
+
+	If you are starting a new business, you will likely enter a debit in your 
+	checking and savings account and credit &quot;Retained Earnings&quot; the same amount.
+</div>
+<div class="clear"></div>
+
+<form action="/accounts/startingbalance" method="POST">
+	<div id="accounts-startingbalance-form" class="row-elements row-elements-alternating-colors">
+		<ul>
+			<li class="accounts-startingbalance-form-account text-bold">
+				<span class="accounts-startingbalance-form-account-name">Account</span>
+				<span class="accounts-startingbalance-form-account-debit" style="text-align: center;">Debit</span>
+				<span class="accounts-startingbalance-form-account-credit" style="text-align: center;">Credit</span>
+				<div class="clear"></div>
+			</li>
+			{{#accounts}}
+				{{^reserved}}
+					<li class="accounts-startingbalance-form-account {{#top_level}}text-bold{{/top_level}}">
+						<span style="padding-left: {{indent_level_px}}px;" class="accounts-startingbalance-form-account-name">{{name}}</span>
+						{{^top_level}}
+							<span class="accounts-startingbalance-form-account-debit"><input type="text" name="account_debit_{{id}}"></span>
+							<span class="accounts-startingbalance-form-account-credit"><input type="text" name="account_credit_{{id}}" {{#bankaccount}} style="background-color: #e6e6e6;" disabled="disabled"{{/bankaccount}}></span>
+						{{/top_level}}
+						<div class="clear"></div>
+					</li>
+				{{/reserved}}
+			{{/accounts}}
+		</ul>
+		<div class="clear"></div>
+	</div>
+
+	<div id="accounts-startingbalance-status" class="form">
+		Date:<br>
+		<input type="text" name="date" placeholder="{{dateYYYYMMDD}}"><br>
+		Total Debits:<br>
+		<input type="text" name="debit_total" readonly="readonly"><br>
+		Total Credits:<br>
+		<input type="text" name="credit_total" readonly="readonly"><br>
+		Balance:<br>
+		<input type="text" name="balance" readonly="readonly"><br>
+		<div class="accounts-startingbalance-status-actions">
+			<a href="/accounts/" class="button">Cancel</a>
+			<a href="#" class="button" id="accounts-startingbalance-status-save">Save</a>
+			<div class="clear"></div>
+		</div>
+
+	</div>
+
+	<div class="clear"></div>
+</form>

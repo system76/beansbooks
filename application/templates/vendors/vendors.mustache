@@ -1,0 +1,157 @@
+<div id="vendors-vendors-create">
+	<div class="text-bold text-medium bump-down">Create Vendor</div>
+
+	<div class="form bump-down-more">
+		<div id="vendors-vendors-create-form">
+			<div class="row column-4 labels">
+				<span class="oop-oop">First Name</span>
+				<span class="oop-oop">Last Name</span>
+				<span class="oppa-gangnam-style">Email Address</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop"><input type="text" tabindex="1" class="vendor first_name" name="first_name"></span>
+				<span class="oop-oop"><input type="text" tabindex="2" class="vendor last_name" name="last_name"></span>
+				<span class="oppa-gangnam-style"><input type="text" tabindex="3" class="required vendor email" name="email"></span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop">Company Name</span>
+				<span class="oop-oop">Phone Number</span>
+				<span class="oop-oop">Fax Number</span>
+				<span class="oop-oop">Terms/Payable Account</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop"><input type="text" tabindex="4" class="required vendor company_name" name="company_name"></span>
+				<span class="oop-oop"><input type="text" tabindex="5" class="vendor phone_number" name="phone_number"></span>
+				<span class="oop-oop"><input type="text" tabindex="6" class="vendor fax_number" name="fax_number"></span>
+				<span class="oop-oop"><select class="account-dropdown" tabindex="7" class="vendor default_account_id" name="default_account_id" {{#vendor_payable_account_default}}rel="{{id}}"{{/vendor_payable_account_default}}>
+					<option value="">&nbsp;</option>
+					{{#vendor_payable_accounts}}
+						{{^reserved}}
+							<option value="{{id}}" {{^payable}}{{^payment}}disabled="disabled"{{/payment}}{{/payable}} {{#selected}}selected="selected" rel="default"{{/selected}}>{{{name_print}}}</option>
+						{{/reserved}}
+					{{/vendor_payable_accounts}}
+				</select></span>
+			</div>
+
+			<div class="row text-bold bump-down-most">
+				Vendor Addresses
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 1</span>
+				<span class="oop-oop">State/Province</span>
+				<span class="oop-oop-oop"><div class="checkbox medium"><input type="checkbox" value="1" checked="checked" class="address" rel="default-remit"></div> Default Remit Address</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address required" tabindex="8" rel="address1"></span>
+				<span class="oop-oop"><input type="text" class="address" tabindex="11" rel="state"></span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">Address Line 2</span>
+				<span class="oop-oop">Zip</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address" tabindex="9" rel="address2"></span>
+				<span class="oop-oop"><input type="text" class="address required" tabindex="12" rel="zip"></span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4 labels">
+				<span class="oop-oop-oop">City</span>
+				<span class="oop-oop">Country</span>
+				<span class="oop-oop-oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-4">
+				<span class="oop-oop-oop"><input type="text" class="address required" tabindex="10" rel="city"></span>
+				<span class="oop-oop"><div class="select"><select class="address required" tabindex="13" rel="country">
+					<option value="">&nbsp;</option>
+					{{#countries}}
+						<option value="{{code}}" {{#default}}rel="default" selected="selected"{{/default}}>{{name}}</option>
+					{{/countries}}
+				</select></div></span>
+				<span class="oop-oop"><a href="#" class="button" id="vendors-vendors-create-form-address-save" tabindex="14">Save This Address</a></span>
+				<span class="oop"><a href="#" class="button" id="vendors-vendors-create-form-address-canceledit" disabled="disabled" tabindex="15">Cancel Edit</a></span>
+			</div>
+
+			<div id="vendors-vendors-create-form-addresses" class="bump-down-more">
+				<div class="clear"></div>
+				<a href="#" class="button" id="vendors-vendors-create-form-save" tabindex="17">Save</a>
+				<a href="#" class="button" id="vendors-vendors-create-form-cancel" tabindex="16">Cancel</a>
+			</div>
+
+		</div>
+	</div>
+
+</div>
+
+<div class="vendors-vendors-actions bump-down">
+	<span class="text-bold text-medium bump-down float-left">Vendors</span>
+	<input type="text" class="search float-right" id="vendors-vendors-vendors-search" placeholder="Search Name / Email / Phone / Fax">
+	<div class="clear"></div>
+</div>
+
+<div id="vendors-vendors-vendors" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="vendor-vendor">
+			<span class="vendor-vendor-name text-bold text-left">Vendor</span>
+			<span class="vendor-vendor-phone text-bold text-center">Phone</span>
+			<span class="vendor-vendor-email text-bold text-center">Email</span>
+			<span class="vendor-vendor-balance text-bold text-right">Account Balance</span>
+			<span class="vendor-vendor-actions text-bold text-right">
+				&nbsp;
+			</span>
+		</li>
+		{{#vendors}}
+			{{>vendors_vendor_vendor}}
+		{{/vendors}}
+		{{^vendors}}
+			<li class="text-bold vendor-invoice text-center">No vendors found.</li>
+		{{/vendors}}
+	</ul>
+</div>
+
+<div id="vendors-vendors-loadvendors" class="hidden">
+	<br>
+	<p class="text-medium text-center">Loading additional vendors: please wait...</p>
+	<br>
+	<p class="text-center spinme">&nbsp;</p>
+	<br>
+</div>
+
+<div id="vendors-vendors-endvendors" class="hidden">
+	<br>
+	<p class="text-medium text-center">No additional vendors found.</p>
+	<br>
+</div>
+
+
+<div id="vendors-vendors-create-form-addresses-address-template" class="hidden">
+	<div class="vendors-vendors-create-form-addresses-address hidden">
+		<input type="hidden" class="address-key" name="address-key" value="ADDRESSKEY">
+		<input type="hidden" class="address1" name="address1" value="">
+		<input type="hidden" class="address2" name="address2" value="">
+		<input type="hidden" class="city" name="city" value="">
+		<input type="hidden" class="state" name="state" value="">
+		<input type="hidden" class="zip" name="zip" value="">
+		<input type="hidden" class="country" name="country" value="">
+		<input type="hidden" class="default-remit" name="default-remit" value="">
+		<div><span class="address1">&nbsp;</span> (<a href="#" class="edit">edit</a>)</div>
+		<div><span class="address2">&nbsp;</span></div>
+		<div>
+			<span class="city">&nbsp;</span>,
+			<span class="state">&nbsp;</span>
+			<span class="zip">&nbsp;</span>
+		</div>
+		<div><span class="country">&nbsp;</span></div>
+		<span class="default-remit"><div>Default Remit Address</div></span>
+	</div>
+</div>

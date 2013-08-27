@@ -1,0 +1,146 @@
+<div id="setup-taxes-create" rel="new">
+	<div class="text-bold text-medium bump-down">Create Tax Jurisdiction</div>
+
+	<div class="form bump-down-more">
+		<div class="setup-taxes-create-left">
+			<div class="row column-10 labels">
+				<span class="ehhh-sexy-lady">Tax Name</span>
+				<span class="oop-oop">Tax Rate %</span>
+				<span class="ehhh-sexy-lady">Liability Account</span>
+			</div>
+			<div class="row column-10">
+				<span class="ehhh-sexy-lady"><input type="text" name="name" tabindex="1"></span>
+				<span class="oop-oop"><input type="text" name="percent" placeholder="i.e. 3.25" tabindex="2"></span>
+				<span class="ehhh-sexy-lady"><select class="account-dropdown" name="account_id" tabindex="3" {{#default_tax_account}}data-default="{{id}}"{{/default_tax_account}}>
+					<option value="">&nbsp;</option>
+					{{#taxes_all_accounts_chart_flat}}
+						{{^reserved}}
+							<option value="{{id}}" {{^payable}}disabled="disabled"{{/payable}} {{#default}}selected="selected"{{/default}}>{{{name_print}}}</option>
+						{{/reserved}}
+					{{/taxes_all_accounts_chart_flat}}
+				</select></span>
+			</div>
+
+			<div class="row column-10 labels">
+				<span class="yellow-suit-dance-off">Tax Authority Name</span>
+				<span class="ehhh-sexy-lady">License/Permit Number</span>
+			</div>
+			<div class="row column-10">
+				<span class="yellow-suit-dance-off"><input type="text" name="authority" tabindex="4"></span>
+				<span class="ehhh-sexy-lady"><input type="text" name="license" tabindex="5"></span>
+			</div>
+
+			<div class="row column-10 labels">
+				<span class="yellow-suit-dance-off">Address Line 1</span>
+				<span class="ehhh-sexy-lady">State / Province</span>
+			</div>
+			<div class="row column-10">
+				<span class="yellow-suit-dance-off"><input type="text" name="address1" tabindex="6"></span>
+				<span class="ehhh-sexy-lady"><input type="text" name="state" tabindex="9"></span>
+			</div>
+
+			<div class="row column-10 labels">
+				<span class="yellow-suit-dance-off">Address Line 2</span>
+				<span class="ehhh-sexy-lady">Zip</span>
+			</div>
+			<div class="row column-10">
+				<span class="yellow-suit-dance-off"><input type="text" name="address2" tabindex="7"></span>
+				<span class="ehhh-sexy-lady"><input type="text" name="zip" tabindex="10"></span>
+			</div>
+
+			<div class="row column-10 labels">
+				<span class="yellow-suit-dance-off">City</span>
+				<span class="ehhh-sexy-lady">Country</span>
+			</div>
+			<div class="row column-10">
+				<span class="yellow-suit-dance-off"><input type="text" name="city" tabindex="8"></span>
+				<span class="ehhh-sexy-lady"><div class="select"><select name="country" tabindex="11" {{#default_country}}data-default="{{code}}"{{/default_country}}>
+					<option value="">&nbsp;</option>
+					{{#countries}}
+						<option value="{{code}}" {{#default}}selected="selected"{{/default}}>{{name}}</option>
+					{{/countries}}
+				</select></div></span>
+			</div>
+
+			<div class="clear"></div>
+			
+		</div>
+		<div class="setup-taxes-create-right">
+			
+
+			<div class="row column-10 labels">
+				<span class="yellow-suit-dance-off">Schedule Automatic Notices for Tax Payments</span>
+			</div>
+			<div class="row column-10">
+				<span class="oop-oop-oop text-right inline-label">Next payment due</span>
+				<span class="oop-oop-oop"><input type="text" name="date_due" tabindex="12"></span>
+			</div>
+			<div class="row column-10">
+				<span class="oop-oop-oop text-right inline-label">Repeat every</span>
+				<span class="oop"><div class="select"><select name="date_due_months_increment" data-default="1" tabindex="13">
+					{{#integers1to12}}
+						<option value="{{.}}">{{.}}</option>
+					{{/integers1to12}}
+				</select></div></span>
+				<span class="oop-oop-oop inline-label">months</span>
+			</div>
+			<div class="row column-6 labels">
+				<span class="oop">&nbsp;</span>
+			</div>
+			
+			
+
+			<div class="row column-6">
+				<span class="oop">&nbsp;</span>
+			</div>
+			<div class="row column-6 labels">
+				<span class="oop">&nbsp;</span>
+			</div>
+			<div class="row column-6">
+				<span class="oop">&nbsp;</span>
+			</div>
+			<div class="row column-6 labels">
+				<span class="oop">&nbsp;</span>
+			</div>
+			<div class="row column-6 labels">
+				<span class="oop">&nbsp;</span>
+			</div>
+
+			<div class="row column-6 setup-taxes-savecancel">
+				<span class="oop force-right"><a href="#" class="button" id="setup-taxes-create-save" tabindex="15">Save</a></span>
+				<span class="oop force-right"><a href="#" class="button" id="setup-taxes-create-cancel" tabindex="14">Cancel</a></span>
+			</div>
+
+			<div class="row column-6 setup-taxes-editcancel  hidden">
+				<span class="oop force-right"><a href="#" class="button" id="setup-taxes-create-edit">Edit</a></span>
+				<span class="oop force-right"><a href="#" class="button" id="setup-taxes-create-canceledit">Cancel</a></span>
+			</div>
+
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+
+<div class="setup-taxes-actions bump-down-more">
+	<span class="text-bold text-medium bump-down float-left">Tax Jurisdictions</span>
+	<input type="text" class="search float-right" id="setup-taxes-taxes-search">
+	<div class="clear"></div>
+</div>
+
+<div id="setup-taxes-taxes" class="row-elements row-elements-alternating-colors text-small bump-down-more">
+	<ul>
+		<li class="setup-tax text-bold">
+			<span class="setup-tax-name text-left">Tax Name</span>
+			<span class="setup-tax-rate text-center">Tax Rate</span>
+			<span class="setup-tax-balance text-center">Current Balance</span>
+			<span class="setup-tax-nextduedate text-center">Next Due Date</span>
+			<span class="setup-tax-actions text-right">&nbsp;</span>
+		</li>
+		{{#taxes}}
+			{{>taxes_taxes_tax}}
+		{{/taxes}}
+		{{^taxes}}
+			<li class="setup-tax text-center text-bold">No taxes found.</li>
+		{{/taxes}}
+	</ul>
+</div>

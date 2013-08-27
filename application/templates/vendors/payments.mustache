@@ -1,0 +1,177 @@
+<input type="hidden" id="vendors-payments-create-requested_payment_id" value="{{requested_payment_id}}">
+
+<div class="text-medium">
+	<span class="text-bold float-left bump-down">Payment Records</span>
+	<input type="text" class="search float-right" id="vendors-payments-payments-search" placeholder="Search Vendor / Payment Date / Number">
+	<div class="clear"></div>
+</div>
+
+<div id="vendors-payments-payments" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="text-bold vendor-payment">
+			<span class="vendor-payment-date text-left text-bold">Date<span id="vendors-payments-payments-paging">{{#vendor_payments_more}}|&nbsp;&nbsp;<a href="#" rel="1">View More &gt;</a>{{/vendor_payments_more}}
+					{{^vendor_payments_more}}&nbsp;{{/vendor_payments_more}}</span>
+			</span>
+			<span class="vendor-payment-vendor text-left">Vendor</span>
+			<span class="vendor-payment-amount text-center text-bold">Payment Amount</span>
+			<span class="vendor-payment-check text-center text-bold">Check Number</span>
+			<span class="vendor-payment-actions text-right">&nbsp;</span>
+		</li>
+		{{#vendor_payments}}
+			{{>vendors_payments_payment}}
+		{{/vendor_payments}}
+		{{^vendor_payments}}
+			<li class="text-bold vendor-payment text-center">No payments found.</li>
+		{{/vendor_payments}}
+	</ul>
+</div>
+
+<div id="vendors-payments-create">
+	<input type="hidden" name="replace_transaction_id" value="">
+	<input type="hidden" name="remit_address_id" value="">
+	<div class="text-medium text-bold bump-down-more">Pay Invoices</div>
+	<div class="text-medium bump-down">
+		Pay one invoice or a batch of invoices that originated from a purchase order. 
+		Use expenses to pay an invoice without a purchase order.
+	</div>
+
+	<div class="form bump-down">
+		<div class="row labels column-10">
+			<span class="oop-oop-oop">Date</span>
+			<span class="ehhh-sexy-lady">Vendor</span>
+			<span class="oop-oop-oop">PO Totals</span>
+			<span class="oop-oop-oop">Payment Amount</span>
+			<span class="oop-oop-oop">Write-Off Total</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+		</div>
+		
+		<div class="row column-10">
+			<span class="oop-oop-oop"><input type="text" name="date" class="datepicker" value="{{dateYYYYMMDD}}"></span>
+			<span class="ehhh-sexy-lady"><input type="hidden" name="vendor_id"></span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="purchase_total"></span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="amount"></span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="writeoff_amount"></span>
+			<span class="oop-oop-oop">&nbsp;</span>
+		</div>
+		
+		<div class="row column-10 labels">
+			<span class="oppa-gangnam-style">Payment Account</span>
+			<span class="oppa-gangnam-style">Write Off Account</span>
+			<span class="oop-oop-oop">Check Number</span>
+			<span class="oop-oop">&nbsp;</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+		</div>
+
+		<div class="row column-10">
+			<span class="oppa-gangnam-style"><select class="account-dropdown" name="payment_account_id" {{#payment_payment_account_default}}rel="{{id}}"{{/payment_payment_account_default}}>
+				<option value="">&nbsp;</option>
+				{{#payment_payment_accounts}}
+					{{^reserved}}
+						<option value="{{id}}" {{^payment}}disabled="disabled"{{/payment}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/payment_payment_accounts}}
+			</select></span>
+			<span class="oppa-gangnam-style"><select class="account-dropdown" name="writeoff_account_id">
+				<option value="">No Write Off</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}" {{^writeoff}}disabled="disabled"{{/writeoff}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></span>
+			<span class="oop-oop-oop"><input type="text" name="check_number"></span>
+			<span class="oop-oop-oop inline-label"><div class="checkbox"><input type="checkbox" name="print_check" value="1"></div>&nbsp;&nbsp;Print Check?</span>
+			<span class="oop-oop vendors-payments-create-actions-deleteplaceholder">&nbsp;</span>
+			<span class="oop-oop vendors-payments-create-actions-delete" style="display:none;"><a href="#" class="button" id="vendors-payments-create-delete">Delete</a></span>
+			<span class="oop-oop"><a href="#" class="button" id="vendors-payments-create-cancel">Cancel</a></span>
+			<span class="oop-oop vendors-payments-create-actions-edit" style="display:none;"><a href="#" class="button" id="vendors-payments-create-edit">Edit</a></span>
+			<span class="oop-oop vendors-payments-create-actions-save"><a href="#" class="button" id="vendors-payments-create-save">Save</a></span>
+		</div>
+	</div>
+
+	<div id="vendors-payments-create-actions" class="bump-down">
+		<input class="search float-right" type="text" id="vendors-payments-create-actions-search" value="" placeholder="Search Name / Amount / Date / Number">
+		<!-- 
+		<a href="#" class="button float-right" id="vendors-payments-create-actions-showall" style="display:none;">Show All Invoices</a>
+		<a href="#" class="button float-right" id="vendors-payments-create-actions-showincluded">Show Included Invoices</a>
+		-->
+		<div class="clear"></div>
+	</div>
+
+	<div id="vendors-payments-create-purchases" class="row-elements row-elements-alternating-colors text-small bump-down">
+		<ul>
+			<li class="vendor-paymentpo text-bold">
+				<span class="vendor-paymentpo-po text-center">PO Number</span>
+				<span class="vendor-paymentpo-invoice text-center">Vendor Invoice #</span>
+				<span class="vendor-paymentpo-date_billed text-center">Invoice Date</span>
+				<span class="vendor-paymentpo-numeric balance text-center">Balance Due</span>
+				<span class="vendor-paymentpo-numeric amount text-center">Amount Paid</span>
+				<span class="vendor-paymentpo-balancewriteoff text-center">Write-Off Balance</span>
+				<span class="vendor-paymentpo-numeric balancenew text-center">New Balance</span>
+				<span class="vendor-paymentpo-add text-right">&nbsp;</span>
+			</li>
+			<li class="vendor-paymentpo text-center">
+				Select a vendor to see POs that are due.
+			</li>
+		</ul>
+		
+	</div>
+
+</div>
+
+<div class="modal-dialog" id="vendors-payments-duplicate-dialog">&nbsp;</div>
+
+<div class="modal-dialog" id="vendors-payments-address-dialog">
+	<input type="hidden" name="vendor_id" value="">
+	<div class="text-bold text-medium">Payment Remit Address</div>
+	<div class="text-medium bump-down address-mismatch hidden">
+		The purchase orders that you selected don't all have the same remit address.
+		Please select the address that you are remitting payment to or create a new one.
+	</div>
+	<div class="text-medium bump-down address-none hidden">
+		The purchase orders that you selected don't have a remit address.
+		You can either select one to be used for this payment, or manually add it later.
+	</div>
+	<div class="form bump-down">
+		<div class="row column-4">
+			<span class="oppa-gangnam-style">
+				<div class="select"><select name="address_id">
+					<option value="new">Create New Address</option>
+				</select></div>
+			</span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Address Line 1</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="address1"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oppa-gangnam-style">Address Line 2</span>
+		</div>
+		<div class="row column-4">
+			<span class="oppa-gangnam-style"><input type="text" name="address2"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">City</span>
+			<span class="oop-oop">State</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="city"></span>
+			<span class="oop-oop"><input type="text" name="state"></span>
+		</div>
+		<div class="row column-4 labels">
+			<span class="oop-oop">Zip</span>
+			<span class="oop-oop">Country</span>
+		</div>
+		<div class="row column-4">
+			<span class="oop-oop"><input type="text" name="zip"></span>
+			<span class="oop-oop"><div class="select"><select tabindex="13" name="country" tabindex="15" {{#default_country}}data-default="{{code}}"{{/default_country}}>
+				<option value="">&nbsp;</option>
+				{{#countries}}
+					<option value="{{code}}" {{#default}}selected="selected"{{/default}}>{{name}}</option>
+				{{/countries}}
+			</select></div></span>
+		</div>
+	</div>
+</div>

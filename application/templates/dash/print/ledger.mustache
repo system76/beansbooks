@@ -1,0 +1,54 @@
+{{{tableopen}}}
+	<tr>
+		<td style="padding-left: 3px; width: 40%; text-align: left; min-height: 50px; padding-bottom: 5px; vertical-align: bottom;">
+			<div style="widows: 100; font-size: 24px; vertical-align: bottom;">
+				{{#companylogo}}
+					{{{companylogo}}}
+				{{/companylogo}}
+				{{^companylogo}}
+					{{#companyname}}
+						{{companyname}}
+					{{/companyname}}
+					{{^companyname}}
+						<span style="font-size: 14px;">No Company Name!<br><span style="font-size: 12px;">Please <a href="/setup" style="font-weight: bold;">click here</a> to setup your company.</span></span>
+					{{/companyname}}
+				{{/companylogo}}
+			</div>
+		</td>
+		<td style="padding-right: 2px; width: 60%; {{fontsizelarge}} text-align: right; min-height: 50px; padding-bottom: 5px; padding-top: 15px;">
+			General Ledger: {{report_date_start}} - {{report_date_end}}
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="2">
+			&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="2">
+			&nbsp;
+		</td>
+	</tr>
+{{{tableclose}}}
+
+{{{tableopen}}}
+	<!-- border-right: 1px solid #cccccc; -->
+	<tr>
+		<td style="background: {{backgroundlightgreen}}; border-right: 1px solid #cccccc; font-size: 12px; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 10%; text-align: center; font-weight: bold;">Date</td>
+		<td style="background: {{backgroundlightgreen}}; border-right: 1px solid #cccccc; font-size: 12px; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 12%; text-align: center; font-weight: bold;">Number</td>
+		<td style="background: {{backgroundlightgreen}}; border-right: 1px solid #cccccc; font-size: 12px; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 39%; text-align: left; font-weight: bold; padding-left: 5px;">Description</td>
+		<td style="background: {{backgroundlightgreen}}; border-right: 1px solid #cccccc; font-size: 12px; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 12%; text-align: center; font-weight: bold;">Debit</td>
+		<td style="background: {{backgroundlightgreen}}; border-right: 1px solid #cccccc; font-size: 12px; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 12%; text-align: center; font-weight: bold;">Credit</td>
+		<td style="background: {{backgroundlightgreen}}; font-size: 12px; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 14%; text-align: center; font-weight: bold;">Balance</td>
+	</tr>
+	{{#account_transactions}}
+		<tr>
+			<td style="border-right: 1px solid #cccccc; font-size: 12px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 10%; text-align: center;">{{date}}</td>
+			<td style="border-right: 1px solid #cccccc; font-size: 12px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 12%; text-align: center;">{{#check_number}}{{check_number}}{{/check_number}}{{^check_number}}{{number}}{{/check_number}}</td>
+			<td style="border-right: 1px solid #cccccc; font-size: 12px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 39%; text-align: left; padding-left: 5px;">{{description}}</td>
+			<td style="border-right: 1px solid #cccccc; font-size: 12px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 12%; text-align: right; padding-right: 10px;">{{debit_formatted}}</td>
+			<td style="border-right: 1px solid #cccccc; font-size: 12px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 12%; text-align: right; padding-right: 10px;">{{credit_formatted}}</td>
+			<td style="font-size: 12px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; height: 16px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; width: 14%; text-align: right; padding-right: 10px;">{{balance_formatted}}</td>
+		</tr>
+	{{/account_transactions}}
+{{{tableclose}}}

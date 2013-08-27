@@ -1,0 +1,406 @@
+/**
+ * Customers CSS
+ */
+
+#customers-sales-create-status {
+	text-align: right;
+}
+
+#customers-sales-create-status a {
+	color: #0e4c10;
+}
+
+#customers-sales-create-status a:hover {
+	color: #417741;
+}
+
+span.customers-sales-create-form-subtotal-label {
+	display: inline-block;
+	width: 27px;
+	text-align: right;
+}
+span.customers-sales-create-form-subtotal-value {
+	display: inline-block;
+	width: 71px;
+	text-align: left;
+}
+span.customers-sales-create-form-taxes-label {
+	display: inline-block;
+	width: 28px;
+	text-align: right;
+}
+span.customers-sales-create-form-taxes-value {
+	display: inline-block;
+	width: 71px;
+	text-align: left;
+}
+span.customers-sales-create-form-total-label {
+	display: inline-block;
+	width: 35px;
+	text-align: right;
+}
+span.customers-sales-create-form-total-value {
+	display: inline-block;
+	width: 71px;
+	text-align: left;
+}
+span.customers-sales-create-form-balance-label {
+	display: inline-block;
+	width: 51px;
+	text-align: right;
+}
+span.customers-sales-create-form-balance-value" {
+	display: inline-block;
+	width: 71px;
+	text-align: left;
+}
+
+
+
+
+.customers-sales-actions .float-right, .customers-customers-actions .float-right, #customers-payments-create-actions .float-right {
+	min-width: 150px;
+	margin-left: 10px;
+}
+
+#customers-sales-sales-search {
+	width: 250px;
+}
+
+#customers-payments-create-actions-search {
+	width: 250px;
+}
+
+#customers-payments-payments-search {
+	width: 250px;
+}
+
+li.customer-sale {
+	padding-left: 0;
+}
+
+li.customer-sale > span {
+	float: left;
+}
+
+li.customer-sale > span.text-left {
+	text-indent: 5px;
+}
+
+.customer-sale-customer {
+	width: 150px;
+}
+
+.customer-sale-sale {
+	width: 100px;
+}
+
+.customer-sale-date {
+	width: 125px;
+}
+
+.customer-sale-status {
+	width: 130px;
+}
+
+.customer-sale-total {
+	width: 105px;
+}
+
+.customer-sale-total.text-right {
+	padding-right: 15px;
+}
+
+
+.customer-sale-actions {
+	width: 310px;
+}
+
+.customer-sale-actions a {
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.customer-sale-actions a:last-child {
+	margin-right: 12px;
+}
+
+/**
+ * Send Invoice
+ */
+
+.customer-sale div.checkbox {
+	top: 1px;
+	position: relative;
+}
+
+.customer-sale-send-none {
+	width: 165px;
+	text-indent: 5px;
+}
+
+.customer-sale-send-email {
+	width: 330px;
+	text-indent: 5px;
+}
+
+.customer-sale-send-email input[type="text"] {
+	width: 200px;
+	height: 19px;
+	margin-top: 0px;
+	margin-left: 5px;
+	line-height: 19px;
+}
+
+.customer-sale-send-mail {
+	width: 160px;
+}
+
+.customer-sale-send-done {
+	width: 125px;
+}
+
+.customer-sale-send-actions {
+	width: 100px;
+	text-align: right;
+	float:right!important;
+}
+
+.customer-sale-send-actions a {
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.customer-sale-send-actions a:last-child {
+	margin-right: 5px;
+}
+
+
+
+#customers-customers-create-form-addresses {
+	position: relative;
+	min-height: 30px;
+}
+
+#customers-customers-create-form-save {
+	position: absolute;
+	bottom: 5px;
+	right: 1px;
+	width: 70px;
+	text-align: center;
+}
+
+#customers-customers-create-form-cancel {
+	position: absolute;
+	bottom: 5px;
+	right: 76px;
+	width: 70px;
+	text-align: center;
+}
+
+.customers-customers-create-form-addresses-address {
+	float: left;
+	width: 185px;
+	height: 95px;
+	margin-bottom: 10px;
+	margin-right: 5px;
+}
+
+.customers-customers-create-form-addresses-address a.edit {
+	color: #417741;
+}
+
+.customer-address {
+	float: left;
+	width: 220px;
+	margin-right: 5px;
+	min-height: 70px;
+	font-size: 12px;
+	line-height: 14px;
+	margin-top: 10px;
+}
+
+.customer-address a.edit {
+	color: #417741;
+}
+
+.customer-address a.edit:hover {
+	color: #414141;
+}
+
+li.customer-customer {
+	padding-left: 0;
+}
+
+li.customer-customer > span {
+	float: left;
+}
+
+li.customer-customer > span.text-left {
+	text-indent: 5px;
+}
+
+.customer-customer-name {
+	width: 170px;
+}
+
+.customer-customer-phone {
+	width: 150px;
+}
+
+.customer-customer-email {
+	width: 200px;
+}
+
+.customer-customer-balance_current, .customer-customer-balance_pastdue {
+	width: 150px;
+}
+
+.customer-customer-actions {
+	width: 100px;
+}
+
+.customer-customer-actions a {
+	display: inline-block;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.customer-customer-actions a:last-child {
+	margin-right: 5px;
+}
+
+li.customer-payment {
+	padding-left: 0px;
+}
+
+li.customer-payment > span {
+	float: left;
+}
+
+li.customer-payment > span.text-left {
+	text-indent: 5px;
+}
+
+li.customer-payment > span.customer-payment-date {
+	width: 300px;
+}
+
+li.customer-payment > span.customer-payment-amount {
+	width: 100px;
+}
+
+li.customer-payment > span.customer-payment-account {
+	width: 270px;
+}
+
+li.customer-payment > span.customer-payment-actions {
+	width: 250px;
+}
+
+#customers-payments-payments-search {
+	width: 250px;
+}
+
+#customers-payments-payments-paging {
+	display: inline-block;
+	margin-left: 1px;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+#customers-payments-payments-paging a {
+	font-weight: bold;
+}
+
+#customers-payments-payments {
+	height: 160px;
+}
+
+#customers-payments-actions a.button {
+	float: left;
+	width: 160px;
+	margin-right: 10px;
+}
+
+#customers-payments-actions span.float-right {
+	width: 570px;
+}
+
+#customers-payments-create-batch-actions .float-right {
+	width: 175px;
+	margin-left: 5px;
+}
+
+li.customer-batchpayment {
+	padding-left: 0px;
+}
+
+li.customer-batchpayment > span {
+	float: left;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+li.customer-batchpayment > span.text-left {
+	text-indent: 5px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-customer {
+	width: 270px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-sale {
+	width: 105px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-numeric.balance {
+	width: 105px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-numeric.balancenew {
+	width: 105px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-numeric.amount {
+	width: 85px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-numeric.text-right {
+	padding-right: 15px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-numeric > input[type="text"] {
+	width: 100%;
+	text-align: right;
+	height: 19px;
+	line-height: 19px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-balancewriteoff {
+	width: 130px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-balancewriteoff > .checkbox {
+	position: relative;
+	top: 1px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-balancewriteoff.text-left {
+	padding-left: 10px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-add {
+	width: 50px;
+}
+
+li.customer-batchpayment > span.customer-batchpayment-add > .checkbox {
+	position: relative;
+	top: 1px;
+}
+
+#customers-customers-customers-search {
+	width: 250px;
+}

@@ -1,0 +1,116 @@
+{{{tableopen}}}
+	<tr>
+		<td style="padding-left: 3px; width: 40%; text-align: left; min-height: 50px; padding-bottom: 5px; vertical-align: bottom;">
+			<div style="widows: 100; font-size: 24px; vertical-align: bottom;">
+				{{#companylogo}}
+					{{{companylogo}}}
+				{{/companylogo}}
+				{{^companylogo}}
+					{{#companyname}}
+						{{companyname}}
+					{{/companyname}}
+					{{^companyname}}
+						<span style="font-size: 14px;">No Company Name!<br><span style="font-size: 12px;">Please <a href="/setup" style="font-weight: bold;">click here</a> to setup your company.</span></span>
+					{{/companyname}}
+				{{/companylogo}}
+			</div>
+		</td>
+		<td style="padding-right: 2px; width: 60%; {{fontsizelarge}} text-align: right; min-height: 50px; padding-bottom: 5px; padding-top: 15px;">
+			<div style="widows: 100;">{{report_title}}</div>
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="2">
+			<div style="widows: 100;">&nbsp;</div>
+		</td>
+	</tr>
+	<tr>
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="2">
+			<div style="widows: 100;">&nbsp;</div>
+		</td>
+	</tr>
+{{{tableclose}}}
+
+{{{tableopen}}}
+	<tr>
+		<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: left; width: 32%; padding-left: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+			{{report_line_range_label}}
+		</td>
+		<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 8%; padding-right: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+			Orders
+		</td>
+		<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 12%; padding-right: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+			Items
+		</td>
+		<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 16%; padding-right: 20px; height: 24px; line-height: 24px; font-size: 12px;">
+			Subtotal
+		</td>
+		<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 16%; padding-right: 20px; height: 24px; line-height: 24px; font-size: 12px;">
+			Taxes
+		</td>
+		<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 16%; padding-right: 20px; height: 24px; line-height: 24px; font-size: 12px;">
+			Total
+		</td>
+	</tr>
+{{{tableclose}}}
+
+{{{tableopen}}}
+	<tr>
+		<td style="height: 5px; font-size: 1px; width: 100%;">&nbsp;</td>
+	</tr>
+{{{tableclose}}}
+
+{{#report_lines}}
+	{{{tableopen}}}
+		<tr>
+			<td style="text-align: left; width: 32%; padding-left: 10px; height: 20px; line-height: 20px; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; ">
+				{{label}}
+			</td>
+			<td style="text-align: right; width: 8%; padding-right: 10px; height: 20px; line-height: 20px; font-size: 12px;">
+				{{orders_formatted}}
+			</td>
+			<td style="text-align: right; width: 12%; padding-right: 10px; height: 20px; line-height: 20px; font-size: 12px;">
+				{{items_formatted}}
+			</td>
+			<td style="text-align: right; width: 16%; padding-right: 10px; height: 20px; line-height: 20px; font-size: 12px;">
+				{{{subtotal_formatted}}}
+			</td>
+			<td style="text-align: right; width: 16%; padding-right: 10px; height: 20px; line-height: 20px; font-size: 12px;">
+				{{{taxes_formatted}}}
+			</td><td style="text-align: right; width: 16%; padding-right: 10px; height: 20px; line-height: 20px; font-size: 12px;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{{tableclose}}}
+{{/report_lines}}
+
+{{{tableopen}}}
+	<tr>
+		<td style="height: 5px; font-size: 1px; width: 100%;">&nbsp;</td>
+	</tr>
+{{{tableclose}}}
+
+{{{tableopen}}}
+	{{#line_totals}}
+		<tr>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: left; width: 32%; padding-left: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+				Customers Totals
+			</td>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 8%; padding-right: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+				{{orders_formatted}}
+			</td>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 12%; padding-right: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+				{{items_formatted}}
+			</td>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 16%; padding-right: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+				{{{subtotal_formatted}}}
+			</td>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 16%; padding-right: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+				{{{taxes_formatted}}}
+			</td>
+			<td style="background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact; font-weight: bold; text-align: right; width: 16%; padding-right: 10px; height: 24px; line-height: 24px; font-size: 12px;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{/line_totals}}
+{{{tableclose}}}

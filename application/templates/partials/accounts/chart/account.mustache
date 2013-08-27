@@ -1,0 +1,50 @@
+<li rel="{{id}}" class="{{#has_accounts}}list-master active{{/has_accounts}}">
+	{{^top_level}}
+		<input type="hidden" class="parent_account_id" value="{{parent_account_id}}">
+		<input type="hidden" class="account_type_id" value="{{account_type_id}}">
+		<input type="hidden" class="name" value="{{name}}">
+		<input type="hidden" class="code" value="{{code}}">
+		<input type="hidden" class="terms" value="{{terms}}">
+		<input type="hidden" class="reconcilable" value="{{reconcilable}}">
+		<input type="hidden" class="deposit" value="{{deposit}}">
+		<input type="hidden" class="payment" value="{{payment}}">
+		<input type="hidden" class="receivable" value="{{receivable}}">
+		<input type="hidden" class="payable" value="{{payable}}">
+		<input type="hidden" class="writeoff" value="{{writeoff}}">
+	{{/top_level}}
+	{{#has_accounts}}
+		<span class="toggle"><a href="#">&nbsp;</a></span>
+	{{/has_accounts}}
+	<span class="account-name {{#top_level}}text-bold{{/top_level}}">
+		{{#top_level}}
+			{{name}}
+		{{/top_level}}
+		{{^top_level}}
+			<a href="/accounts/view/{{id}}">{{name}}</a>
+		{{/top_level}}
+	</span>
+	{{#reserved}}
+		<span class="account-actions">
+			&nbsp;
+		</span>
+	{{/reserved}}
+	{{^reserved}}
+		<span class="account-actions">
+			<a href="#" class="delete" {{#top_level}}disabled="disabled"{{/top_level}}>Delete</a> |
+			<a href="#" class="new">New Sub Account</a> |
+			<a href="#" class="edit" {{#top_level}}disabled="disabled"{{/top_level}}>Edit</a>
+		</span>
+	{{/reserved}}
+	<span class="account-balance {{#negative}}text-red{{/negative}} {{#top_level}}text-bold{{/top_level}}">
+		${{balance}}
+	</span>
+</li>
+{{#has_accounts}}
+	<li class="list-container">
+		<ul>
+			{{#accounts}}
+				{{>accounts_chart_account}}
+			{{/accounts}}
+		</ul>
+	</li>
+{{/has_accounts}}

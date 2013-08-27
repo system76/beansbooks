@@ -1,0 +1,16 @@
+<div class="customer-address" rel="{{id}}">
+	<input type="hidden" class="address1" value="{{address1}}">
+	<input type="hidden" class="address2" value="{{address2}}">
+	<input type="hidden" class="city" value="{{city}}">
+	<input type="hidden" class="state" value="{{state}}">
+	<input type="hidden" class="zip" value="{{zip}}">
+	<input type="hidden" class="country" value="{{country}}">
+	<input type="hidden" class="default-billing" value="{{default_billing}}">
+	<input type="hidden" class="default-shipping" value="{{default_shipping}}">
+	<div>{{address1}} (<a href="#" class="edit">edit</a>)</div>
+	{{#address2}}<div>{{/address2}}{{address2}}{{#address2}}</div>{{/address2}}
+	<div>{{city}}, {{state}} {{zip}}</div>
+	<div>{{country_full}}</div>
+	{{#default_billing}}<div class="default-billing">Default Billing Address</div>{{/default_billing}}
+	{{#default_shipping}}<div class="default-shipping">Default Shipping Address</div>{{/default_shipping}}
+</div>

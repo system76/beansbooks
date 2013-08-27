@@ -1,0 +1,699 @@
+/**
+ * Vendors CSS
+ */
+
+#vendors-purchases-create-status {
+	text-align: right;
+}
+
+#vendors-purchases-create-status a {
+	color: #0e4c10;
+}
+
+#vendors-purchases-create-status a:hover {
+	color: #417741;
+}
+
+.vendors-expenses-actions .float-right {
+	min-width: 150px;
+	margin-left: 10px;
+}
+
+
+span.vendors-expenses-create-form-total-label {
+	display: inline-block;
+	width: 40px;
+	text-align: right;
+}
+span.vendors-expenses-create-form-total-value {
+	display: inline-block;
+	width: 75px;
+	text-align: left;
+}
+
+
+#vendors-expenses-expenses-search {
+	width: 250px;
+}
+
+li.vendor-expense {
+	padding-left: 0;
+}
+
+li.vendor-expense > span {
+	float: left;
+}
+
+li.vendor-expense > span.text-left {
+	text-indent: 5px;
+}
+
+.vendor-expense-vendor {
+	width: 180px;
+}
+
+.vendor-expense-invoice, .vendor-expense-so, .vendor-expense-date, .vendor-expense-check, .vendor-expense-total  {
+	width: 105px;
+}
+
+
+.vendor-expense-actions {
+	width: 217px;
+}
+
+.vendor-expense-actions a {
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.vendor-purchase-actions a:last-child {
+	margin-right: 12px;
+}
+
+
+
+
+/**
+ * Send Invoice
+ */
+
+.vendor-purchase div.checkbox {
+	top: 1px;
+	position: relative;
+}
+
+.vendor-purchase-send-email {
+	width: 330px;
+	text-indent: 5px;
+}
+
+.vendor-purchase-send-email input[type="text"] {
+	width: 200px;
+	height: 19px;
+	margin-top: 0px;
+	margin-left: 5px;
+	line-height: 19px;
+}
+
+.vendor-purchase-send-mail {
+	width: 160px;
+}
+
+.vendor-purchase-send-done {
+	width: 200px;
+}
+
+.vendor-purchase-send-actions {
+	width: 100px;
+	text-align: right;
+	float:right!important;
+}
+
+#vendors-purchases-purchases-search {
+	width: 250px;
+}
+
+.vendor-purchase-send-actions a {
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.vendor-purchase-send-actions a:last-child {
+	margin-right: 5px;
+}
+
+
+li.vendor-vendor {
+	padding-left: 0px;
+}
+
+
+li.vendor-vendor > span {
+	float: left;
+}
+
+li.vendor-vendor > span.text-left {
+	text-indent: 5px;
+}
+
+.vendor-vendor-name, .vendor-vendor-phone, .vendor-vendor-balance {
+	width: 160px;
+}
+
+.vendor-vendor-email {
+	width: 250px;
+}
+
+.vendor-vendor-actions {
+	width: 160px;
+}
+
+#vendors-vendors-create-form-addresses {
+	position: relative;
+	min-height: 30px;
+}
+
+#vendors-vendors-create-form-save {
+	position: absolute;
+	bottom: 5px;
+	right: 1px;
+	width: 70px;
+	text-align: center;
+}
+
+#vendors-vendors-create-form-cancel {
+	position: absolute;
+	bottom: 5px;
+	right: 76px;
+	width: 70px;
+	text-align: center;
+}
+
+.vendors-vendors-create-form-addresses-address {
+	float: left;
+	width: 185px;
+	height: 95px;
+	margin-bottom: 10px;
+	margin-right: 5px;
+}
+
+.vendors-vendors-create-form-addresses-address a.edit {
+	color: #417741;
+}
+
+.vendor-address {
+	float: left;
+	width: 220px;
+	margin-right: 5px;
+	min-height: 70px;
+	font-size: 12px;
+	line-height: 14px;
+	margin-top: 10px;
+}
+
+.vendor-address a.edit {
+	color: #417741;
+}
+
+.vendor-address a.edit:hover {
+	color: #414141;
+}
+
+
+.vendors-vendors-actions .float-right, .vendors-vendor-actions .float-right {
+	min-width: 150px;
+	margin-left: 10px;
+}
+
+li.vendor-payment {
+	padding-left: 0px;
+}
+
+
+li.vendor-payment > span {
+	float: left;
+}
+
+li.vendor-payment > span.text-left {
+	text-indent: 5px;
+}
+
+.vendor-payment-date, .vendor-payment-amount, .vendor-payment-check {
+	width: 160px;
+}
+
+.vendor-payment-amount.text-right {
+	padding-right: 30px;
+}
+
+.vendor-payment-vendor {
+	width: 240px;
+}
+
+.vendor-payment-actions {
+	width: 200px;
+}
+
+
+span.vendors-purchases-create-form-total-label {
+	display: inline-block;
+	width: 40px;
+	text-align: right;
+}
+span.vendors-purchases-create-form-total-value {
+	display: inline-block;
+	width: 75px;
+	text-align: left;
+}
+span.vendors-purchases-create-form-balance-label {
+	display: inline-block;
+	width: 50px;
+	text-align: right;
+}
+span.vendors-purchases-create-form-balance-value {
+	display: inline-block;
+	width: 75px;
+	text-align: left;
+}
+
+
+.vendors-purchases-actions .float-right {
+	min-width: 150px;
+	margin-left: 10px;
+}
+
+li.vendor-purchase {
+	padding-left: 0;
+}
+
+li.vendor-purchase > span {
+	float: left;
+}
+
+li.vendor-purchase > span.text-left {
+	text-indent: 5px;
+}
+
+.vendor-purchase-vendor {
+	width: 170px;
+}
+
+.vendor-purchase-po, .vendor-purchase-so, .vendor-purchase-quote, .vendor-purchase-status {
+	width: 110px;
+}
+
+.vendor-purchase-total {
+	width: 105px;
+}
+
+.vendor-purchase-total.text-right {
+	padding-right: 15px;
+}
+
+
+.vendor-purchase-actions {
+	width: 203px;
+}
+
+.vendor-purchase-actions a {
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.vendor-purchase-actions a:last-child {
+	margin-right: 5px;
+}
+
+li.vendor-payment {
+	padding-left: 0px;
+}
+
+li.vendor-payment > span {
+	float: left;
+}
+
+li.vendor-payment > span.text-left {
+	text-indent: 5px;
+}
+
+li.vendor-payment > span.vendor-payment-date {
+	width: 140px;
+}
+
+li.vendor-payment > span.vendor-payment-vendor {
+	width: 240px;
+}
+
+li.vendor-payment > span.vendor-payment-amount {
+	width: 160px;
+}
+
+li.vendor-payment > span.vendor-payment-check {
+	width: 160px;
+}
+
+li.vendor-payment > span.vendor-payment-actions {
+	width: 220px;
+}
+
+#vendors-payments-payments-search {
+	width: 250px;
+}
+
+#vendors-payments-payments-paging {
+	display: inline-block;
+	margin-left: 1px;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+#vendors-payments-payments-paging a {
+	font-weight: bold;
+}
+
+#vendors-payments-payments {
+	height: 160px;
+}
+
+#vendors-payments-actions a.button {
+	float: left;
+	min-width: 150px;
+	margin-left: 10px;
+}
+
+#vendors-payments-actions span.float-right {
+	width: 570px;
+}
+
+#vendors-payments-create-actions .float-right {
+	min-width: 150px;
+	margin-left: 10px;
+}
+
+#vendors-payments-create-actions-search {
+	width: 250px;
+}
+
+li.vendor-paymentpo {
+	padding-left: 0px;
+}
+
+li.vendor-paymentpo > span {
+	float: left;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+li.vendor-paymentpo > span.text-left {
+	text-indent: 5px;
+}
+
+/** WIDTHS **/
+
+li.vendor-paymentpo > span.vendor-paymentpo-po {
+	width: 135px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-so {
+	width: 105px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-invoice {
+	width: 105px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-date_billed {
+	width: 105px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-numeric.balance {
+	width: 105px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-numeric.amount {
+	width: 105px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-balancewriteoff {
+	width: 130px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-numeric.balancenew {
+	width: 105px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-add {
+	width: 50px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-numeric.text-right {
+	padding-right: 15px;
+}
+
+li.vendor-paymentpo > span > input[type="text"] {
+	width: 100%;
+	height: 19px;
+	line-height: 19px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-numeric > input[type="text"] {
+	text-align: right;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-balancewriteoff {
+	width: 130px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-balancewriteoff > .checkbox {
+	position: relative;
+	top: 1px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-balancewriteoff.text-left {
+	padding-left: 10px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-add {
+	width: 50px;
+}
+
+li.vendor-paymentpo > span.vendor-paymentpo-add > .checkbox {
+	position: relative;
+	top: 1px;
+}
+
+/**
+ * Tax Payments
+ */
+li.vendor-taxpayment {
+	padding-left: 0px;
+}
+
+li.vendor-taxpayment > span {
+	float: left;
+}
+
+li.vendor-taxpayment > span.text-left {
+	text-indent: 5px;
+}
+
+li.vendor-taxpayment > span.vendor-taxpayment-name {
+	width: 150px;
+}
+li.vendor-taxpayment > span.vendor-taxpayment-date {
+	width: 100px;
+}
+
+li.vendor-taxpayment > span.vendor-taxpayment-daterange {
+	width: 200px;
+}
+
+li.vendor-taxpayment > span.vendor-taxpayment-amount {
+	width: 100px;
+}
+
+li.vendor-taxpayment > span.vendor-taxpayment-amount.text-right {
+	padding-right: 15px;
+}
+
+li.vendor-taxpayment > span.vendor-taxpayment-account {
+	width: 200px;
+}
+
+li.vendor-taxpayment > span.vendor-taxpayment-actions {
+	width: 165px;
+	text-align: right;
+}
+
+
+#vendors-taxpayments-payments-search {
+	width: 250px;
+}
+
+#vendors-taxpayments-payments {
+	height: 160px;
+}
+
+#vendors-taxpayments-create > .form{
+	background-image: url('/static/images/curly-right.png');
+	background-repeat: no-repeat;
+	background-position: 290px 140px;
+}
+
+li.vendor-invoice-purchase {
+	padding-left: 0px!important;
+}
+
+li.vendor-invoice-purchase > span {
+	float: left;
+}
+
+li.vendor-invoice-purchase > span.text-left {
+	text-indent: 5px;
+}
+
+li.vendor-invoice-purchase > span > input[type="text"] {
+	width: 100px;
+	height: 19px;
+	line-height: 19px;
+}
+
+li.vendor-invoice-purchase > span > div.select {
+	height: 20px;
+	position: relative;
+	top: 2px;
+	width: 100%;
+}
+
+li.vendor-invoice-purchase > span > .select > select {
+	padding-top: 0px;
+	height: 100%;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-vendor {
+	width: 150px;
+	text-align: left;
+	text-indent: 5px;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-po {
+	width: 80px;
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-so {
+	width: 125px;
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-invoice_number {
+	width: 125px;
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-date_billed {
+	width: 140px;
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-date_billed input[type="text"] {
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-total {
+	width: 125px;
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-invoice_amount {
+	width: 125px;
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-add {
+	width: 50px;
+	text-align: center;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-message {
+	width: 175px;
+	text-align: left;
+	text-indent: 5px;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-difference-description-label {
+	text-indent: 5px;
+	width: 220px;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-difference-description {
+	width: 320px; 
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-difference-description input[type="text"] {
+	width: 100%;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-difference-writeoff-label {
+	width: 111px;
+	text-indent: 5px;
+}
+
+li.vendor-invoice-purchase > span.vendor-invoice-purchase-difference-writeoff {
+	width: 207px;
+}
+
+#vendors-invoices-receive-search {
+	width: 250px;
+}
+
+#vendors-vendors-vendors-search {
+	width: 250px;
+}
+
+#vendors-vendor-payments-search {
+	width: 250px;
+}
+
+/**
+ * Print Checks
+ */
+
+#vendors-printchecks-checks-search {
+	width: 250px;
+}
+
+#vendors-printchecks-checks-paging {
+	display: inline-block;
+	margin-left: 1px;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+#vendors-printchecks-checks-paging a {
+	font-weight: bold;
+}
+
+#vendors-printchecks-checks {
+	height: 160px;
+}
+
+li.vendor-check {
+	padding-left: 0px;
+}
+
+li.vendor-check > span {
+	float: left;
+}
+
+li.vendor-check > span.text-left {
+	text-indent: 5px;
+}
+
+li.vendor-check > span.vendor-check-date {
+	width: 225px;
+}
+
+li.vendor-check > span.vendor-check-vendor {
+	width: 250px;
+}
+
+li.vendor-check > span.vendor-check-amount {
+	width: 150px;
+}
+
+li.vendor-check > span.vendor-check-amount.text-right {
+	padding-right: 30px;
+}
+
+li.vendor-check > span.vendor-check-number {
+	width: 125px;
+}
+
+li.vendor-check > span.vendor-check-actions {
+	width: 170px;
+}
+

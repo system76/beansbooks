@@ -1,0 +1,14 @@
+<div class="vendor-address" rel="{{id}}">
+	<input type="hidden" class="address1" value="{{address1}}">
+	<input type="hidden" class="address2" value="{{address2}}">
+	<input type="hidden" class="city" value="{{city}}">
+	<input type="hidden" class="state" value="{{state}}">
+	<input type="hidden" class="zip" value="{{zip}}">
+	<input type="hidden" class="country" value="{{country}}">
+	<input type="hidden" class="default-remit" value="{{default_remit}}">
+	<div>{{address1}} (<a href="#" class="edit">edit</a>)</div>
+	{{#address2}}<div>{{/address2}}{{address2}}{{#address2}}</div>{{/address2}}
+	<div>{{city}}, {{state}} {{zip}}</div>
+	<div>{{country_full}}</div>
+	{{#default_remit}}<div class="default-remit">Default Remit Address</div>{{/default_remit}}
+</div>

@@ -1,0 +1,18 @@
+<li class="vendor-paymentpo" rel="{{id}}">
+	<input type="hidden" class="remit_address_id" value="{{remit_address_id}}">
+	<span class="vendor-paymentpo-po text-center"><a href="/vendors/purchases/{{id}}">{{purchase_number}}</a>{{^purchase_number}}&nbsp;{{/purchase_number}}</span>
+	<!--
+	<span class="vendor-paymentpo-so text-center"><input type="text" name="purchase-so_number-{{id}}" value="{{so_number}}" readonly="readonly"></span>
+	-->
+	<span class="vendor-paymentpo-invoice text-center"><input type="text" name="purchase-invoice_number-{{id}}" value="{{invoice_number}}" readonly="readonly"></span>
+	<span class="vendor-paymentpo-date_billed text-center"><input type="text" name="purchase-date_billed-{{id}}" value="{{date_billed}}" readonly="readonly"></span>
+	<span class="vendor-paymentpo-numeric balance text-center" rel="{{balance_flipped}}">&nbsp;</span>
+	<span class="vendor-paymentpo-numeric amount text-center"><input type="text" name="purchase-amount-{{id}}" value="{{payment_amount}}" readonly="readonly"></span>
+	<span class="vendor-paymentpo-balancewriteoff text-left hidden">
+		<div class="checkbox manual disabled"><input type="checkbox" disabled="disabled" name="purchase-balance-writeoff-{{id}}" value="{{#writeoff_balance}}{{amount}}{{/writeoff_balance}}{{^writeoff_balance}}0.00{{/writeoff_balance}}"></div> Write-Off
+	</span>
+	<span class="vendor-paymentpo-numeric balancenew text-right">&nbsp;</span>
+	<span class="vendor-paymentpo-add text-right hidden">
+		<div class="checkbox"><input type="checkbox" value="purchase-key" name="{{id}}"></div> Add
+	</span>
+</li>

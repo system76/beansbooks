@@ -1,0 +1,198 @@
+/**
+ * Forms
+ */
+
+.form {
+	background-color: #e8f1e8;
+	padding: 5px 10px;
+	vertical-align: bottom;
+}
+
+.form.form-no-padding {
+	padding: 0px;
+}
+
+.form .row {
+	height: 25px;
+	font-size: 14px;
+	margin: 0px 0px 5px 0px;
+}
+
+.form .row.single {
+	margin: 0px;
+}
+
+.form .row.single.short {
+	padding-top: 5px;
+	padding-left: 5px;
+	height: 30px;
+}
+
+.form .row.short {
+	padding-top: 2px;
+	height: 20px;
+}
+
+.form .row.break {
+	height: 5px;
+	font-size: 1px;
+	border-bottom: 2px solid #b6d2b7;
+}
+
+.form .row.labels {
+	margin: 0px;
+	height: 20px;
+}
+
+.form .row > span {
+	float: left;
+	margin-left: 7px;
+	height: 100%;
+}
+
+.form .row > span.force-right {
+	float: right;
+	margin-right: 7px;
+	margin-left: 0px;
+}
+
+.form .row:after {
+	display: block;
+	content: '';
+	width: 100%;
+	height: 0;
+	clear: both;
+}
+
+.form .row.text-small > span {
+	font-size: 12px;
+}
+
+.form .row > span > input[type="text"], .form .row > span > input[type="password"], .form .row > span > .select , .form .row > span > a, .form .row > span > .select-checkbox, .form .row > span > .select2-container {
+	width: 100%!important;
+}
+
+.form .row > span > .select2-container {
+	font-size: 12px;
+}
+
+/* OR MAYBE NOT? */
+/* NO IDEA WHY WE NEED THIS BUT IT FIXES IT 
+.form .row > span > input[type="text"] {
+	position: relative;
+	top: -1px;
+}*/
+
+.form .row.text-small > span > input[type="text"], .form .row.text-small > span > .select, .form .row.text-small > span > a {
+	height: 20px;
+	line-height: 20px;
+}
+
+.form .row > span.text-small > input[type="text"], .form .row > span.text-small > .select, .form .row > span.text-small > a {
+	height: 20px;
+}
+
+.form .row > span > .checkbox {
+	position: relative;
+	top: 1px;
+}
+
+.form .row > span:first-child {
+	margin-left: 0px;
+}
+
+.form .row > span.force-right:first-child {
+	margin-right: 0px;
+}
+
+.form .row > span.inline-label {
+	padding-top: 3px;
+}
+
+/* XYZXYZ */
+.form .row > span.wrapper {
+	border: 1px solid #b6d2b7;
+}
+
+.form .row > span.wrapper.text-small {
+	padding-top: 4px;
+}
+
+/**
+ * Here is how the columns work.  First, watch this:
+ * http://www.youtube.com/watch?v=9bZkp7q19f0
+ * A row can have either 10, 6, or 4 primary columns - dictated by .column-6 and .column-4, etc.
+ * 
+ */
+
+.form .row.column-6 > span.oop-oop {
+	width: 145px;
+}
+
+.form .row.column-6 > span.oop {
+	width: 69px;
+}
+
+.form .row.column-6 > span.oop-oop-oop {
+	width: 221px;
+}
+
+.form .row.column-6 > span.oppa-gangnam-style {
+	width: 297px;
+}
+
+.form .row.column-6 > span.ehhh-sexy-lady {
+	width: 373px;
+}
+
+.form .row.column-6 > span.sauna-cuddle {
+	width: 449px;
+}
+
+.form .row.column-4 > span.oop-oop {
+	width: 221px;
+}
+
+.form .row.column-4 > span.oop {
+	width: 107px;
+}
+
+.form .row.column-4 > span.oop-oop-oop {
+	width: 335px;
+}
+
+.form .row.column-4 > span.oppa-gangnam-style {
+	width: 449px;
+}
+
+.form .row.column-4 > span.ehhh-sexy-lady {
+	width: 563px;
+}
+
+.form .row.column-10 > span.oop {
+	width: 38px;
+}
+
+.form .row.column-10 > span.oop-oop {
+	width: 84px;
+}
+
+.form .row.column-10 > span.oop-oop-oop {
+	width: 130px;
+}
+
+.form .row.column-10 > span.oppa-gangnam-style {
+	width: 175px;
+}
+
+.form .row.column-10 > span.ehhh-sexy-lady {
+	width: 221px;
+}
+
+.form .row.column-10 > span.yellow-suit-dance-off {
+	width: 312px;
+}
+
+.form .row.column-10 > span.elevator-dance {
+	width: 450px;	
+}

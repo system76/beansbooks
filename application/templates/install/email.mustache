@@ -1,0 +1,66 @@
+<div class="install-process-step">
+	Installation Progress: Step 3 of 5
+</div>
+<div class="clear"></div>
+
+<h3 class="text-center">Email Configuration</h3>
+<div class="clear"></div>
+
+<div class="explanation text-medium bump-down-most">
+	BeansBooks sends sales orders, invoices and purchase orders through email. Currently, only SMTP support is enabled.
+</div>
+
+<form action="" method="POST">
+	<input type="hidden" name="install-step" value="3">
+
+	<div class="explanation form text-medium bump-down-most">
+		<div class="text-medium">Please enter your SMTP server details.</div>
+		
+		<div class="left-right-row bump-down-more">
+			<span class="left">Hostname</span>
+			<span class="right"><input type="text" name="email_hostname" placeholder="i.e. localhost or 192.168.0.1" value=""></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Port</span>
+			<span class="right"><input type="text" name="email_port" placeholder="i.e. 25" value=""></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Username</span>
+			<span class="right"><input type="text" name="email_username" placeholder="" value=""></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Password</span>
+			<span class="right"><input type="password" name="email_password" placeholder="" value=""></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Encryption</span>
+			<span class="right"><div class="select"><select name="email_encryption">
+				<option value="">None</option>
+				<option value="ssl">SSL</option>
+				<option value="tls">TLS</option>
+			</select></div></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Test Email Address</span>
+			<span class="right"><input type="text" name="email_address" placeholder="" value=""></span>
+		</div>
+
+	</div>
+
+	<div class="explanation text-small bump-down-most">
+		<span class="text-bold">Test Email Address?</span> 
+		In order to verify your email server settings, BeansBooks requires a 
+		valid email address that is supported by your email provider. If you don't
+		have one or are sure that your email settings will work, simply leave that 
+		field blank.
+	</div>
+
+	<div class="explanation text-center bump-down-most">
+		<a href="#" class="button process-step">Verify Email Information</a>
+	</div>
+</form>

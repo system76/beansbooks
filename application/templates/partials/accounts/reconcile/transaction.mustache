@@ -1,0 +1,7 @@
+<li class="account-reconcile-transaction" rel="{{transaction_id}}">
+	<span class="account-reconcile-transaction-date text-center">{{date}}</span>
+	<span class="account-reconcile-transaction-number text-center">{{code}}{{^code}}&nbsp;{{/code}}</span>
+	<span class="account-reconcile-transaction-description">{{description}}{{^description}}&nbsp;{{/description}}</span>
+	<span class="account-reconcile-transaction-amount text-right">{{amount_formatted}}</span>
+	<span class="account-reconcile-transaction-include"><div class="checkbox manual"><input type="checkbox" name="include-transaction-{{id}}" rel="{{amount}}"></div></span>
+</li>

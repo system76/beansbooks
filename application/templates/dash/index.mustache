@@ -1,0 +1,251 @@
+<div class="float-left dash-index-column">
+	
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">Cash Position</p>
+
+		<div class="dash-index-chart-cash">
+			{{#report_cash_lines}}
+				<div class="line">
+					<span class="name" style="text-indent: {{indent_level_px}}px;">
+						{{name}}
+					</span>
+					<span class="total">
+						{{{total_formatted}}}{{^total_formatted}}&nbsp;{{/total_formatted}}
+					</span>
+					<span class="amount">
+						{{{amount_formatted}}}{{^amount_formatted}}{{#showzero}}0.00{{/showzero}}{{^showzero}}&nbsp;{{/showzero}}{{/amount_formatted}}
+					</span>
+				</div>
+			{{/report_cash_lines}}
+			<div class="line divider">&nbsp;</div>
+			{{#report_cash_total}}
+				<div class="line">
+					<span class="name">
+						{{name}}
+					</span>
+					<span class="total">
+						{{{total_formatted}}}{{^total_formatted}}&nbsp;{{/total_formatted}}
+					</span>
+					<span class="amount">
+						{{{amount_formatted}}}{{^amount_formatted}}{{#showzero}}0.00{{/showzero}}&nbsp;{{/amount_formatted}}
+					</span>
+				</div>
+			{{/report_cash_total}}
+		</div>
+	
+	</div>
+
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">
+			Income and Expenses by Month 
+			<input type="text" name="date_start" class="dash-index-chart-incomeexpense-date" value="{{incomeexpense_date_start}}">
+			-
+			<input type="text" name="date_end" class="dash-index-chart-incomeexpense-date" value="{{incomeexpense_date_end}}">
+		</p>
+
+		<div class="dash-index-chart-incomeexpense-loading">
+			<div class="dash-index-chart-incomeexpense-loading-spinner">&nbsp;</div>
+			Please wait...
+		</div>
+		<div id="dash-index-chart-incomeexpense">
+			<canvas id="dash-index-chart-incomeexpense-chart" width="420" height="250"></canvas>
+		</div>
+	</div>
+
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">
+			Income Statement Chart 
+			<input type="text" name="date_start" class="dash-index-chart-income-date" value="{{income_date_start}}">
+			-
+			<input type="text" name="date_end" class="dash-index-chart-income-date" value="{{income_date_end}}">
+		</p>
+
+		<div class="dash-index-chart-income-loading">
+			<div class="dash-index-chart-income-loading-spinner">&nbsp;</div>
+			Please wait...
+		</div>
+		<div id="dash-index-chart-income">
+			<canvas id="dash-index-chart-income-chart" width="420" height="250"></canvas>
+		</div>
+	</div>
+
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">Past Due Invoices</p>
+
+		<div class="dash-index-chart-formlist">
+			{{#sales_past_due}}
+				<div class="line {{#odd}}background-white{{/odd}} {{#hidden}}hidden{{/hidden}}">
+					<span class="number"><a href="{{url}}">{{number}}</a></span>
+					<span class="name"><a href="{{url}}">{{name}}</a></span>
+					<span class="amount">{{{amount_formatted}}}</span>
+					<span class="date">{{date}}</span>
+				</div>
+			{{/sales_past_due}}
+			{{#sales_past_due_more}}
+				<div class="line text-center background-white">
+					<a href="#" class="dash-index-show-hidden-lines">Show {{count}} More Items</a>
+				</div>
+			{{/sales_past_due_more}}
+			{{^sales_past_due}}
+				<div class="line background-white text-center">
+					None found.
+				</div>
+			{{/sales_past_due}}
+		</div>
+	</div>
+
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">Unfulfilled Sales Orders Older Than 30 Days</p>
+
+		<div class="dash-index-chart-formlist">
+			{{#sales_not_invoiced}}
+				<div class="line {{#odd}}background-white{{/odd}} {{#hidden}}hidden{{/hidden}}">
+					<span class="number"><a href="{{url}}">{{number}}</a></span>
+					<span class="name"><a href="{{url}}">{{name}}</a></span>
+					<span class="amount">{{{amount_formatted}}}</span>
+					<span class="date">{{date}}</span>
+				</div>
+			{{/sales_not_invoiced}}
+			{{#sales_not_invoiced_more}}
+				<div class="line text-center background-white">
+					<a href="#" class="dash-index-show-hidden-lines">Show {{count}} More Items</a>
+				</div>
+			{{/sales_not_invoiced_more}}
+			{{^sales_not_invoiced}}
+				<div class="line background-white text-center">
+					None found.
+				</div>
+			{{/sales_not_invoiced}}
+		</div>
+	</div>
+
+</div>
+
+<div class="float-right dash-index-column">
+	<!-- RIGHTIES -->
+
+	{{#dash_messages}}
+		{{>dash_message}}
+	{{/dash_messages}}
+	
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">Reports</p>
+
+		<p class="report-link"><a href="/dash/sales">Sales Report</a></p>
+		<p class="report-description">Sales by day, month or year over a period of time.</p>
+
+		<p class="report-link"><a href="/dash/balance">Balance Sheet</a></p>
+		<p class="report-description">A snapshot of your company's financial condition.</p>
+
+		<p class="report-link"><a href="/dash/income">Income Statement</a></p>
+		<p class="report-description">A report displaying your company's income and expenses over a
+		defined amount of time.</p>
+
+		<p class="report-link"><a href="/dash/budget">Budget Detail</a></p>
+		<p class="report-description">Detailed profit and expenses month to month.</p>
+
+		<p class="report-link"><a href="/dash/purchaseorders">Outstanding Purchase Orders</a></p>
+		<p class="report-description">A report detailing purchase orders that have not yet been paid
+		or received as an invoice.</p>
+
+		<p class="report-link"><a href="/dash/payables">Aged Payables</a></p>
+		<p class="report-description">A report summarizing your outstanding accounts payable to all
+		vendors or only a specific vendor.</p>
+
+		<p class="report-link"><a href="/dash/salesorders">Outstanding Sales Orders</a></p>
+		<p class="report-description">A report detailing sales orders that have not been converted
+		to an invoice.</p>
+
+		<p class="report-link"><a href="/dash/receivables">Aged Receivables</a></p>
+		<p class="report-description">A report summarizing your outstanding accounts receivable from
+		all customers or only a specific customer.</p>
+
+		<p class="report-link"><a href="/dash/customer">Income by Customer</a></p>
+		<p class="report-description">Track income per customer.</p>
+
+		<p class="report-link"><a href="/dash/vendor">Cost by Vendor</a></p>
+		<p class="report-description">Track cost per vendor.</p>
+
+		<p class="report-link"><a href="/dash/taxes">Sales Tax</a></p>
+		<p class="report-description">A report of income per tax jurisdiction and tax payable.</p>
+
+		<p class="report-link"><a href="/dash/trial">Trial Balance</a></p>
+		<p class="report-description">View the balance of all accounts on a given day.</p>
+
+		<p class="report-link"><a href="/dash/ledger">General Ledger</a></p>
+		<p class="report-description">View a list of all transactions recorded in a given time period for a specific account.</p>
+
+	</div>
+
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">
+			Monthly Operating Expenses
+		</p>
+		<div class="select dash-index-chart-expenses-date"><select name="date">
+			{{#expenses_months}}
+				<option value="{{value}}">{{label}}</option>
+			{{/expenses_months}}
+		</select></div>
+
+		<div class="dash-index-chart-expenses-loading">
+			<div class="dash-index-chart-expenses-loading-spinner">&nbsp;</div>
+			Please wait...
+		</div>
+		<div id="dash-index-chart-expenses">
+			<canvas id="dash-index-chart-expenses-chart" width="420" height="300"></canvas>
+		</div>
+	</div>
+
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">Past Due Payments</p>
+
+		<div class="dash-index-chart-formlist">
+			{{#purchases_past_due}}
+				<div class="line {{#odd}}background-white{{/odd}} {{#hidden}}hidden{{/hidden}}">
+					<span class="number"><a href="{{url}}">{{number}}</a></span>
+					<span class="name"><a href="{{url}}">{{name}}</a></span>
+					<span class="amount">{{{amount_formatted}}}</span>
+					<span class="date">{{date}}</span>
+				</div>
+			{{/purchases_past_due}}
+			{{#purchases_past_due_more}}
+				<div class="line text-center background-white">
+					<a href="#" class="dash-index-show-hidden-lines">Show {{count}} More Items</a>
+				</div>
+			{{/purchases_past_due_more}}
+			{{^purchases_past_due}}
+				<div class="line background-white text-center">
+					None found.
+				</div>
+			{{/purchases_past_due}}
+		</div>
+	</div>
+
+	<div class="dash-index-chart text-medium">
+		<p class="text-bold">Purchase Orders Past 30 Days Not Invoiced</p>
+
+		<div class="dash-index-chart-formlist">
+			{{#purchases_not_invoiced}}
+				<div class="line {{#odd}}background-white{{/odd}} {{#hidden}}hidden{{/hidden}}">
+					<span class="number"><a href="{{url}}">{{number}}</a></span>
+					<span class="name"><a href="{{url}}">{{name}}</a></span>
+					<span class="amount">{{{amount_formatted}}}</span>
+					<span class="date">{{date}}</span>
+				</div>
+			{{/purchases_not_invoiced}}
+			{{#purchases_not_invoiced_more}}
+				<div class="line text-center background-white">
+					<a href="#" class="dash-index-show-hidden-lines">Show {{count}} More Items</a>
+				</div>
+			{{/purchases_not_invoiced_more}}
+			{{^purchases_not_invoiced}}
+				<div class="line background-white text-center">
+					None found.
+				</div>
+			{{/purchases_not_invoiced}}
+		</div>
+	</div>
+
+</div>
+
+<div class="clear"></div>

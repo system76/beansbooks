@@ -1,0 +1,254 @@
+
+.dash-index-column {
+	width: 460px;
+	margin: 5px 0px;
+}
+
+.dash-index-column > .dash-index-message {
+	background-color: #ffdfb0;
+	padding: 10px 5px 5px 5px;
+	width: 100%;
+	margin: 0px 0px 5px 0px;
+	position: relative;
+}
+
+.dash-index-column > .dash-index-message > .dash-index-message-actions > a {
+	float: right;
+	min-width: 80px;
+	text-align: center;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+.dash-index-column > .dash-index-chart {
+	background-color: #e8f1e8;
+	padding: 10px;
+	width: 100%;
+	margin: 0px 0px 5px 0px;
+	position: relative;
+}
+
+.dash-index-chart p.report-link {
+	padding-left: 15px;
+	margin-top: 5px;
+}
+
+.dash-index-chart p.report-description {
+	padding-left: 30px;
+	padding-right: 10px;
+	font-style: italic;
+}
+
+.form .report-field {
+	float: left;
+	min-width: 100px;
+}
+
+.report-form {
+	margin-bottom: 20px;
+}
+
+.report-form .row {
+	margin-bottom: 0px;
+}
+
+.report-form .report-field input[type="text"] {
+	width: 144px;
+	margin-left: 5px;
+}
+
+.report-form .report-field .checkbox {
+	position: relative;
+	top: 3px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+/**
+ * DASH INDEX CHARTS
+ */
+
+.dash-index-chart-cash {
+	margin: 10px 10px;
+}
+
+.dash-index-chart-cash .line {
+	height: 20px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.dash-index-chart-cash .line .name {
+	float: left;
+	width: 225px;
+}
+
+.dash-index-chart-cash .line .total, .dash-index-chart-cash .line .amount {
+	float: right;
+	width: 95px;
+	text-align: right;
+}
+
+.dash-index-chart-cash .line.divider {
+	height: 5px;
+	border-top: 2px solid #b6d2b7;
+}
+
+.dash-index-chart-incomeexpense-loading {
+	margin-top: 10px;
+	padding: 5px;
+	height: 270px;
+	text-align: center;
+}
+
+.dash-index-chart-incomeexpense-loading-spinner {
+	height: 50px;
+	width: 50px;
+	margin: 100px auto 0 auto;
+	text-align: center;
+	padding-top: 50px;
+}
+
+#dash-index-chart-incomeexpense {
+	padding: 5px; 
+	background:white; 
+	margin-top: 10px;
+	display: none;
+}
+
+#dash-index-chart-incomeexpense-chart {
+	margin: 5px;
+	background: white;
+	display: block;
+}
+
+input.dash-index-chart-incomeexpense-date {
+	width: 75px;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+input.dash-index-chart-incomeexpense-date:first-child {
+	margin-left: 50px;
+}
+
+.dash-index-chart-income-loading {
+	margin-top: 10px;
+	padding: 5px;
+	height: 270px;
+	text-align: center;
+}
+
+.dash-index-chart-income-loading-spinner {
+	height: 50px;
+	width: 50px;
+	margin: 100px auto 0 auto;
+	text-align: center;
+	padding-top: 50px;
+}
+
+#dash-index-chart-income {
+	padding: 5px; 
+	background:white; 
+	margin-top: 10px;
+	display: none;
+}
+
+#dash-index-chart-income-chart {
+	margin: 5px;
+	background: white;
+	display: block;
+}
+
+input.dash-index-chart-income-date {
+	width: 75px;
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+input.dash-index-chart-income-date:first-child {
+	margin-left: 100px;
+}
+
+.dash-index-chart-expenses-loading {
+	margin-top: 10px;
+	padding: 5px;
+	height: 320px;
+	text-align: center;
+}
+
+.dash-index-chart-expenses-loading-spinner {
+	height: 50px;
+	width: 50px;
+	margin: 100px auto 0 auto;
+	text-align: center;
+	padding-top: 50px;
+}
+
+#dash-index-chart-expenses {
+	padding: 5px; 
+	background:white; 
+	margin-top: 10px;
+	display: none;
+}
+
+#dash-index-chart-expenses-chart {
+	margin: 5px;
+	background: white;
+	height: 300px;
+}
+
+.dash-index-chart-expenses-date {
+	width: 150px;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+}
+
+.dash-index-chart-formlist .line {
+	height: 22px;
+	line-height: 22px;
+	padding: 0px 5px;
+	font-size: 12px;
+}
+
+.dash-index-chart-formlist .line > span {
+	float: left;
+	overflow: hidden;
+	height: 20px;
+}
+
+.dash-index-chart-formlist .line .number {
+	width: 65px;
+}
+
+.dash-index-chart-formlist .line .name {
+	width: 185px;
+}
+
+.dash-index-chart-formlist .line .amount {
+	text-align: right;
+	width: 80px;
+}
+
+.dash-index-chart-formlist .line .date {
+	width: 90px;
+	text-align: right;
+}
+
+.dash-index-chart-formlist .line.background-white {
+	background: white;
+}
+
+.dash-index-chart-formlist .line {
+	border: 1px solid #cccccc;
+	border-bottom: none;
+}
+
+.dash-index-chart-formlist {
+	border-bottom: 1px solid #cccccc;
+}
+
+a.dash-report-link-underline {
+	text-decoration: underline;
+}

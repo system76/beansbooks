@@ -1,0 +1,148 @@
+{{{tableopenlandscape}}}
+	<tr style="page-break-before: auto;">
+		<td style="padding-left: 3px; width: 40%; text-align: left; min-height: 50px; padding-bottom: 5px; vertical-align: bottom;">
+			<div style="widows: 100; font-size: 24px; vertical-align: bottom;">
+				{{#companylogo}}
+					{{{companylogo}}}
+				{{/companylogo}}
+				{{^companylogo}}
+					{{#companyname}}
+						{{companyname}}
+					{{/companyname}}
+					{{^companyname}}
+						<span style="font-size: 14px;">No Company Name!<br><span style="font-size: 12px;">Please <a href="/setup" style="font-weight: bold;">click here</a> to setup your company.</span></span>
+					{{/companyname}}
+				{{/companylogo}}
+			</div>
+		</td>
+		<td style="padding-right: 1px; width: 60%; {{fontsizelarge}} text-align: right; min-height: 50px; padding-bottom: 5px; padding-top: 15px;">
+			Budget Detail: {{report_date_start}} - {{report_date_end}}
+		</td>
+	</tr>
+	<tr style="page-break-before: auto;">
+		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="2">&nbsp;</td>
+	</tr>
+	<tr style="page-break-before: auto;">
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="2">&nbsp;</td>
+	</tr>
+{{{tablecloselandscape}}}
+
+{{{tableopenlandscape}}}
+	<tr>
+		<td style="width: 125px; background: {{backgrounddarkgreen}}; color: white; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; font-weight: bold; text-align: left;">
+			Income
+		</td>
+		{{#report_months}}
+			<td style="width: 60px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; line-height: 25px; font-size: 10px; font-weight: bold; text-align: center;">
+				{{label}}{{^label}}&nbsp;{{/label}}
+			</td>
+		{{/report_months}}
+		<td style="width: 90px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; line-height: 25px; font-size: 10px; font-weight: bold; text-align: center;">
+			Total
+		</td>
+	</tr>
+
+	{{#income_accounts}}
+		<tr class="income-line {{#zero}}report-zero{{/zero}}" {{#zero}}style="display:none;"{{/zero}}>
+			<td style="width: 125px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; color: black; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+				{{name}}
+			</td>
+			{{#date_values}}
+				<td style="width: 60px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; border-left: 1px solid {{borderdarkgreen}}; color: black; padding-right: 2px; height: 25px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+					{{{amount_formatted}}}
+				</td>
+			{{/date_values}}
+			<td style="width: 90px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; border-left: 1px solid {{borderdarkgreen}}; color: black; padding-right: 2px; height: 25px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{/income_accounts}}
+
+	{{#income_total}}
+		<tr>
+			<td style="width: 125px; background: {{backgrounddarkgreen}}; color: white; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+				{{name}}
+			</td>
+			{{#date_values}}
+				<td style="width: 60px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; padding-right: 2px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+					{{{amount_formatted}}}
+				</td>
+			{{/date_values}}
+			<td style="width: 90px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; padding-right: 2px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{/income_total}}
+
+	<tr style="page-break-before: auto;">
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="14">&nbsp;</td>
+	</tr>
+
+	<tr>
+		<td style="width: 125px; background: {{backgrounddarkgreen}}; color: white; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; font-weight: bold; text-align: left;">
+			Expenses
+		</td>
+		{{#report_months}}
+			<td style="width: 60px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; line-height: 25px; font-size: 10px; font-weight: bold; text-align: center;">
+				{{label}}{{^label}}&nbsp;{{/label}}
+			</td>
+		{{/report_months}}
+		<td style="width: 90px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; line-height: 25px; font-size: 10px; font-weight: bold; text-align: center;">
+			Total
+		</td>
+	</tr>
+
+	{{#expense_accounts}}
+		<tr class="expense-line {{#zero}}report-zero{{/zero}}" {{#zero}}style="display:none;"{{/zero}}>
+			<td style="width: 125px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; color: black; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+				{{name}}
+			</td>
+			{{#date_values}}
+				<td style="width: 60px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; border-left: 1px solid {{borderdarkgreen}}; color: black; padding-right: 2px; height: 25px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+					{{{amount_formatted}}}
+				</td>
+			{{/date_values}}
+			<td style="width: 90px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; border-left: 1px solid {{borderdarkgreen}}; color: black; padding-right: 2px; height: 25px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{/expense_accounts}}
+
+	{{#expense_total}}
+		<tr>
+			<td style="width: 125px; background: {{backgrounddarkgreen}}; color: white; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+				{{name}}
+			</td>
+			{{#date_values}}
+				<td style="width: 60px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; padding-right: 2px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+					{{{amount_formatted}}}
+				</td>
+			{{/date_values}}
+			<td style="width: 90px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; padding-right: 2px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{/expense_total}}
+
+	<tr style="page-break-before: auto;">
+		<td style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="14">&nbsp;</td>
+	</tr>
+
+	{{#net}}
+		<tr>
+			<td style="width: 125px; background: {{backgrounddarkgreen}}; color: white; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+				{{name}}
+			</td>
+			{{#date_values}}
+				<td style="width: 60px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; padding-right: 2px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+					{{{amount_formatted}}}
+				</td>
+			{{/date_values}}
+			<td style="width: 90px; background: {{backgrounddarkgreen}}; border-left: 1px solid {{borderdarkgreen}}; color: white; height: 25px; padding-right: 2px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{/net}}
+
+{{{tablecloselandscape}}}
+

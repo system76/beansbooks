@@ -1,0 +1,114 @@
+<input type="hidden" id="customers-payments-create-requested_payment_id" value="{{requested_payment_id}}">
+
+<div class="text-medium">
+	<span class="text-bold float-left bump-down">Payment Records</span>
+	<input type="text" class="search float-right" id="customers-payments-payments-search" placeholder="Search Payment Date / Invoice Number">
+	<div class="clear"></div>
+</div>
+
+<div id="customers-payments-payments" class="row-elements row-elements-alternating-colors text-small bump-down">
+	<ul>
+		<li class="text-bold customer-payment">
+			<span class="customer-payment-date text-left">
+				Date<span id="customers-payments-payments-paging">{{#customer_payments_more}}|&nbsp;&nbsp;<a href="#" rel="1">View More &gt;</a>{{/customer_payments_more}}
+					{{^customer_payments_more}}&nbsp;{{/customer_payments_more}}</span>
+			</span>
+			<span class="customer-payment-amount text-center">Payment Amount</span>
+			<span class="customer-payment-account text-center">Deposit Account</span>
+			<span class="customer-payment-actions">&nbsp;</span>
+		</li>
+		{{#customer_payments}}
+			{{>customers_payments_payment}}
+		{{/customer_payments}}
+		{{^customer_payments}}
+			<li class="text-bold customer-payment text-center">No payments found.</li>
+		{{/customer_payments}}
+	</ul>
+</div>
+
+<div id="customers-payments-create">
+	<input type="hidden" name="replace_transaction_id" value="">
+	<div class="text-medium text-bold bump-down-more">Record Payment Received</div>
+
+	<div class="form bump-down">
+		<div class="row labels column-10">
+			<span class="oop-oop-oop">Date</span>
+			<span class="oop-oop-oop">Invoice Total</span>
+			<span class="oop-oop-oop">Payment Amount</span>
+			<span class="oop-oop-oop">Write-Off Total</span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+		</div>
+		
+		<div class="row column-10">
+			<span class="oop-oop-oop"><input type="text" name="date" class="datepicker" value="{{dateYYYYMMDD}}"></span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="sale_total"></span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="amount"></span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="writeoff_amount"></span>
+			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+		</div>
+		
+		<div class="row column-10 labels">
+			<span class="ehhh-sexy-lady">Deposit Account</span>
+			<span class="ehhh-sexy-lady">Write Off Account</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+		</div>
+
+		<div class="row column-10">
+			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="deposit_account_id" {{#payment_deposit_account_default}}rel="{{id}}"{{/payment_deposit_account_default}}>
+				<option value="">&nbsp;</option>
+				{{#payment_deposit_accounts}}
+					{{^reserved}}
+						<option value="{{id}}" {{^deposit}}disabled="disabled"{{/deposit}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/payment_deposit_accounts}}
+			</select></span>
+			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="writeoff_account_id">
+				<option value="">No Write Off</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}" {{^writeoff}}disabled="disabled"{{/writeoff}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></span>
+			<span class="oppa-gangnam-style">&nbsp;</span>
+			<span class="oop-oop customers-payments-create-actions-deleteplaceholder">&nbsp;</span>
+			<span class="oop-oop customers-payments-create-actions-delete" style="display:none;"><a href="#" class="button" id="customers-payments-create-delete">Delete</a></span>
+			<span class="oop-oop"><a href="#" class="button" id="customers-payments-create-cancel">Cancel</a></span>
+			<span class="oop-oop customers-payments-create-actions-edit" style="display:none;"><a href="#" class="button" id="customers-payments-create-edit">Edit</a></span>
+			<span class="oop-oop customers-payments-create-actions-save"><a href="#" class="button" id="customers-payments-create-save">Save</a></span>
+		</div>
+	</div>
+
+	<div id="customers-payments-create-actions" class="bump-down">
+		<input class="search float-right" type="text" id="customers-payments-create-actions-search" value="" placeholder="Search Name / Amount / Date / Number">
+		<!--
+		<a href="#" class="button float-right" id="customers-payments-create-actions-showall" style="display:none;">Show All Sales</a>
+		<a href="#" class="button float-right" id="customers-payments-create-actions-showincluded">Show Included Sales</a>
+		-->
+		<div class="clear"></div>
+	</div>
+
+	<div id="customers-payments-create-sales" class="row-elements row-elements-alternating-colors text-small bump-down">
+		<ul>
+			<li class="customer-batchpayment text-bold">
+				<span class="customer-batchpayment-customer text-left">Invoices</span>
+				<span class="customer-batchpayment-sale text-center">Invoice Number</span>
+				<span class="customer-batchpayment-numeric balance text-center">Balance Due</span>
+				<span class="customer-batchpayment-numeric amount text-center">Amount Paid</span>
+				<span class="customer-batchpayment-balancewriteoff text-center">Write-Off Balance</span>
+				<span class="customer-batchpayment-numeric balancenew text-center">New Balance</span>
+				<span class="customer-batchpayment-add text-right">&nbsp;</span>
+			</li>
+			{{#sales}}
+				{{>customers_payments_batchpaymentform}}
+			{{/sales}}
+		</ul>
+		
+	</div>
+
+</div>
+
+<div class="modal-dialog" id="customers-payments-duplicate-dialog">&nbsp;</div>

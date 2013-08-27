@@ -1,0 +1,50 @@
+<div class="install-process-step">
+	Installation Progress: Step 2 of 5
+</div>
+<div class="clear"></div>
+
+<h3 class="text-center">Database Configuration</h3>
+<div class="clear"></div>
+
+<div class="explanation text-medium bump-down-most">
+	BeansBooks will automatically configure your database. Before proceeding, create your database and database user. 
+	If you need assistance, check the README.md file for step by step database and database user creation instructions.
+</div>
+
+<form action="" method="POST">
+	<input type="hidden" name="install-step" value="2">
+
+	<div class="explanation form text-medium bump-down-most">
+		<div class="text-medium">Please enter your MySQL database details.</div>
+		
+		<div class="left-right-row bump-down-more">
+			<span class="left">Hostname</span>
+			<span class="right"><input type="text" name="database_hostname" placeholder="i.e. localhost or 192.168.0.1:1337" value=""></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Database</span>
+			<span class="right"><input type="text" name="database_database" placeholder="i.e. beans" value=""></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Username</span>
+			<span class="right"><input type="text" name="database_username" placeholder="" value=""></span>
+		</div>
+
+		<div class="left-right-row bump-down-more">
+			<span class="left">Password</span>
+			<span class="right"><input type="password" name="database_password" placeholder="" value=""></span>
+		</div>
+
+	</div>
+
+	<div class="explanation text-small bump-down-most">
+		<span class="text-bold">Database Creation:</span> The README.md file has a section titled &quot;MySQL&quot;
+		that provides instructions on how to create a database and user account for BeansBooks.
+	</div>
+
+	<div class="explanation text-center bump-down-most">
+		<a href="#" class="button process-step">Verify Database Information</a>
+	</div>
+</form>
