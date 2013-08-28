@@ -25,7 +25,7 @@ and install beans there.
     cd ~
     mkdir source
     cd source
-    git clone --recursive https://github.com/system76/beans.git
+    git clone --recursive https://github.com/system76/beansbooks.git
 
 You'll need to update the permissions on two directories before proceeding.
 ** TODO ** Talk about www-data
