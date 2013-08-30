@@ -4,7 +4,7 @@ This BeansBooks Public License (this "Agreement") is a legal agreement that desc
 
 In consideration of the mutual promises and upon the terms and conditions set forth below, the parties agree as follows:
 
-## 1. Grant of Copyright License 
+**1. Grant of Copyright License**
 
 1.1 - Subject to the terms and conditions of this Agreement, System76 hereby grants to You, under any and all of its copyright interest in and to the Software, a royalty-free, non-exclusive, non-transferable license to copy, modify, compile, execute, and distribute the Software and Modifications. For the purposes of this Agreement, any change to, addition to, or abridgement of the Software made by You is a "Modification;" however, any file You add to the Software that does not contain any part of the Software is not a "Modification." 
 
@@ -16,11 +16,11 @@ In consideration of the mutual promises and upon the terms and conditions set fo
 
 1.5 - This Agreement does not limit Your right to distribute files that are entirely Your own work (i.e., which do not incorporate any portion of the Software and are not Modifications) under any terms You choose. 
 
-## 2. Support 
+**2. Support**
 
 System76 has no obligation to provide technical support or updates to You.
 
-## 3. Contributions
+**3. Contributions**
 
 3.1 - A “Contribution” means any work of authorship that is Submitted by You to System76 in which You own or assert ownership of the Copyright. “Submit” means to provide a Contribution to System76 by any form of communication.
 
@@ -30,7 +30,7 @@ System76 has no obligation to provide technical support or updates to You.
 
 3.4 For patent claims related to the Contribution including, without limitation, method, process, and apparatus claims which You own, control or have the right to grant, now or in the future, You grant System76 a perpetual, worldwide, non-exclusive, transferable, royalty-free, irrevocable patent license, with the right to sublicense these rights through multiple tiers of sublicensees, to reproduce, modify, display, perform, sell and distribute the Contribution as part of the Software. Further, you grant end users of the Software a perpetual, worldwide, non-exclusive, royalty-free, irrevocable patent license to use the Contribution.
 
-## 4. All Rights Reserved
+**4. All Rights Reserved**
 
 4.1 - Except for the license expressly granted under copyright in Section 1.1, no rights, licenses or forbearances are granted or may arise in relation to this Agreement whether expressly, by implication, exhaustion, estoppel or otherwise. All rights that are not expressly granted under this Agreement are hereby reserved. 
 
@@ -38,15 +38,15 @@ System76 has no obligation to provide technical support or updates to You.
 
 4.3 - Commercial distribution of the Software requires a trademark license agreement and you may be required to pay. Using the Software within a corporation or entity is not considered commercial distribution. This license does not grant You rights to use any party's name, logo, or trademarks, except solely as necessary to comply with Section 4.2. 
 
-## 5. Disclaimer of Warranties 
+**5. Disclaimer of Warranties**
 
 THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND. SYSTEM76 MAKES NO WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY REGARDING OR RELATING TO THE SOFTWARE. SPECIFICALLY, SYSTEM76 DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR FREE OR WILL PERFORM IN AN UNINTERRUPTED MANNER. TO THE GREATEST EXTENT ALLOWED BY LAW, SYSTEM76 SPECIFICALLY DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE (EVEN IF SYSTEM76 HAD BEEN INFORMED OF SUCH PURPOSE), AND NONINFRINGEMENT WITH RESPECT TO THE SOFTWARE, ANY MODIFICATIONS THERETO AND WITH RESPECT TO THE USE OF THE FOREGOING. 
 
-## 6. Limitation of Liability 
+**6. Limitation of Liability**
 
 IN NO EVENT WILL SYSTEM76 BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES OF ANY KIND (INCLUDING WITHOUT LIMITATION LOSS OF PROFITS, LOSS OF USE, BUSINESS INTERRUPTION, LOSS OF DATA, COST OF COVER) IN CONNECTION WITH OR ARISING OUT OF OR RELATING TO THE FURNISHING, PERFORMANCE OR USE OF THE SOFTWARE OR ANY OTHER RIGHTS GRANTED HEREUNDER, WHETHER ALLEGED AS A BREACH OF CONTRACT OR TORTIOUS CONDUCT, INCLUDING NEGLIGENCE, AND EVEN IF SYSTEM76 HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
 
-## 7. Term and Termination 
+**7. Term and Termination**
 
 7.1 - This Agreement will continue in effect unless and until terminated earlier pursuant to this Section 7. 
 
