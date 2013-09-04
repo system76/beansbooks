@@ -172,6 +172,30 @@ class View_Setup_Settings extends View_Template {
 				'name' => "Renminbi",
 				'symbol' => '¥',
 			),
+			array(
+				'name' => "Romanian Leu",
+				'symbol' => 'RON',
+			),
+			array(
+				'name' => "Hungarian Forint",
+				'symbol' => 'Ft',
+			),
+			array(
+				'name' => "Indian rupee",
+				'symbol' => 'INR',
+			),
+			array(
+				'name' => "Egyptian pound",
+				'symbol' => '£',
+			),
+			array(
+				'name' => "Russian ruble",
+				'symbol' => 'R',
+			),
+			array(
+				'name' => "Swiss Franc",
+				'symbol' => 'Fr',
+			),
 		);
 
 		foreach( $currencies as $index => $currency )
