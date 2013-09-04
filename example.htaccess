@@ -6,7 +6,7 @@ RewriteEngine On
 SetEnv KOHANA_ENV PRODUCTION
 
 # Force SSL
-# Uncomment these two lines if you are testing and would prefer
+# Comment out these two lines if you are testing and would prefer
 # to use regular HTTP.
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
