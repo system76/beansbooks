@@ -191,7 +191,7 @@ support to your web server:
 
 Then go ahead and edit your virtual host to support SSL connections:
 
-    sudo nano /etc/apache2/sites-available/beans
+    sudo nano /etc/apache2/sites-available/beansbooks
 
     <IfModule mod_ssl.c>
         <VirtualHost *:443>
