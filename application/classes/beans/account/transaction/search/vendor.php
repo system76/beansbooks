@@ -104,74 +104,76 @@ class Beans_Account_Transaction_Search_Vendor extends Beans_Account_Transaction_
 				or_where('payment','=','expense')->
 			and_where_close();
 
-		$this->_transactions = $this->_transactions->and_where_open();
-
-		// $this->_search_keywords
-		if( $this->_search_keywords )
+		if( $this->_search_keywords OR $this->_search_date OR $this->_search_check_number )
 		{
-			$forms = ORM::Factory('form')->where('entity_id','=',$this->_search_vendor_id);
-			$query = FALSE;
-			foreach( explode(' ',$this->_search_keywords) as $keyword )
-			{
-				$term = trim($keyword);
+			$this->_transactions = $this->_transactions->and_where_open();
 
-				if( $term )
+			if( $this->_search_keywords )
+			{
+				$forms = ORM::Factory('form')->where('entity_id','=',$this->_search_vendor_id);
+				$query = FALSE;
+				foreach( explode(' ',$this->_search_keywords) as $keyword )
 				{
-					$query = TRUE;
-					$forms = $forms->
-						and_where_open()->
+					$term = trim($keyword);
+
+					if( $term )
+					{
+						$query = TRUE;
+						$forms = $forms->
+							and_where_open()->
 							or_where('code','LIKE','%'.$term.'%')->
 							or_where('reference','LIKE','%'.$term.'%')->
 							or_where('alt_reference','LIKE','%'.$term.'%')->
 							or_where('aux_reference','LIKE','%'.$term.'%')->
-						and_where_close();
+							and_where_close();
+					}
 				}
+				if( $query )
+				{
+					$forms = $forms->find_all();
+				}
+				else
+				{
+					$forms = array();
+				}
+
+				$form_ids = array();
+				foreach( $forms as $form )
+					$form_ids[] = $form->id;
+
+				$account_transactions = ORM::Factory('account_transaction')->join('account_transaction_forms','LEFT')->on('account_transaction_forms.account_transaction_id','=','account_transaction.id');
+				$account_transactions = $account_transactions->where('account_transaction_forms.form_id','IN',$form_ids);
+				$account_transactions = $account_transactions->find_all();
+
+				$transaction_ids = array();
+				foreach( $account_transactions as $account_transaction )
+					$transaction_ids[] = $account_transaction->transaction_id;
+
+				if( $this->_search_and )
+					$this->_transactions = $this->_transactions->where('id','IN',$transaction_ids);
+				else
+					$this->_transactions = $this->_transactions->or_where('id','IN',$transaction_ids);
 			}
-			if( $query )
+
+			if( $this->_search_date )
 			{
-				$forms = $forms->find_all();
-			} 
-			else 
-			{
-				$forms = array();
+				if( $this->_search_and )
+					$this->_transactions = $this->_transactions->where('transaction.date','=',$this->_search_date);
+				else
+					$this->_transactions = $this->_transactions->or_where('transaction.date','=',$this->_search_date);
 			}
 
-			$form_ids = array();
-			foreach( $forms as $form )
-				$form_ids[] = $form->id;
+			if( $this->_search_check_number )
+			{
+				if( $this->_search_and )
+					$this->_transactions = $this->_transactions->where('transaction.reference','LIKE','%'.$this->_search_check_number.'%');
+				else
+					$this->_transactions = $this->_transactions->or_where('transaction.reference','LIKE','%'.$this->_search_check_number.'%');
+			}
 
-			$account_transactions = ORM::Factory('account_transaction')->join('account_transaction_forms','LEFT')->on('account_transaction_forms.account_transaction_id','=','account_transaction.id');
-			$account_transactions = $account_transactions->where('account_transaction_forms.form_id','IN',$form_ids);
-			$account_transactions = $account_transactions->find_all();
-
-			$transaction_ids = array();
-			foreach( $account_transactions as $account_transaction )
-				$transaction_ids[] = $account_transaction->transaction_id;
-
-			if( $this->_search_and )
-				$this->_transactions = $this->_transactions->where('id','IN',$transaction_ids);
-			else 
-				$this->_transactions = $this->_transactions->or_where('id','IN',$transaction_ids);
+			$this->_transactions = $this->_transactions->and_where_close();
 		}
 
-
-		if( $this->_search_date )
-		{
-			if( $this->_search_and )
-				$this->_transactions = $this->_transactions->where('transaction.date','=',$this->_search_date);
-			else
-				$this->_transactions = $this->_transactions->or_where('transaction.date','=',$this->_search_date);
-		}
-
-		if( $this->_search_check_number )
-		{
-			if( $this->_search_and )
-				$this->_transactions = $this->_transactions->where('transaction.reference','LIKE','%'.$this->_search_check_number.'%');
-			else 
-				$this->_transactions = $this->_transactions->or_where('transaction.reference','LIKE','%'.$this->_search_check_number.'%');
-		}
-
-		$this->_transactions = $this->_transactions->and_where_close();
 
 		$result_object = $this->_find_transactions();
 
