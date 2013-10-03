@@ -772,6 +772,8 @@ class Beans_Customer extends Beans {
 		$return_object->number = $payment->code;
 		$return_object->description = $payment->description;
 		$return_object->date = $payment->date;
+		$return_object->type = $payment->type;
+		$return_object->reference = $payment->reference;
 		$return_object->payment = $payment->payment;	// Somewhat redundant.
 		$return_object->amount = 0.00;
 		// $return_object->amount = $payment->amount;

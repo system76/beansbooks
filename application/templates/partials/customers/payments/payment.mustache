@@ -1,5 +1,7 @@
 <li class="customer-payment" rel="{{id}}">
 	<span class="customer-payment-date text-left">{{date}}</span>
+    <span class="customer-payment-type text-center">{{type}}</span>
+    <span class="customer-payment-reference text-center">{{reference}}</span>
 	<span class="customer-payment-amount text-right">{{amount_formatted}}</span>
 	<span class="customer-payment-account text-center">{{#deposit_account}}{{name}}{{/deposit_account}}{{^deposit_account}}&nbsp;{{/deposit_account}}</span>
 	<span class="customer-payment-actions text-right"><a href="#" class="print">Print Payment Report</a> | <a href="/customers/payments/{{id}}" rel="{{id}}" class="view">View</a></span>

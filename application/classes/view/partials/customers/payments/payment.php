@@ -18,7 +18,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 */
 
 
-class View_Partials_Customers_Payments_Payment extends KOstache {
+class View_Partials_Customers_Payments_Payment extends Kostache {
 	// Receives $this->payment
 	
 	public function id()
@@ -53,7 +53,7 @@ class View_Partials_Customers_Payments_Payment extends KOstache {
 		return $this->_deposit_account;
 	}
 
-	protected $_amount = FALSe;
+	protected $_amount = FALSE;
 	public function amount()
 	{
 		if( $this->_amount )
@@ -69,6 +69,21 @@ class View_Partials_Customers_Payments_Payment extends KOstache {
 		$amount = $this->amount();
 
 		return ( $amount > 0 ? '-' : '' ).$this->_company_currency().number_format(abs($amount),2,'.',',');
+	}
+
+	/**
+	 * Get the type of this transaction.
+	 *
+	 * @return string
+	 */
+	public function type()
+	{
+		return ucwords($this->payment->type);
+	}
+
+	public function reference()
+	{
+		return $this->payment->reference;
 	}
 	
 	protected function _customer_payment_deposit_account_array($payment) {

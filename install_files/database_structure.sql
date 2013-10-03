@@ -201,10 +201,14 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `amount` decimal(15,2) DEFAULT NULL,
   `transaction_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `transactions` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- Create the transactions table.
+CREATE TABLE IF NOT EXISTS `transactions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `entity_id` bigint(20) unsigned DEFAULT NULL,
   `code` varchar(255) DEFAULT NULL,
+  `type` enum('cash','check','credit card','transfer','other') DEFAULT 'other',
   `reference` varchar(16) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `date` date DEFAULT NULL,
@@ -212,7 +216,10 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `payment` enum('customer','vendor','expense') DEFAULT NULL,
   `close_books` date DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `users` (
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- Users
+CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) DEFAULT NULL,
   `email` varchar(256) DEFAULT NULL,

@@ -289,7 +289,15 @@ li.customer-payment > span.text-left {
 }
 
 li.customer-payment > span.customer-payment-date {
-	width: 300px;
+	width: 100px;
+}
+
+li.customer-payment > span.customer-payment-type {
+	width: 100px;
+}
+
+li.customer-payment > span.customer-payment-reference {
+	width: 80px;
 }
 
 li.customer-payment > span.customer-payment-amount {
