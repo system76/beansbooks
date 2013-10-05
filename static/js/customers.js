@@ -3050,7 +3050,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					$('#customers-payments-create input[name="date"]').val(data.data.payment.date);
 					$('#customers-payments-create select[name="type"]').select2('data',{
 						id: data.data.payment.type,
-						text: ucwords(data.data.payment.type)
+						text: data.data.payment.type ? ucwords(data.data.payment.type) : ''
 					});
 					$('#customers-payments-create input[name="reference"]').val(data.data.payment.reference);
 					$('#customers-payments-create input[name="sale_total"]').val(data.data.payment.amount);
