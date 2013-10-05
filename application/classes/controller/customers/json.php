@@ -1215,11 +1215,13 @@ class Controller_Customers_Json extends Controller_Json {
 			}
 
 			$customer_payment_create = new Beans_Customer_Payment_Create($this->_beans_data_auth((object)array(
-				'date' => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
-				'amount' => $this->request->post('amount'),
-				'deposit_account_id' => $this->request->post('deposit_account_id'),
+				'date'                => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
+				'amount'              => $this->request->post('amount'),
+				'type'                => $this->request->post('type'),
+				'reference'           => $this->request->post('reference'),
+				'deposit_account_id'  => $this->request->post('deposit_account_id'),
 				'writeoff_account_id' => $this->request->post('writeoff_account_id'),
-				'sales' => $sales,
+				'sales'               => $sales,
 			)));
 
 			$customer_payment_create_result = $customer_payment_create->execute();
