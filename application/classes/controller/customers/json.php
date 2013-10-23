@@ -1215,11 +1215,13 @@ class Controller_Customers_Json extends Controller_Json {
 			}
 
 			$customer_payment_create = new Beans_Customer_Payment_Create($this->_beans_data_auth((object)array(
-				'date' => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
-				'amount' => $this->request->post('amount'),
-				'deposit_account_id' => $this->request->post('deposit_account_id'),
+				'date'                => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
+				'amount'              => $this->request->post('amount'),
+				'type'                => $this->request->post('type'),
+				'reference'           => $this->request->post('reference'),
+				'deposit_account_id'  => $this->request->post('deposit_account_id'),
 				'writeoff_account_id' => $this->request->post('writeoff_account_id'),
-				'sales' => $sales,
+				'sales'               => $sales,
 			)));
 
 			$customer_payment_create_result = $customer_payment_create->execute();
@@ -1283,13 +1285,17 @@ class Controller_Customers_Json extends Controller_Json {
 
 		$sales = array();
 		foreach( $this->request->post() as $key => $value )
+		{
 			if( $value == "sale-key" )
+			{
 				$sales[] = (object)array(
 					'sale_id' => $key,
 					'amount' => $this->request->post('sale-amount-'.$key),
 					'writeoff_balance' => ( $this->request->post('sale-balance-writeoff-'.$key) ) ? TRUE : FALSE,
 					'writeoff_amount' => $this->request->post('sale-balance-writeoff-'.$key),
 				);
+			}
+		}
 
 		// This is the payment we end up creating.
 		$payment = FALSE;
@@ -1298,12 +1304,14 @@ class Controller_Customers_Json extends Controller_Json {
 			$this->request->post('replace_transaction_id') != "new" )
 		{
 			$customer_payment_replace_data = (object)array(
-				'transaction_id' => $this->request->post('replace_transaction_id'),
-				'date' => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
-				'amount' => $this->request->post('amount'),
-				'deposit_account_id' => $this->request->post('deposit_account_id'),
+				'transaction_id'      => $this->request->post('replace_transaction_id'),
+				'date'                => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
+				'type'                => $this->request->post('type'),
+				'reference'           => $this->request->post('reference'),
+				'amount'              => $this->request->post('amount'),
+				'deposit_account_id'  => $this->request->post('deposit_account_id'),
 				'writeoff_account_id' => $this->request->post('writeoff_account_id'),
-				'sales' => $sales,
+				'sales'               => $sales,
 			);
 
 			// VALIDATE
@@ -1388,12 +1396,14 @@ class Controller_Customers_Json extends Controller_Json {
 			}
 
 			$customer_payment_update = new Beans_Customer_Payment_Update($this->_beans_data_auth((object)array(
-				'id' => $payment_id,
-				'date' => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
-				'amount' => $this->request->post('amount'),
-				'deposit_account_id' => $this->request->post('deposit_account_id'),
+				'id'                  => $payment_id,
+				'date'                => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
+				'type'                => $this->request->post('type'),
+				'reference'           => $this->request->post('reference'),
+				'amount'              => $this->request->post('amount'),
+				'deposit_account_id'  => $this->request->post('deposit_account_id'),
 				'writeoff_account_id' => $this->request->post('writeoff_account_id'),
-				'sales' => $sales,
+				'sales'               => $sales,
 			)));
 
 			$customer_payment_update_result = $customer_payment_update->execute();

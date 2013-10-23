@@ -72,10 +72,12 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		$payment_object = $this->_return_customer_payment_element($this->_payment);
 
 		$create_transaction_data = new stdClass;
-		$create_transaction_data->code = $this->_payment->reference;
+		$create_transaction_data->code        = $this->_payment->reference;
 		$create_transaction_data->description = $this->_payment->description;
-		$create_transaction_data->date = $this->_payment->date;
-		$create_transaction_data->payment = "customer";
+		$create_transaction_data->date        = $this->_payment->date;
+		$create_transaction_data->type        = $this->_payment->type;
+		$create_transaction_data->reference   = $this->_payment->reference;
+		$create_transaction_data->payment     = "customer";
 		
 		// Array of IDs for sales to have their invoices updated.
 		$sales_invoice_update = array();

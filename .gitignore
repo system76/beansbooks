@@ -1,0 +1,35 @@
+
+# Skip the netbeans project directory, this is developer centric
+/nbproject
+
+# Skip the htaccess file, this is server centric
+/.htaccess
+
+# Skip the configuration file, this is developer and server centric
+/application/classes/beans/config.php
+
+# Skip some Apple directories, these is machine centric
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Temp files created by gedit, (or something...)
+*~
+*.swp
+
+# Skip some additional PhpStorm metafiles.  These are all project centric
+# I need to explicitly list the files to ignore in this directory because ONE needs to be included,
+# codeStyleSettings.xml is extremely useful for ensuring that additional installations of phpStorm play nicely.
+/.idea/.*
+/.idea/*.iml
+/.idea/*/
+/.idea/encodings.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
+/.idea/dataSources.ids
+/.idea/dataSources.xml
+/.idea/sqldialects.xml

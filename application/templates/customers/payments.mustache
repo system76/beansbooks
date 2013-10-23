@@ -13,6 +13,8 @@
 				Date<span id="customers-payments-payments-paging">{{#customer_payments_more}}|&nbsp;&nbsp;<a href="#" rel="1">View More &gt;</a>{{/customer_payments_more}}
 					{{^customer_payments_more}}&nbsp;{{/customer_payments_more}}</span>
 			</span>
+            <span class="customer-payment-type text-center">Payment Type</span>
+            <span class="customer-payment-reference text-center">Ref #</span>
 			<span class="customer-payment-amount text-center">Payment Amount</span>
 			<span class="customer-payment-account text-center">Deposit Account</span>
 			<span class="customer-payment-actions">&nbsp;</span>
@@ -33,20 +35,29 @@
 	<div class="form bump-down">
 		<div class="row labels column-10">
 			<span class="oop-oop-oop">Date</span>
+            <span class="oop-oop-oop">Payment Type</span>
+            <span class="oop-oop-oop">Payment Ref #</span>
 			<span class="oop-oop-oop">Invoice Total</span>
 			<span class="oop-oop-oop">Payment Amount</span>
 			<span class="oop-oop-oop">Write-Off Total</span>
-			<span class="oop-oop-oop">&nbsp;</span>
-			<span class="ehhh-sexy-lady">&nbsp;</span>
 		</div>
 		
 		<div class="row column-10">
 			<span class="oop-oop-oop"><input type="text" name="date" class="datepicker" value="{{dateYYYYMMDD}}"></span>
+            <span class="oop-oop-oop">
+                <select class="account-dropdown" name="type">
+                    <option value="">&nbsp;</option>
+                    <option value="cash">Cash</option>
+                    <option value="check">Check</option>
+                    <option value="credit card">Credit Card</option>
+                    <option value="transfer">Transfer</option>
+                    <option value="other">Other</option>
+                </select>
+            </span>
+            <span class="oop-oop-oop"><input type="text" name="reference"></span>
 			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="sale_total"></span>
 			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="amount"></span>
 			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="writeoff_amount"></span>
-			<span class="oop-oop-oop">&nbsp;</span>
-			<span class="ehhh-sexy-lady">&nbsp;</span>
 		</div>
 		
 		<div class="row column-10 labels">

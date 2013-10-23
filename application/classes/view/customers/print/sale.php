@@ -20,6 +20,13 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class View_Customers_Print_Sale extends View_Print {
 
+	/** @var bool|array Cache of line items on this sale */
+	protected $_sale_lines = FALSE;
+	/** @var bool|array Cache of taxes on this sale */
+	protected $_sale_taxes = FALSE;
+	/** @var bool|array Cache of payments on this sale */
+	protected $_payment_lines = FALSE;
+
 	// Receives $this->sale
 
 	public function invoiced()
@@ -106,6 +113,26 @@ class View_Customers_Print_Sale extends View_Print {
 
 		return ( $this->sale->total < 0 ? '-' : '' ).$beans_settings->company_currency.number_format(abs($this->sale->total),2,'.',',');
 	}
+
+	/**
+	 * Return the balance left on this sale formatted with the correct currency settings.
+	 *
+	 * Used directly in the template
+	 * @see application/templates/customers/print/sale.mustache
+	 *
+	 * @return string
+	 */
+	public function sale_total_balance_formatted()
+	{
+		$beans_settings = parent::beans_settings();
+
+		// Balance is going to be inverse;
+		// if it's $-13.50, that means that the customer still owes $13.50.
+		// Since this is used on a form to be used by their perspective, it'll be positive.
+		$balance = 0 - $this->sale->balance;
+
+		return ( $balance < 0 ? '-' : '' ).$beans_settings->company_currency.number_format(abs($balance),2,'.',',');
+	}
 	
 	public function sale_date_due_formatted()
 	{
@@ -117,7 +144,12 @@ class View_Customers_Print_Sale extends View_Print {
 		return date("F j, Y",strtotime($this->sale->date_billed));
 	}
 
-	protected $_sale_lines = FALSE;
+
+	/**
+	 * Return an array of the sale lines on this sale or false if it doesn't have any.
+	 *
+	 * @return array|bool
+	 */
 	public function sale_lines()
 	{
 		if( $this->_sale_lines ) 
@@ -139,6 +171,36 @@ class View_Customers_Print_Sale extends View_Print {
 		
 		return $this->_sale_lines;
 	}
+
+	public function payment_lines()
+	{
+		// Already been cached, I can simply return that cache instead of running through the full process.
+		if($this->_payment_lines) return $this->_payment_lines;
+
+		$this->_payment_lines = array();
+
+		$beans_settings = parent::beans_settings();
+
+		$i = 0;
+		foreach( $this->sale->payments as $payment )
+		{
+			$this->_payment_lines[] = array(
+				'odd'            => ( $i++ % 2 == 0 ? TRUE : FALSE ),
+				'date_formatted' => date("F j, Y",strtotime($payment->date)),
+				'type'           => ucwords($payment->type),
+				'reference'      => $payment->reference,
+				'price_formatted' => ( $payment->amount < 0 ? '-' : '' ).$beans_settings->company_currency.number_format(abs($payment->amount),2,'.',','),
+			);
+		}
+
+		return $this->_payment_lines;
+	}
+
+	public function has_payments()
+	{
+		return sizeof($this->payment_lines()) > 0;
+	}
+
 	
 	public function total_formatted()
 	{
@@ -159,7 +221,7 @@ class View_Customers_Print_Sale extends View_Print {
 		return ( $this->sale->subtotal < 0 ? '-' : '' ).$beans_settings->company_currency.number_format(abs($this->sale->subtotal),2,'.',',');
 	}
 
-	protected $_sale_taxes = FALSE;
+
 	public function sale_taxes()
 	{
 		if( $this->_sale_taxes )

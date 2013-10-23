@@ -493,6 +493,8 @@ hr {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	/* This is to prevent floated empty spans from collapsing. */
+	height: 2em;
 }
 
 /* Row background colors */
