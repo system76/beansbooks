@@ -6,7 +6,7 @@ to take advantage of the same open source ecosystem that many of us were
 already using for the rest of our software stack.  With that in mind, 
 BeansBooks public development will be done in public in the hope that many 
 other developers will join in contributing to this project to support the 
-many businesses and organizations that will benefit from it's progress.
+many businesses and organizations that will benefit from its progress.
 
 ## Getting Started
 
