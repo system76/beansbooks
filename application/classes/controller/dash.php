@@ -612,10 +612,10 @@ class Controller_Dash extends Controller_View {
 		if( ! $account_transaction_search_result->success OR 
 			! count($account_transaction_search_result->data->transactions) )
 			return array();
-
+		
 		// Check if already closed.
 		$account_transaction_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
-			'close_books' => $fye_date,
+			'close_books' => substr($fye_date,0,7).'-00',
 			'page_size' => 1,
 		)));
 		$account_transaction_search_result = $account_transaction_search->execute();
