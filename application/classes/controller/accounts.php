@@ -176,6 +176,20 @@ class Controller_Accounts extends Controller_View {
 		}
 	}
 
+	public function action_calibrate()
+	{
+		$account_id = $this->request->param('id');
+
+		$account_calibrate = new Beans_Account_Calibrate($this->_beans_data_auth((object)array('id' => $account_id)));
+		$account_calibrate_result = $account_calibrate->execute();
+
+		if( $this->_beans_result_check($account_calibrate_result) )
+		{
+			$this->_view->account_calibrate_result = $account_calibrate_result;
+		}
+
+	}
+
 	public function action_view()
 	{
 		$account_id = $this->request->param('id');
