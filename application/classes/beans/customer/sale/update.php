@@ -271,6 +271,13 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			$sale_line->delete();
 		}
 
+		// Reverse current taxes if billed.
+		if( $this->_sale->date_billed )
+		{
+			foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
+				$this->_tax_adjust_balance($sale_tax->tax_id,( -1 * $sale_tax->total) );
+		}
+
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
 			$sale_tax->delete();
 		
