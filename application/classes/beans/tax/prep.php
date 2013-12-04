@@ -29,15 +29,15 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required date_end STRING Inclusive YYYY-MM-DD date ( i.e. <= date_end )
 @optional payment_id INTEGER The ID of a #Beans_Tax_Payment# to ignore when tabulating totals.  Useful if updating a previous payment.
 @returns tax_prep OBJECT An object with information regarding the tax payment for that time period.
-@returns @attribute tax_collected DECIMAL Total amount of tax collected.
-@returns @attribute total_sales DECIMAL Total sales for that time period on applied taxes.
-@returns @attribute taxable_sales DECIMAL The amount of taxable sales for that time period on that tax.
-@returns @attribute tax_returned DECIMAL Amount of taxes returned for refunds.
-@returns @attribute total_returns DECIMAL Total returned.
-@returns @attribute taxable_returns DECIMAL The taxable total returned.
-@returns @attribute tax_payments ARRAY An array of #Beans_Tax_Payment# that occurred for periods within that time period.
-@returns @attribute tax_payments_total DECIMAL Total tax remitted for periods within that time period.
-@returns @attribute tax OBJECT The applicable #Beans_Tax#.
+@returns @attribute tax_prep tax_collected DECIMAL Total amount of tax collected.
+@returns @attribute tax_prep total_sales DECIMAL Total sales for that time period on applied taxes.
+@returns @attribute tax_prep taxable_sales DECIMAL The amount of taxable sales for that time period on that tax.
+@returns @attribute tax_prep tax_returned DECIMAL Amount of taxes returned for refunds.
+@returns @attribute tax_prep total_returns DECIMAL Total returned.
+@returns @attribute tax_prep taxable_returns DECIMAL The taxable total returned.
+@returns @attribute tax_prep tax_payments ARRAY An array of #Beans_Tax_Payment# that occurred for periods within that time period.
+@returns @attribute tax_prep tax_payments_total DECIMAL Total tax remitted for periods within that time period.
+@returns @attribute tax_prep tax OBJECT The applicable #Beans_Tax#.
 ---BEANSENDSPEC---
 */
 class Beans_Tax_Prep extends Beans_Tax {

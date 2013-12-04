@@ -26,6 +26,14 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_expiration
 @required id The id of the #Beans_Account# to calibrate.
 @returns account The #Beans_Account# that was requested.
+@returns calibrated_balance_shift The amount that the entire account was shifted by.
+@returns calibrated_transactions An array of all transactions in the journal including a previous and calibrated balance.
+@returns @attribute calibrated_transactions id The ID of the #Beans_Account_Transaction#
+@returns @attribute calibrated_transactions date The date of the transaction
+@returns @attribute calibrated_transactions transaction_id The ID of the parent #Beans_Transaction#
+@returns @attribute calibrated_transactions amount The transaction amount
+@returns @attribute calibrated_transactions balance The previous balance
+@returns @attribute calibrated_transactions calibrated_balance The new balance
 ---BEANSENDSPEC---
 */
 class Beans_Account_Calibrate extends Beans_Account {
@@ -53,7 +61,7 @@ class Beans_Account_Calibrate extends Beans_Account {
 		$previous_balance = 0.00;
 		$calibrated_balance = 0.00;
 		$calibrated_balance_shift = 0.00;
-		
+
 		$calibrated_transactions = array();
 
 		// Look up all transactions in order.
