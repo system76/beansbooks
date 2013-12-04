@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans {
 
-	protected $_BEANS_VERSION = '1.0.0';
+	protected $_BEANS_VERSION = '1.0.1';
 
 	private $_beans_settings;
 	private $_beans_config;
@@ -99,7 +99,8 @@ class Beans {
 				throw new Beans_Auth_Exception($this->_auth_error);
 
 			if( $this->_BEANS_VERSION != $this->_get_current_beans_version() &&
-				strpos(strtolower(get_called_class()),'beans_setup_update') === FALSE )
+				strpos(strtolower(get_called_class()),'beans_setup_update') === FALSE &&
+				strpos(strtolower(get_called_class()),'beans_setup_init') === FALSE )
 				throw new Beans_Setup_Exception('BeansBooks must be updated before any further action.');
 
 			$data = $this->_execute();
@@ -374,11 +375,8 @@ class Beans {
 
 			$user = new stdClass;
 			$user->role = new stdClass;
-			$user->role->UPDATE = "UPDATE";
-			$user->role->setup = TRUE;			// V2Item - Replace these with a global install permission?
-			$user->role->account_read = TRUE;	// 
-			$user->role->account_write = TRUE;	// 
-
+			$user->role->UPDATE = TRUE;
+			
 			return $user;
 		}
 

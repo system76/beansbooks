@@ -19,6 +19,8 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans_Setup_Update extends Beans_Setup {
 
+	protected $_auth_role_perm = "UPDATE";
+
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
