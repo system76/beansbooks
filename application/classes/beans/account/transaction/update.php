@@ -203,6 +203,10 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 											   ? TRUE
 											   : FALSE;
 
+			// TODO - If we ever allow updating close books transactions, 
+			// then add that above for $this->_new_transaction and add the proper logic here.
+			$new_account_transaction->close_books = ( $account_transaction->close_books ) ? TRUE : FALSE;
+
 			$this->_validate_account_transaction($new_account_transaction);
 
 			$transaction_balance = $this->_beans_round(($transaction_balance + $new_account_transaction->amount));

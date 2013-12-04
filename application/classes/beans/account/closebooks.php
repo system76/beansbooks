@@ -128,22 +128,30 @@ class Beans_Account_Closebooks extends Beans_Account {
 	}
 
 	// DUPLICATE FROM class Beans_Report ( beans/report.php )
-	protected function _generate_simple_account_balance($account_id,$date_end,$date_start = FALSE)
+	protected function _generate_simple_account_balance($account_id,$table_sign,$date_end,$date_start = FALSE)
 	{
 		$balance = 0.00;
-		$balance_rows = DB::Query(Database::SELECT,'SELECT account_transactions.balance as balance, transactions.date as date FROM account_transactions RIGHT JOIN transactions ON account_transactions.transaction_id = transactions.id WHERE account_transactions.account_id = "'.$account_id.'" AND transactions.date <= DATE("'.$date_end.'") ORDER BY transactions.date DESC, transactions.id DESC LIMIT 1')->execute()->as_array();
-
+		$balance_rows = DB::Query(Database::SELECT,
+			' SELECT balance,date FROM account_transactions '.
+			' WHERE account_id = "'.$account_id.'" AND `date` <= DATE("'.$date_end.'") '.
+			' ORDER BY `date` DESC, close_books ASC, transaction_id DESC LIMIT 1'
+		)->execute()->as_array();
+			
 		if( count($balance_rows) != 0 )
-			$balance = $this->_beans_round( $balance + ( $balance_rows[0]['balance'] ) );
+			$balance = $this->_beans_round( $balance + ( $balance_rows[0]['balance'] * $table_sign ) );
 
 		if( $balance !== NULL AND
 			$date_start )
 		{
-			$balance_rows = DB::Query(Database::SELECT,'SELECT account_transactions.balance as balance, transactions.date as date FROM account_transactions RIGHT JOIN transactions ON account_transactions.transaction_id = transactions.id WHERE account_transactions.account_id = "'.$account_id.'" AND transactions.date < DATE("'.$date_start.'") ORDER BY transactions.date DESC, transactions.id DESC LIMIT 1')->execute()->as_array();
+			$balance_rows = DB::Query(Database::SELECT,
+				' SELECT balance,date FROM account_transactions '.
+				' WHERE account_id = "'.$account_id.'" AND `date` < DATE("'.$date_end.'") '.
+				' ORDER BY `date` ASC, close_books DESC, transaction_id ASC LIMIT 1'
+			)->execute()->as_array();
 
 			// If we find no rows - then we would subtract 0.00 
 			if( count($balance_rows) != 0 )
-				$balance = $this->_beans_round( $balance - ( $balance_rows[0]['balance'] ) );
+				$balance = $this->_beans_round( $balance - ( $balance_rows[0]['balance'] * $table_sign ) );
 
 		}
 

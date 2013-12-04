@@ -65,7 +65,7 @@ class Beans_Account_Calibrate extends Beans_Account {
 		$calibrated_transactions = array();
 
 		// Look up all transactions in order.
-		$account_transactions = DB::Query(Database::SELECT,'SELECT id,date,transaction_id,amount,balance FROM account_transactions WHERE account_id = "'.$this->_account->id.'" ORDER BY date ASC, transaction_id ASC')->execute()->as_array();
+		$account_transactions = DB::Query(Database::SELECT,'SELECT id,date,transaction_id,amount,balance FROM account_transactions WHERE account_id = "'.$this->_account->id.'" ORDER BY date ASC, close_books DESC, transaction_id ASC')->execute()->as_array();
 
 		foreach( $account_transactions as $account_transaction )
 		{
