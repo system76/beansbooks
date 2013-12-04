@@ -86,6 +86,9 @@ class Beans_Setup_Init extends Beans_Setup {
 			foreach( $default_setting as $key => $value )
 				$setting->{$key} = $value;
 
+			// Add Beans Version
+			$setting->BEANS_VERSION = $this->_BEANS_VERSION;
+
 			$setting->save();
 		}
 

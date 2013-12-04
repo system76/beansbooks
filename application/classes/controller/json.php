@@ -94,6 +94,9 @@ class Controller_Json extends Controller {
 			if( isset($result->auth_error) AND
 				strlen($result->auth_error) )
 				return $result->auth_error;
+			else if( isset($result->config_error) AND
+				strlen($result->config_error) )
+				return $result->config_error;
 			else
 				return $result->error;
 		}

@@ -19,6 +19,8 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans {
 
+	protected $_BEANS_VERSION = '1.0.0';
+
 	private $_beans_settings;
 	private $_beans_config;
 	protected $_sha_hash;
@@ -95,6 +97,10 @@ class Beans {
 
 			if( $this->_auth_error )
 				throw new Beans_Auth_Exception($this->_auth_error);
+
+			if( $this->_BEANS_VERSION != $this->_get_current_beans_version() &&
+				strpos(strtolower(get_called_class()),'beans_setup_update') === FALSE )
+				throw new Beans_Setup_Exception('BeansBooks must be updated before any further action.');
 
 			$data = $this->_execute();
 
@@ -188,6 +194,25 @@ class Beans {
 			throw new Exception($result->error);
 
 		throw new Exception("An unknown and unhandled error occurred.");
+	}
+
+	protected function _get_current_beans_version()
+	{
+		// Just to make sure this isn't called before settings are loaded.
+		if( ! isset($this->_beans_settings) ||
+			! isset($this->_beans_settings->LOCAL) )
+			return FALSE;
+
+		$version = $this->_beans_setting_get('BEANS_VERSION');
+
+		if( ! $version )
+		{
+			$version = '1.0.0';
+			$this->_beans_setting_set('BEANS_VERSION','1.0.0');
+			$this->_beans_settings_save();
+		}
+
+		return $version;
 	}
 
 	// V2Item - Cache these settings in memory using APC or something similar.
@@ -330,6 +355,26 @@ class Beans {
 			$user = new stdClass;
 			$user->role = new stdClass;
 			$user->role->INSTALL = "INSTALL";
+			$user->role->setup = TRUE;			// V2Item - Replace these with a global install permission?
+			$user->role->account_read = TRUE;	// 
+			$user->role->account_write = TRUE;	// 
+
+			return $user;
+		}
+
+		// If we're updating, there is a single use case in which we grant access.
+		if( $data->auth_uid === "UPDATE" AND 
+			$data->auth_key === "UPDATE" AND 
+			$data->auth_expiration === "UPDATE" AND 
+			strpos(strtolower(get_called_class()),'beans_setup_update') !== FALSE )
+		{
+			$this->_cache_auth_uid = $data->auth_uid;
+			$this->_cache_auth_key = $data->auth_key;
+			$this->_cache_auth_expiration = $data->auth_expiration;
+
+			$user = new stdClass;
+			$user->role = new stdClass;
+			$user->role->UPDATE = "UPDATE";
 			$user->role->setup = TRUE;			// V2Item - Replace these with a global install permission?
 			$user->role->account_read = TRUE;	// 
 			$user->role->account_write = TRUE;	// 
