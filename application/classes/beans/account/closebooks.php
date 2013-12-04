@@ -96,9 +96,14 @@ class Beans_Account_Closebooks extends Beans_Account {
 
 		foreach( $accounts as $account )
 		{
-			if( strtolower($account->account_type->type) == "income" OR 
-				strtolower($account->account_type->type) == "cost of goods sold" OR 
-				strtolower($account->account_type->type) == "expense" )
+			if( (
+					strtolower($account->account_type->type) == "income" OR 
+					strtolower($account->account_type->type) == "cost of goods sold" OR 
+					strtolower($account->account_type->type) == "expense" 
+				) AND
+				(
+					strpos($account->account_type->code, 'pending_') === FALSE
+				) )
 			{
 				$balance = $this->_generate_simple_account_balance($account->id,$balance_report_date);
 				if( $balance != 0.00 )
