@@ -206,37 +206,35 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 											 ? 'Payment '.$this->_transaction->code
 											 : 'Transaction '.$this->_transaction->code;
 		
-		// LOCK TABLE
-		DB::query(NULL, 'START TRANSACTION')->execute();
 
-		$this->_transaction->save();
-		
-		foreach( $this->_account_transactions as $_account_transaction )
+		foreach( $this->_account_transactions as $i => $_account_transaction )
 		{
-			$_account_transaction->balance = NULL;
-			$_account_transaction->transaction_id = $this->_transaction->id;
-			$_account_transaction->save();
-			
-			$this->_account_balance_new_transaction($_account_transaction);
-		}
-		
-		foreach( $this->_account_transactions as $j => $account_transaction )
-		{
-			foreach( $this->_account_transactions_forms[$j] as $account_transaction_form )
+			$this->_account_transactions[$i]->transaction_id = $this->_transaction->id;
+
+			// Insert transaction and save ID.
+			$this->_account_transactions[$i]->id = $this->_account_transaction_insert($_account_transaction);
+
+			// Add forms to account transaction.
+			foreach( $this->_account_transactions_forms[$i] as $account_transaction_form )
 			{
-				$account_transaction_form->account_transaction_id = $account_transaction->id;
+				$account_transaction_form->account_transaction_id = $_account_transaction->id;
 				$account_transaction_form->save();
 			}
 		}
 
-		// Update form balances.
+		$update_form_ids = array();
+
 		foreach( $this->_account_transactions as $j => $account_transaction )
+		{
 			foreach( $this->_account_transactions_forms[$j] as $account_transaction_form )
-				$this->_form_balance_calibrate($account_transaction_form->form_id);
-		
-		// UNLOCK TABLE
-		DB::query(NULL, 'COMMIT;')->execute();
-		
+			{
+				if( ! in_array($account_transaction_form->form_id, $update_form_ids) )
+					$update_form_ids[] = $account_transaction_form->form_id;
+			}
+		}
+
+		foreach( $update_form_ids as $update_form_id )
+			$this->_form_balance_calibrate($update_form_id);
 
 		return (object)array(
 			"transaction" => $this->_return_transaction_element($this->_transaction),

@@ -105,30 +105,33 @@ class Beans_Account_Transaction_Delete extends Beans_Account_Transaction {
 
 		$form_ids = array();
 
-		foreach( $this->_transaction->account_transactions->find_all() as $account_transaction )
+		$account_transactions = $this->_transaction->account_transactions->find_all();
+		$account_transaction_forms = array();
+
+		foreach( $account_transactions as $account_transaction )
 		{
 			if( $account_transaction->account_reconcile_id )
 				throw new Exception("Cannot delete a transaction that has been reconciled.");
 
 			foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form )
-				$form_ids[] = $account_transaction_form->form_id;
+			{
+				$account_transaction_forms[] = $account_transaction_form;
+
+				if( ! in_array($account_transaction_form->form_id, $form_ids) )
+					$form_ids[] = $account_transaction_form->form_id;
+			}
 		}
-
-		// LOCK TABLE
-		DB::query(NULL, 'START TRANSACTION')->execute();
-
-		// Delete everything and then shift balances.
-		foreach( $this->_transaction->account_transactions->find_all() as $account_transaction )
-			$this->_account_balance_remove_transaction($account_transaction);
 		
-		$this->_transaction->delete();
+		foreach( $account_transaction_forms as $account_transaction_form )
+			$account_transaction_form->delete();
+		
+		foreach( $account_transactions as $account_transaction )
+			$this->_account_transaction_remove($account_transaction);
 
 		foreach( $form_ids as $form_id )
 			$this->_form_balance_calibrate($form_id);
-		
-		// UNLOCK TABLE
-		DB::query(NULL, 'COMMIT;')->execute();
-		
+
+		$this->_transaction->delete();
 
 		return (object)array();
 	}
