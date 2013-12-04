@@ -505,9 +505,6 @@ class Beans_Account extends Beans {
 			! $this->_beans_internal_call() )
 			throw new Exception("Reserved account journals can only be updated by Beans.");
 
-		if( $account_transaction->amount == 0 )
-			throw new Exception("Invalid account transaction amount: must be non-zero.");
-
 		// V2Item
 		// Consider validating form.
 	}
