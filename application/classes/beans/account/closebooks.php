@@ -128,7 +128,7 @@ class Beans_Account_Closebooks extends Beans_Account {
 	}
 
 	// DUPLICATE FROM class Beans_Report ( beans/report.php )
-	protected function _generate_simple_account_balance($account_id,$table_sign,$date_end,$date_start = FALSE)
+	protected function _generate_simple_account_balance($account_id,$date_end,$date_start = FALSE)
 	{
 		$balance = 0.00;
 		$balance_rows = DB::Query(Database::SELECT,
@@ -138,7 +138,7 @@ class Beans_Account_Closebooks extends Beans_Account {
 		)->execute()->as_array();
 			
 		if( count($balance_rows) != 0 )
-			$balance = $this->_beans_round( $balance + ( $balance_rows[0]['balance'] * $table_sign ) );
+			$balance = $this->_beans_round( $balance + ( $balance_rows[0]['balance'] ) );
 
 		if( $balance !== NULL AND
 			$date_start )
@@ -151,7 +151,7 @@ class Beans_Account_Closebooks extends Beans_Account {
 
 			// If we find no rows - then we would subtract 0.00 
 			if( count($balance_rows) != 0 )
-				$balance = $this->_beans_round( $balance - ( $balance_rows[0]['balance'] * $table_sign ) );
+				$balance = $this->_beans_round( $balance - ( $balance_rows[0]['balance'] ) );
 
 		}
 
