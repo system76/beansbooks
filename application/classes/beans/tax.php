@@ -326,6 +326,8 @@ class Beans_Tax extends Beans {
 		if( ! $return_object->payment_transaction )
 			throw new Exception("Invalid payment - no payment transaction account found.");
 
+		$return_object->amount = $return_object->payment_transaction->amount;
+
 		return $return_object;
 	}
 
