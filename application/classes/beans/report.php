@@ -216,8 +216,8 @@ class Beans_Report extends Beans {
 		{
 			$balance_rows = DB::Query(Database::SELECT,
 				' SELECT balance,date FROM account_transactions '.
-				' WHERE account_id = "'.$account_id.'" AND `date` < DATE("'.$date_end.'") '.
-				' ORDER BY `date` ASC, close_books DESC, transaction_id ASC LIMIT 1'
+				' WHERE account_id = "'.$account_id.'" AND `date` < DATE("'.$date_start.'") '.
+				' ORDER BY `date` DESC, close_books ASC, transaction_id DESC LIMIT 1'
 			)->execute()->as_array();
 
 			// If we find no rows - then we would subtract 0.00 
@@ -246,8 +246,8 @@ class Beans_Report extends Beans {
 		{
 			$balance_rows = DB::Query(Database::SELECT,
 				' SELECT balance,date FROM account_transactions '.
-				' WHERE account_id = "'.$account->id.'" AND date < DATE("'.$date_end.'") '.
-				' ORDER BY date ASC, close_books DESC, transaction_id ASC LIMIT 1'
+				' WHERE account_id = "'.$account->id.'" AND date < DATE("'.$date_start.'") '.
+				' ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1'
 			)->execute()->as_array();
 
 			// If we find no rows - then we would subtract 0.00 
