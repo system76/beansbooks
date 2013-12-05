@@ -60,7 +60,7 @@ class Controller_Myaccount extends Controller_View {
 				else
 				{
 					$data->current_password = $this->request->post('current_password');
-					$data->password = $this->request->post('password');
+					$data->password = $this->request->post('new_password');
 				}
 			}
 

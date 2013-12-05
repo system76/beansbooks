@@ -35,8 +35,12 @@ class Controller_Auth extends Controller_View {
 		// Check and make sure Beans is setup.
 		$setup_check = new Beans();
 		$setup_check_result = $setup_check->execute();
-
-		if( ! $setup_check_result->success )
+		
+		if( ! $setup_check_result->success &&
+			isset($setup_check_result->config_error) &&
+			strpos(strtolower($setup_check_result->config_error),'update') !== FALSE )
+			$this->request->redirect('/update');
+		else if( ! $setup_check_result->success )
 			$this->request->redirect('/install');
 
 		if( count($this->request->post()) )

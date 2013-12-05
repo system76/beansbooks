@@ -83,8 +83,17 @@ class Controller_View extends Controller {
 				Session::instance()->set('tab_links',$tab_links);
 			}
 		}
-		
 
+		if( Session::instance()->get('global_error_message') ) {
+			$this->_view->send_error_message(Session::instance()->get('global_error_message'));
+			Session::instance()->delete('global_error_message');
+		}
+		
+		if( Session::instance()->get('global_success_message') ) {
+			$this->_view->send_success_message(Session::instance()->get('global_success_message'));
+			Session::instance()->delete('global_success_message');
+		}
+		
 		if( get_class($this->_view) != "stdClass" )
 			$this->response->body($this->_view->render());
 		else
@@ -119,7 +128,15 @@ class Controller_View extends Controller {
 				else
 					$this->_view->send_error_message($result->auth_error);
 			}
-			else
+			else if( isset($result->config_error) AND
+				strlen($result->config_error) )
+			{
+				// In the case of a config_error - the user must be logged out.
+				Session::instance()->destroy();
+				//Session::instance()->set('global_error_message',$result->config_error);
+				$this->request->redirect('/');
+			}
+			else 
 			{
 				$this->_view->send_error_message($result->error);
 			}

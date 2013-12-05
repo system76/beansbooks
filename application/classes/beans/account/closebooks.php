@@ -96,9 +96,14 @@ class Beans_Account_Closebooks extends Beans_Account {
 
 		foreach( $accounts as $account )
 		{
-			if( strtolower($account->account_type->type) == "income" OR 
-				strtolower($account->account_type->type) == "cost of goods sold" OR 
-				strtolower($account->account_type->type) == "expense" )
+			if( (
+					strtolower($account->account_type->type) == "income" OR 
+					strtolower($account->account_type->type) == "cost of goods sold" OR 
+					strtolower($account->account_type->type) == "expense" 
+				) AND
+				(
+					strpos($account->account_type->code, 'pending_') === FALSE
+				) )
 			{
 				$balance = $this->_generate_simple_account_balance($account->id,$balance_report_date);
 				if( $balance != 0.00 )
@@ -126,15 +131,23 @@ class Beans_Account_Closebooks extends Beans_Account {
 	protected function _generate_simple_account_balance($account_id,$date_end,$date_start = FALSE)
 	{
 		$balance = 0.00;
-		$balance_rows = DB::Query(Database::SELECT,'SELECT account_transactions.balance as balance, transactions.date as date FROM account_transactions RIGHT JOIN transactions ON account_transactions.transaction_id = transactions.id WHERE account_transactions.account_id = "'.$account_id.'" AND transactions.date <= DATE("'.$date_end.'") ORDER BY transactions.date DESC, transactions.id DESC LIMIT 1')->execute()->as_array();
-
+		$balance_rows = DB::Query(Database::SELECT,
+			' SELECT balance,date FROM account_transactions '.
+			' WHERE account_id = "'.$account_id.'" AND `date` <= DATE("'.$date_end.'") '.
+			' ORDER BY `date` DESC, close_books ASC, transaction_id DESC LIMIT 1'
+		)->execute()->as_array();
+			
 		if( count($balance_rows) != 0 )
 			$balance = $this->_beans_round( $balance + ( $balance_rows[0]['balance'] ) );
 
 		if( $balance !== NULL AND
 			$date_start )
 		{
-			$balance_rows = DB::Query(Database::SELECT,'SELECT account_transactions.balance as balance, transactions.date as date FROM account_transactions RIGHT JOIN transactions ON account_transactions.transaction_id = transactions.id WHERE account_transactions.account_id = "'.$account_id.'" AND transactions.date < DATE("'.$date_start.'") ORDER BY transactions.date DESC, transactions.id DESC LIMIT 1')->execute()->as_array();
+			$balance_rows = DB::Query(Database::SELECT,
+				' SELECT balance,date FROM account_transactions '.
+				' WHERE account_id = "'.$account_id.'" AND `date` < DATE("'.$date_end.'") '.
+				' ORDER BY `date` ASC, close_books DESC, transaction_id ASC LIMIT 1'
+			)->execute()->as_array();
 
 			// If we find no rows - then we would subtract 0.00 
 			if( count($balance_rows) != 0 )
