@@ -35,6 +35,16 @@ class Beans_Setup_Update extends Beans_Setup {
 
 		sort($updates,SORT_NATURAL);
 
+		// PHP 5.4+ Required for this...  using an ugly hack instead.
+		// sort($updates,'SORT_NATURAL');
+		natsort($updates);
+
+		$new_updates = array();
+		foreach( $updates as $update )
+				$new_updates[] = $update;
+
+		$updates = $new_updates;
+
 		$i = 0;
 		$target_version = FALSE;
 		while( ! $target_version && 
