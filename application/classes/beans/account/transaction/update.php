@@ -203,6 +203,10 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 											   ? TRUE
 											   : FALSE;
 
+			// TODO - If we ever allow updating close books transactions, 
+			// then add that above for $this->_new_transaction and add the proper logic here.
+			$new_account_transaction->close_books = ( $account_transaction->close_books ) ? TRUE : FALSE;
+
 			$this->_validate_account_transaction($new_account_transaction);
 
 			$transaction_balance = $this->_beans_round(($transaction_balance + $new_account_transaction->amount));
@@ -233,44 +237,37 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 		if( $this->_validate_only )
 			return (object)array();
 
-		// LOCK DB
-		DB::query(NULL, 'START TRANSACTION')->execute();
-
-		// Delete everything and then shift balances.
+		// Remove current account transactions and adjust balances.
 		foreach( $current_account_transactions as $current_account_transaction )
-			$this->_account_balance_remove_transaction($current_account_transaction,TRUE);
-		
+			$this->_account_transaction_remove($current_account_transaction);
+
+		// Remove old transaction, but save ID.
 		$_old_transaction_id = $this->_transaction->id;
 		$this->_transaction->delete();
 
-		// Save New
+		// Save new transaction.
 		$this->_new_transaction->id = $_old_transaction_id;
 		$this->_new_transaction->save();
-		
-		foreach( $this->_account_transactions as $_account_transaction )
+
+		// Insert new transactions
+		foreach( $this->_account_transactions as $i => $_account_transaction )
 		{
-			$_account_transaction->balance = NULL;
-			$_account_transaction->transaction_id = $this->_new_transaction->id;
-			$_account_transaction->save();
-			
-			$this->_account_balance_new_transaction($_account_transaction);
-		}
-		
-		foreach( $this->_account_transactions as $account_transaction )
-		{
-			if( isset($this->_account_transactions_forms[$account_transaction->account_id]) AND 
-				count($this->_account_transactions_forms[$account_transaction->account_id]) )
+			$this->_account_transactions[$i]->transaction_id = $this->_new_transaction->id;
+
+			// Insert transaction and save ID.
+			$this->_account_transactions[$i]->id = $this->_account_transaction_insert($_account_transaction);
+
+			// Update forms with new account transaction id.
+			if( isset($this->_account_transactions_forms[$_account_transaction->account_id]) AND 
+				count($this->_account_transactions_forms[$_account_transaction->account_id]) )
 			{
-				foreach( $this->_account_transactions_forms[$account_transaction->account_id] as $account_transaction_form )
+				foreach( $this->_account_transactions_forms[$_account_transaction->account_id] as $account_transaction_form )
 				{
-					$account_transaction_form->account_transaction_id = $account_transaction->id;
+					$account_transaction_form->account_transaction_id = $_account_transaction->id;
 					$account_transaction_form->save();
 				}
 			}
 		}
-		
-		// UNLOCK DB
-		DB::query(NULL, 'COMMIT;')->execute();
 		
 		return (object)array(
 			"transaction" => $this->_return_transaction_element($this->_new_transaction),

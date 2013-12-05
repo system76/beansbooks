@@ -67,26 +67,35 @@ class Beans_Report_Trial extends Beans_Report {
 
 		foreach( $accounts as $account )
 		{
-			$return_account = new stdClass;
-			$return_account->id = $account->id;
-			$return_account->name = $account->name;
-			
-			if( isset($account->type->table_sign) )
+			if( ! isset($account->type->code) ||
+				strpos($account->type->code,'pending_') === FALSE )
 			{
-				$return_account->table_sign = $account->type->table_sign;
-				$return_account->balance = $this->_generate_simple_account_balance($account->id,$account->type->table_sign,$date);
-			}
-			else
-			{
-				$return_account->table_sign = NULL;
-				$return_account->balance = NULL;
-			}
+				$return_account = new stdClass;
+				$return_account->id = $account->id;
+				$return_account->name = $account->name;
+				
+				if( isset($account->type->table_sign) )
+				{
+					$return_account->table_sign = $account->type->table_sign;
+					$return_account->balance = $this->_generate_simple_account_balance($account->id,$account->type->table_sign,$date);
+				}
+				else
+				{
+					$return_account->table_sign = NULL;
+					$return_account->balance = NULL;
+				}
 
-			if( isset($account->accounts) AND 
-				count($account->accounts) )
-				$return_account->accounts = $this->_generate_simple_accounts($account->accounts,$date);
-			
-			$return_array[] = $return_account;
+				if( isset($account->accounts) AND 
+					count($account->accounts) )
+					$return_account->accounts = $this->_generate_simple_accounts($account->accounts,$date);
+				
+				if( (
+						isset($return_account->accounts) &&
+						count($return_account->accounts) 
+					) ||
+					$return_account->table_sign !== NULL )
+					$return_array[] = $return_account;
+			}
 		}
 
 		return $return_array;

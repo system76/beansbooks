@@ -74,8 +74,8 @@ class Beans_Account extends Beans {
 	@attribute parent_account_id INTEGER representing the ID of the parent #Beans_Account#.
 	@attribute reserved BOOLEAN whether or not this is a system-only account.
 	@attribute name STRING 
-	@attribute code STRING
-	@attribute reconcilable BOOLEAN
+	@attribute code STRING 
+	@attribute reconcilable BOOLEAN 
 	@attribute terms INTEGER Number of days that forms attached to this account are due on.
 	@attribute balance DECIMAL The current account balance.
 	@attribute deposit BOOLEAN Payments can be received to this account.
@@ -505,9 +505,6 @@ class Beans_Account extends Beans {
 			! $this->_beans_internal_call() )
 			throw new Exception("Reserved account journals can only be updated by Beans.");
 
-		if( $account_transaction->amount == 0 )
-			throw new Exception("Invalid account transaction amount: must be non-zero.");
-
 		// V2Item
 		// Consider validating form.
 	}
@@ -551,7 +548,7 @@ class Beans_Account extends Beans {
 		if( ! $account_transaction_form->form_id )
 			throw new Exception("Invalid account transaction form form ID: none provided.");
 
-		if( ! $this->_load_form($account_transaction_form->form_id)->loaded() )
+		if( ! $this->_check_form_id($account_transaction_form->form_id) )
 			throw new Exception("Invalid account transaction form form ID: form not found.");
 
 		if( ! $account_transaction_form->amount )
@@ -604,236 +601,127 @@ class Beans_Account extends Beans {
 	}
 
 	// Account Balancing
-
 	/**
-	 * Adds an account transaction to the account journal ( updates balances ).
-	 * This new transaction should already be tied to a parent transaction and have an amount and account id.
-	 * @param  Model_Account_Transaction $new_account_transaction 
-	 * @return void 
+	 * Updates the account balance to match the last transaction in its journal.
+	 * @param Integer $account_id The ID of the account to balance.
+	 * @return void
 	 */
-	protected function _account_balance_new_transaction($new_account_transaction)
+	protected function _account_balance_calibrate($account_id)
 	{
-		if( ! $new_account_transaction OR 
-			! $new_account_transaction->loaded() )
-			throw new Exception("Invalid new account transaction - could not be loaded.");
+		$update_sql = 'UPDATE accounts SET '.
+					  'balance = ( SELECT IFNULL(SUM(bbalance),0.00) FROM ('.
+					  '		SELECT IFNULL(balance,0.00) as bbalance FROM '.
+					  '		account_transactions as aaccount_transactions WHERE '.
+					  '		account_id = "'.$account_id.'" '.
+					  '		ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
+					  ') as baccount_transactions ) '.
+					  'WHERE id = "'.$account_id.'"';
 
-		if( ! $new_account_transaction->account->loaded() OR 
-			! $new_account_transaction->transaction->loaded() OR
-			! strlen($new_account_transaction->amount) )
-			throw new Exception("Invalid new account transaction - missing required attributes. Must be completed less balance.");
-
-		$previous_transaction = $this->_previous_account_transaction($new_account_transaction);
-		$next_transaction = $this->_next_account_transaction($new_account_transaction);
-
-		// First transaction for account.
-		if( ! $previous_transaction AND 
-			! $next_transaction )
-			$new_account_transaction->balance = $this->_beans_round($new_account_transaction->amount);
-
-		// Inserted at beginning of journal.
-		else if( ! $previous_transaction )
-			$new_account_transaction->balance = $this->_beans_round($new_account_transaction->amount);
-
-		// Inserted somewhere in the middle of the journal.
-		else
-			$new_account_transaction->balance = $this->_beans_round($previous_transaction->balance + $new_account_transaction->amount);
-		
-		// Update all account_transactions after this one. $uq = Update Query.
-		$uq = 	'UPDATE account_transactions LEFT JOIN transactions ON transactions.id = account_transactions.transaction_id ';
-		$uq .= 	'SET account_transactions.balance = ( account_transactions.balance + '.$new_account_transaction->amount.' ) ';
-		$uq .=	'WHERE account_transactions.account_id = '.$new_account_transaction->account->id.' AND ';
-		$uq .= 	' ( ';
-		$uq .=	' ( transactions.id > '.$new_account_transaction->transaction->id.' AND transactions.date = "'.$new_account_transaction->transaction->date.'" ) OR ';
-		$uq .= 	' ( transactions.date > "'.$new_account_transaction->transaction->date.'" ) ';
-		$uq .= 	' ) ';
-		DB::query(NULL,$uq)->execute();
-
-		// Update account balance.
-		DB::query(NULL,'UPDATE accounts SET balance = balance + '.$new_account_transaction->amount.' WHERE id = "'.$new_account_transaction->account->id.'"')->execute();
-
-		$new_account_transaction->save();
+		$update_result = DB::Query(Database::UPDATE,$update_sql)->execute();
 	}
 
 	/**
-	 * Removes an account transaction from an account journal.
-	 * @param  Model_Account_Transaction $remove_account_transaction 
-	 * @return void                             
+	 * Insert a new account transaction into an account's journal.
+	 * @param  Model_Account_Transaction $account_transaction The account transaction to insert.
+	 * @return Integer The ID of the new account transaction.
 	 */
-	protected function _account_balance_remove_transaction($remove_account_transaction,$preserve_forms = FALSE)
+	protected function _account_transaction_insert($account_transaction)
 	{
-		if( ! $remove_account_transaction OR 
-			! $remove_account_transaction->loaded() )
-			throw new Exception("Invalid remove account transaction - could not be loaded.");
+		// Insert new account transaction.
+		$insert_sql = 'INSERT INTO account_transactions '.
+					  '(transaction_id, account_id, date, amount, transfer, writeoff, close_books, balance) '.
+					  'VALUES ( '.
+					  $account_transaction->transaction_id.', '.
+					  $account_transaction->account_id.', '.
+					  'DATE("'.$account_transaction->date.'"), '.
+					  $account_transaction->amount.', '.
+					  ( $account_transaction->transfer ? '1' : '0' ).', '.
+					  ( $account_transaction->writeoff ? '1' : '0' ).', '.
+					  ( $account_transaction->close_books ? '1' : '0' ).', '.
+					  '( SELECT IFNULL(SUM(bbalance),0.00) FROM ('.
+					  '		SELECT IFNULL(balance,0.00) as bbalance FROM '.
+					  '		account_transactions as aaccount_transactions WHERE '.
+					  '		account_id = "'.$account_transaction->account_id.'" AND '.
+					  '		date <= DATE("'.$account_transaction->date.'") AND '.
+					  ' 	transaction_id < '.$account_transaction->transaction_id.' '.
+					  '		ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
+					  ') as baccount_transactions ) '.
+					  ') ';
+		
+		$insert_result = DB::Query(Database::INSERT,$insert_sql)->execute();
 
-		if( ! $remove_account_transaction->account->loaded() OR 
-			! $remove_account_transaction->transaction->loaded() OR
-			! strlen($remove_account_transaction->amount) OR 
-			! strlen($remove_account_transaction->balance) )
-			throw new Exception("Invalid remove account transaction - missing required attributes. Must be completed and balanced.");
+		$account_transaction_id = $insert_result[0];
 
-		$uq = 	'UPDATE account_transactions LEFT JOIN transactions ON transactions.id = account_transactions.transaction_id ';
-		$uq .= 	'SET account_transactions.balance = ( account_transactions.balance - '.$remove_account_transaction->amount.' ) ';
-		$uq .=	'WHERE account_transactions.account_id = '.$remove_account_transaction->account->id.' AND ';
-		$uq .= 	' ( ';
-		$uq .=	' ( transactions.id > '.$remove_account_transaction->transaction->id.' AND transactions.date = "'.$remove_account_transaction->transaction->date.'" ) OR ';
-		$uq .= 	' ( transactions.date > "'.$remove_account_transaction->transaction->date.'" ) ';
-		$uq .= 	' ) ';
-		DB::query(NULL,$uq)->execute();
+		// Update transaction balances.
+		$update_sql = 'UPDATE account_transactions '.
+					  'SET balance = balance + '.$account_transaction->amount.' WHERE '.
+					  'account_id = "'.$account_transaction->account_id.'" AND '.
+					  '( '.
+					  ' 	( date > DATE("'.$account_transaction->date.'") ) OR '.
+					  ' 	( date = DATE("'.$account_transaction->date.'") AND transaction_id >= '.$account_transaction->transaction_id.' AND close_books <= '.( $account_transaction->close_books ? '1' : '0' ).' ) '.
+					  ') ';
+		
+		$update_result = DB::Query(Database::UPDATE,$update_sql)->execute();
 
-		if( $remove_account_transaction->account->account_transactions->count_all() == 1 )
-		{
-			// Set to 0 - even though the below should be good this aids in testing.
-			DB::query(NULL,'UPDATE accounts SET balance = 0.00 WHERE id = "'.$remove_account_transaction->account->id.'"')->execute();
-		}
-		else
-		{
-			// Update account balance.
-			DB::query(NULL,'UPDATE accounts SET balance = balance - '.$remove_account_transaction->amount.' WHERE id = "'.$remove_account_transaction->account->id.'"')->execute();
-		}
+		// Update Account Balance
+		$this->_account_balance_calibrate($account_transaction->account_id);
 
-		if( ! $preserve_forms )
-		{
-			// Remove all attached account_transaction_forms
-			foreach( $remove_account_transaction->account_transaction_forms->find_all() as $account_transaction_form )
-				$account_transaction_form->delete();
-		}
-
-		// Delete the transaction.
-		$remove_account_transaction->delete();
+		return $account_transaction_id;
 	}
 
 	/**
-	 * This assumes something hit the fan, but that we also know a last good date.
-	 * @param  Integer $account_id 
-	 * @param  String $date 
-	 * @return void 
+	 * Remove an account transaction from a journal.
+	 * @param  Model_Account_Transaction $account_transaction The account transaction to remove.
+	 * @return void
 	 */
-	protected function _account_balance_calibrate($account_id,$date)
+	protected function _account_transaction_remove($account_transaction)
 	{
-		throw new Exception("DEPRECATED UNTIL REDESIGN ON ACCOUNT TRANSACTION UPDATES.");
+		if( ! $account_transaction->id ||
+			! $account_transaction->account_id ) 
+			throw new Exception("Invalid remove account transaction - missing required ID or account ID.");
+
+		// Remove account transaction row.
+		$remove_sql = 'DELETE FROM account_transactions '.
+					  'WHERE id = "'.$account_transaction->id.'" '.
+					  'LIMIT 1';
+
+		$remove_result = DB::Query(Database::DELETE, $remove_sql)->execute();
+
+		// Update transaction balances.
+		$update_sql = 'UPDATE account_transactions '.
+					  'SET balance = balance - '.$account_transaction->amount.' WHERE '.
+					  'account_id = "'.$account_transaction->account_id.'" AND '.
+					  '( '.
+					  ' 	( date > DATE("'.$account_transaction->date.'") ) OR '.
+					  ' 	( date = DATE("'.$account_transaction->date.'") AND transaction_id >= '.$account_transaction->transaction_id.' AND close_books <= '.( $account_transaction->close_books ? '1' : '0' ).' ) '.
+					  ') ';
 		
-		if( ! $account_id )
-			throw new Exception("Invalid account ID - none provided.");
+		$update_result = DB::Query(Database::UPDATE,$update_sql)->execute();
 
-		$account = $this->_load_account($account_id);
-
-		if( ! $account->loaded() )
-			throw new Exception("Invalid account ID - not found.");
-
-		if( ! $date )
-			throw new Exception("Invalid date - none provided.");
-
-		if( $date != date("Y-m-d",strtotime($date)) )
-			throw new Exception("Invalid date - must be in YYYY-MM-DD format.");
-
-		// Get to work.
-		
-		// LOCK TABLE
-		// Before throwing any exceptions after this point we should/must run a COMMIT; query.
-		//DB::query(NULL, 'START TRANSACTION;')->execute();
-		//DB::query(NULL, 'SET autocommit=0;')->execute();
-		//DB::query(NULL, 'LOCK TABLES account_transactions WRITE, transactions WRITE, accounts WRITE;')->execute();
-		//DB::query(NULL, 'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE')->execute();
-		DB::query(NULL, 'START TRANSACTION')->execute();
-
-
-		// V2Item
-		// Consider changing to a find_all() and looping saves afterwards.
-		
-		$account_transaction = $account->account_transactions->
-			join('transactions','left')->on('account_transaction.transaction_id','=','transactions.id')->
-			where('transactions.date','<',$date)->
-			order_by('transactions.date','desc')->
-			order_by('transactions.id','desc')->
-			find();
-
-		$next_transaction = $this->_next_account_transaction($account_transaction);
-
-		while( $next_transaction )
-		{
-			$next_transaction->balance = $this->_beans_round($account_transaction->balance + $next_transaction->amount);
-			$next_transaction->save();
-			$account_transaction = $next_transaction;
-			$next_transaction = $this->_next_account_transaction($account_transaction);
-		}
-
-		// Update Account
-		DB::query(NULL, 'UPDATE accounts SET balance = '.$account_transaction->balance.' WHERE id = "'.$account->id.'"')->execute();
-
-		// UNLOCK TABLE
-		DB::query(NULL, 'COMMIT;')->execute();
-		//DB::query(NULL, 'UNLOCK TABLES;')->execute();
-		//DB::query(NULL, 'SET autocommit=1;')->execute();
+		// Update Account Balance
+		$this->_account_balance_calibrate($account_transaction->account_id);
 	}
 
-	private function _previous_account_transaction($account_transaction)
-	{
-		if( ! $account_transaction OR 
-			! $account_transaction->loaded() )
-			throw new Exception("Invalid account transaction provided.");
-
-		$previous_transaction = ORM::Factory('account_transaction')->
-			join('transactions','left')->on('account_transaction.transaction_id','=','transactions.id')->
-			where('account_transaction.account_id','=',$account_transaction->account_id)->
-			and_where_open()->
-			or_where_open()->
-			where('transactions.date','=',$account_transaction->transaction->date)->
-			where('transactions.id','<',$account_transaction->transaction->id)->
-			or_where_close()->
-			or_where('transactions.date','<',$account_transaction->transaction->date)->
-			and_where_close()->
-			order_by('transactions.date','desc')->
-			order_by('transactions.id','desc')->
-			find();
-
-		if( ! $previous_transaction->loaded() )
-			return FALSE;
-
-		return $previous_transaction;
-	}
-
-	private function _next_account_transaction($account_transaction)
-	{
-		if( ! $account_transaction OR 
-			! $account_transaction->loaded() )
-			throw new Exception("Invalid account transaction provided.");
-
-		$next_transaction = ORM::Factory('account_transaction')->
-			join('transactions','left')->on('account_transaction.transaction_id','=','transactions.id')->
-			where('account_transaction.account_id','=',$account_transaction->account_id)->
-			and_where_open()->
-			or_where_open()->
-			where('transactions.date','=',$account_transaction->transaction->date)->
-			where('transactions.id','>',$account_transaction->transaction->id)->
-			or_where_close()->
-			or_where('transactions.date','>',$account_transaction->transaction->date)->
-			and_where_close()->
-			order_by('transactions.date','asc')->
-			order_by('transactions.id','asc')->
-			find();
-
-		if( ! $next_transaction->loaded() )
-			return FALSE;
-
-		return $next_transaction;
-	}
-
+	/**
+	 * Updates the balance on a form per all transactions tied to that form.
+	 * @param  Integer $form_id The ID of the form to update.
+	 * @return void
+	 */
 	protected function _form_balance_calibrate($form_id)
 	{
 		if( ! $form_id )
 			throw new Exception("Invalid form ID - none provided.");
 
-		$form = ORM::Factory('form',$form_id);
+		$update_sql = 'UPDATE forms '.
+					  'SET balance = ( '.
+					  '		SELECT IFNULL(balance,0.00) FROM ( '.
+					  ' 		SELECT SUM(amount) as balance '.
+					  '			FROM account_transaction_forms '.
+					  '			WHERE form_id = '.$form_id.' '.
+					  '		) as aforms ) '.
+					  'WHERE id = "'.$form_id.'"';
 
-		if( ! $form->loaded() )
-			throw new Exception("Invalid form ID - not found.");
-
-		// Forms don't require us to track a per-transaction balance - 
-		// so we can simply query for the SUM of all related transactions and apply it.
-		$form_balance = DB::query(Database::SELECT,'SELECT SUM(amount) as balance FROM account_transaction_forms WHERE form_id = "'.$form->id.'"')->execute()->as_array();
-
-		$form->balance = $form_balance[0]['balance'];
-		$form->save();
+		DB::Query(Database::UPDATE, $update_sql)->execute();
 	}
 
 	/**
@@ -878,9 +766,21 @@ class Beans_Account extends Beans {
 		return ORM::Factory('account',$id);
 	}
 
+	/**
+	 * Attempts to load an acount type with the specified ID.
+	 * @param  Integer $id 
+	 * @return Model_Account_Type     The loaded account type.
+	 */
 	protected function _load_account_type($id)
 	{
 		return ORM::Factory('account_type',$id);
+	}
+
+	protected function _check_form_id($id)
+	{
+		$result = DB::Query(Database::SELECT,'SELECT COUNT(1) as id_exists FROM forms WHERE id = '.$id)->execute()->as_array();
+		
+		return ( isset($result[0]) && $result[0]['id_exists'] ) ? TRUE : FALSE;
 	}
 
 	// *** DUPLICATE FUNCTION ***

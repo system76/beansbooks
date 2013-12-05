@@ -35,6 +35,12 @@ Route::set('install','install(/<action>(/<id>))')
 		'action'		=> 'index'
 	));
 
+Route::set('update','update(/<action>(/<id>))')
+	->defaults(array(
+		'controller'	=> 'update',
+		'action'		=> 'index'
+	));
+
 Route::set('interface-tab','interface/tab(/<action>(/<id>(/<code>)))')
 	->defaults(array(
 		'controller'	=> 'interface_tab',

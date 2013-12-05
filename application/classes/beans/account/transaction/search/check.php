@@ -32,20 +32,24 @@ class Beans_Account_Transaction_Search_Check extends Beans_Account_Transaction_S
 	private $_sort_by_patterns = array(
 		'newest' => array(
 			'date' => 'desc',
+			'close_books' => 'asc',
 			'id' => 'desc',
 		),
 		'oldest' => array(
 			'date' => 'asc',
+			'close_books' => 'desc',
 			'id' => 'asc',
 		),
 		'checknewest' => array(
 			'reference' => 'desc',
 			'date' 		=> 'desc',
+			'close_books' => 'asc',
 			'id' 		=> 'desc',
 		),
 		'checkoldest' => array(
 			'reference' => 'asc',
 			'date'		=> 'asc',
+			'close_books' => 'desc',
 			'id'		=> 'asc',
 		),
 	);

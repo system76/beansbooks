@@ -65,19 +65,13 @@ class Beans_Report_Ledger extends Beans_Report {
 			throw new Exception("Invalid report end date: must be in format YYYY-MM-DD.");
 
 		$this->_account_transactions = ORM::Factory('account_transaction')->
-			join('transactions','right')->
-			on('transactions.id','=','account_transaction.transaction_id');
-
-		$this->_account_transactions = $this->_account_transactions->
-			where('account_transaction.account_id','=',$account->id)->
-			where('transactions.date','>=',$this->_date_start)->
-			where('transactions.date','<=',$this->_date_end);
-
-		$this->_account_transactions = $this->_account_transactions->
-			order_by('transactions.date','asc')->
-			order_by('transactions.id','asc');
-		
-		$this->_account_transactions = $this->_account_transactions->find_all();
+			where('account_id','=',$account->id)->
+			where('date','>=',$this->_date_start)->
+			where('date','<=',$this->_date_end)->
+			order_by('date','asc')->
+			order_by('close_books','desc')->
+			order_by('transaction_id','asc')->
+			find_all();
 
 		return (object)array(
 			'date_start' => $this->_date_start,

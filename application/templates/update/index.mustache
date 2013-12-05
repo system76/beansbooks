@@ -1,0 +1,27 @@
+
+<br><br><br>
+
+<h3 class="text-center">Your BeansBooks is about to get a lot better!</h3>
+<div class="clear"></div>
+
+
+<div class="explanation text-medium bump-down-most">
+	<div class="text-center">Current Version: <span class="text-bold">{{current_version}}</span></div>
+	<div class="text-center">Upgrade Target: <span class="text-bold">{{target_version}}</span></div>
+</div>
+
+<div class="clear"></div>
+<br>
+
+<form action="/update/run" method="POST">
+	<input type="hidden" name="target_version" value="{{target_version}}">
+	<div class="explanation text-medium bump-down-most">
+		<div class="text-center">
+			<a class="button" href="#" onclick="showPleaseWait(); $(this).closest('form').submit();">Start Upgrade</a>
+		</div>
+	</div>
+</form>
+
+<div class="explanation text-small bump-down-most text-center" style="width: 49%;">
+	<span class="text-bold">Please note:</span> The upgrade can take up to several minutes depending on the work that is being performed.  Please be patient and do not click the button twice.
+</div>

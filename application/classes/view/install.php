@@ -24,6 +24,20 @@ class View_Install extends Kostache_Layout {
 
 	protected $_system_messages = FALSE;
 
+	public function head_title() {
+		if( ! isset($this->install_title) )
+			return "Install BeansBooks";
+
+		return $this->install_title;
+	}
+
+	public function page_title() {
+		if( ! isset($this->page_title) )
+			return "Beans Installation Process";
+
+		return $this->page_title;
+	}
+
 	public function send_error_message($text) {
 		return $this->_add_system_message('error',$text);
 	}
