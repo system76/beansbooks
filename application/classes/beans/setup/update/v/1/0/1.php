@@ -70,6 +70,17 @@ class Beans_Setup_Update_V_1_0_1 extends Beans_Setup_Update_V {
 
 					$previous_balance = $calibrated_balance;
 				}
+
+				$update_sql = 'UPDATE accounts SET '.
+							  'balance = ( SELECT IFNULL(SUM(bbalance),0.00) FROM ('.
+							  '		SELECT IFNULL(balance,0.00) as bbalance FROM '.
+							  '		account_transactions as aaccount_transactions WHERE '.
+							  '		account_id = "'.$account['id'].'" '.
+							  '		ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
+							  ') as baccount_transactions ) '.
+							  'WHERE id = "'.$account['id'].'"';
+
+				$update_result = DB::Query(Database::UPDATE,$update_sql)->execute();
 			}
 		}
 		catch( Exception $e )

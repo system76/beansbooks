@@ -97,6 +97,8 @@ class Beans_Account_Calibrate extends Beans_Account {
 			$previous_shift = $calibrated_balance - $account_transaction['balance'];
 		}
 
+		$this->_account_balance_calibrate($this->_account->id);
+
 		return (object)array(
 			'account' => $this->_return_account_element($this->_account),
 			'calibrated_transactions' => $calibrated_transactions,
