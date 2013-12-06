@@ -130,30 +130,17 @@ class Beans_Account_Closebooks extends Beans_Account {
 	// DUPLICATE FROM class Beans_Report ( beans/report.php )
 	protected function _generate_simple_account_balance($account_id,$date_end,$date_start = FALSE)
 	{
-		$balance = 0.00;
-		$balance_rows = DB::Query(Database::SELECT,
-			' SELECT balance,date FROM account_transactions '.
-			' WHERE account_id = "'.$account_id.'" AND `date` <= DATE("'.$date_end.'") '.
-			' ORDER BY `date` DESC, close_books ASC, transaction_id DESC LIMIT 1'
-		)->execute()->as_array();
-			
-		if( count($balance_rows) != 0 )
-			$balance = $this->_beans_round( $balance + ( $balance_rows[0]['balance'] ) );
+		$table_sign = 1;
 
-		if( $balance !== NULL AND
-			$date_start )
-		{
-			$balance_rows = DB::Query(Database::SELECT,
-				' SELECT balance,date FROM account_transactions '.
-				' WHERE account_id = "'.$account_id.'" AND `date` < DATE("'.$date_start.'") '.
-				' ORDER BY `date` DESC, close_books ASC, transaction_id DESC LIMIT 1'
-			)->execute()->as_array();
+		$balance_query = ' SELECT IFNULL(SUM(amount),0.00) as bal FROM account_transactions WHERE '.
+						 ' account_id = "'.$account_id.'" AND '.
+						 ' close_books = 0 '.
+						 ( $date_end ? ' AND date <= DATE("'.$date_end.'") ' : '' ).
+						 ( $date_start ? ' AND date >= DATE("'.$date_start.'") ' : '' );
 
-			// If we find no rows - then we would subtract 0.00 
-			if( count($balance_rows) != 0 )
-				$balance = $this->_beans_round( $balance - ( $balance_rows[0]['balance'] ) );
+		$balance_rows = DB::Query(Database::SELECT, $balance_query)->execute()->as_array();
 
-		}
+		$balance = $balance_rows[0]['bal'] * $table_sign;
 
 		return $balance;
 	}

@@ -201,30 +201,15 @@ class Beans_Report extends Beans {
 
 	protected function _generate_simple_account_balance($account_id,$table_sign,$date_end,$date_start = FALSE)
 	{
-		$balance = 0.00;
-		$balance_rows = DB::Query(Database::SELECT,
-			' SELECT balance,date FROM account_transactions '.
-			' WHERE account_id = "'.$account_id.'" AND `date` <= DATE("'.$date_end.'") '.
-			' ORDER BY `date` DESC, close_books ASC, transaction_id DESC LIMIT 1'
-		)->execute()->as_array();
-			
-		if( count($balance_rows) != 0 )
-			$balance = $this->_beans_round( $balance + ( $balance_rows[0]['balance'] * $table_sign ) );
+		$balance_query = ' SELECT IFNULL(SUM(amount),0.00) as bal FROM account_transactions WHERE '.
+						 ' account_id = "'.$account_id.'" AND '.
+						 ' close_books = 0 '.
+						 ( $date_end ? ' AND date <= DATE("'.$date_end.'") ' : '' ).
+						 ( $date_start ? ' AND date >= DATE("'.$date_start.'") ' : '' );
 
-		if( $balance !== NULL AND
-			$date_start )
-		{
-			$balance_rows = DB::Query(Database::SELECT,
-				' SELECT balance,date FROM account_transactions '.
-				' WHERE account_id = "'.$account_id.'" AND `date` < DATE("'.$date_start.'") '.
-				' ORDER BY `date` DESC, close_books ASC, transaction_id DESC LIMIT 1'
-			)->execute()->as_array();
+		$balance_rows = DB::Query(Database::SELECT, $balance_query)->execute()->as_array();
 
-			// If we find no rows - then we would subtract 0.00 
-			if( count($balance_rows) != 0 )
-				$balance = $this->_beans_round( $balance - ( $balance_rows[0]['balance'] * $table_sign ) );
-
-		}
+		$balance = $balance_rows[0]['bal'] * $table_sign;
 
 		return $balance;
 	}
@@ -232,30 +217,17 @@ class Beans_Report extends Beans {
 	protected function _generate_account_balance($account,$date_end,$date_start = FALSE)
 	{
 		$account->balance = NULL;
-		$balance_rows = DB::Query(Database::SELECT,
-			' SELECT balance,date FROM account_transactions '.
-			' WHERE account_id = "'.$account->id.'" AND date <= DATE("'.$date_end.'") '.
-			' ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1'
-		)->execute()->as_array();
 
-		if( count($balance_rows) != 0 )
-			$account->balance = $balance_rows[0]['balance'] * $account->table_sign;
+		$balance_query = ' SELECT IFNULL(SUM(amount),0.00) as bal FROM account_transactions WHERE '.
+						 ' account_id = "'.$account->id.'" AND '.
+						 ' close_books = 0 '.
+						 ( $date_end ? ' AND date <= DATE("'.$date_end.'") ' : '' ).
+						 ( $date_start ? ' AND date >= DATE("'.$date_start.'") ' : '' );
 
-		if( $account->balance !== NULL AND
-			$date_start )
-		{
-			$balance_rows = DB::Query(Database::SELECT,
-				' SELECT balance,date FROM account_transactions '.
-				' WHERE account_id = "'.$account->id.'" AND date < DATE("'.$date_start.'") '.
-				' ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1'
-			)->execute()->as_array();
+		$balance_rows = DB::Query(Database::SELECT, $balance_query)->execute()->as_array();
 
-			// If we find no rows - then we would subtract 0.00 
-			if( count($balance_rows) != 0 )
-				$account->balance = $this->_beans_round( $account->balance - ( $balance_rows[0]['balance'] * $account->table_sign ) );
-
-		}
-
+		$account->balance = $balance_rows[0]['bal'] * $account->table_sign;
+		
 		if( isset($account->accounts) AND 
 			count($account->accounts) )
 			foreach( $account->accounts as $key => $child_account )
