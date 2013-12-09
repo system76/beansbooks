@@ -159,9 +159,26 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 				if( ! $vendor_purchase_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_invoice_result->error);
 			}
+			else if( $purchase->date_billed AND 
+					 $purchase->invoice_transaction_id AND 
+					 $purchase_payment->invoice_number )
+			{
+				$vendor_purchase_update_invoice = new Beans_Vendor_Purchase_Update_Invoice($this->_beans_data_auth((object)array(
+					'id' => $purchase->id,
+					'invoice_number' => $purchase_payment->invoice_number,
+					'validate_only' => $this->_validate_only,
+				)));
+				$vendor_purchase_update_invoice_result = $vendor_purchase_update_invoice->execute();
+
+				if( ! $vendor_purchase_update_invoice_result->success )
+					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
+			}
 			else if( ! $purchase->date_billed AND 
 				! $purchase->invoice_transaction_id )
 				throw new Exception("Invalid payment purchase: ".$purchase->code." has not been invoiced.  Please include an invoice number and date.");
+
+			if( strtotime($purchase->date_billed) > strtotime($create_transaction_data->date) )
+				throw new Exception("Invalid payment purchase: ".$purchase->code." cannot be paid before its invoice date: ".$purchase->date_billed.".");
 
 			// Simplifies copied code.
 			$purchase_id = $purchase->id;
