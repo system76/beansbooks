@@ -910,11 +910,17 @@ class Beans_Customer extends Beans {
 	{
 		$return_array = array();
 
-		foreach( $account_transactions as $account_transaction ) 
+		foreach( $account_transactions as $account_transaction )
+		{
 			if( ! $account_transaction->transfer AND
 				! $account_transaction->writeoff )
+			{
 				foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form ) 
+				{
 					$return_array[$account_transaction_form->form_id] = $this->_return_customer_payment_sale_element($account_transaction_form);
+				}
+			}
+		}
 
 		return $return_array;
 	}
