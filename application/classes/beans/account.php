@@ -645,7 +645,8 @@ class Beans_Account extends Beans {
 					  '		account_id = "'.$account_transaction->account_id.'" AND '.
 					  '		date <= DATE("'.$account_transaction->date.'") AND ( '.
 					  ' 		transaction_id < '.$account_transaction->transaction_id.' OR '.
-					  ' 		close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' '.
+					  ' 		( close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' AND '.
+					  ' 		transaction_id < '.$account_transaction->transaction_id.' ) '.
 					  ' 	) ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
 					  ') as baccount_transactions ) '.
 					  ') ';
