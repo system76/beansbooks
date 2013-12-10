@@ -199,13 +199,13 @@ class Beans_Report extends Beans {
 		return $balance;
 	}
 
-	protected function _generate_simple_account_balance($account_id,$table_sign,$date_end,$date_start = FALSE)
+	protected function _generate_simple_account_balance($account_id,$table_sign,$date_end,$date_start = FALSE,$include_close_books = FALSE)
 	{
 		$balance_query = ' SELECT IFNULL(SUM(amount),0.00) as bal FROM account_transactions WHERE '.
-						 ' account_id = "'.$account_id.'" AND '.
-						 ' close_books = 0 '.
-						 ( $date_end ? ' AND date <= DATE("'.$date_end.'") ' : '' ).
-						 ( $date_start ? ' AND date >= DATE("'.$date_start.'") ' : '' );
+						 ' account_id = "'.$account_id.'" '.
+						 ( ! $include_close_books ? ' AND close_books = 0 ' : ' ' ).
+						 ( $date_end ? ' AND date <= DATE("'.$date_end.'") ' : ' ' ).
+						 ( $date_start ? ' AND date >= DATE("'.$date_start.'") ' : ' ' );
 
 		$balance_rows = DB::Query(Database::SELECT, $balance_query)->execute()->as_array();
 
@@ -214,13 +214,13 @@ class Beans_Report extends Beans {
 		return $balance;
 	}
 
-	protected function _generate_account_balance($account,$date_end,$date_start = FALSE)
+	protected function _generate_account_balance($account,$date_end,$date_start = FALSE,$include_close_books = FALSE)
 	{
 		$account->balance = NULL;
 
 		$balance_query = ' SELECT IFNULL(SUM(amount),0.00) as bal FROM account_transactions WHERE '.
-						 ' account_id = "'.$account->id.'" AND '.
-						 ' close_books = 0 '.
+						 ' account_id = "'.$account->id.'" '.
+						 ( ! $include_close_books ? ' AND close_books = 0 ' : ' ' ).
 						 ( $date_end ? ' AND date <= DATE("'.$date_end.'") ' : '' ).
 						 ( $date_start ? ' AND date >= DATE("'.$date_start.'") ' : '' );
 

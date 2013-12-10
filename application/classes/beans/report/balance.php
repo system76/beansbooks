@@ -85,7 +85,7 @@ class Beans_Report_Balance extends Beans_Report {
 		{
 			foreach( $type->accounts as $key => $account )
 			{
-				$account_types[$type_key]->accounts[$key] = $this->_generate_account_balance($account,$this->_date);
+				$account_types[$type_key]->accounts[$key] = $this->_generate_account_balance($account,$this->_date,FALSE,($type_key == 'equity' ? TRUE : FALSE));
 			}
 		}
 
