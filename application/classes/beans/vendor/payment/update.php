@@ -163,8 +163,8 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			if( ! $purchase->date_billed AND 
 				! $purchase->invoice_transaction_id AND 
 				( 
-					$purchase_payment->invoice_number OR
-					$purchase_payment->date_billed 
+					( isset($purchase_payment->invoice_number) AND $purchase_payment->invoice_number ) OR
+					( isset($purchase_payment->date_billed) AND $purchase_payment->date_billed ) 
 				) )
 			{
 				$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(
@@ -180,7 +180,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			}
 			else if( $purchase->date_billed AND 
 					 $purchase->invoice_transaction_id AND 
-					 $purchase_payment->invoice_number )
+					 ( isset($purchase_payment->invoice_number) AND $purchase_payment->invoice_number ) )
 			{
 				$vendor_purchase_update_invoice = new Beans_Vendor_Purchase_Update_Invoice($this->_beans_data_auth((object)array(
 					'id' => $purchase->id,
