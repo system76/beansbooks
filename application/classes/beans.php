@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans {
 
-	protected $_BEANS_VERSION = '1.0.1';
+	protected $_BEANS_VERSION = '1.0.2';
 
 	private $_beans_settings;
 	private $_beans_config;
@@ -262,20 +262,20 @@ class Beans {
 		if( ! isset($this->_beans_settings) )
 			$this->_beans_settings = new stdClass;
 
-		// RESERVED
-		unset($this->_beans_settings->LOCAL);
-
 		foreach( $this->_beans_settings as $key => $value )
 		{
-			$setting = ORM::Factory('setting')->where('key','=',$key)->find();
-			if( ! $setting->loaded() )
+			if( $key != "LOCAL" )
 			{
-				$setting = ORM::Factory('setting');
-				$setting->key = $key;
-			}
+				$setting = ORM::Factory('setting')->where('key','=',$key)->find();
+				if( ! $setting->loaded() )
+				{
+					$setting = ORM::Factory('setting');
+					$setting->key = $key;
+				}
 
-			$setting->value = $value;
-			$setting->save();
+				$setting->value = $value;
+				$setting->save();
+			}
 		}
 	}
 
