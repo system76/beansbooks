@@ -121,7 +121,7 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 										 ? $this->_data->description
 										 : $this->_old_transaction->description;
 
-		$this->_transaction->date = ( isset($this->_data->date) )
+		$this->_transaction->date = ( isset($this->_data->date) AND $this->_data->date )
 									  ? $this->_data->date
 									  : $this->_old_transaction->date;
 
@@ -135,8 +135,15 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 										   ? $this->_data->entity_id
 										   : $this->_old_transaction->entity_id;
 
+		// If this was previously a payment we retain that attribute
+		// However, if this is a new payment ( i.e. Payment/Replace ) then we want 
+		// to apply the new flag appropriately.
 		if( $this->_old_transaction->payment )
 			$this->_transaction->payment = $this->_old_transaction->payment;
+		else if ( $this->_beans_internal_call() AND 
+				  isset($this->_data->payment) AND 
+				  $this->_data->payment )
+			$this->_transaction->payment = $this->_data->payment;
 
 		// TODO - If changing FYE transactions is enabled, add close_books here.
 
@@ -150,10 +157,6 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 		// Any transactions that are reconciled cannot be changed.
 		foreach( $current_account_transactions as $current_account_transaction )
 		{
-			if( $current_account_transaction->account_reconcile_id AND 
-				$this->_old_transaction->date != $this->_transaction->date )
-				throw new Exception("Invalid transaction date: cannot change the date of a transaction that has been reconciled.");
-
 			if( $current_account_transaction->account_reconcile_id )
 			{
 				$unchanged = FALSE;
