@@ -68,7 +68,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		if( ! $this->_old_payment->loaded() )
 			throw new Exception("Payment could not be found.");
 
-		if( ! $this->_old_payment->payment != "vendor" )
+		if( $this->_old_payment->payment != "vendor" )
 			throw new Exception("That transaction is not a payment.");
 
 		if( $this->_old_payment->account_transactions->where('account_reconcile_id','IS NOT',NULL)->count_all() )

@@ -93,7 +93,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 		if( ! $this->_old_payment->loaded() )
 			throw new Exception("Payment could not be found.");
 
-		if( ! $this->_old_payment->payment != "customer" )
+		if( $this->_old_payment->payment != "customer" )
 			throw new Exception("That transaction is not a payment.");
 
 		// Check for some basic data.
