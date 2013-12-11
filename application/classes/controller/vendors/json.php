@@ -1723,23 +1723,6 @@ class Controller_Vendors_Json extends Controller_Json {
 				'purchases' => $purchases,
 			);
 
-			// VALIDATE
-			$vendor_payment_replace_data->validate_only = TRUE;
-			$vendor_payment_validate = new Beans_Vendor_Payment_Create($this->_beans_data_auth($vendor_payment_replace_data));
-			$vendor_payment_validate_result = $vendor_payment_validate->execute();
-
-			if( ! $vendor_payment_validate_result->success )
-				return $this->_return_error($this->_beans_result_get_error($vendor_payment_validate_result));
-
-			// DELETE
-			$vendor_payment_cancel = new Beans_Vendor_Payment_Cancel($this->_beans_data_auth((object)array(
-				'id' => $payment_id,
-			)));
-			$vendor_payment_cancel_result = $vendor_payment_cancel->execute();
-
-			if( ! $vendor_payment_cancel_result->success )
-				return $this->_return_error($this->_beans_result_get_error($vendor_payment_cancel_result));
-
 			// REPLACE
 			$vendor_payment_replace_data->validate_only = FALSE;
 			$vendor_payment_replace = new Beans_Vendor_Payment_Replace($this->_beans_data_auth($vendor_payment_replace_data));
