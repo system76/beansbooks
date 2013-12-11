@@ -196,12 +196,23 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 		
 		$this->_transaction->save();
 
+		$save_again = FALSE;
 		if( $this->_transaction->code == "AUTOGENERATE" )
+		{
+			$save_again = TRUE;
 			$this->_transaction->code = $this->_transaction->id;
+		}
+
 		if( $this->_transaction->description == "AUTOGENERATE" )
+		{
+			$save_again = TRUE;
 			$this->_transaction->description = ( $this->_transaction->payment )
 											 ? 'Payment '.$this->_transaction->code
 											 : 'Transaction '.$this->_transaction->code;
+		}
+
+		if( $save_again )
+			$this->_transaction->save();
 		
 
 		foreach( $this->_account_transactions as $account_id => $_account_transaction )
