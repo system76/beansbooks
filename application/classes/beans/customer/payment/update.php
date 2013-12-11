@@ -75,7 +75,6 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 
 	protected function _execute()
 	{
-		
 		if( ! $this->_transaction_sale_account_id )
 			throw new Exception("INTERNAL ERROR: Could not find default SO receivable account.");
 
@@ -94,8 +93,8 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 		if( ! $this->_old_payment->loaded() )
 			throw new Exception("Payment could not be found.");
 
-		if( FALSE && $this->_old_payment->account_transactions->where('account_reconcile_id','IS NOT',NULL)->count_all() )
-			throw new Exception("Payment cannot be changed after it has been reconciled.");
+		if( ! $this->_old_payment->payment != "customer" )
+			throw new Exception("That transaction is not a payment.");
 
 		// Check for some basic data.
 		if( ! isset($this->_data->deposit_account_id) )
