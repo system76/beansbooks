@@ -33,8 +33,6 @@ class Beans_Setup_Update extends Beans_Setup {
 		if( ! in_array($current_version, $updates) )
 			$updates[] = $current_version;
 
-		sort($updates,SORT_NATURAL);
-
 		// PHP 5.4+ Required for this...  using an ugly hack instead.
 		// sort($updates,'SORT_NATURAL');
 		natsort($updates);
