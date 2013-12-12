@@ -46,6 +46,7 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 	protected $_auth_role_perm = "vendor_payment_write";
 
 	protected $_transaction_id;
+	protected $_validate_only;
 	protected $_data;
 	protected $_transaction;
 	protected $_payment;
@@ -62,6 +63,11 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 		$this->_payment = $this->_default_vendor_payment();
 
 		$this->_data = $data;
+
+		$this->_validate_only = ( 	isset($this->_data->validate_only) AND 
+							 		$this->_data->validate_only )
+							  ? TRUE
+							  : FALSE;
 	}
 
 	protected function _execute()
@@ -354,6 +360,9 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 			$update_transaction_data->account_transactions[] = $account_transaction;
 		}
 
+		if( $this->_validate_only )
+			$update_transaction_data->validate_only = TRUE;
+
 		$update_transaction_data->id = $this->_transaction->id;
 		$update_transaction_data->payment_type_handled = 'vendor';
 		
@@ -363,6 +372,9 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 		if( ! $update_transaction_result->success )
 			throw new Exception("Update failure - could not convert transaction to payment: ".$update_transaction_result->error);
 
+		if( $this->_validate_only )
+			return (object)array();
+		
 		if( count($calibrate_payments) )
 			usort($calibrate_payments, array($this,'_calibrate_payments_sort') );
 

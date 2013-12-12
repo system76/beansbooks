@@ -1724,13 +1724,23 @@ class Controller_Vendors_Json extends Controller_Json {
 			);
 
 			// REPLACE
+			$vendor_payment_replace_data->validate_only = TRUE;
+			$vendor_payment_replace_validate = new Beans_Vendor_Payment_Replace($this->_beans_data_auth($vendor_payment_replace_data));
+			$vendor_payment_replace_validate_result = $vendor_payment_replace_validate->execute();
+
+			if( ! $vendor_payment_replace_validate_result->success )
+				return $this->_return_error($this->_beans_result_get_error($vendor_payment_replace_validate_result));
+
 			$vendor_payment_replace_data->validate_only = FALSE;
 			$vendor_payment_replace = new Beans_Vendor_Payment_Replace($this->_beans_data_auth($vendor_payment_replace_data));
-
 			$vendor_payment_replace_result = $vendor_payment_replace->execute();
 
+			// This would be quite unexpected.
 			if( ! $vendor_payment_replace_result->success )
-				return $this->_return_error($this->_beans_result_get_error($vendor_payment_replace_result));
+				return $this->_return_error(
+					"An unexpected error has occurred:<br>".
+					$this->_beans_result_get_error($vendor_payment_replace_result)
+				);
 
 			$payment = $vendor_payment_replace_result->data->payment;
 		}
@@ -1786,8 +1796,8 @@ class Controller_Vendors_Json extends Controller_Json {
 				}
 
 			}
-
-			$vendor_payment_update = new Beans_Vendor_Payment_Update($this->_beans_data_auth((object)array(
+			
+			$vendor_payment_update_data = (object)array(
 				'id' => $payment_id,
 				'date' => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
 				'amount' => $this->request->post('amount'),
@@ -1795,31 +1805,27 @@ class Controller_Vendors_Json extends Controller_Json {
 				'writeoff_account_id' => $this->request->post('writeoff_account_id'),
 				'check_number' => $this->request->post('check_number'),
 				'purchases' => $purchases,
-			)));
+			);
 
+			$vendor_payment_update_data->validate_only = TRUE;
+			$vendor_payment_update_validate = new Beans_Vendor_Payment_Update($this->_beans_data_auth($vendor_payment_update_data));
+			$vendor_payment_update_validate_result = $vendor_payment_update_validate->execute();
+
+			if( ! $vendor_payment_update_validate_result->success )
+				return $this->_return_error($this->_beans_result_get_error($vendor_payment_update_validate_result));
+
+			$vendor_payment_update_data->validate_only = FALSE;
+			$vendor_payment_update = new Beans_Vendor_Payment_Update($this->_beans_data_auth($vendor_payment_update_data));
 			$vendor_payment_update_result = $vendor_payment_update->execute();
 
+			// This would be quite unexpected.
 			if( ! $vendor_payment_update_result->success )
-				return $this->_return_error($this->_beans_result_get_error($vendor_payment_update_result));
+				return $this->_return_error(
+					"An unexpected error has occurred:<br>".
+					$this->_beans_result_get_error($vendor_payment_update_result)
+				);
 
 			$payment = $vendor_payment_update_result->data->payment;
-		}
-
-		// V2Item
-		// Remove the attributes_only request from here and Beans_Vendor_Purchase_Update
-		// Update purchases with SO/Invoice numbers.
-		foreach( $purchases as $purchase )
-		{
-			$vendor_purchase_update = new Beans_Vendor_Purchase_Update($this->_beans_data_auth((object)array(
-				'id' => $purchase->purchase_id,
-				'attributes_only' => TRUE,
-				'so_number' => ( strlen($purchase->so_number) ) ? $purchase->so_number : NULL,
-				'invoice_number' => ( strlen($purchase->invoice_number) ) ? $purchase->invoice_number : NULL,
-			)));
-			$vendor_purchase_update_result = $vendor_purchase_update->execute();
-
-			if( ! $vendor_purchase_update_result->success )
-				$this->_return_object->error = ( $this->_return_object->error ) ? $this->_return_object->error.'<br>'.$this->_beans_result_get_error($vendor_purchase_update_result) : 'Payment was successfully added, but some errors were encountered:<br>'.$this->_beans_result_get_error($vendor_purchase_update_result);
 		}
 
 		// Update remit address ID
