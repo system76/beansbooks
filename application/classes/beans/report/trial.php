@@ -77,7 +77,7 @@ class Beans_Report_Trial extends Beans_Report {
 				if( isset($account->type->table_sign) )
 				{
 					$return_account->table_sign = $account->type->table_sign;
-					$return_account->balance = $this->_generate_simple_account_balance($account->id,$account->type->table_sign,$date);
+					$return_account->balance = $this->_generate_simple_account_balance($account->id,$account->type->table_sign,$date,FALSE,($account->type->code == 'equity' ? TRUE : FALSE));
 				}
 				else
 				{

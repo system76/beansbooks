@@ -200,34 +200,13 @@ class Beans_Customer_Sale_Invoice_Update extends Beans_Customer_Sale {
 			}
 		}
 
-		$sale_invoice_transaction_data->validate_only = TRUE;
-		$sale_invoice_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($sale_invoice_transaction_data));
+		$sale_invoice_transaction_data->id = $this->_sale->invoice_transaction_id;
+		$sale_invoice_transaction_data->form_type_handled = "sale";
+		$sale_invoice_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($sale_invoice_transaction_data));
 		$sale_invoice_transaction_result = $sale_invoice_transaction->execute();
 
 		if( ! $sale_invoice_transaction_result->success )
 			throw new Exception("Could not create invoice transaction: ".$sale_invoice_transaction_result->error);
-
-		$sale_invoice_transaction_data->force_id = $this->_sale->invoice_transaction_id;
-		
-		$sale_invoice_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
-			'id' => $this->_sale->invoice_transaction_id,
-			'form_type_handled' => "sale",
-		)));
-		$sale_invoice_transaction_delete_result = $sale_invoice_transaction_delete->execute();
-
-		if( ! $sale_invoice_transaction_delete_result->success )
-			throw new Exception("Could not delete old invoice transaction: ".$sale_invoice_transaction_delete_result->error);
-
-		$sale_invoice_transaction_data->validate_only = FALSE;
-		$sale_invoice_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($sale_invoice_transaction_data));
-		$sale_invoice_transaction_result = $sale_invoice_transaction->execute();
-
-		if( ! $sale_invoice_transaction_result->success )
-			throw new Exception("Could not create invoice transaction: ".$sale_invoice_transaction_result->error);
-
-		// ID Changes with Update
-		$this->_sale->invoice_transaction_id = $sale_invoice_transaction_result->data->transaction->id;
-		$this->_sale->save();
 
 		// We need to reload the sale so that we can get the correct balance, etc.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);

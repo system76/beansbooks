@@ -629,7 +629,7 @@ class Beans_Account extends Beans {
 	{
 		// Insert new account transaction.
 		$insert_sql = 'INSERT INTO account_transactions '.
-					  '(transaction_id, account_id, date, amount, transfer, writeoff, close_books, balance) '.
+					  '(transaction_id, account_id, date, amount, transfer, writeoff, close_books, account_reconcile_id, balance) '.
 					  'VALUES ( '.
 					  $account_transaction->transaction_id.', '.
 					  $account_transaction->account_id.', '.
@@ -638,13 +638,16 @@ class Beans_Account extends Beans {
 					  ( $account_transaction->transfer ? '1' : '0' ).', '.
 					  ( $account_transaction->writeoff ? '1' : '0' ).', '.
 					  ( $account_transaction->close_books ? '1' : '0' ).', '.
+					  ( $account_transaction->account_reconcile_id ? $account_transaction->account_reconcile_id : 'NULL' ).', '.
 					  '( SELECT IFNULL(SUM(bbalance),0.00) FROM ('.
 					  '		SELECT IFNULL(balance,0.00) as bbalance FROM '.
 					  '		account_transactions as aaccount_transactions WHERE '.
 					  '		account_id = "'.$account_transaction->account_id.'" AND '.
-					  '		date <= DATE("'.$account_transaction->date.'") AND '.
-					  ' 	transaction_id < '.$account_transaction->transaction_id.' '.
-					  '		ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
+					  '		date <= DATE("'.$account_transaction->date.'") AND ( '.
+					  ' 		transaction_id < '.$account_transaction->transaction_id.' OR '.
+					  ' 		( close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' AND '.
+					  ' 		transaction_id < '.$account_transaction->transaction_id.' ) '.
+					  ' 	) ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
 					  ') as baccount_transactions ) '.
 					  ') ';
 		
@@ -658,8 +661,8 @@ class Beans_Account extends Beans {
 					  'account_id = "'.$account_transaction->account_id.'" AND '.
 					  '( '.
 					  ' 	( date > DATE("'.$account_transaction->date.'") ) OR '.
-					  ' 	( date = DATE("'.$account_transaction->date.'") AND close_books <= '.( $account_transaction->close_books ? '1' : '0' ).' ) OR '.
-					  ' 	( date = DATE("'.$account_transaction->date.'") AND transaction_id >= '.$account_transaction->transaction_id.' ) '.
+					  ' 	( date = DATE("'.$account_transaction->date.'") AND close_books < '.( $account_transaction->close_books ? '1' : '0' ).' ) OR '.
+					  ' 	( date = DATE("'.$account_transaction->date.'") AND close_books <= '.( $account_transaction->close_books ? '1' : '0' ).' AND transaction_id >= '.$account_transaction->transaction_id.' ) '.
 					  ') ';
 		
 		$update_result = DB::Query(Database::UPDATE,$update_sql)->execute();
@@ -694,7 +697,8 @@ class Beans_Account extends Beans {
 					  'account_id = "'.$account_transaction->account_id.'" AND '.
 					  '( '.
 					  ' 	( date > DATE("'.$account_transaction->date.'") ) OR '.
-					  ' 	( date = DATE("'.$account_transaction->date.'") AND transaction_id >= '.$account_transaction->transaction_id.' AND close_books <= '.( $account_transaction->close_books ? '1' : '0' ).' ) '.
+					  ' 	( date = DATE("'.$account_transaction->date.'") AND close_books < '.( $account_transaction->close_books ? '1' : '0' ).' ) OR '.
+					  ' 	( date = DATE("'.$account_transaction->date.'") AND close_books <= '.( $account_transaction->close_books ? '1' : '0' ).' AND transaction_id >= '.$account_transaction->transaction_id.' ) '.
 					  ') ';
 		
 		$update_result = DB::Query(Database::UPDATE,$update_sql)->execute();
