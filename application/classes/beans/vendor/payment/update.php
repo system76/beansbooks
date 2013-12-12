@@ -46,6 +46,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 	protected $_auth_role_perm = "vendor_payment_write";
 
 	protected $_id;
+	protected $_validate_only;
 	protected $_data;
 	protected $_old_payment;
 	protected $_payment;
@@ -61,6 +62,11 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		$this->_payment = $this->_default_vendor_payment();
 
 		$this->_data = $data;
+
+		$this->_validate_only = ( 	isset($this->_data->validate_only) AND 
+							 		$this->_data->validate_only )
+							  ? TRUE
+							  : FALSE;
 	}
 
 	protected function _execute()
@@ -290,8 +296,6 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			$update_transaction_data->description = "Vendor Payment Recorded: ".$vendor->company_name;
 		}
 
-		
-
 		$writeoff_account = FALSE;
 		if( $writeoff_account_transfer_total != 0.00 )
 		{
@@ -366,6 +370,9 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 
 		$vendor = $this->_load_vendor($vendor_id);
 
+		if( $this->_validate_only )
+			$update_transaction_data->validate_only = TRUE;
+
 		// Shouldn't change...
 		// $update_transaction_data->entity_id = $vendor_id;
 		$update_transaction_data->id = $this->_old_payment->id;
@@ -377,6 +384,9 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		if( ! $update_transaction_result->success )
 			throw new Exception("An error occurred creating that payment: ".$update_transaction_result->error);
 
+		if( $this->_validate_only )
+			return (object)array();
+		
 		if( count($calibrate_payments) )
 			usort($calibrate_payments, array($this,'_calibrate_payments_sort') );
 
