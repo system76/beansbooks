@@ -1081,6 +1081,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 				$(this).attr('disabled',false).focus().blur();
 			});
 			$('#customers-sales-create select[name="account"]').select2('enable');
+			$('#customers-sales-create select[name="account"]').attr('disabled',false).attr('readonly',false);
+			
 			$('#customers-sales-create-form-lines select.account_id').each(function () {
 				$(this).select2("enable");
 			});
