@@ -45,11 +45,11 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 
 		$payment_object = $this->_return_vendor_payment_element($this->_payment);
 
-		$create_transaction_data = new stdClass;
-		$create_transaction_data->code = $this->_payment->reference;
-		$create_transaction_data->description = $this->_payment->description;
-		$create_transaction_data->date = $this->_payment->date;
-		$create_transaction_data->payment = "vendor";
+		$update_transaction_data = new stdClass;
+		$update_transaction_data->code = $this->_payment->reference;
+		$update_transaction_data->description = $this->_payment->description;
+		$update_transaction_data->date = $this->_payment->date;
+		$update_transaction_data->payment = "vendor";
 		
 		$purchase_account_transfers = array();
 		$purchase_account_transfers_forms = array();
@@ -68,9 +68,9 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 				if( (
 						$account_transaction_form->account_transaction->transaction->payment AND 
 						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($create_transaction_data->date) OR
+							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($create_transaction_data->date) AND 
+								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
 								$account_transaction_form->account_transaction->transaction->id < $this->_payment->id
 							)
 						)
@@ -84,9 +84,9 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 				}
 				else if( $account_transaction_form->account_transaction->transaction->payment AND 
 						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) > strtotime($create_transaction_data->date) OR
+							strtotime($account_transaction_form->account_transaction->transaction->date) > strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($create_transaction_data->date) AND 
+								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
 								$account_transaction_form->account_transaction->transaction->id > $this->_payment->id
 							)
 						) AND
@@ -171,7 +171,7 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		$purchase_account_transfers[$payment_account->id] = $payment_object->amount
 														 * $payment_account->type->table_sign;
 
-		$create_transaction_data->account_transactions = array();
+		$update_transaction_data->account_transactions = array();
 
 		foreach( $purchase_account_transfers as $account_id => $amount )
 		{
@@ -199,38 +199,17 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 					);
 			}
 
-			$create_transaction_data->account_transactions[] = $account_transaction;
+			$update_transaction_data->account_transactions[] = $account_transaction;
 		}
 
-		// Check that our data is good.
-		$create_transaction_data->validate_only = TRUE;
+		$update_transaction_data->id = $this->_payment->id;
+		$update_transaction_data->payment_type_handled = 'vendor';
 
-		$validate_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($create_transaction_data));
-		$validate_transaction_result = $validate_transaction->execute();
+		$update_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($update_transaction_data));
+		$update_transaction_result = $update_transaction->execute();
 
-		if( ! $validate_transaction_result->success )
-			throw new Exception("An error occurred when re-calibrating that payment: ".$validate_transaction_result->error);
-
-		$create_transaction_data->validate_only = FALSE;
-
-		// Keep same ID / Order.
-		$create_transaction_data->force_id = $this->_payment->id;
-
-		// Before we create the new payment, we remove the old one to avoid any systemic errors in journals.
-		$account_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
-			'id' => $this->_payment->id,
-			'payment_type_handled' => 'vendor',
-		)));
-		$account_transaction_delete_result = $account_transaction_delete->execute();
-
-		if( ! $account_transaction_delete_result->success )
-			throw new Exception("Update failure - could not cancel previous payment: ".$account_transaction_delete_result->error);
-
-		$create_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($create_transaction_data));
-		$create_transaction_result = $create_transaction->execute();
-
-		if( ! $create_transaction_result->success )
-			throw new Exception("An error occurred creating that payment: ".$create_transaction_result->error);
+		if( ! $update_transaction_result->success )
+			throw new Exception("An error occurred creating that payment: ".$update_transaction_result->error);
 
 		return (object)array();
 	}

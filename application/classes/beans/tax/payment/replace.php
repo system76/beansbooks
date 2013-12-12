@@ -122,36 +122,36 @@ class Beans_Tax_Payment_Replace extends Beans_Tax_Payment {
 
 		// Delete old transaction
 		// Formulate data request object for Beans_Account_Transaction_Create
-		$create_transaction_data = new stdClass;
+		$update_transaction_data = new stdClass;
 
-		$create_transaction_data->code = $this->_transaction->code; // PRESERVE THIS
+		$update_transaction_data->code = $this->_transaction->code; // PRESERVE THIS
 
-		$create_transaction_data->description = ( isset($this->_data->description) )
+		$update_transaction_data->description = ( isset($this->_data->description) )
 											  ? $this->_data->description
 											  : NULL;
 
-		if( ! $create_transaction_data->description ) 
-			$create_transaction_data->description = "Tax Remittance: ".$tax->name;
+		if( ! $update_transaction_data->description ) 
+			$update_transaction_data->description = "Tax Remittance: ".$tax->name;
 		else 
-			$create_transaction_data->description = "Tax Remittance: ".$create_transaction_data->description;
+			$update_transaction_data->description = "Tax Remittance: ".$update_transaction_data->description;
 
-		$create_transaction_data->date = ( isset($this->_data->date) )
+		$update_transaction_data->date = ( isset($this->_data->date) )
 									   ? $this->_data->date
 									   : NULL;
 
-		$create_transaction_data->reference = ( isset($this->_data->check_number) )
+		$update_transaction_data->reference = ( isset($this->_data->check_number) )
 											? $this->_data->check_number
 											: NULL;
 
-		if( ! $create_transaction_data->code AND 
-			$create_transaction_data->reference ) 
-			$create_transaction_data->code = $create_transaction_data->reference;
+		if( ! $update_transaction_data->code AND 
+			$update_transaction_data->reference ) 
+			$update_transaction_data->code = $update_transaction_data->reference;
 
 		// Positive Payment = Negative to Balance
-		$create_transaction_data->account_transactions = array();
+		$update_transaction_data->account_transactions = array();
 
 		// Payment Account
-		$create_transaction_data->account_transactions[] = (object)array(
+		$update_transaction_data->account_transactions[] = (object)array(
 			'account_id' => $payment_account->id,
 			'transfer' => TRUE,
 			'amount' => ( $this->_payment->amount * -1 * $payment_account->account_type->table_sign ),
@@ -183,7 +183,7 @@ class Beans_Tax_Payment_Replace extends Beans_Tax_Payment {
 			if( ! $writeoff_account->writeoff )
 				throw new Exception("Invalid writeoff account: must be marked as a valid writeoff account.");
 
-			$create_transaction_data->account_transactions[] = (object)array(
+			$update_transaction_data->account_transactions[] = (object)array(
 				'account_id' => $writeoff_account->id,
 				'writeoff' => TRUE,
 				'amount' => ( $writeoff_amount * -1 * $payment_account->account_type->table_sign ),
@@ -193,35 +193,22 @@ class Beans_Tax_Payment_Replace extends Beans_Tax_Payment {
 		}
 
 		// Tax Account
-		$create_transaction_data->account_transactions[] = (object)array(
+		$update_transaction_data->account_transactions[] = (object)array(
 			'account_id' => $tax->account_id,
 			'amount' => ( $this->_payment->amount * $payment_account->account_type->table_sign ),
 		);
 
 		// Make sure our data is good.
-		$create_transaction_data->validate_only = TRUE;
+		$update_transaction_data->id = $this->_transaction->id;
 
-		$validate_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($create_transaction_data));
-		$validate_transaction_result = $validate_transaction->execute();
+		$update_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($update_transaction_data));
+		$update_transaction_result = $update_transaction->execute();
 
-		if( ! $validate_transaction_result->success )
-			throw new Exception("An error occurred when creating that payment: ".$validate_transaction_result->error);
-
-		if( $this->_validate_only )
-			return (object)array();
-
-		$create_transaction_data->validate_only = FALSE;
-
-		$create_transaction_data->id = $this->_transaction->id;
-
-		$create_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($create_transaction_data));
-		$create_transaction_result = $create_transaction->execute();
-
-		if( ! $create_transaction_result->success )
-			throw new Exception("An error occurred creating that tax payment: ".$create_transaction_result->error);
+		if( ! $update_transaction_result->success )
+			throw new Exception("An error occurred creating that tax payment: ".$update_transaction_result->error);
 		
 		// Assign transation to payment and save
-		$this->_payment->transaction_id = $create_transaction_result->data->transaction->id;
+		$this->_payment->transaction_id = $update_transaction_result->data->transaction->id;
 		$this->_payment->save();
 
 		// Update tax 
