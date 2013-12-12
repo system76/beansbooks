@@ -48,7 +48,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 
 	protected function _execute()
 	{
-		if( $this->_beans_internal_call() )
+		if( ! $this->_beans_internal_call() )
 			throw new Exception("Restricted to internal calls.");
 
 		if( ! $this->_transaction_sale_account_id )
