@@ -79,6 +79,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		
 		// Array of IDs for sales to have their invoices updated.
 		$sales_invoice_update = array();
+		$sales_cancel_update = array();
 
 		$sale_account_transfers = array();
 		$sale_account_transfers_forms = array();
@@ -172,15 +173,12 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			}
 			else
 			{
-				if( (
-						$sale->date_billed AND 
-						$sale->invoice_transaction_id 
-					) OR 
-					(
-						$sale->date_cancelled AND 
-						$sale->cancel_transaction_id
-					) )
+				if( $sale->date_billed AND 
+					$sale->invoice_transaction_id )
 					$sales_invoice_update[] = $sale->id;
+				else if( $sale->date_cancelled AND 
+						 $sale->cancel_transaction_id )
+					$sales_cancel_update[] = $sale->id;
 
 				$income_transfer_amount = 0.00;
 				$tax_transfer_amount = 0.00;
@@ -352,6 +350,19 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			if( ! $customer_sale_invoice_update_result->success ) 
 			{
 				$invoice_update_errors .= "UNEXPECTED ERROR: Error updating customer sale invoice transaction. ".$customer_sale_invoice_update_result->error;
+			}
+		}
+
+		foreach( $sales_cancel_update as $sale_id )
+		{
+			$customer_sale_cancel_update = new Beans_Customer_Sale_Cancel_Update($this->_beans_data_auth((object)array(
+				'id' => $sale_id,
+			)));
+			$customer_sale_cancel_update_result = $customer_sale_cancel_update->execute();
+
+			if( ! $customer_sale_cancel_update_result->success ) 
+			{
+				$invoice_update_errors .= "UNEXPECTED ERROR: Error updating customer sale cancellation transaction. ".$customer_sale_cancel_update_result->error;
 			}
 		}
 
