@@ -95,16 +95,31 @@ class Beans_Report_Balance extends Beans_Report {
 			$account_types[$type_key]->balance = $bal;
 		}
 
-		$balanced_retained_earnings = $account_types['asset']->balance - $account_types['liability']->balance - $account_types['equity']->balance;
+		// Get Net Income
+		$income_report = new Beans_Report_Income($this->_beans_data_auth((object)array(
+			'date_start' => substr($this->_date,0,4).'-01-01',
+			'date_end' => $this->_date
+		)));
+		$income_report_result = $income_report->execute();
 
-		$account_types['equity']->balance = $this->_beans_round( $account_types['equity']->balance + $balanced_retained_earnings );
+		if( ! $income_report_result->success )
+			throw new Exception(
+				"Unexpected error: could not get net income: ".
+				$income_report_result->error.
+				$income_report_result->auth_error.
+				$income_report_result->config_error
+			);
+
+		$net_income = $income_report_result->data->account_types['net']->balance;
+
+		$account_types['equity']->balance = $this->_beans_round( $account_types['equity']->balance + $net_income );
 
 		$account_types['equity']->accounts[] = (object)array(
 			'name' => "Net Income",
 			'id' => NULL,
 			'type' => 'equity',
 			'table_sign' => 1,
-			'balance' => $balanced_retained_earnings,
+			'balance' => $net_income,
 		);
 
 		$total_liabilities_equity = $this->_beans_round( $account_types['liability']->balance + $account_types['equity']->balance );
