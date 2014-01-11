@@ -551,9 +551,10 @@ class Beans_Account extends Beans {
 		if( ! $this->_check_form_id($account_transaction_form->form_id) )
 			throw new Exception("Invalid account transaction form form ID: form not found.");
 
+		/*
 		if( ! $account_transaction_form->amount )
 			throw new Exception("Invalid account transaction form amount: none provided.");
-
+		*/
 	}
 
 	/**
@@ -727,6 +728,36 @@ class Beans_Account extends Beans {
 					  'WHERE id = "'.$form_id.'"';
 
 		DB::Query(Database::UPDATE, $update_sql)->execute();
+
+		// PENDING FOR v1.1 or future hotfix
+		// Requires adding date_paid field and a migration script to update
+		// Significantly speeds up payables/receivables reports and allows showing
+		// "Paid YYYY-MM-DD" within search results
+		/*
+		// Update date_paid
+		// If Balance == 0 set date_paid to last account_transaction_form date
+		$balance_sql = 'SELECT balance FROM forms WHERE id = "'.$form_id.'"';
+		$balance = DB::Query(Database::SELECT, $balance_sql)->execute()->as_array();
+
+		if( $balance['balance'] == 0.00 )
+		{
+			$date_paid_sql = 
+				' SELECT account_transaction_forms.id as id, account_transactions.date as date FROM account_transaction_forms '.
+				' LEFT JOIN account_transactions ON account_transaction_forms.account_transaction_id = account_transactions.id '.
+				' WHERE account_transaction_forms.form_id = '.$form_id.' '.
+				' ORDER BY account_transactions.date DESC, account_transactions.id DESC '.
+				' LIMIT 1 ';
+			$date_paid = DB::Query(Database::SELECT, $date_paid_sql)->execute()->as_array();
+
+			$date_paid_update_sql = 'UPDATE forms SET date_paid = "'.$date_paid[0]['date'].'" WHERE id = "'.$form_id.'"';
+			$date_paid_update = DB::Query(Database::UPDATE, $date_paid_update_sql)->execute();
+		}
+		else
+		{
+			$date_paid_update_sql = 'UPDATE forms SET date_paid = NULL WHERE id = "'.$form_id.'"';
+			$date_paid_update = DB::Query(Database::UPDATE, $date_paid_update_sql)->execute();
+		}
+		*/
 	}
 
 	/**

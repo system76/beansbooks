@@ -73,6 +73,22 @@ class Beans_Report_Ledger extends Beans_Report {
 			order_by('transaction_id','asc')->
 			find_all();
 
+		$balance = NULL;
+
+		// Calculate balance on-the-fly to avoid an error when pulling massive account transactions with balances mid-update.	
+		foreach( $this->_account_transactions as $i => $account_transaction )
+		{
+			if( $balance === NULL )
+			{
+				$balance = $this->_beans_round($account_transaction->balance);
+			}
+			else
+			{
+				$this->_account_transactions[$i]->balance = $this->_beans_round( $balance + $account_transaction->amount );
+				$balance = $this->_account_transactions[$i]->balance;
+			}
+		}
+		
 		return (object)array(
 			'date_start' => $this->_date_start,
 			'date_end' => $this->_date_end,

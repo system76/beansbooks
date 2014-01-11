@@ -16,7 +16,10 @@
 			</div>
 		</td>
 		<td style="padding-right: 2px; width: 60%; {{fontsizelarge}} text-align: right; min-height: 50px; padding-bottom: 5px; padding-top: 15px;">
-			General Ledger: {{report_date_start}} - {{report_date_end}}
+			<span style="display: inline-block;">
+			{{account_name}}{{^account_name}}General Ledger{{/account_name}}:
+			</span>
+			<span style="display: inline-block;">{{report_date_start}} - {{report_date_end}}</span>
 		</td>
 	</tr>
 	<tr>

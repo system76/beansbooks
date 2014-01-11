@@ -95,9 +95,20 @@ class Beans_Report_Balance extends Beans_Report {
 			$account_types[$type_key]->balance = $bal;
 		}
 
+		// Net Income Year = Last un-closed year.
+		$fye_transaction = ORM::Factory('transaction')->
+							where('close_books','IS NOT',NULL)->
+							order_by('close_books','DESC')->
+							find();
+
+		$income_year = date("Y",1);
+
+		if( $fye_transaction->loaded() )
+			$income_year = intval(substr($fye_transaction->close_books,0,4))+1;
+
 		// Get Net Income
 		$income_report = new Beans_Report_Income($this->_beans_data_auth((object)array(
-			'date_start' => substr($this->_date,0,4).'-01-01',
+			'date_start' => $income_year.'-01-01',
 			'date_end' => $this->_date
 		)));
 		$income_report_result = $income_report->execute();

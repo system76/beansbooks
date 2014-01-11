@@ -98,17 +98,19 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			$sale_balance = 0.00;
 			foreach( $sale->account_transaction_forms->find_all() as $account_transaction_form )
 			{
-				if( (
-						$account_transaction_form->account_transaction->transaction->payment AND 
-						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($update_transaction_data->date) OR
+				if( $account_transaction_form->account_transaction->transaction_id == $sale->create_transaction_id OR
+					(
+						( 
+							$account_transaction_form->account_transaction->transaction->payment 
+						) AND 
+						( 
+							strtotime($account_transaction_form->account_transaction->date) < strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
-								$account_transaction_form->account_transaction->transaction->id < $payment_object->id
+								$account_transaction_form->account_transaction->date == $update_transaction_data->date &&
+								$account_transaction_form->account_transaction->transaction_id < $this->_payment->id
 							)
-						)
-					) OR
-					$account_transaction_form->account_transaction->transaction_id == $sale->create_transaction_id )
+						) 
+					) )
 				{
 					$sale_balance = $this->_beans_round(
 						$sale_balance +
@@ -180,35 +182,10 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 						 $sale->cancel_transaction_id )
 					$sales_cancel_update[] = $sale->id;
 
-				$income_transfer_amount = 0.00;
-				$tax_transfer_amount = 0.00;
+				$deferred_amounts = $this->_calculate_deferred_payment($sale_payment_amount, $sale_paid, $sale_line_total, $sale_tax_total);
 				
-				if( $sale_paid < $sale_line_total )
-				{
-					$income_transfer_amount = $this->_beans_round(
-						$income_transfer_amount + 
-						(
-							( ( $sale_line_total - $sale_paid ) <= $sale_payment_amount )
-							? ( $sale_line_total - $sale_paid )
-							: $sale_payment_amount
-						)
-					);
-				}
-
-				if( $income_transfer_amount < $sale_payment_amount AND 
-					( $income_transfer_amount + $sale_paid - $sale_line_total ) < ( $sale_tax_total ) ) 
-				{
-					$remaining_tax_balance = ( $sale_tax_total + $sale_line_total - $sale_paid - $income_transfer_amount );
-					$remaining_payment_amount = ( $sale_payment_amount - $income_transfer_amount );
-					$tax_transfer_amount = $this->_beans_round(
-						$tax_transfer_amount + 
-						(
-							( $remaining_tax_balance <= $remaining_payment_amount )
-							? $remaining_tax_balance
-							: $remaining_payment_amount
-						)
-					);
-				}
+				$income_transfer_amount = $deferred_amounts->income_transfer_amount;
+				$tax_transfer_amount = $deferred_amounts->tax_transfer_amount;
 
 				if( $income_transfer_amount )
 				{
