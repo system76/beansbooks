@@ -26,4 +26,107 @@ class Beans_Customer_Sale extends Beans_Customer {
 		parent::__construct($data);
 	}
 	
+	protected function _calculate_deferred_invoice($sale_paid, $sale_line_total, $sale_tax_total)
+	{
+
+		$income_transfer_amount = 0.00;
+		$tax_transfer_amount = 0.00;
+
+		if( $sale_line_total >= 0 && $sale_paid >= 0 )
+		{
+			$sale_line_paid = $sale_paid;
+
+			if( $sale_line_paid > $sale_line_total )
+				$sale_line_paid = $sale_line_total;
+
+			$sale_tax_paid = $this->_beans_round( $sale_paid - $sale_line_paid );
+
+			if( $sale_tax_paid > $sale_tax_total )
+				$sale_tax_paid = $sale_tax_total;
+
+			$sale_line_paid = $this->_beans_round( $sale_line_paid + ( $sale_paid - ( $sale_line_paid + $sale_tax_paid ) ) );
+
+			$income_transfer_amount = $sale_line_paid;
+			$tax_transfer_amount = $sale_tax_paid;
+
+			return (object)array(
+				'income_transfer_amount' => $income_transfer_amount,
+				'tax_transfer_amount' => $tax_transfer_amount
+			);
+		}
+
+		if( $sale_line_total >= 0 && $sale_paid < 0 )
+		{
+			$sale_line_paid = $sale_paid;
+
+			if( $sale_line_paid > $sale_line_total )
+				$sale_line_paid = $sale_line_total;
+
+			$sale_tax_paid = $this->_beans_round( $sale_paid - $sale_line_paid );
+
+			if( $sale_tax_paid > $sale_tax_total )
+				$sale_tax_paid = $sale_tax_total;
+
+			$sale_line_paid = $this->_beans_round( $sale_line_paid + ( $sale_paid - ( $sale_line_paid + $sale_tax_paid ) ) );
+
+			$income_transfer_amount = $sale_line_paid;
+			$tax_transfer_amount = $sale_tax_paid;
+
+			return (object)array(
+				'income_transfer_amount' => $income_transfer_amount,
+				'tax_transfer_amount' => $tax_transfer_amount
+			);
+		}
+
+		if( $sale_line_total < 0 && $sale_paid <= 0 )
+		{
+			$sale_line_paid = $sale_paid;
+
+			if( $sale_line_paid < $sale_line_total ) // Sign Flip
+				$sale_line_paid = $sale_line_total;
+
+			$sale_tax_paid = $this->_beans_round( $sale_paid - $sale_line_paid );
+
+			if( $sale_tax_paid < $sale_tax_total ) // Sign Flip
+				$sale_tax_paid = $sale_tax_total;
+
+			// Operation Flip 
+			$sale_line_paid = $this->_beans_round( $sale_line_paid - ( $sale_paid - ( $sale_line_paid + $sale_tax_paid ) ) );
+
+			$income_transfer_amount = $sale_line_paid;
+			$tax_transfer_amount = $sale_tax_paid;
+
+			return (object)array(
+				'income_transfer_amount' => $income_transfer_amount,
+				'tax_transfer_amount' => $tax_transfer_amount
+			);
+		}
+
+		if( $sale_line_total < 0 && $sale_paid > 0 )
+		{
+			$sale_line_paid = $sale_paid;
+
+			if( $sale_line_paid < $sale_line_total ) // Sign Flip
+				$sale_line_paid = $sale_line_total;
+
+			$sale_tax_paid = $this->_beans_round( $sale_paid - $sale_line_paid );
+
+			if( $sale_tax_paid < $sale_tax_total ) // Sign Flip
+				$sale_tax_paid = $sale_tax_total;
+
+			// Operation Flip 
+			$sale_line_paid = $this->_beans_round( $sale_line_paid - ( $sale_paid - ( $sale_line_paid + $sale_tax_paid ) ) );
+
+			$income_transfer_amount = $sale_line_paid;
+			$tax_transfer_amount = $sale_tax_paid;
+
+			return (object)array(
+				'income_transfer_amount' => $income_transfer_amount,
+				'tax_transfer_amount' => $tax_transfer_amount
+			);
+		}
+
+		throw new Exception("Invalid invoice information: Uncaught Invoice Combination.");
+	}
+
 }

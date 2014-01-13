@@ -498,7 +498,8 @@ class Controller_Customers_Json extends Controller_Json {
 		$update_sale_data->customer_id = $customer_info[0];
 		if( $this->request->post('date_created') ) 
 			$update_sale_data->date_created = date("Y-m-d",strtotime($this->request->post('date_created')));
-		
+		if( $this->request->post('date_billed') )
+			$update_sale_data->date_billed = date("Y-m-d",strtotime($this->request->post('date_billed')));
 		$update_sale_data->date_due = ( $this->request->post('date_due') )
 									   ? date("Y-m-d",strtotime($this->request->post('date_due')))
 									   : date("Y-m-d",strtotime($update_sale_data->date_created.' +'.$account_info[1].' Days'));

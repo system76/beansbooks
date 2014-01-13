@@ -36,12 +36,12 @@ class View_Dash_Ledger extends View_Template {
 		return $this->report_ledger_result->data->date_end;
 	}
 
-	public function account()
+	public function account_name()
 	{
 		if( ! isset($this->report_ledger_result) )
 			return FALSE;
 
-		return $this->_account_array($this->report_ledger_result->data->account);
+		return $this->report_ledger_result->data->account->name;
 	}
 
 	public function account_transactions()

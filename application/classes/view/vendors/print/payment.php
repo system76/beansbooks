@@ -112,6 +112,7 @@ class View_Vendors_Print_Payment extends View_Print {
 				'po_date' => $purchase_payment->purchase->date_created,
 				'so_number' => $purchase_payment->purchase->so_number,
 				'invoice_number' => $purchase_payment->purchase->invoice_number,
+				'invoice_date' => $purchase_payment->purchase->date_billed,
 				'date_due' => $purchase_payment->purchase->date_due,
 				'amount_formatted' => ( $purchase_payment->amount < 0 ? '-' : '' ).$beans_settings->company_currency.number_format(abs($purchase_payment->amount),2,'.',','),
 			);

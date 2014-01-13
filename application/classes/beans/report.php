@@ -223,7 +223,7 @@ class Beans_Report extends Beans {
 						 ( ! $include_close_books ? ' AND close_books = 0 ' : ' ' ).
 						 ( $date_end ? ' AND date <= DATE("'.$date_end.'") ' : '' ).
 						 ( $date_start ? ' AND date >= DATE("'.$date_start.'") ' : '' );
-
+		
 		$balance_rows = DB::Query(Database::SELECT, $balance_query)->execute()->as_array();
 
 		$account->balance = $balance_rows[0]['bal'] * $account->table_sign;
@@ -329,6 +329,18 @@ class Beans_Report extends Beans {
 		}
 
 		return array_reverse($date_ranges);
+	}
+
+	protected function _get_invoice_date_balance($invoice, $date)
+	{
+		$account_transaction_forms_query = 
+			' SELECT SUM(account_transaction_forms.amount) as balance FROM account_transaction_forms '.
+			' LEFT JOIN account_transactions ON account_transaction_forms.account_transaction_id = account_transactions.id '.
+			' WHERE account_transaction_forms.form_id = '.$invoice->id.' AND '.
+			' account_transactions.date <= DATE("'.$date.'") ';
+		$account_transaction_forms_result = DB::Query(Database::SELECT, $account_transaction_forms_query)->execute()->as_array();
+
+		return $account_transaction_forms_result[0]['balance'];
 	}
 
 
