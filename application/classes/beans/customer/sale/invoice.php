@@ -139,11 +139,11 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 		$sale_balance = 0.00;
 		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
 		{
-			if( (
+			if( $account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id OR
+				(
 					$account_transaction_form->account_transaction->transaction->payment AND 
-					strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($sale_invoice_transaction_data->date) 
-				) OR
-				$account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id )
+					strtotime($account_transaction_form->account_transaction->date) <= strtotime($sale_invoice_transaction_data->date) 
+				) )
 			{
 				$sale_balance = $this->_beans_round(
 					$sale_balance +
@@ -166,36 +166,11 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 
 		$sale_paid = $this->_sale->total + $sale_balance;
 
-		// Reverse our payment math into Deferred Income / Pending Income && Tax
-		// i.e. fill income_transfer_total
-		// then fill tax_transfer_total
-		$income_transfer_amount = 0.00;
-		$tax_transfer_amount = 0.00;
+		$deferred_amounts = $this->_calculate_deferred_invoice($sale_paid, $sale_line_total, $sale_tax_total);
+
+		$income_transfer_amount = $deferred_amounts->income_transfer_amount;
+		$tax_transfer_amount = $deferred_amounts->tax_transfer_amount;
 		
-		if( $sale_paid != 0.00 )
-		{
-			$income_transfer_amount = $this->_beans_round(
-				$income_transfer_amount +
-				(
-					( $sale_line_total < $sale_paid )
-					? $sale_line_total 
-					: $sale_paid
-				)
-			);
-
-			if( ( $sale_paid - $sale_line_total ) > 0 )
-			{
-				$tax_transfer_amount = $this->_beans_round(
-					$tax_transfer_amount + 
-					(
-						( $sale_tax_total < ( $sale_paid - $sale_line_total ) )
-						? $sale_tax_total
-						: ( $sale_paid - $sale_line_total )
-					)
-				);
-			}
-		}
-
 		// Fill transactions.
 		$account_transactions[$this->_transaction_sale_account_id] = ( $sale_balance * -1 );
 		$account_transactions[$this->_sale->account_id] = ( $sale_balance );

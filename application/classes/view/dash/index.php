@@ -279,7 +279,7 @@ class View_Dash_Index extends View_Template {
 						 ? $form->sale_number
 						 : $form->purchase_number,
 				'url' => ( isset($form->customer) )
-					  ? '/customers/sales/'.$form->id
+					  ? '/customers/invoices/'.$form->id
 					  : '/vendors/purchases/'.$form->id,
 				'name' => ( isset($form->customer) )
 					   ? $form->customer->first_name.' '.$form->customer->last_name

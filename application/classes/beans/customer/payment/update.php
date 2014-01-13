@@ -165,10 +165,10 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 				throw new Exception("Invalid payment sale amount: none provided.");
 
 			if( in_array($sale->id, $handled_sales_ids) )
-				throw new Exception("Invalid payment sale: sale ID ".$sale->id." cannot be in payment more than once.");
+				throw new Exception("Invalid payment sale: sale ".$sale->code." cannot be in payment more than once.");
 
 			if( strtotime($sale->date_created) > strtotime($update_transaction_data->date) )
-				throw new Exception("Invalid payment sale: sale ID ".$sale->id." cannot be paid before its creation date: ".$sale->date_created.".");
+				throw new Exception("Invalid payment sale: sale ".$sale->code." cannot be paid before its creation date: ".$sale->date_created.".");
 
 			$handled_sales_ids[] = $sale->id;
 
@@ -185,17 +185,19 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 				{
 					// NADA
 				}
-				else if( (
-						$account_transaction_form->account_transaction->transaction->payment AND 
-						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($update_transaction_data->date) OR
+				else if( $account_transaction_form->account_transaction->transaction_id == $sale->create_transaction_id OR
+					( 
+						( 
+							$account_transaction_form->account_transaction->transaction->payment 
+						) AND 
+						( 
+							strtotime($account_transaction_form->account_transaction->date) < strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
-								$account_transaction_form->account_transaction->transaction->id < $this->_old_payment->id
+								$account_transaction_form->account_transaction->date == $update_transaction_data->date &&
+								$account_transaction_form->account_transaction->transaction_id < $this->_old_payment->id
 							)
-						)
-					) OR
-					$account_transaction_form->account_transaction->transaction_id == $sale->create_transaction_id )
+						) 
+					) )
 				{
 					$sale_balance = $this->_beans_round(
 						$sale_balance +
@@ -283,35 +285,10 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 						 $sale->cancel_transaction_id )
 					$sales_cancel_update[] = $sale->id;
 
-				$income_transfer_amount = 0.00;
-				$tax_transfer_amount = 0.00;
+				$deferred_amounts = $this->_calculate_deferred_payment($sale_payment_amount, $sale_paid, $sale_line_total, $sale_tax_total);
 				
-				if( $sale_paid < $sale_line_total )
-				{
-					$income_transfer_amount = $this->_beans_round(
-						$income_transfer_amount + 
-						(
-							( ( $sale_line_total - $sale_paid ) <= $sale_payment_amount )
-							? ( $sale_line_total - $sale_paid )
-							: $sale_payment_amount
-						)
-					);
-				}
-
-				if( $income_transfer_amount < $sale_payment_amount AND 
-					( $income_transfer_amount + $sale_paid - $sale_line_total ) < ( $sale_tax_total ) ) 
-				{
-					$remaining_tax_balance = ( $sale_tax_total + $sale_line_total - $sale_paid - $income_transfer_amount );
-					$remaining_payment_amount = ( $sale_payment_amount - $income_transfer_amount );
-					$tax_transfer_amount = $this->_beans_round(
-						$tax_transfer_amount + 
-						(
-							( $remaining_tax_balance <= $remaining_payment_amount )
-							? $remaining_tax_balance
-							: $remaining_payment_amount
-						)
-					);
-				}
+				$income_transfer_amount = $deferred_amounts->income_transfer_amount;
+				$tax_transfer_amount = $deferred_amounts->tax_transfer_amount;
 
 				if( $income_transfer_amount )
 				{

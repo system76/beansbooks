@@ -35,12 +35,8 @@
 	
 	{{#customer_reports}}
 		<tr>
-			<td width="*" colspan="3" style="background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; padding-left: 5px; font-size: 12px; font-weight: bold; text-align: left;">
-				{{customer_name}}
-			</td>
-			
-			<td colspan="2" style="width: 146px; background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; font-size: 12px; font-weight: bold; text-align: center;">
-				{{company_name}}
+			<td width="*" colspan="5" style="background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; padding-left: 5px; font-size: 12px; font-weight: bold; text-align: left;">
+				{{customer_name}} {{#company_name}}- {{company_name}}{{/company_name}}
 			</td>
 
 			<td colspan="2" style="width: 146px; background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; font-size: 12px; font-weight: bold; text-align: center;">
