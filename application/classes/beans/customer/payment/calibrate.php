@@ -143,12 +143,24 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			if( (
 					$sale->date_billed AND 
 					$sale->invoice_transaction_id AND 
-					strtotime($sale->date_billed) <= strtotime($payment_object->date)
+					(
+						strtotime($sale->date_billed) < strtotime($payment_object->date) OR 
+						(
+							$sale->date_billed == $payment_object->date &&
+							$sale->invoice_transaction_id < $this->_payment->id
+						)
+					)
 				) OR
 				(
 					$sale->date_cancelled AND 
 					$sale->cancel_transaction_id AND 
-					strtotime($sale->date_cancelled) <= strtotime($payment_object->date)
+					(
+						strtotime($sale->date_cancelled) < strtotime($payment_object->date) OR 
+						(
+							$sale->date_cancelled == $payment_object->date &&
+							$sale->invoice_transaction_id < $this->_payment->id
+						)
+					)
 				) ) 
 			{
 				// Sale AR
