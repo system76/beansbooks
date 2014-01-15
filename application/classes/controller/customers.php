@@ -208,6 +208,14 @@ class Controller_Customers extends Controller_View {
 		if( ! $customer_invoice_updatebatch_result->success )
 			die($date.' -> ERROR: '.$customer_invoice_updatebatch_result->error);
 
+		$customer_cancel_updatebatch = new Beans_Customer_Sale_Cancel_Updatebatch($this->_beans_data_auth((object)array(
+			'date' => $date,
+		)));
+		$customer_cancel_updatebatch_result = $customer_cancel_updatebatch->execute();
+
+		if( ! $customer_cancel_updatebatch_result->success )
+			die($date.' -> ERROR: '.$customer_cancel_updatebatch_result->error);
+
 		$customer_payment_calibratebatch = new Beans_Customer_Payment_Calibratebatch($this->_beans_data_auth((object)array(
 			'date' => $date,
 		)));
@@ -238,13 +246,15 @@ class Controller_Customers extends Controller_View {
 		$nextscript .= '</script>';
 
 		die(
-			$date." -> Success!  Calibrated ".count($customer_invoice_updatebatch_result->data->updated_invoice_ids)." invoices and ".count($customer_payment_calibratebatch_result->data->calibrated_payment_ids)." payments.<br><br>".
+			$date." -> Success!  Calibrated ".count($customer_invoice_updatebatch_result->data->updated_invoice_ids)." invoices, ".count($customer_cancel_updatebatch_result->data->updated_cancel_ids)." cancels and ".count($customer_payment_calibratebatch_result->data->calibrated_payment_ids)." payments.<br><br>".
 			'<div id="counter">...</div><br><br>'.
 			'<a id="stopnext" href="#">CANCEL NEXT</a>&nbsp;&nbsp;&nbsp;&nbsp;'.
 			'<a id="nextcalibrate" href="/customers/paymentcalibrate/'.date("Y-m-d",strtotime($date.' +1 Day')).'/">Next</a>'.
 			$nextscript.
 			'<br><br>'.
-			'Invoice IDs: '.implode(', ', $customer_invoice_updatebatch_result->data->updated_invoice_ids)
+			'Invoice IDs: '.implode(', ', $customer_invoice_updatebatch_result->data->updated_invoice_ids).
+			'<br><br>'.
+			'Cancel IDs: '.implode(', ', $customer_cancel_updatebatch_result->data->updated_cancel_ids)
 		);
 	}
 
