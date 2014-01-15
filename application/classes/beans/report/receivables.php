@@ -57,7 +57,10 @@ class Beans_Report_Receivables extends Beans_Report {
 			
 			$invoices = ORM::Factory('form')->
 				where('type','=','sale')->
-				where('date_billed','<=',$this->_date)->
+				and_where_open()->
+					or_where('date_billed','<=',$this->_date)->
+					or_where('date_cancelled','<=',$this->_date)->
+				and_where_close()->
 				order_by('id','ASC')->
 				find_all();
 
