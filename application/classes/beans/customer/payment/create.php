@@ -179,8 +179,7 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 						( 
 							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($create_transaction_data->date) OR
 							(
-								$account_transaction_form->account_transaction->transaction->date == $create_transaction_data->date &&
-								$account_transaction_form->account_transaction->transaction->id < $sale->invoice_transaction_id
+								$account_transaction_form->account_transaction->transaction->date == $create_transaction_data->date 
 							)
 						) 
 					) )
