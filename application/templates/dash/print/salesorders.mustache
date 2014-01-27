@@ -47,41 +47,38 @@
 				{{phone_number}}
 			</td>
 
-			<td colspan="3" style="width: 219px; background: {{backgroundlightgreen}}; padding-right: 10px; color: black; height: 20px; line-height: 20px; font-size: 12px; font-weight: bold; text-align: right;">
+			<td colspan="2" style="width: 219px; background: {{backgroundlightgreen}}; padding-right: 10px; color: black; height: 20px; line-height: 20px; font-size: 12px; font-weight: bold; text-align: right;">
 				Open Balance: {{{balance_total_formatted}}}
 			</td>
 		</tr>
 
 		<tr>
-			<td colspan="10" style="width:100%; padding-top: 2px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
+			<td colspan="9" style="width:100%; padding-top: 2px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
 		</tr>
 
 		<tr>
 			<td width="*" style="padding-left: 2px; font-size: 12px; color: black; text-align: center;">
-				Inv. Date
+				SO Date
 			</td>
-			<td style="width: 60px; padding-left: 5px; font-size: 12px; color: black; text-align: left;">
-				PO Num
+			<td style="width: 80px; padding-left: 5px; font-size: 12px; color: black; text-align: left;">
+				SO Num
 			</td>
-			<td style="width: 73px; font-size: 12px; color: black; text-align: center;">
-				Due Date
-			</td>
-			<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 				Balance
 			</td>
-			<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
-				Current
+			<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
+				Today
 			</td>
-			<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 				Late
 			</td>
-			<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 				30 Days
 			</td>
-			<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 				60 Days
 			</td>
-			<td style="width: 78px; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
 				90 Days
 			</td>
 			<td style="width: 60px; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
@@ -94,28 +91,25 @@
 				<td width="*" style="padding-left: 2px; font-size: 12px; color: black; text-align: center;">
 					{{date_created}}
 				</td>
-				<td style="width: 60px; padding-left: 5px; font-size: 12px; color: black; text-align: left;">
+				<td style="width: 80px; padding-left: 5px; font-size: 12px; color: black; text-align: left;">
 					<a class="dash-report-link-underline" href="/customers/sales/{{sale_id}}">{{sale_number}}</a>
 				</td>
-				<td style="width: 73px; font-size: 12px; color: black; text-align: center;">
-					{{date_due}}
-				</td>
-				<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+				<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 					{{{balance_formatted}}}
 				</td>
-				<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+				<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 					{{{balance_current_formatted}}}
 				</td>
-				<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+				<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 					{{{balance_0_formatted}}}
 				</td>
-				<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+				<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 					{{{balance_30_formatted}}}
 				</td>
-				<td style="width: 78px; font-size: 12px; color: black; text-align: right;">
+				<td style="width: 80px; font-size: 12px; color: black; text-align: right;">
 					{{{balance_60_formatted}}}
 				</td>
-				<td style="width: 78px; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
+				<td style="width: 80px; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
 					{{{balance_90_formatted}}}
 				</td>
 				<td style="width: 60px; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
@@ -125,30 +119,30 @@
 		{{/sales}}
 
 		<tr>
-			<td colspan="10" style="width:100%; padding-top: 5px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
+			<td colspan="9" style="width:100%; padding-top: 5px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
 		</tr>
 
 		<tr>
-			<td width="*" colspan="3" style="background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; padding-left: 5px; font-size: 12px; font-weight: bold; text-align: left;">
+			<td width="*" colspan="2" style="background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; padding-left: 5px; font-size: 12px; font-weight: bold; text-align: left;">
 				Customer Totals
 			</td>
 
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{{customer_balance_total_formatted}}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{{customer_balance_current_formatted}}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{{customer_balance_0_formatted}}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{{customer_balance_30_formatted}}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{{customer_balance_60_formatted}}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
 				{{{customer_balance_90_formatted}}}
 			</td>
 
@@ -158,33 +152,33 @@
 		</tr>
 
 		<tr>
-			<td colspan="10" style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
+			<td colspan="9" style="width:100%; padding-top: 10px;  height: 0px; line-height: 0px; font-size: 0px;">&nbsp;</td>
 		</tr>
 
 	{{/customer_reports}}
 
 	{{#report_totals}}
 		<tr>
-			<td width="*" colspan="3" style="background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; padding-left: 5px; font-size: 12px; font-weight: bold; text-align: left;">
-				Report Totals ({{customer_count}} Customers)
+			<td width="*" colspan="2" style="background: {{backgroundlightgreen}}; color: black; height: 20px; line-height: 20px; padding-left: 5px; font-size: 12px; font-weight: bold; text-align: left;">
+				Totals ({{customer_count}} Customers)
 			</td>
 
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{balance_total_formatted}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{balance_current_formatted}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{balance_0_formatted}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{balance_30_formatted}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; font-size: 12px; color: black; text-align: right;">
 				{{balance_60_formatted}}
 			</td>
-			<td style="width: 78px; background: {{backgroundlightgreen}}; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
+			<td style="width: 80px; background: {{backgroundlightgreen}}; padding-right: 2px; font-size: 12px; color: black; text-align: right;">
 				{{balance_90_formatted}}
 			</td>
 

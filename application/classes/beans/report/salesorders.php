@@ -98,7 +98,7 @@ class Beans_Report_Salesorders extends Beans_Report {
 				'date_due' => $sale->date_due,
 				'sale_number' => $sale->code,
 				'balance' => ( $sale->balance * -1),
-				'days_late' => round(($timestamp_today - strtotime($sale->date_due)) / 86400),
+				'days_late' => round(($timestamp_today - strtotime($sale->date_created)) / 86400),
 			);
 			
 			$days_range = 'current';
@@ -112,6 +112,7 @@ class Beans_Report_Salesorders extends Beans_Report {
 				$days_range = '0';
 
 			$customers[$sale->entity_id]->balances[$days_range] = $this->_beans_round( $customers[$sale->entity_id]->balances[$days_range] + $report_sale->balance );
+			$balances[$days_range] = $this->_beans_round( $balances[$days_range] + $report_sale->balance );
 			
 			$customers[$sale->entity_id]->balance_total = $this->_beans_round( $customers[$sale->entity_id]->balance_total + $report_sale->balance );
 			$balance_total = $this->_beans_round( $balance_total + $report_sale->balance );
