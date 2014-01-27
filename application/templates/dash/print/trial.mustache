@@ -32,24 +32,24 @@
 	
 	<tr>
 		<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:bold; text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 60%; padding-left: 73px; text-indent: {{indent_level_px}}px;">Account</td>
-		<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:bold; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%; text-indent: {{indent_level_px}}px;">Debit</td>
-		<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:bold; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%; text-indent: {{indent_level_px}}px;">Credit</td>
+		<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:bold; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%;">Debit</td>
+		<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:bold; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%;">Credit</td>
 		<td width="*" style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} height: 15px; padding-top: 2px; padding-bottom: 3px;">&nbsp;</td>
 	</tr>
 
 	{{#account_lines}}
 		<tr>
 			<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:normal; text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 60%; padding-left: 73px; text-indent: {{indent_level_px}}px;">{{name}}</td>
-			<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%; text-indent: {{indent_level_px}}px;">{{{debit_formatted}}}{{^debit_formatted}}&nbsp;{{/debit_formatted}}</td>
-			<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%; text-indent: {{indent_level_px}}px;">{{{credit_formatted}}}{{^credit_formatted}}&nbsp;{{/credit_formatted}}</td>
+			<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%;">{{{debit_formatted}}}{{^debit_formatted}}&nbsp;{{/debit_formatted}}</td>
+			<td style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%;">{{{credit_formatted}}}{{^credit_formatted}}&nbsp;{{/credit_formatted}}</td>
 			<td width="*" style="{{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} height: 15px; padding-top: 2px; padding-bottom: 3px;">&nbsp;</td>
 		</tr>
 	{{/account_lines}}
 
 	<tr>
 		<td style="border-top: 2px solid {{backgrounddarkgreen}}; font-weight:bold; text-align: left; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 60%; padding-left: 73px; text-indent: {{indent_level_px}}px;">Total</td>
-		<td style="border-top: 2px solid {{backgrounddarkgreen}}; font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%; text-indent: {{indent_level_px}}px;">{{{debit_total_formatted}}}</td>
-		<td style="border-top: 2px solid {{backgrounddarkgreen}}; font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%; text-indent: {{indent_level_px}}px;">{{{credit_total_formatted}}}</td>
+		<td style="border-top: 2px solid {{backgrounddarkgreen}}; font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%;">{{{debit_total_formatted}}}</td>
+		<td style="border-top: 2px solid {{backgrounddarkgreen}}; font-weight:normal; text-align: right; height: 15px; padding-top: 2px; padding-bottom: 3px; width: 15%;">{{{credit_total_formatted}}}</td>
 		<td width="*" style="border-top: 2px solid {{backgrounddarkgreen}}; height: 15px; padding-top: 2px; padding-bottom: 3px;">&nbsp;</td>
 	</tr>
 

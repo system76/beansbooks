@@ -98,7 +98,7 @@ class Beans_Report_Purchaseorders extends Beans_Report {
 				'date_due' => $purchase->date_due,
 				'purchase_number' => $purchase->code,
 				'balance' => $purchase->balance,
-				'days_late' => round(($timestamp_today - strtotime($purchase->date_due)) / 86400),
+				'days_late' => round(($timestamp_today - strtotime($purchase->date_created)) / 86400),
 			);
 			
 			$days_range = 'current';
@@ -113,6 +113,7 @@ class Beans_Report_Purchaseorders extends Beans_Report {
 			
 
 			$vendors[$purchase->entity_id]->balances[$days_range] = $this->_beans_round( $vendors[$purchase->entity_id]->balances[$days_range] + $report_purchase->balance );
+			$balances[$days_range] = $this->_beans_round( $balances[$days_range] + $report_purchase->balance );
 			
 			$vendors[$purchase->entity_id]->balance_total = $this->_beans_round( $vendors[$purchase->entity_id]->balance_total + $report_purchase->balance );
 			$balance_total = $this->_beans_round( $balance_total + $report_purchase->balance );

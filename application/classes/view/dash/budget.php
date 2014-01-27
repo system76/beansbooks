@@ -114,6 +114,22 @@ class View_Dash_Budget extends View_Template {
 		return $return_array;
 	}
 
+	public function cogs_accounts()
+	{
+		if( ! isset($this->report_budget_result) )
+			return FALSE;
+
+		$return_array = array();
+
+		$j = 0;
+		foreach( $this->report_budget_result->data->account_types['costofgoods'] as $account )
+		{
+			$return_array[] = $this->_summarize_account($account,$j++);
+		}
+
+		return $return_array;
+	}
+
 	public function income_total()
 	{
 		if( ! isset($this->report_budget_result) )
