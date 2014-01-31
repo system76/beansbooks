@@ -667,6 +667,8 @@ class View_Template extends Kostache_Layout {
 		$return_array['description'] = $payment->description;
 		$return_array['number'] = $payment->number;
 		$return_array['deposit_account'] = $this->_customer_payment_deposit_account_array($payment);
+		$return_array['type'] = ucwords($payment->type);
+		$return_array['reference'] = $payment->reference;
 		$return_array['amount'] = $return_array['deposit_account']['amount'];
 		$return_array['amount_formatted'] = ($return_array['amount'] > 0 ? '-' : '').$this->_company_currency().number_format(abs($return_array['amount']),2,'.',',');
 

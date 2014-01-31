@@ -121,6 +121,8 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 									   : NULL;
 
 		$create_transaction_data->payment = "customer";
+		$create_transaction_data->type = $this->_data->type;
+		$create_transaction_data->reference = $this->_data->reference;
 
 		$sale_account_transfers = array();
 		$sale_account_transfers_forms = array();

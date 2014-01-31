@@ -49,7 +49,7 @@ class Controller_Myaccount extends Controller_View {
 					! strlen($this->request->post('new_password')) OR 
 					! strlen($this->request->post('repeat_password')) )
 				{
-					$this->_view->send_error_message('Please include all password fields.');
+					$this->_view->send_error_message('Please include all password fields to update your password.');
 					$valid = FALSE;
 				}
 				else if ( $this->request->post('new_password') != $this->request->post('repeat_password') )

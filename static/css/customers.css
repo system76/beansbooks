@@ -49,7 +49,7 @@ span.customers-sales-create-form-balance-label {
 	width: 51px;
 	text-align: right;
 }
-span.customers-sales-create-form-balance-value" {
+span.customers-sales-create-form-balance-value {
 	display: inline-block;
 	width: 71px;
 	text-align: left;
@@ -243,19 +243,23 @@ li.customer-customer > span.text-left {
 }
 
 .customer-customer-name {
-	width: 170px;
+	width: 140px;
+}
+
+.customer-company {
+	width: 140px;
 }
 
 .customer-customer-phone {
-	width: 150px;
+	width: 130px;
 }
 
 .customer-customer-email {
-	width: 200px;
+	width: 190px;
 }
 
 .customer-customer-balance_current, .customer-customer-balance_pastdue {
-	width: 150px;
+	width: 110px;
 }
 
 .customer-customer-actions {
@@ -285,7 +289,15 @@ li.customer-payment > span.text-left {
 }
 
 li.customer-payment > span.customer-payment-date {
-	width: 300px;
+	width: 100px;
+}
+
+li.customer-payment > span.customer-payment-type {
+	width: 100px;
+}
+
+li.customer-payment > span.customer-payment-reference {
+	width: 80px;
 }
 
 li.customer-payment > span.customer-payment-amount {

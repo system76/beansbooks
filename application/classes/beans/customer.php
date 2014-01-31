@@ -471,9 +471,15 @@ class Beans_Customer extends Beans {
 	{
 		$return_object = new stdClass;
 
-		$return_object->id = $account_transaction_form->account_transaction->transaction->id;
-		$return_object->date = $account_transaction_form->account_transaction->transaction->date;
-		$return_object->amount = $account_transaction_form->amount;
+		/** @var Model_Account_Transaction_Form $account_transaction_form  */
+		/** @var Model_Account_Transaction $account_transaction_form->account_transaction */
+		/** @var Model_Transaction $account_transaction_form->account_transaction->transaction */
+
+		$return_object->id        = $account_transaction_form->account_transaction->transaction->id;
+		$return_object->date      = $account_transaction_form->account_transaction->transaction->date;
+		$return_object->type      = $account_transaction_form->account_transaction->transaction->type;
+		$return_object->reference = $account_transaction_form->account_transaction->transaction->reference;
+		$return_object->amount    = $account_transaction_form->amount;
 
 		return $return_object;
 	}
@@ -772,6 +778,8 @@ class Beans_Customer extends Beans {
 		$return_object->number = $payment->code;
 		$return_object->description = $payment->description;
 		$return_object->date = $payment->date;
+		$return_object->type = $payment->type;
+		$return_object->reference = $payment->reference;
 		$return_object->payment = $payment->payment;	// Somewhat redundant.
 		$return_object->amount = 0.00;
 		// $return_object->amount = $payment->amount;

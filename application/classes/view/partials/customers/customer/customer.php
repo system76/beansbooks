@@ -46,6 +46,16 @@ class View_Partials_Customers_Customer_Customer extends Kostache {
 		return $this->customer->phone_number;
 	}
 
+	/**
+	 * Get the customer's company name for the template.
+	 *
+	 * @return string
+	 */
+	public function company_name()
+	{
+		return $this->customer->company_name;
+	}
+
 	public function balance_current_formatted() {
 		return (( $this->customer->balance_pastdue + $this->customer->balance_pending ) < 0 ? '-' : '').$this->_company_currency().number_format(abs(( $this->customer->balance_pastdue + $this->customer->balance_pending )),2,'.',',');
 	}

@@ -2956,6 +2956,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		});
 
 		$('#customers-payments-create input[name="date"]').val(dateYYYYMMDD());
+		$('#customers-payments-create select[name="type"]').select2('data',{
+			id: '',
+			text: ''
+		});
+		$('#customers-payments-create input[name="reference"]').val('');
 		$('#customers-payments-create input[name="sale_total"]').val('0.00');
 		$('#customers-payments-create input[name="writeoff_amount"]').val('0.00');
 		$('#customers-payments-create input[name="amount"]').val('0.00');
@@ -3044,6 +3049,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					$('#customers-payments-create').attr('rel',data.data.payment.id);
 					// Assign appropriate values to batch payment form and make everything readonly.
 					$('#customers-payments-create input[name="date"]').val(data.data.payment.date);
+					$('#customers-payments-create select[name="type"]').select2('data',{
+						id: data.data.payment.type,
+						text: data.data.payment.type ? ucwords(data.data.payment.type) : ''
+					});
+					$('#customers-payments-create input[name="reference"]').val(data.data.payment.reference);
 					$('#customers-payments-create input[name="sale_total"]').val(data.data.payment.amount);
 					$('#customers-payments-create input[name="amount"]').val(parseFloat(-1 * data.data.payment.deposit_transaction.amount).toFixed(2));
 					
@@ -3086,6 +3096,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 	function createPaymentBatchDisableFields() {
 		$('#customers-payments-create-actions').hide();
 		$('#customers-payments-create input[name="date"]').attr('readonly',true).datepicker("destroy");
+		$('#customers-payments-create select[name="type"]').select2('disable');
+		$('#customers-payments-create input[name="reference"]').attr('readonly',true);
 		$('#customers-payments-create input[name="amount"]').attr('readonly',true);
 		$('#customers-payments-create select[name="deposit_account_id"]').select2('disable');
 		$('#customers-payments-create select[name="writeoff_account_id"]').select2('disable');
@@ -3094,6 +3106,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 	function createPaymentBatchEnableFields() {
 		$('#customers-payments-create-actions').slideDown();
 		$('#customers-payments-create input[name="date"]').attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
+		$('#customers-payments-create select[name="type"]').select2('enable');
+		$('#customers-payments-create input[name="reference"]').removeAttr('readonly');
 		$('#customers-payments-create input[name="amount"]').attr('readonly',true);
 		$('#customers-payments-create select[name="deposit_account_id"]').select2('enable');
 		$('#customers-payments-create select[name="writeoff_account_id"]').select2('enable');
@@ -3144,5 +3158,23 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			setTimeout( function () { popupWindow.print(); } , 1000 );
 		});
 	}
+
+	function ucwords (str) {
+		// http://kevin.vanzonneveld.net
+		// +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+		// +   improved by: Waldo Malqui Silva
+		// +   bugfixed by: Onno Marsman
+		// +   improved by: Robin
+		// +      input by: James (http://www.james-bell.co.uk/)
+		// +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// *     example 1: ucwords('kevin van  zonneveld');
+		// *     returns 1: 'Kevin Van  Zonneveld'
+		// *     example 2: ucwords('HELLO WORLD');
+		// *     returns 2: 'HELLO WORLD'
+		return (str + '').replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function ($1) {
+			return $1.toUpperCase();
+		});
+	}
+
 
 }

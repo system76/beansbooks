@@ -96,6 +96,10 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 									 ? $this->_data->payment
 									 : FALSE;
 
+		$this->_transaction->type = ( isset($this->_data->type) AND $this->_data->type)
+			? $this->_data->type
+			: NULL;
+
 		$this->_transaction->reference = ( isset($this->_data->reference) AND $this->_data->reference )
 									   ? $this->_data->reference
 									   : NULL;
