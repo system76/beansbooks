@@ -193,6 +193,69 @@ class Controller_Customers extends Controller_View {
 		$this->_view->force_current_uri = "/customers/payments";
 	}
 
-	
+	public function action_paymentcalibrate()
+	{
+		set_time_limit(60 * 10);
+		ini_set('memory_limit', '256M');
+
+		$date = $this->request->param('id');
+
+		$customer_invoice_updatebatch = new Beans_Customer_Sale_Invoice_Updatebatch($this->_beans_data_auth((object)array(
+			'date' => $date,
+		)));
+		$customer_invoice_updatebatch_result = $customer_invoice_updatebatch->execute();
+
+		if( ! $customer_invoice_updatebatch_result->success )
+			die($date.' -> ERROR: '.$customer_invoice_updatebatch_result->error);
+
+		$customer_cancel_updatebatch = new Beans_Customer_Sale_Cancel_Updatebatch($this->_beans_data_auth((object)array(
+			'date' => $date,
+		)));
+		$customer_cancel_updatebatch_result = $customer_cancel_updatebatch->execute();
+
+		if( ! $customer_cancel_updatebatch_result->success )
+			die($date.' -> ERROR: '.$customer_cancel_updatebatch_result->error);
+
+		$customer_payment_calibratebatch = new Beans_Customer_Payment_Calibratebatch($this->_beans_data_auth((object)array(
+			'date' => $date,
+		)));
+		$customer_payment_calibratebatch_result = $customer_payment_calibratebatch->execute();
+
+		if( ! $customer_payment_calibratebatch_result->success )
+			die($date.' -> ERROR: '.$customer_payment_calibratebatch_result->error);
+
+		$nextscript = '<script type="text/javascript" src="/static/js/libs/jquery-1.7.2.min.js"></script>';
+		$nextscript .= '<script type="text/javascript">';
+		$nextscript .= '$(function() { ';
+		$nextscript .= '  var count = 5; ';
+		$nextscript .= '  var nextInterval = setInterval(function() { ';
+		$nextscript .= '    if( count < 0 ) { ';
+		$nextscript .= '      $("#counter").text("..."); clearInterval(nextInterval); ';
+		$nextscript .= '    } else if( count != 0 ) { ';
+		$nextscript .= '      $("#counter").text("Next will run in "+count+" seconds...");';
+		$nextscript .= '      count--;';
+		$nextscript .= '    } else {';
+		$nextscript .= '      count--; clearInterval(nextInterval); ';
+		$nextscript .= '      document.location = $("#nextcalibrate").attr("href"); ';//$("#nextcalibrate").trigger("click"); ';
+		$nextscript .= '      $("#nextcalibrate").hide(); ';
+		$nextscript .= '      $("#stopnext").hide(); ';
+		$nextscript .= '    } ';
+		$nextscript .= '  }, 1000);';
+		$nextscript .= '  $("#stopnext").click(function() { console.log("wasss"); count = -1; } );';
+		$nextscript .= '});';
+		$nextscript .= '</script>';
+
+		die(
+			$date." -> Success!  Calibrated ".count($customer_invoice_updatebatch_result->data->updated_invoice_ids)." invoices, ".count($customer_cancel_updatebatch_result->data->updated_cancel_ids)." cancels and ".count($customer_payment_calibratebatch_result->data->calibrated_payment_ids)." payments.<br><br>".
+			'<div id="counter">...</div><br><br>'.
+			'<a id="stopnext" href="#">CANCEL NEXT</a>&nbsp;&nbsp;&nbsp;&nbsp;'.
+			'<a id="nextcalibrate" href="/customers/paymentcalibrate/'.date("Y-m-d",strtotime($date.' +1 Day')).'/">Next</a>'.
+			$nextscript.
+			'<br><br>'.
+			'Invoice IDs: '.implode(', ', $customer_invoice_updatebatch_result->data->updated_invoice_ids).
+			'<br><br>'.
+			'Cancel IDs: '.implode(', ', $customer_cancel_updatebatch_result->data->updated_cancel_ids)
+		);
+	}
 
 }

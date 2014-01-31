@@ -314,7 +314,7 @@ class Controller_Install extends Controller_View {
 			if( ! $beans_setup_init_result->success )
 			{
 				$this->_remove_sql_progress($db);
-				return $this->_view->send_error_message("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->error);
+				return $this->_view->send_error_message("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->config_error.$beans_setup_init_result->error);
 			}
 			else
 			{
@@ -399,7 +399,7 @@ class Controller_Install extends Controller_View {
 		if( ! $beans_setup_init_result->success )
 		{
 			$this->_remove_sql_progress();
-			die("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->error."\n");
+			die("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->config_error.$beans_setup_init_result->error."\n");
 		}
 
 		// Create Admin Account

@@ -113,10 +113,7 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 		$this->_validate_transaction($this->_transaction);
 
 		$this->_transaction->amount = 0.00;
-
 		$transaction_balance = 0;
-
-		$i = 0;
 
 		// Make sure there's only one account_transaction per account.
 		$account_ids = array();
@@ -146,6 +143,8 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 			if( isset($account_transaction->writeoff) AND 
 				$account_transaction->writeoff )
 				$new_account_transaction->writeoff = TRUE;
+
+			$new_account_transaction->close_books = ( $this->_transaction->close_books ) ? TRUE : FALSE;
 							
 			$this->_validate_account_transaction($new_account_transaction);
 
@@ -156,9 +155,9 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 										? $new_account_transaction->amount
 										: 0;
 
-			$this->_account_transactions[$i] = $new_account_transaction;
+			$this->_account_transactions[$new_account_transaction->account_id] = $new_account_transaction;
 
-			$this->_account_transactions_forms[$i] = array();
+			$this->_account_transactions_forms[$new_account_transaction->account_id] = array();
 
 			if( $this->_beans_internal_call() AND 
 				isset($account_transaction->forms) AND
@@ -187,11 +186,9 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 
 					$account_transaction_form_total = $this->_beans_round( $account_transaction_form_total + $new_account_transaction_form->amount);
 
-					$this->_account_transactions_forms[$i][] = $new_account_transaction_form;
+					$this->_account_transactions_forms[$new_account_transaction->account_id][] = $new_account_transaction_form;
 				}
 			}
-
-			$i++;
 
 		}
 
@@ -203,44 +200,57 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 		
 		$this->_transaction->save();
 
+		$save_again = FALSE;
 		if( $this->_transaction->code == "AUTOGENERATE" )
+		{
+			$save_again = TRUE;
 			$this->_transaction->code = $this->_transaction->id;
+		}
+
 		if( $this->_transaction->description == "AUTOGENERATE" )
+		{
+			$save_again = TRUE;
 			$this->_transaction->description = ( $this->_transaction->payment )
 											 ? 'Payment '.$this->_transaction->code
 											 : 'Transaction '.$this->_transaction->code;
-		
-		// LOCK TABLE
-		DB::query(NULL, 'START TRANSACTION')->execute();
-
-		$this->_transaction->save();
-		
-		foreach( $this->_account_transactions as $_account_transaction )
-		{
-			$_account_transaction->balance = NULL;
-			$_account_transaction->transaction_id = $this->_transaction->id;
-			$_account_transaction->save();
-			
-			$this->_account_balance_new_transaction($_account_transaction);
 		}
+
+		if( $save_again )
+			$this->_transaction->save();
 		
-		foreach( $this->_account_transactions as $j => $account_transaction )
+
+		foreach( $this->_account_transactions as $account_id => $_account_transaction )
 		{
-			foreach( $this->_account_transactions_forms[$j] as $account_transaction_form )
+			$this->_account_transactions[$account_id]->transaction_id = $this->_transaction->id;
+
+			// Insert transaction and save ID.
+			$this->_account_transactions[$account_id]->id = $this->_account_transaction_insert($_account_transaction);
+
+			// Add forms to account transaction.
+			if( isset($this->_account_transactions_forms[$account_id]) AND
+				count($this->_account_transactions_forms[$account_id]) )
 			{
-				$account_transaction_form->account_transaction_id = $account_transaction->id;
-				$account_transaction_form->save();
+				foreach( $this->_account_transactions_forms[$account_id] as $account_transaction_form )
+				{
+					$account_transaction_form->account_transaction_id = $_account_transaction->id;
+					$account_transaction_form->save();
+				}
 			}
 		}
 
-		// Update form balances.
-		foreach( $this->_account_transactions as $j => $account_transaction )
-			foreach( $this->_account_transactions_forms[$j] as $account_transaction_form )
-				$this->_form_balance_calibrate($account_transaction_form->form_id);
-		
-		// UNLOCK TABLE
-		DB::query(NULL, 'COMMIT;')->execute();
-		
+		$update_form_ids = array();
+
+		foreach( $this->_account_transactions as $account_id => $account_transaction )
+		{
+			foreach( $this->_account_transactions_forms[$account_id] as $account_transaction_form )
+			{
+				if( ! in_array($account_transaction_form->form_id, $update_form_ids) )
+					$update_form_ids[] = $account_transaction_form->form_id;
+			}
+		}
+
+		foreach( $update_form_ids as $update_form_id )
+			$this->_form_balance_calibrate($update_form_id);
 
 		return (object)array(
 			"transaction" => $this->_return_transaction_element($this->_transaction),

@@ -150,6 +150,9 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 			if( isset($this->_data->date_due) )
 				$this->_sale->date_due = $this->_data->date_due;
+
+			if( strtotime($this->_sale->date_created) > strtotime($this->_sale->date_billed) )
+				$this->_sale->date_created = $this->_sale->date_billed;
 		}
 
 		// Make sure we have good sale information before moving on.
@@ -244,6 +247,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 		// If this is a refund we need to verify that the total is not greater than the original.
 		if( $this->_sale->refund_form_id AND 
+			$this->_sale->refund_form_id < $this->_sale->id AND
 			$this->_sale->total > $this->_load_customer_sale($this->_sale->refund_form_id)->total )
 			throw new Exception("That refund total was greater than the original sale total.");
 		
@@ -269,6 +273,13 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 				$sale_line_tax->delete();
 			
 			$sale_line->delete();
+		}
+
+		// Reverse current taxes if billed.
+		if( $this->_sale->date_billed )
+		{
+			foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
+				$this->_tax_adjust_balance($sale_tax->tax_id,( -1 * $sale_tax->total) );
 		}
 
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
@@ -383,35 +394,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		
 		$this->_sale->save();
 
-
-		// This might be excessive - consider removing... only appropriate use case is on create?
-		// Breakdown = above date_billed and date_due is only allowed if date_billed is set... etc.
-		if( $this->_date_billed AND 
-			! $this->_sale->date_billed )
-		{
-			$customer_sale_invoice = new Beans_Customer_Sale_Invoice($this->_beans_data_auth((object)array(
-				'id' => $this->_sale->id,
-				'date_billed' => $this->_date_billed,
-			)));
-			$customer_sale_invoice_result = $customer_sale_invoice->execute();
-
-			// If it fails - we undo everything ( this was a single request, after all ).
-			if( ! $customer_sale_invoice_result->success )
-			{
-				$delete_sale = new Beans_Customer_Sale_Delete($this->_beans_data_auth((object)array(
-					'id' => $this->_sale->id,
-				)));
-				$delete_sale_result = $delete_sale->execute();
-
-				if( ! $delete_sale_result->success )
-					throw new Exception("Error creating account transaction for sale. COULD NOT DELETE SALE! ".$delete_sale_result->error);
-				
-				throw new Exception("Error creating sale invoice: ".$customer_sale_invoice_result->error);
-			}
-
-			return $customer_sale_invoice_result;
-		}
-
 		$calibrate_payments = array();
 		
 		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
@@ -438,7 +420,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			$customer_sale_invoice_update_result = $customer_sale_invoice_update->execute();
 
 			if( ! $customer_sale_invoice_update_result->success ) 
-				$invoice_update_errors .= "UNEXPECTED ERROR: Error updating customer sale invoice transaction. ".$customer_sale_invoice_update_result->error;
+				throw new Exception("UNEXPECTED ERROR: Error updating customer sale invoice transaction. ".$customer_sale_invoice_update_result->error);
 		}
 
 		if( count($calibrate_payments) )

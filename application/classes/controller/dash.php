@@ -45,6 +45,7 @@ class Controller_Dash extends Controller_View {
 
 	public function action_index()
 	{
+		
 		$report_cash = new Beans_Report_Cash($this->_beans_data_auth((object)array(
 			'date' => date("Y-m-d"),
 		)));
@@ -262,6 +263,7 @@ class Controller_Dash extends Controller_View {
 		$report_payables = new Beans_Report_Payables($this->_beans_data_auth((object)array(
 			'vendor_id' => $vendor_id,
 			'days_late_minimum' => $days_late_minimum,
+			'date' => $this->request->post('date'),
 		)));
 		$report_payables_result = $report_payables->execute();
 
@@ -290,6 +292,7 @@ class Controller_Dash extends Controller_View {
 		$report_receivables = new Beans_Report_Receivables($this->_beans_data_auth((object)array(
 			'customer_id' => $customer_id,
 			'days_late_minimum' => $days_late_minimum,
+			'date' => $this->request->post('date'),
 		)));
 		$report_receivables_result = $report_receivables->execute();
 
@@ -592,37 +595,15 @@ class Controller_Dash extends Controller_View {
 
 	private function _dash_index_messages_closebooks($company_settings_result)
 	{
-		$fye = ( isset($company_settings_result->data->settings->company_fye) AND
-						$company_settings_result->data->settings->company_fye )
-				  ? $company_settings_result->data->settings->company_fye
-				  : "12-31";
-		
-		$fye_date = date("Y").'-'.$fye;
-		if( strtotime($fye_date) > time() )
-			$fye_date = date("Y",strtotime("-1 Year")).'-'.$fye;
-		
-		$fye_date_next_day = date("Y-m-d",strtotime($fye_date.' +1 Day'));
+		$account_closebooks_check = new Beans_Account_Closebooks_Check($this->_beans_data_auth());
+		$account_closebooks_check_result = $account_closebooks_check->execute();
 
-		$account_transaction_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
-			'date_before' => $fye_date_next_day,
-			'page_size' => 1,
-		)));
-		$account_transaction_search_result = $account_transaction_search->execute();
-
-		if( ! $account_transaction_search_result->success OR 
-			! count($account_transaction_search_result->data->transactions) )
+		if( ! $account_closebooks_check_result->success ||
+			! $account_closebooks_check_result->data->ready ||
+			! $account_closebooks_check_result->data->fye_date )
 			return array();
 
-		// Check if already closed.
-		$account_transaction_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
-			'close_books' => $fye_date,
-			'page_size' => 1,
-		)));
-		$account_transaction_search_result = $account_transaction_search->execute();
-
-		if( ! $account_transaction_search_result->success OR 
-			count($account_transaction_search_result->data->transactions) )
-			return array();
+		$fye_date = $account_closebooks_check_result->data->fye_date;
 
 		// This is a really ugly / special use case.
 

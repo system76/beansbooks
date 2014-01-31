@@ -58,6 +58,22 @@
 		</tr>
 	{{/income_accounts}}
 
+	{{#cogs_accounts}}
+		<tr class="income-line {{#zero}}report-zero{{/zero}}" {{#zero}}style="display:none;"{{/zero}}>
+			<td style="width: 125px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; color: black; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+				{{name}}
+			</td>
+			{{#date_values}}
+				<td style="width: 60px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; border-left: 1px solid {{borderdarkgreen}}; color: black; padding-right: 2px; height: 25px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+					{{{amount_formatted}}}
+				</td>
+			{{/date_values}}
+			<td style="width: 90px; background: {{#odd}}{{backgroundlightgreen}}{{/odd}}{{^odd}}white{{/odd}}; border-left: 1px solid {{borderdarkgreen}}; color: black; padding-right: 2px; height: 25px; line-height: 25px; font-size: 10px; text-align: right; overflow: hidden; white-space: nowrap;">
+				{{{total_formatted}}}
+			</td>
+		</tr>
+	{{/cogs_accounts}}
+
 	{{#income_total}}
 		<tr>
 			<td style="width: 125px; background: {{backgrounddarkgreen}}; color: white; height: 25px; line-height: 25px; padding-left: 5px; font-size: 10px; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">

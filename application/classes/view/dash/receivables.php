@@ -25,6 +25,9 @@ class View_Dash_Receivables extends View_Template {
 		if( ! isset($this->report_receivables_result) )
 			return FALSE;
 
+		if( $this->report_receivables_result->data->date == date("Y-m-d") )
+			return FALSE;
+
 		return $this->report_receivables_result->data->date;
 	}
 

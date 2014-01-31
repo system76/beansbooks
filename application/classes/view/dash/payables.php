@@ -25,6 +25,9 @@ class View_Dash_Payables extends View_Template {
 		if( ! isset($this->report_payables_result) )
 			return FALSE;
 
+		if( $this->report_payables_result->data->date == date("Y-m-d") )
+			return FALSE;
+
 		return $this->report_payables_result->data->date;
 	}
 

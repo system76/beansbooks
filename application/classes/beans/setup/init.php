@@ -89,6 +89,14 @@ class Beans_Setup_Init extends Beans_Setup {
 			$setting->save();
 		}
 
+		$setting = ORM::Factory('setting')->where('key','=','BEANS_VERSION')->find();
+		if( ! $setting->loaded() )
+			$setting = ORM::Factory('setting');
+		
+		$setting->key = 'BEANS_VERSION';
+		$setting->value = $this->_BEANS_VERSION;
+		$setting->save();
+		
 		// Three laws - let it go.
 
 		// Default Accounts

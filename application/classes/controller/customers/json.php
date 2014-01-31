@@ -498,7 +498,8 @@ class Controller_Customers_Json extends Controller_Json {
 		$update_sale_data->customer_id = $customer_info[0];
 		if( $this->request->post('date_created') ) 
 			$update_sale_data->date_created = date("Y-m-d",strtotime($this->request->post('date_created')));
-		
+		if( $this->request->post('date_billed') )
+			$update_sale_data->date_billed = date("Y-m-d",strtotime($this->request->post('date_billed')));
 		$update_sale_data->date_due = ( $this->request->post('date_due') )
 									   ? date("Y-m-d",strtotime($this->request->post('date_due')))
 									   : date("Y-m-d",strtotime($update_sale_data->date_created.' +'.$account_info[1].' Days'));
@@ -1313,23 +1314,6 @@ class Controller_Customers_Json extends Controller_Json {
 				'writeoff_account_id' => $this->request->post('writeoff_account_id'),
 				'sales'               => $sales,
 			);
-
-			// VALIDATE
-			$customer_payment_replace_data->validate_only = TRUE;
-			$customer_payment_validate = new Beans_Customer_Payment_Create($this->_beans_data_auth($customer_payment_replace_data));
-			$customer_payment_validate_result = $customer_payment_validate->execute();
-
-			if( ! $customer_payment_validate_result->success )
-				return $this->_return_error($this->_beans_result_get_error($customer_payment_validate_result));
-
-			// DELETE
-			$customer_payment_cancel = new Beans_Customer_Payment_Cancel($this->_beans_data_auth((object)array(
-				'id' => $payment_id,
-			)));
-			$customer_payment_cancel_result = $customer_payment_cancel->execute();
-
-			if( ! $customer_payment_cancel_result->success )
-				return $this->_return_error($this->_beans_result_get_error($customer_payment_cancel_result));
 
 			// REPLACE
 			$customer_payment_replace_data->validate_only = FALSE;

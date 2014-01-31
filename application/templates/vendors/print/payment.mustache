@@ -31,10 +31,10 @@
 {{{tableopen}}}
 	<tr>
 		<td style="padding-top: 4px; padding-bottom: 4px; width: 20%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">PO Number</td>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Invoice Date</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Order Date</td>
 		<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">SO Num</td>
 		<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Invoice Num</td>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Due Date</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Invoice Date</td>
 		<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Amount Paid</td>
 	</tr>
 	{{#payment_lines}}
@@ -43,7 +43,7 @@
 			<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{po_date}}</td>
 			<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{so_number}}</td>
 			<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{invoice_number}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{date_due}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: center; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{invoice_date}}</td>
 			<td style="padding-top: 4px; padding-bottom: 4px; width: 16%; {{#odd}}background: {{backgroundlightgreen}}; -webkit-print-color-adjust:exact;{{/odd}} {{fontsizenormal}} text-align: right; padding-right: 5px; min-height: 24px; border-left: 1px solid {{borderdarkgreen}};">{{amount_formatted}}</td>
 		</tr>
 	{{/payment_lines}}

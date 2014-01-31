@@ -28,6 +28,7 @@ class Controller extends Kohana_Controller {
 		// Auth redirects.
 		if( $this->request->controller() != "api" AND 
 			$this->request->controller() != "auth" AND
+			$this->request->controller() != "update" AND
 			$this->request->controller() != "install" AND
 			$this->request->controller() != "exception" AND
 			(
@@ -51,6 +52,7 @@ class Controller extends Kohana_Controller {
 		// Avoid a nested exception thrown.
 		if( $this->request->controller() != "api" AND 
 			$this->request->controller() != "auth" AND
+			$this->request->controller() != "update" AND 
 			$this->request->controller() != "install" AND 
 			$this->request->controller() != "exception" AND 
 			count($this->_required_role_permissions) )

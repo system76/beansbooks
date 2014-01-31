@@ -1,0 +1,26 @@
+Final Balance Shift: {{calibrated_balance_shift}}<br>
+<br>
+<br>
+
+Transactions:<br>
+<div class="gray-bg-alternate">
+	{{#calibrated_transactions}}
+		<div>
+			<span style="display: inline-block; width: 100px;">{{id}}</span>
+			<span style="display: inline-block; width: 100px;">{{date}}</span>
+			<span style="display: inline-block; width: 100px;">{{transaction_id}}</span>
+			<span style="display: inline-block; width: 100px;">{{amount}}</span>
+			<span style="display: inline-block; width: 100px;">{{balance}}</span>
+			<span style="display: inline-block; width: 100px; {{#balance_changed}}color:#ff0000;{{/balance_changed}}{{^balance_changed}}color:#008800;{{/balance_changed}}">{{calibrated_balance}}</span>
+		</div>
+	{{/calibrated_transactions}}
+</div>
+
+<style>
+.gray-bg-alternate div {
+	padding: 2px 10px;
+}
+.gray-bg-alternate div:nth-child(odd) {
+	background: #efefef;
+}
+</style>

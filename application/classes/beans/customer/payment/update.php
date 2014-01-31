@@ -93,8 +93,8 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 		if( ! $this->_old_payment->loaded() )
 			throw new Exception("Payment could not be found.");
 
-		if( $this->_old_payment->account_transactions->where('account_reconcile_id','IS NOT',NULL)->count_all() )
-			throw new Exception("Payment cannot be changed after it has been reconciled.");
+		if( $this->_old_payment->payment != "customer" )
+			throw new Exception("That transaction is not a payment.");
 
 		// Check for some basic data.
 		if( ! isset($this->_data->deposit_account_id) )
@@ -112,33 +112,34 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 			throw new Exception("Invalid payment amount: none provided.");
 
 		// Formulate data request object for Beans_Account_Transaction_Create
-		$create_transaction_data = new stdClass;
+		$update_transaction_data = new stdClass;
 
-		$create_transaction_data->code = ( isset($this->_data->number) )
+		$update_transaction_data->code = ( isset($this->_data->number) )
 									   ? $this->_data->number
 									   : $this->_old_payment->reference;
 
-		$create_transaction_data->description = ( isset($this->_data->description) )
+		$update_transaction_data->description = ( isset($this->_data->description) )
 											  ? $this->_data->description
 											  : $this->_old_payment->description;
 
-		$create_transaction_data->description = ( strpos($create_transaction_data->description,"Customer Payment Recorded") !== FALSE )
-											  ? $create_transaction_data->description
-											  : "Customer Payment Recorded".( $create_transaction_data->description ? ': '.$create_transaction_data->description : '' );
+		$update_transaction_data->description = ( strpos($update_transaction_data->description,"Customer Payment Recorded") !== FALSE )
+											  ? $update_transaction_data->description
+											  : "Customer Payment Recorded".( $update_transaction_data->description ? ': '.$update_transaction_data->description : '' );
 
-		$create_transaction_data->date = ( isset($this->_data->date) )
+		$update_transaction_data->date = ( isset($this->_data->date) )
 									   ? $this->_data->date
 									   : $this->_old_payment->date;
 
-		$create_transaction_data->payment = "customer";
-		$create_transaction_data->type = $this->_data->type;
-		$create_transaction_data->reference = $this->_data->reference;
+		$update_transaction_data->payment = "customer";
+		$update_transaction_data->type = $this->_data->type;
+		$update_transaction_data->reference = $this->_data->reference;
 
 		$sale_account_transfers = array();
 		$sale_account_transfers_forms = array();
 		
 		// Array of IDs for sales to have their invoices updated.
 		$sales_invoice_update = array();
+		$sales_cancel_update = array();
 		$calibrate_payments = array();
 
 		$writeoff_account_transfer_total = 0.00;
@@ -166,7 +167,10 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 				throw new Exception("Invalid payment sale amount: none provided.");
 
 			if( in_array($sale->id, $handled_sales_ids) )
-				throw new Exception("Invalid payment sale: sale ID ".$sale->id." cannot be in payment more than once.");
+				throw new Exception("Invalid payment sale: sale ".$sale->code." cannot be in payment more than once.");
+
+			if( strtotime($sale->date_created) > strtotime($update_transaction_data->date) )
+				throw new Exception("Invalid payment sale: sale ".$sale->code." cannot be paid before its creation date: ".$sale->date_created.".");
 
 			$handled_sales_ids[] = $sale->id;
 
@@ -183,17 +187,19 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 				{
 					// NADA
 				}
-				else if( (
-						$account_transaction_form->account_transaction->transaction->payment AND 
-						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($create_transaction_data->date) OR
+				else if( $account_transaction_form->account_transaction->transaction_id == $sale->create_transaction_id OR
+					( 
+						( 
+							$account_transaction_form->account_transaction->transaction->payment 
+						) AND 
+						( 
+							strtotime($account_transaction_form->account_transaction->date) < strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($create_transaction_data->date) AND 
-								$account_transaction_form->account_transaction->transaction->id < $this->_old_payment->id
+								$account_transaction_form->account_transaction->date == $update_transaction_data->date &&
+								$account_transaction_form->account_transaction->transaction_id < $this->_old_payment->id
 							)
-						)
-					) OR
-					$account_transaction_form->account_transaction->transaction_id == $sale->create_transaction_id )
+						) 
+					) )
 				{
 					$sale_balance = $this->_beans_round(
 						$sale_balance +
@@ -202,9 +208,9 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 				}
 				else if( $account_transaction_form->account_transaction->transaction->payment AND 
 						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) > strtotime($create_transaction_data->date) OR
+							strtotime($account_transaction_form->account_transaction->transaction->date) > strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($create_transaction_data->date) AND 
+								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
 								$account_transaction_form->account_transaction->transaction->id > $this->_old_payment->id
 							)
 						) AND
@@ -242,12 +248,24 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 			if( (
 					$sale->date_billed AND 
 					$sale->invoice_transaction_id AND 
-					strtotime($sale->date_billed) <= strtotime($create_transaction_data->date)
+					(
+						strtotime($sale->date_billed) < strtotime($update_transaction_data->date) OR 
+						(
+							$sale->date_billed == $update_transaction_data->date &&
+							$sale->invoice_transaction_id < $this->_payment->id
+						)
+					)
 				) OR
 				(
 					$sale->date_cancelled AND 
 					$sale->cancel_transaction_id AND 
-					strtotime($sale->date_cancelled) <= strtotime($create_transaction_data->date)
+					(
+						strtotime($sale->date_cancelled) < strtotime($update_transaction_data->date) OR 
+						(
+							$sale->date_cancelled == $update_transaction_data->date &&
+							$sale->invoice_transaction_id < $this->_payment->id
+						)
+					)
 				) ) 
 			{
 				// Sale AR
@@ -274,45 +292,17 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 			}
 			else
 			{
-				if( (
-						$sale->date_billed AND 
-						$sale->invoice_transaction_id 
-					) OR 
-					(
-						$sale->date_cancelled AND 
-						$sale->cancel_transaction_id
-					) )
+				if( $sale->date_billed AND 
+					$sale->invoice_transaction_id )
 					$sales_invoice_update[] = $sale->id;
+				else if( $sale->date_cancelled AND 
+						 $sale->cancel_transaction_id )
+					$sales_cancel_update[] = $sale->id;
 
-				$income_transfer_amount = 0.00;
-				$tax_transfer_amount = 0.00;
+				$deferred_amounts = $this->_calculate_deferred_payment($sale_payment_amount, $sale_paid, $sale_line_total, $sale_tax_total);
 				
-				if( $sale_paid < $sale_line_total )
-				{
-					$income_transfer_amount = $this->_beans_round(
-						$income_transfer_amount + 
-						(
-							( ( $sale_line_total - $sale_paid ) <= $sale_payment_amount )
-							? ( $sale_line_total - $sale_paid )
-							: $sale_payment_amount
-						)
-					);
-				}
-
-				if( $income_transfer_amount < $sale_payment_amount AND 
-					( $income_transfer_amount + $sale_paid - $sale_line_total ) < ( $sale_tax_total ) ) 
-				{
-					$remaining_tax_balance = ( $sale_tax_total + $sale_line_total - $sale_paid - $income_transfer_amount );
-					$remaining_payment_amount = ( $sale_payment_amount - $income_transfer_amount );
-					$tax_transfer_amount = $this->_beans_round(
-						$tax_transfer_amount + 
-						(
-							( $remaining_tax_balance <= $remaining_payment_amount )
-							? $remaining_tax_balance
-							: $remaining_payment_amount
-						)
-					);
-				}
+				$income_transfer_amount = $deferred_amounts->income_transfer_amount;
+				$tax_transfer_amount = $deferred_amounts->tax_transfer_amount;
 
 				if( $income_transfer_amount )
 				{
@@ -422,7 +412,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 		$sale_account_transfers[$deposit_account->id] = $this->_data->amount
 														 * $deposit_account->account_type->table_sign;
 
-		$create_transaction_data->account_transactions = array();
+		$update_transaction_data->account_transactions = array();
 
 		foreach( $sale_account_transfers as $account_id => $amount )
 		{
@@ -450,38 +440,17 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 					);
 			}
 
-			$create_transaction_data->account_transactions[] = $account_transaction;
+			$update_transaction_data->account_transactions[] = $account_transaction;
 		}
 
-		// Check that our data is good.
-		$create_transaction_data->validate_only = TRUE;
+		$update_transaction_data->id = $this->_old_payment->id;
+		$update_transaction_data->payment_type_handled = 'customer';
 
-		$validate_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($create_transaction_data));
-		$validate_transaction_result = $validate_transaction->execute();
+		$update_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($update_transaction_data));
+		$update_transaction_result = $update_transaction->execute();
 
-		if( ! $validate_transaction_result->success )
-			throw new Exception("An error occurred when creating that payment: ".$validate_transaction_result->error);
-
-		$create_transaction_data->validate_only = FALSE;
-
-		// Keep same ID / Order.
-		$create_transaction_data->force_id = $this->_payment->id;
-
-		// Before we create the new payment, we remove the old one to avoid any systemic errors in journals.
-		$account_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
-			'id' => $this->_old_payment->id,
-			'payment_type_handled' => 'customer',
-		)));
-		$account_transaction_delete_result = $account_transaction_delete->execute();
-
-		if( ! $account_transaction_delete_result->success )
-			throw new Exception("Update failure - could not cancel previous payment: ".$account_transaction_delete_result->error);
-
-		$create_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($create_transaction_data));
-		$create_transaction_result = $create_transaction->execute();
-
-		if( ! $create_transaction_result->success )
-			throw new Exception("An error occurred creating that payment: ".$create_transaction_result->error);
+		if( ! $update_transaction_result->success )
+			throw new Exception("Update failure - could not update payment: ".$update_transaction_result->error);
 
 		if( count($calibrate_payments) )
 			usort($calibrate_payments, array($this,'_calibrate_payments_sort') );
@@ -515,11 +484,24 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 			}
 		}
 
+		foreach( $sales_cancel_update as $sale_id )
+		{
+			$customer_sale_cancel_update = new Beans_Customer_Sale_Cancel_Update($this->_beans_data_auth((object)array(
+				'id' => $sale_id,
+			)));
+			$customer_sale_cancel_update_result = $customer_sale_cancel_update->execute();
+
+			if( ! $customer_sale_cancel_update_result->success ) 
+			{
+				$invoice_update_errors .= "UNEXPECTED ERROR: Error updating customer sale cancellation transaction. ".$customer_sale_cancel_update_result->error;
+			}
+		}
+
 		if( $invoice_update_errors )
 			throw new Exception($invoice_update_errors);
 
 		return (object)array(
-			"payment" => $this->_return_customer_payment_element($this->_load_customer_payment($create_transaction_result->data->transaction->id)),
+			"payment" => $this->_return_customer_payment_element($this->_load_customer_payment($update_transaction_result->data->transaction->id)),
 		);
 	}
 

@@ -31,6 +31,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `account_reconcile_id` bigint(20) unsigned DEFAULT NULL,
   `transfer` BOOLEAN NOT NULL DEFAULT '0',
   `writeoff` BOOLEAN NOT NULL DEFAULT '0',
+  `close_books` BOOLEAN NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `account_transaction_forms` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,

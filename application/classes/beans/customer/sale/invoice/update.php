@@ -88,10 +88,19 @@ class Beans_Customer_Sale_Invoice_Update extends Beans_Customer_Sale {
 		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
 		{
 			if( (
-					$account_transaction_form->account_transaction->transaction->payment AND 
-					strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($sale_invoice_transaction_data->date) 
-				) OR
-				$account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id )
+					$account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id OR
+					( 
+						$account_transaction_form->account_transaction->transaction->payment 
+						AND 
+						( 
+							strtotime($account_transaction_form->account_transaction->date) < strtotime($sale_invoice_transaction_data->date) OR
+							(
+								$account_transaction_form->account_transaction->date == $sale_invoice_transaction_data->date &&
+								$account_transaction_form->account_transaction->transaction_id < $this->_sale->invoice_transaction_id
+							)
+						)
+					) 
+				) )
 			{
 				$sale_balance = $this->_beans_round(
 					$sale_balance +
@@ -102,36 +111,11 @@ class Beans_Customer_Sale_Invoice_Update extends Beans_Customer_Sale {
 
 		$sale_paid = $this->_sale->total + $sale_balance;
 
-		// Reverse our payment math into Deferred Income / Pending Income && Tax
-		// i.e. fill income_transfer_total
-		// then fill tax_transfer_total
-		$income_transfer_amount = 0.00;
-		$tax_transfer_amount = 0.00;
+		$deferred_amounts = $this->_calculate_deferred_invoice($sale_paid, $sale_line_total, $sale_tax_total);
+
+		$income_transfer_amount = $deferred_amounts->income_transfer_amount;
+		$tax_transfer_amount = $deferred_amounts->tax_transfer_amount;
 		
-		if( $sale_paid != 0.00 )
-		{
-			$income_transfer_amount = $this->_beans_round(
-				$income_transfer_amount +
-				(
-					( $sale_line_total < $sale_paid )
-					? $sale_line_total 
-					: $sale_paid
-				)
-			);
-
-			if( ( $sale_paid - $sale_line_total ) > 0 )
-			{
-				$tax_transfer_amount = $this->_beans_round(
-					$tax_transfer_amount + 
-					(
-						( $sale_tax_total < ( $sale_paid - $sale_line_total ) )
-						? $sale_tax_total
-						: ( $sale_paid - $sale_line_total )
-					)
-				);
-			}
-		}
-
 		// Fill transactions.
 		$account_transactions[$this->_transaction_sale_account_id] = ( $sale_balance * -1 );
 		$account_transactions[$this->_sale->account_id] = ( $sale_balance );
@@ -200,34 +184,13 @@ class Beans_Customer_Sale_Invoice_Update extends Beans_Customer_Sale {
 			}
 		}
 
-		$sale_invoice_transaction_data->validate_only = TRUE;
-		$sale_invoice_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($sale_invoice_transaction_data));
+		$sale_invoice_transaction_data->id = $this->_sale->invoice_transaction_id;
+		$sale_invoice_transaction_data->form_type_handled = "sale";
+		$sale_invoice_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($sale_invoice_transaction_data));
 		$sale_invoice_transaction_result = $sale_invoice_transaction->execute();
 
 		if( ! $sale_invoice_transaction_result->success )
 			throw new Exception("Could not create invoice transaction: ".$sale_invoice_transaction_result->error);
-
-		$sale_invoice_transaction_data->force_id = $this->_sale->invoice_transaction_id;
-		
-		$sale_invoice_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
-			'id' => $this->_sale->invoice_transaction_id,
-			'form_type_handled' => "sale",
-		)));
-		$sale_invoice_transaction_delete_result = $sale_invoice_transaction_delete->execute();
-
-		if( ! $sale_invoice_transaction_delete_result->success )
-			throw new Exception("Could not delete old invoice transaction: ".$sale_invoice_transaction_delete_result->error);
-
-		$sale_invoice_transaction_data->validate_only = FALSE;
-		$sale_invoice_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($sale_invoice_transaction_data));
-		$sale_invoice_transaction_result = $sale_invoice_transaction->execute();
-
-		if( ! $sale_invoice_transaction_result->success )
-			throw new Exception("Could not create invoice transaction: ".$sale_invoice_transaction_result->error);
-
-		// ID Changes with Update
-		$this->_sale->invoice_transaction_id = $sale_invoice_transaction_result->data->transaction->id;
-		$this->_sale->save();
 
 		// We need to reload the sale so that we can get the correct balance, etc.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);

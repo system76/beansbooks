@@ -46,6 +46,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 	protected $_auth_role_perm = "vendor_payment_write";
 
 	protected $_id;
+	protected $_validate_only;
 	protected $_data;
 	protected $_old_payment;
 	protected $_payment;
@@ -61,12 +62,20 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		$this->_payment = $this->_default_vendor_payment();
 
 		$this->_data = $data;
+
+		$this->_validate_only = ( 	isset($this->_data->validate_only) AND 
+							 		$this->_data->validate_only )
+							  ? TRUE
+							  : FALSE;
 	}
 
 	protected function _execute()
 	{
 		if( ! $this->_old_payment->loaded() )
 			throw new Exception("Payment could not be found.");
+
+		if( $this->_old_payment->payment != "vendor" )
+			throw new Exception("That transaction is not a payment.");
 
 		if( $this->_old_payment->account_transactions->where('account_reconcile_id','IS NOT',NULL)->count_all() )
 			throw new Exception("Payment cannot be changed after it has been reconciled.");
@@ -87,37 +96,25 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			throw new Exception("Invalid payment amount: none provided.");
 
 		// Formulate data request object for Beans_Account_Transaction_Create
-		$create_transaction_data = new stdClass;
+		$update_transaction_data = new stdClass;
 
-		$create_transaction_data->code = ( isset($this->_data->number) )
+		$update_transaction_data->code = ( isset($this->_data->number) )
 									   ? $this->_data->number
 									   : $this->_old_payment->code;
 
-		$create_transaction_data->description = ( isset($this->_data->description) )
+		$update_transaction_data->description = ( isset($this->_data->description) )
 											  ? $this->_data->description
 											  : $this->_old_payment->description;
 
-		$create_transaction_data->date = ( isset($this->_data->date) )
+		$update_transaction_data->date = ( isset($this->_data->date) )
 									   ? $this->_data->date
 									   : $this->_old_payment->date;
 
-		$create_transaction_data->reference = ( isset($this->_data->check_number) )
+		$update_transaction_data->reference = ( isset($this->_data->check_number) )
 											? $this->_data->check_number
 											: $this->_old_payment->reference;
 
-		$create_transaction_data->payment = "vendor";
-
-		// Keep the description clean.
-		if( $create_transaction_data->description )
-		{
-			$create_transaction_data->description = ( strpos($create_transaction_data->description,"Vendor Payment Recorded: ") !== FALSE )
-												  ? $create_transaction_data->description
-												  : "Vendor Payment Recorded: ".$create_transaction_data->description;
-		}
-		else
-		{
-			$create_transaction_data->description = "Vendor Payment Recorded: ".$vendor->company_name;
-		}
+		$update_transaction_data->payment = "vendor";
 
 		$purchase_account_transfers = array();
 		$purchase_account_transfers_forms = array();
@@ -163,8 +160,8 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			if( ! $purchase->date_billed AND 
 				! $purchase->invoice_transaction_id AND 
 				( 
-					$purchase_payment->invoice_number OR
-					$purchase_payment->date_billed 
+					( isset($purchase_payment->invoice_number) AND $purchase_payment->invoice_number ) OR
+					( isset($purchase_payment->date_billed) AND $purchase_payment->date_billed ) 
 				) )
 			{
 				$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(
@@ -178,10 +175,27 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				if( ! $vendor_purchase_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_invoice_result->error);
 			}
+			else if( $purchase->date_billed AND 
+					 $purchase->invoice_transaction_id AND 
+					 ( isset($purchase_payment->invoice_number) AND $purchase_payment->invoice_number ) )
+			{
+				$vendor_purchase_update_invoice = new Beans_Vendor_Purchase_Update_Invoice($this->_beans_data_auth((object)array(
+					'id' => $purchase->id,
+					'invoice_number' => $purchase_payment->invoice_number,
+					'validate_only' => $this->_validate_only,
+				)));
+				$vendor_purchase_update_invoice_result = $vendor_purchase_update_invoice->execute();
+
+				if( ! $vendor_purchase_update_invoice_result->success )
+					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
+			}
 			else if( ! $purchase->date_billed AND 
 				! $purchase->invoice_transaction_id )
 				throw new Exception("Invalid payment purchase: ".$purchase->code." has not been invoiced.  Please include an invoice number and date.");
 
+			if( strtotime($purchase->date_billed) > strtotime($update_transaction_data->date) )
+				throw new Exception("Invalid payment purchase: ".$purchase->code." cannot be paid before its invoice date: ".$purchase->date_billed.".");
+			
 			// Simplifies copied code.
 			$purchase_id = $purchase->id;
 
@@ -195,9 +209,9 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				else if( (
 						$account_transaction_form->account_transaction->transaction->payment AND 
 						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($create_transaction_data->date) OR
+							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($create_transaction_data->date) AND 
+								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
 								$account_transaction_form->account_transaction->transaction->id < $this->_old_payment->id
 							)
 						)
@@ -211,9 +225,9 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				}
 				else if( $account_transaction_form->account_transaction->transaction->payment AND 
 						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) > strtotime($create_transaction_data->date) OR
+							strtotime($account_transaction_form->account_transaction->transaction->date) > strtotime($update_transaction_data->date) OR
 							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($create_transaction_data->date) AND 
+								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
 								$account_transaction_form->account_transaction->transaction->id > $this->_old_payment->id
 							)
 						) AND
@@ -268,6 +282,20 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 
 		}
 
+		$vendor = $this->_load_vendor($vendor_id);
+
+		// Keep the description clean.
+		if( $update_transaction_data->description )
+		{
+			$update_transaction_data->description = ( strpos($update_transaction_data->description,"Vendor Payment Recorded: ") !== FALSE )
+												  ? $update_transaction_data->description
+												  : "Vendor Payment Recorded: ".$update_transaction_data->description;
+		}
+		else
+		{
+			$update_transaction_data->description = "Vendor Payment Recorded: ".$vendor->company_name;
+		}
+
 		$writeoff_account = FALSE;
 		if( $writeoff_account_transfer_total != 0.00 )
 		{
@@ -309,7 +337,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 														 * -1 // FLIP THE SIGN
 														 * $payment_account->account_type->table_sign;
 
-		$create_transaction_data->account_transactions = array();
+		$update_transaction_data->account_transactions = array();
 
 		foreach( $purchase_account_transfers as $account_id => $amount )
 		{
@@ -337,43 +365,28 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 					);
 			}
 
-			$create_transaction_data->account_transactions[] = $account_transaction;
+			$update_transaction_data->account_transactions[] = $account_transaction;
 		}
 
 		$vendor = $this->_load_vendor($vendor_id);
 
+		if( $this->_validate_only )
+			$update_transaction_data->validate_only = TRUE;
+
 		// Shouldn't change...
-		// $create_transaction_data->entity_id = $vendor_id;
+		// $update_transaction_data->entity_id = $vendor_id;
+		$update_transaction_data->id = $this->_old_payment->id;
+		$update_transaction_data->payment_type_handled = 'vendor';
+		
+		$update_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($update_transaction_data));
+		$update_transaction_result = $update_transaction->execute();
 
-		// Check that our data is good.
-		$create_transaction_data->validate_only = TRUE;
+		if( ! $update_transaction_result->success )
+			throw new Exception("An error occurred creating that payment: ".$update_transaction_result->error);
 
-		$validate_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($create_transaction_data));
-		$validate_transaction_result = $validate_transaction->execute();
-
-		if( ! $validate_transaction_result->success )
-			throw new Exception("An error occurred when creating that payment: ".$validate_transaction_result->error);
-
-		$create_transaction_data->validate_only = FALSE;
-
-		$create_transaction_data->force_id = $this->_old_payment->id;
-
-		// Before we create the new payment, we remove the old one to avoid any systemic errors in journals.
-		$account_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
-			'id' => $this->_old_payment->id,
-			'payment_type_handled' => 'vendor',
-		)));
-		$account_transaction_delete_result = $account_transaction_delete->execute();
-
-		if( ! $account_transaction_delete_result->success )
-			throw new Exception("Update failure - could not cancel previous payment: ".$account_transaction_delete_result->error);
-
-		$create_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($create_transaction_data));
-		$create_transaction_result = $create_transaction->execute();
-
-		if( ! $create_transaction_result->success )
-			throw new Exception("An error occurred creating that payment: ".$create_transaction_result->error);
-
+		if( $this->_validate_only )
+			return (object)array();
+		
 		if( count($calibrate_payments) )
 			usort($calibrate_payments, array($this,'_calibrate_payments_sort') );
 
@@ -392,7 +405,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		}
 
 		return(object)array(
-			"payment" => $this->_return_vendor_payment_element($this->_load_vendor_payment($create_transaction_result->data->transaction->id)),
+			"payment" => $this->_return_vendor_payment_element($this->_load_vendor_payment($update_transaction_result->data->transaction->id)),
 		);
 	}
 }
