@@ -110,6 +110,9 @@ class Beans_Account_Transaction_Search_Vendor extends Beans_Account_Transaction_
 
 		$this->_transactions = $this->_transactions->and_where_open();
 
+		$this->_transactions = $this->_transactions->
+			where('id','IS NOT',NULL);
+
 		// $this->_search_keywords
 		if( $this->_search_keywords )
 		{
