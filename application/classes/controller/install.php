@@ -27,10 +27,10 @@ class Controller_Install extends Controller_View {
 			$this->request->action() != "manual" )
 		{
 			$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
-			if( intval($config_permissions[2]) <= 6 AND 
-				intval($config_permissions[3]) <= 4 AND 
-				intval($config_permissions[4]) <= 0 )
-				throw new HTTP_Exception_404("Page not found.".implode('',$config_permissions));
+			if( intval($config_permissions[count($config_permissions) - 2]) <= 6 AND 
+				intval($config_permissions[count($config_permissions) - 1]) <= 6 AND 
+				intval($config_permissions[count($config_permissions) - 0]) <= 0 )
+				throw new HTTP_Exception_404("Page not found.");
 		}
 
 		parent::before();
@@ -227,7 +227,8 @@ class Controller_Install extends Controller_View {
 		if( count($this->request->post()) AND 
 			$this->request->post('install-step') == "5" )
 		{
-			if( ! file_exists(APPPATH.'classes/beans/config.php') )
+			if( ! file_exists(APPPATH.'classes/beans/config.php') OR
+				filesize(APPPATH.'classes/beans/config.php') < 1 )
 			{
 				// Write Config File.
 				
@@ -271,20 +272,26 @@ class Controller_Install extends Controller_View {
 					';'
 				);
 
-				if( ! chmod(APPPATH.'classes/beans/config.php',0640) )
-					return $this->_view->send_error_message("Error: The config file was successfully created, but the permissions could not be changed. ".
-						"Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0640. ".
+				$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
+				if( intval($config_permissions[count($config_permissions) - 2]) > 6 OR 
+					intval($config_permissions[count($config_permissions) - 1]) > 6 OR 
+					intval($config_permissions[count($config_permissions) - 0]) > 0 )
+					return $this->_view->send_error_message("Error: The config file was successfully created, but the permissions must be changed. ".
+						"Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0660. ".
 						"Once you've done so - you can click &quot;Finalize Installation&quot; again to finish the process.");
 			}
 			else
 			{
 				$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
-				if( intval($config_permissions[2]) > 6 OR 
-					intval($config_permissions[3]) > 4 OR 
-					intval($config_permissions[4]) > 0 )
-					return $this->_view->send_error_message("Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0640.");
+				if( intval($config_permissions[count($config_permissions) - 2]) > 6 OR 
+					intval($config_permissions[count($config_permissions) - 1]) > 6 OR 
+					intval($config_permissions[count($config_permissions) - 0]) > 0 )
+					return $this->_view->send_error_message("Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0660.");
 			}
 
+			$beans_config = require(APPPATH.'classes/beans/config.php');
+
+			$config_database = $beans_config['modules']['database']['default'];
 
 			$db = database::instance('install',$config_database);
 			$db->connect();
@@ -307,14 +314,14 @@ class Controller_Install extends Controller_View {
 				'auth_uid' => "INSTALL",
 				'auth_key' => "INSTALL",
 				'auth_expiration' => "INSTALL",
-				'default_account_set' => "full",//Session::instance('native')->get('accounts_options_choice'),
+				'default_account_set' => "full",
 			)));
 			$beans_setup_init_result = $beans_setup_init->execute();
 
 			if( ! $beans_setup_init_result->success )
 			{
 				$this->_remove_sql_progress($db);
-				return $this->_view->send_error_message("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->config_error.$beans_setup_init_result->error);
+				return $this->_view->send_error_message("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->error);
 			}
 			else
 			{
@@ -399,7 +406,7 @@ class Controller_Install extends Controller_View {
 		if( ! $beans_setup_init_result->success )
 		{
 			$this->_remove_sql_progress();
-			die("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->config_error.$beans_setup_init_result->error."\n");
+			die("Error setting up initial table entries: ".$beans_setup_init_result->auth_error.$beans_setup_init_result->error."\n");
 		}
 
 		// Create Admin Account

@@ -527,7 +527,7 @@ abstract class Kohana_Database {
 			elseif (strpos($column, '"') !== FALSE)
 			{
 				// Quote the column in FUNC("column") identifiers
-				$column = preg_replace('/"(.+?)"/e', '$this->quote_column("$1")', $column);
+				$column = @preg_replace('/"(.+?)"/e', '$this->quote_column("$1")', $column);
 			}
 			elseif (strpos($column, '.') !== FALSE)
 			{
