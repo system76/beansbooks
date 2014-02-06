@@ -115,12 +115,12 @@ class Beans_Report_Balancecheck extends Beans_Report {
 		// Asset + Liability =  Equity + Income - COGS - Expense
 		$result = $this->_beans_round( 
 			( $account_types['asset']->balance - $account_types['liability']->balance ) - 
-			( $account_types['equity']->balance + $account_types['income']->balance + $account_types['cost of goods sold']->balance + $account_types['expense']->balance )
+			( $account_types['equity']->balance + $account_types['income']->balance + $account_types['cost of goods sold']->balance - $account_types['expense']->balance )
 		);
 		
 		return (object)array(
 			'date' => $this->_date,
-			'balanced' => ( $result == 0.00 ? TRUE : FALSE ),
+			'balanced' => ( $result == 0.00 ? 1 : 0 ),
 		);
 	}
 }
