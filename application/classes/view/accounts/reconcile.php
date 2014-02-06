@@ -115,7 +115,7 @@ class View_Accounts_Reconcile extends View_Template {
 						'transaction_id' => $transaction->id,
 						'id' => $account_transaction->id,
 						'date' => $transaction->date,
-						'code' => $transaction->code,
+						'code' => $transaction->check_number ? $transaction->check_number : $transaction->code,
 						'description' => $transaction->description,
 						'amount' => $account_transaction->amount * $this->account_lookup_result->data->account->type->table_sign,
 						'amount_formatted' => $beans_settings->company_currency.number_format(abs($account_transaction->amount),2,'.',','),

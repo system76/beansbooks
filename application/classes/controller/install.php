@@ -27,9 +27,9 @@ class Controller_Install extends Controller_View {
 			$this->request->action() != "manual" )
 		{
 			$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
-			if( intval($config_permissions[count($config_permissions) - 2]) <= 6 AND 
-				intval($config_permissions[count($config_permissions) - 1]) <= 6 AND 
-				intval($config_permissions[count($config_permissions) - 0]) <= 0 )
+			if( intval($config_permissions[count($config_permissions) - 3]) <= 6 AND 
+				intval($config_permissions[count($config_permissions) - 2]) <= 6 AND 
+				intval($config_permissions[count($config_permissions) - 1]) <= 0 )
 				throw new HTTP_Exception_404("Page not found.");
 		}
 
@@ -224,76 +224,68 @@ class Controller_Install extends Controller_View {
 
 	public function action_finalize()
 	{
+		if( ! count($this->request->post()) ||
+			! $this->request->post('install-step') )
+		{
+			if( ! Session::instance('native')->get('config_database') ||
+				! Session::instance('native')->get('config_email') )
+				return $this->request->redirect('/install/');
+
+			// Write Config File.
+			
+			// Generate our secure hashes.
+			time_nanosleep(rand(0,2), rand(0,999999999));
+			$sha_hash = $this->_generate_random_string(128);
+			time_nanosleep(rand(0,2), rand(0,999999999));
+			$sha_salt = $this->_generate_random_string(128);
+			time_nanosleep(rand(0,2), rand(0,999999999));
+			$cookie_salt = $this->_generate_random_string(128);
+			time_nanosleep(rand(0,2), rand(0,999999999));
+			
+			// Create encrypt config
+			$config_encrypt = $this->_create_encrypt_config($this->_generate_random_string(64,TRUE));
+
+			$config_database = Session::instance('native')->get('config_database');
+			$config_email = Session::instance('native')->get('config_email');
+
+			// Beans Configuration!
+			$beans_config = array(
+				'sha_hash' => $sha_hash,
+				'sha_salt' => $sha_salt,
+				'cookie_salt' => $cookie_salt,
+				'modules' => array(
+					'encrypt' => array(
+						'default' => $config_encrypt,
+					),
+					'database' => array(
+						'default' => $config_database,
+					),
+					'email' => $config_email,
+				),
+			);
+
+			// Write Config File
+			file_put_contents(APPPATH.'classes/beans/config.php', 
+				'<?php defined(\'SYSPATH\') or die(\'No direct access allowed.\');'.
+				"\n\n".
+				'return '.
+				var_export($beans_config,TRUE).
+				';'
+			);
+		}
+
+		$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
+		if( intval($config_permissions[count($config_permissions) - 3]) > 6 OR 
+			intval($config_permissions[count($config_permissions) - 2]) > 6 OR 
+			intval($config_permissions[count($config_permissions) - 1]) > 0 )
+			return $this->_view->send_error_message("Error: The config file was successfully created, but the permissions must be changed. ".
+				"Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0660. ".
+				"Once you've done so - you can click &quot;Finalize Installation&quot; again to finish the process.");
+
 		if( count($this->request->post()) AND 
 			$this->request->post('install-step') == "5" )
 		{
-			if( ! file_exists(APPPATH.'classes/beans/config.php') OR
-				filesize(APPPATH.'classes/beans/config.php') < 1 )
-			{
-				// Write Config File.
-				
-				// Generate our secure hashes.
-				time_nanosleep(rand(0,2), rand(0,999999999));
-				$sha_hash = $this->_generate_random_string(128);
-				time_nanosleep(rand(0,2), rand(0,999999999));
-				$sha_salt = $this->_generate_random_string(128);
-				time_nanosleep(rand(0,2), rand(0,999999999));
-				$cookie_salt = $this->_generate_random_string(128);
-				time_nanosleep(rand(0,2), rand(0,999999999));
-				
-				// Create encrypt config
-				$config_encrypt = $this->_create_encrypt_config($this->_generate_random_string(64,TRUE));
-
-				$config_database = Session::instance('native')->get('config_database');
-				$config_email = Session::instance('native')->get('config_email');
-
-				// Beans Configuration!
-				$beans_config = array(
-					'sha_hash' => $sha_hash,
-					'sha_salt' => $sha_salt,
-					'cookie_salt' => $cookie_salt,
-					'modules' => array(
-						'encrypt' => array(
-							'default' => $config_encrypt,
-						),
-						'database' => array(
-							'default' => $config_database,
-						),
-						'email' => $config_email,
-					),
-				);
-
-				// Write Config File
-				file_put_contents(APPPATH.'classes/beans/config.php', 
-					'<?php defined(\'SYSPATH\') or die(\'No direct access allowed.\');'.
-					"\n\n".
-					'return '.
-					var_export($beans_config,TRUE).
-					';'
-				);
-
-				$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
-				if( intval($config_permissions[count($config_permissions) - 2]) > 6 OR 
-					intval($config_permissions[count($config_permissions) - 1]) > 6 OR 
-					intval($config_permissions[count($config_permissions) - 0]) > 0 )
-					return $this->_view->send_error_message("Error: The config file was successfully created, but the permissions must be changed. ".
-						"Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0660. ".
-						"Once you've done so - you can click &quot;Finalize Installation&quot; again to finish the process.");
-			}
-			else
-			{
-				$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
-				if( intval($config_permissions[count($config_permissions) - 2]) > 6 OR 
-					intval($config_permissions[count($config_permissions) - 1]) > 6 OR 
-					intval($config_permissions[count($config_permissions) - 0]) > 0 )
-					return $this->_view->send_error_message("Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0660.");
-			}
-
-			$beans_config = require(APPPATH.'classes/beans/config.php');
-
-			$config_database = $beans_config['modules']['database']['default'];
-
-			$db = database::instance('install',$config_database);
+			$db = database::instance();
 			$db->connect();
 
 			$tables = $db->query(Database::SELECT,'SHOW TABLES;')->as_array();
@@ -309,7 +301,7 @@ class Controller_Install extends Controller_View {
 					? $db->query(NULL,$database_table)
 					: NULL
 				);
-			
+
 			$beans_setup_init = new Beans_Setup_Init((object)(array(
 				'auth_uid' => "INSTALL",
 				'auth_key' => "INSTALL",
@@ -358,6 +350,12 @@ class Controller_Install extends Controller_View {
 		if( ! file_exists(APPPATH.'classes/beans/config.php') OR 
 			filesize(APPPATH.'classes/beans/config.php') < 1 )
 			die("Error: Missing config.php\n");
+
+		$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
+		if( intval($config_permissions[count($config_permissions) - 3]) > 6 OR 
+			intval($config_permissions[count($config_permissions) - 2]) > 6 OR 
+			intval($config_permissions[count($config_permissions) - 1]) > 0 )
+			die("Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0660.");
 		
 		// Check for required parameters.
 		$auth_options = CLI::options('name','email','password','accounts','overwritedb','temppassword');

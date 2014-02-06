@@ -601,7 +601,8 @@ class Controller_Dash extends Controller_View {
 		$incomplete_calibration = FALSE;
 		$report_balancecheck_result = FALSE;
 
-		if( isset($setup_company_list_result->data->settings) &&
+		if( isset($setup_company_list_result->data) &&
+			isset($setup_company_list_result->data->settings) &&
 			isset($setup_company_list_result->data->settings->calibrate_date_next) &&
 			$setup_company_list_result->data->settings->calibrate_date_next )
 			$incomplete_calibration = TRUE;
