@@ -1,0 +1,37 @@
+<div>
+	<div class="text-bold text-medium bump-down">Calibrate Accounts</div>
+
+	<div class="text-medium bump-down-more">
+		When BeansBooks has an update it can require you to recalibrate your accounts.  This process can take
+		a variable amount of time depending on how many transactions need to be recalculated, but usually will 
+		take less than 30 minutes.
+	</div>
+
+	{{#calibrate_required}}
+		<div class="text-medium bump-down-most form">
+			<div class="row">
+				<div class="text-center bump-down-more" id="setup-calibrate-status">
+					Start the calibration whenever you are ready.  You can pause it at any time if necessary.
+				</div>
+			</div>
+			<div class="row">
+				<div class="text-center bump-down-more">
+					<input type="hidden" id="setup-calibrate-date" value="">
+					<a href="#" class="button" id="setup-calibrate-start"><span>Start Calibration</span></a>
+					<a href="#" class="button" id="setup-calibrate-pause" style="display: none;"><span>Pause Calibration</span></a>
+					<a href="#" class="button" id="setup-calibrate-resume" style="display: none;"><span>Resume Calibration</span></a>
+				</div>
+			</div>
+		</div>
+	{{/calibrate_required}}
+	{{^calibrate_required}}
+		<div class="text-medium bump-down-most form">
+			<div class="row">
+				<div class="text-center bump-down-more" id="setup-calibrate-status">
+					Your books are up-to-date!  No calibration required.
+				</div>
+			</div>
+		</div>
+	{{/calibrate_required}}
+
+</div>

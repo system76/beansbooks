@@ -107,7 +107,7 @@ class View_Dash_Index extends View_Template {
 	}
 
 	public function incomeexpense_date_start() {
-		return date("Y-m-d",strtotime("-6 Months"));
+		return date("Y-m",strtotime("-5 Months")).'-01';
 	}
 
 	public function incomeexpense_date_end() {
@@ -115,7 +115,7 @@ class View_Dash_Index extends View_Template {
 	}
 
 	public function income_date_start() {
-		return date("Y")."-01-01";
+		return date("Y-m",strtotime("-11 Months")).'-01';
 	}
 
 	public function income_date_end() {
