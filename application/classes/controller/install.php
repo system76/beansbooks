@@ -350,6 +350,12 @@ class Controller_Install extends Controller_View {
 		if( ! file_exists(APPPATH.'classes/beans/config.php') OR 
 			filesize(APPPATH.'classes/beans/config.php') < 1 )
 			die("Error: Missing config.php\n");
+
+		$config_permissions = str_split(substr(decoct(fileperms(APPPATH.'classes/beans/config.php')),2));
+		if( intval($config_permissions[count($config_permissions) - 3]) > 6 OR 
+			intval($config_permissions[count($config_permissions) - 2]) > 6 OR 
+			intval($config_permissions[count($config_permissions) - 1]) > 0 )
+			die("Please change the mode on application/classes/beans/config.php to be at least as restrictive as 0660.");
 		
 		// Check for required parameters.
 		$auth_options = CLI::options('name','email','password','accounts','overwritedb','temppassword');
