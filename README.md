@@ -27,15 +27,26 @@ and install beans there.
     cd source
     git clone --recursive https://github.com/system76/beansbooks.git
 
-You'll need to update the permissions on two directories before proceeding.
-** TODO ** Talk about www-data
+You'll need to update the permissions on two directories and one file before proceeding.
 
     chmod 770 -R application/logs
     chmod 770 -R application/cache
+    chmod 660 application/classes/beans/config.php
+
+Finally, your web user ( presumably, www-data ) will require access to the owner of
+your application directory.  Presuming you've setup BeansBooks to run locally, it's easiest 
+to add www-data to your user group.
+
+    sudo usermod -a -G `whoami` www-data
+
+If you'd like a more secure solution, you should create a user specifically 
+for BeansBooks and install everything within a sub-folder of the home 
+directory for that user.  In that case, you could want to replace \`whoami\` 
+in the above solution with the name of the user you created.
 
 You should now have everything you need to run Beans locally.  Next, we'll 
 configure the local instance of beans to work with the packages you setup 
-above.  
+above.
 
 ## Configuring Packages
 
