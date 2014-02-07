@@ -68,7 +68,7 @@ configure and setup several dependencies to enable your application to run.
 
 ## Configuring Packages
 
-Before configuring BeansBooks itself, we need to setup the environment to run 
+Before configuring Beans itself, we need to setup the environment to run 
 it. We're going to quickly setup a local MySQL database, Apache Virtual Host, 
 and create the correct permissions on our code.
 
