@@ -108,6 +108,14 @@ class Controller_Accounts_Json extends Controller_Json {
 												 : FALSE;
 		$search_parameters['search_date_after'] = date("Y-m-d",strtotime($month."-01 -1 Day"));
 
+		$account_lookup = new Beans_Account_Lookup($this->_beans_data_auth((object)array(
+			'id' => $account_id,
+		)));
+		$account_lookup_result = $account_lookup->execute();
+
+		if( ! $account_lookup_result->success )
+			return $this->_return_error('An unexpected error occurred: '.$this->_beans_result_get_error($account_lookup_result));
+
 		do
 		{
 			$search_parameters['page'] = $page;
@@ -126,6 +134,7 @@ class Controller_Accounts_Json extends Controller_Json {
 					strtotime($transaction->date) < strtotime($last_transaction_date) )
 				{
 					$html = new View_Partials_Accounts_View_Transaction;
+					$html->account_lookup_result = $account_lookup_result;
 					$html->transaction = $transaction;
 					$html->account_id = $account_id;
 
@@ -171,6 +180,11 @@ class Controller_Accounts_Json extends Controller_Json {
 		$search_parameters['search_include_cancelled'] = TRUE;
 		$search_parameters['search_date_before'] = date("Y-m-d",strtotime($last_transaction_date." +1 Day"));
 		
+		$account_lookup = new Beans_Account_Lookup($this->_beans_data_auth((object)array(
+			'id' => $account_id,
+		)));
+		$account_lookup_result = $account_lookup->execute();
+
 		do
 		{
 			$search_parameters['page'] = $page;
@@ -189,6 +203,7 @@ class Controller_Accounts_Json extends Controller_Json {
 					strtotime($transaction->date) < strtotime($last_transaction_date) )
 				{
 					$html = new View_Partials_Accounts_View_Transaction;
+					$html->account_lookup_result = $account_lookup_result;
 					$html->transaction = $transaction;
 					$html->account_id = $account_id;
 
@@ -353,7 +368,13 @@ class Controller_Accounts_Json extends Controller_Json {
 		if( ! $account_transaction_create_result->success )
 			return $this->_return_error("An error occurred:<br>".$this->_beans_result_get_error($account_transaction_create_result));
 
+		$account_lookup = new Beans_Account_Lookup($this->_beans_data_auth((object)array(
+			'id' => $this->request->post('transaction-account-id'),
+		)));
+		$account_lookup_result = $account_lookup->execute();
+
 		$html = new View_Partials_Accounts_View_Transaction;
+		$html->account_lookup_result = $account_lookup_result;
 		$html->transaction = $account_transaction_create_result->data->transaction;
 		$html->account_id = $this->request->post('transaction-account-id');
 
@@ -425,7 +446,13 @@ class Controller_Accounts_Json extends Controller_Json {
 		if( ! $account_transaction_update_result->success )
 			return $this->_return_error($this->_beans_result_get_error($account_transaction_update_result));
 
+		$account_lookup = new Beans_Account_Lookup($this->_beans_data_auth((object)array(
+			'id' => $this->request->post('transaction-account-id'),
+		)));
+		$account_lookup_result = $account_lookup->execute();
+
 		$html = new View_Partials_Accounts_View_Transaction;
+		$html->account_lookup_result = $account_lookup_result;
 		$html->transaction = $account_transaction_update_result->data->transaction;
 		$html->account_id = $this->request->post('transaction-account-id');
 

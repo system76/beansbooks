@@ -155,9 +155,20 @@ class Controller_Dash_Json extends Controller_Json {
 
 	public function action_closebooks()
 	{
+		$include_account_ids = array();
+		if( $this->request->post('include_account_ids') )
+		{
+			foreach( explode(',', $this->request->post('include_account_ids')) as $include_account_id )
+			{
+				if( trim($include_account_id) )
+					$include_account_ids[] = $include_account_id;
+			}
+		}
+
 		$account_closebooks = new Beans_Account_Closebooks($this->_beans_data_auth((object)array(
 			'date' => $this->request->post('date'),
 			'transfer_account_id' => $this->request->post('transfer_account_id'),
+			'include_account_ids' => $include_account_ids
 		)));
 		$account_closebooks_result = $account_closebooks->execute();
 

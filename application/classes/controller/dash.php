@@ -684,6 +684,19 @@ class Controller_Dash extends Controller_View {
 		$text .= '<div class="bump-down-more float-left" style="width: 215px;">'.$fye_date.'</div>';
 		$text .= '<div class="clear"></div>';
 		
+		$text .= '<div class="text-bold bump-down-more float-left" style="width: 180px;">Equity Accounts to Close:</div>';
+		$text .= '<div class="bump-down float-left dash-index-close-books-include_accounts" style="width: 215px;"><div class="select" style="width: 200px;"><select class="dash-index-close-books-include_account_ids">';
+		$text .= '<option value="">&nbsp;</option>';
+		foreach( $account_search_result->data->accounts as $account ) {
+			if( isset($account->type) AND 
+				isset($account->type->type) AND 
+				strtolower($account->type->type) == "equity" )
+				$text .= '<option value="'.$account->id.'" '.( stripos($account->name,'owners distribution') !== FALSE ? 'selected="selected"' : '' ).' >'.$account->name.'</option>';
+		}
+		$text .= '</select></div></div>';
+
+		$text .= '<div class="clear"></div>';
+
 		$text .= '<div class="text-bold bump-down-more float-left" style="width: 180px;">Closing Transfer Account:</div>';
 		$text .= '<div class="bump-down float-left" style="width: 215px;"><div class="select" style="width: 200px;"><select name="transfer_account_id">';
 		foreach( $account_search_result->data->accounts as $account ) {
@@ -695,9 +708,12 @@ class Controller_Dash extends Controller_View {
 		$text .= '</select></div></div>';
 		$text .= '<div class="clear"></div>';
 
+		
+
 
 
 		$text .= '<input type="hidden" name="date" value="'.$fye_date.'">';
+		$text .= '<input type="hidden" name="include_account_ids" value="">';
 
 		return array(
 			(object)array(
