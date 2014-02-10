@@ -52,6 +52,11 @@ Additionally, you'll need to update the permissions on two directories before pr
     chmod 770 -R application/logs
     chmod 770 -R application/cache
 
+And create a configuration file:
+
+    touch application/classes/beans/config.php
+    chmod 660 application/classes/beans/config.php
+
 Finally, your web user ( presumably, www-data ) will require access to the owner of
 your application directory.  Presuming you've setup BeansBooks to run locally, it's easiest 
 to add www-data to your user group.
