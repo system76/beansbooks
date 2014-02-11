@@ -488,8 +488,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 					$editTransaction.find('input[name="transaction-debit"]').val('');
 				}
 
-				$account_table_sign = parseFloat($editTransaction.find('input[name="transaction-account-table_sign"]').val());
-
 				$editTransactionSplit = $($('#accounts-view-edit-transaction-container-template').html());
 
 				if( $transaction.find('.account-transaction-transfer').attr('rel') ) {
@@ -506,39 +504,19 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 
 					$transactionSplit.find('li.account-transaction').each(function() {
 						$currentSplit = $(this);
-						$split_table_sign = parseFloat($currentSplit.find('input.table_sign').val());
-
 						$newEditSplit = $($('#accounts-view-edit-split-template').html());
 						$newEditSplit.find('select[name="transaction-split-transfer"]').val($currentSplit.find('.account-transaction-transfer').attr('rel'));
-						$amount = monetaryRound(parseFloat($currentSplit.find('input.amount').val()));
-						$amount = $amount * 
-							$account_table_sign *
-							$split_table_sign;
 
-						if( $editTransaction.find('input[name="transaction-credit"]').val().length > 0 ) {
-							if( $amount < 0 && 
-								$account_table_sign == $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount * -1);
-							} else if ( $amount < 0 ) {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount * -1);
-							} else if ( $account_table_sign != $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount);
-							} else {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount);
-							}
-						} else {
-							if( $amount > 0 && 
-								$account_table_sign == $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount);
-							} else if ( $amount > 0 ) {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount);
-							} else if ( $account_table_sign != $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount * -1);
-							} else {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount * -1);
-							}
+						$newEditSplit.find('input[name="transaction-split-credit"]').val(convertCurrencyToNumber($currentSplit.find('.account-transaction-credit').text().trim()));
+						$newEditSplit.find('input[name="transaction-split-debit"]').val(convertCurrencyToNumber($currentSplit.find('.account-transaction-debit').text().trim()));
+						
+						if( $newEditSplit.find('input[name="transaction-split-credit"]').val() == "0" ) {
+							$newEditSplit.find('input[name="transaction-split-credit"]').val('');
 						}
-
+						if( $newEditSplit.find('input[name="transaction-split-debit"]').val() == "0" ) {
+							$newEditSplit.find('input[name="transaction-split-debit"]').val('');
+						}
+						
 						$editTransactionSplit.find('li.account-transaction.actions').before($newEditSplit);
 					});
 

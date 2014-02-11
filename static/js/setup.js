@@ -339,6 +339,21 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 			}
 		});
 
+		// Calibration
+		$('#setup-calibrate-start').live('click', function (e) {
+			e.preventDefault();
+			setupCalibrateNextReady = true;
+			setupCalibrateNext();
+			$('#setup-calibrate-start').hide();
+			$('#setup-calibrate-resume').show();
+		});
+
+		$('#setup-calibrate-resume').live('click', function (e) {
+			e.preventDefault();
+			setupCalibrateNextReady = true;
+			setupCalibrateNext();
+		});
+
 	});
 
 	function createTaxClearForm() {
@@ -454,6 +469,78 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 				flip = true;
 			}
 		});
+	}
+
+	var setupCalibrateNextReady = true;
+
+	// Calibration Functions
+	function setupCalibrateNext() {
+		if( ! $('#setup-calibrate-date').val() ||
+			$('#setup-calibrate-date').val().length == 0 )
+			return setupCalibrateGetStart();
+
+		if( setupCalibrateNextReady ) {
+			showPleaseWait(
+				'Calibrating '+$('#setup-calibrate-date').val()+'...',
+				'Pause Calibration',
+				setupCalibratePauseNext
+			);
+			$.post(
+				'/setup/json/calibratedate',
+				{
+					date: $('#setup-calibrate-date').val()
+				},
+				function (data) {
+					if( ! data.success ) {
+						hidePleaseWait();
+						showError(data.error);
+						return;
+					}
+					if( data.data.date_next ) {
+						$("#setup-calibrate-date").val(data.data.date_next);
+						setupCalibrateNext();
+						return;
+					}
+					// All done.
+					showPleaseWait();
+					window.location.reload();
+				}
+			);
+			return;
+		}
+
+		hidePleaseWait();
+
+	}
+
+	// Add pause button to showPleaseWait() ?
+
+	function setupCalibrateGetStart() {
+		showPleaseWait(
+			'Determining Start Date.',
+			'Pause Calibration',
+			setupCalibratePauseNext
+		);
+		$.post(
+			'/setup/json/calibratestartdate',
+			{},
+			function (data) {
+				if( ! data.success ) {
+					hidePleaseWait();
+					showError(data.error);
+					return;
+				}
+				$("#setup-calibrate-date").val(data.data.date);
+				setupCalibrateNext();
+			}
+		);
+	}
+
+	function setupCalibratePauseNext(e) {
+		e.preventDefault();
+		setupCalibrateNextReady = false;
+		showPleaseWait('Finishing Current Step...');
+		return false;
 	}
 
 }

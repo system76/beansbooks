@@ -1,4 +1,4 @@
-# Beans
+# BeansBooks
 
 ## Getting Started
 
@@ -51,6 +51,11 @@ Additionally, you'll need to update the permissions on two directories before pr
 
     chmod 770 -R application/logs
     chmod 770 -R application/cache
+
+And create a configuration file:
+
+    touch application/classes/beans/config.php
+    chmod 660 application/classes/beans/config.php
 
 Finally, your web user ( presumably, www-data ) will require access to the owner of
 your application directory.  Presuming you've setup BeansBooks to run locally, it's easiest 
@@ -113,7 +118,7 @@ We're going to setup our instance of BeansBooks to be found at http://beansbooks
 this is convenient as it will neither interfere with an actual domain, and 
 can be configured fairly easily.  Go ahead and run the following command:  
 
-    sudo nano /etc/apache2/sites-available/beansbooks
+    sudo nano /etc/apache2/sites-available/beansbooks.conf
 
 That will open a text editor for a new virtual host configuration - go ahead and 
 copy and paste the following into the file.  Make sure to replace PWDHERE with 
@@ -135,12 +140,26 @@ the result of running "pwd" above - it will probably looking something like
         </Directory>
     </VirtualHost>
 
+**If you're using Apache 2.4 or newer you should use the following instead.**
+
+    <VirtualHost *:80>
+        ServerName beansbooks 
+        ServerAlias beansbooks 
+
+        DocumentRoot PWDHERE            
+        <Directory PWDHERE>
+            Options FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+    </VirtualHost>
+
 After pasting in and editing the above code, hit Control + "x" to exit. If it prompts you 
 to save your changes, hit "y".  Then run the following to disable the default virtual host, 
-enable the beans virtual host and reload the Apache configuration.  
+enable the beansbooks.conf virtual host and reload the Apache configuration.  
 
     sudo a2dissite 000-default
-    sudo a2ensite beansbooks
+    sudo a2ensite beansbooks.conf
     sudo service apache2 reload
   
 Then we need to add an entry to your hosts file to be able to load the local 
@@ -148,13 +167,17 @@ instance of beans.
 
 	sudo sh -c "echo '127.0.0.1 beansbooks' >> /etc/hosts"
   
-## Configure BeansBooks  
+## Installation
 
-Now we need to configure your BeansBooks application.
+At this point you should be able to navigate to http://beansbooks/ to finish the installation
+process.  If you would prefer to run the installation and initial database setup from 
+the command line please do as follows:
+
+## Manually Configure BeansBooks  
 
 Copy example.config.php to config.php in application/classes/beans/ and fill in the appropriate information.
 
-    cd applcation/classes/beans/
+    cd application/classes/beans/
     cp example.config.php config.php
     chmod 660 config.php
     nano config.php
@@ -174,12 +197,9 @@ Lastly, email support is optional - though it enables quite a few useful feature
 communication with customers and vendors.  If you have an SMTP email provider, you should
 enter the correct information in the "email" section.
 
-## Installation
+Once you've saved the config.php file, it's time to manually run the installation process.
 
-At this point you should be able to navigate to http://beansbooks/ to finish the installation
-process.  If you would prefer to run the installation and initial database setup from 
-the command line you can do the following:
-
+    cd ~/source/beansbooks
     php index.php --uri=/install/manual --name="Your Name" --password="password" --email="you@email.address" --accounts="full"
 
 ## SSL Support
@@ -191,7 +211,7 @@ support to your web server:
 
 Then go ahead and edit your virtual host to support SSL connections:
 
-    sudo nano /etc/apache2/sites-available/beansbooks
+    sudo nano /etc/apache2/sites-available/beansbooks.conf
 
     <IfModule mod_ssl.c>
         <VirtualHost *:443>
@@ -219,5 +239,7 @@ Then go ahead and edit your virtual host to support SSL connections:
             BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
         </VirtualHost>
     </IfModule>
+
+**Note - if you adjusted your VirtualHost above for Apache 2.4, you should do so here as well.**
 
 When you're done making changes, make sure to restart Apache.

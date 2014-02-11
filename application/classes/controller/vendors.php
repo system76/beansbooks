@@ -197,47 +197,50 @@ class Controller_Vendors extends Controller_View {
 			)));
 			$account_transaction_search_result = $account_transaction_search->execute();
 			
-			foreach( $account_transaction_search_result->data->transactions as $index => $transaction )
+			if( $this->_beans_result_check($account_transaction_search_result) )
 			{
-				if( isset($transaction->form) AND
-					$transaction->form AND
-					isset($transaction->form->id) AND 
-					$transaction->form->type == "expense" )
+				foreach( $account_transaction_search_result->data->transactions as $index => $transaction )
 				{
-					$vendor_expense_lookup = new Beans_Vendor_Expense_Lookup($this->_beans_data_auth((object)array(
-						'id' => $transaction->form->id,
-					)));
-					$vendor_expense_lookup_result = $vendor_expense_lookup->execute();
+					if( isset($transaction->form) AND
+						$transaction->form AND
+						isset($transaction->form->id) AND 
+						$transaction->form->type == "expense" )
+					{
+						$vendor_expense_lookup = new Beans_Vendor_Expense_Lookup($this->_beans_data_auth((object)array(
+							'id' => $transaction->form->id,
+						)));
+						$vendor_expense_lookup_result = $vendor_expense_lookup->execute();
 
-					if( $this->_beans_result_check($vendor_expense_lookup_result) )
-						$account_transaction_search_result->data->transactions[$index]->expense = $vendor_expense_lookup_result->data->expense;
-					
-				}
-				else if( $transaction->payment AND 
-						 $transaction->payment == "vendor" )
-				{
-					$vendor_payment_lookup = new Beans_Vendor_Payment_Lookup($this->_beans_data_auth((object)array(
-						'id' => $transaction->id,
-					)));
-					$vendor_payment_lookup_result = $vendor_payment_lookup->execute();
+						if( $this->_beans_result_check($vendor_expense_lookup_result) )
+							$account_transaction_search_result->data->transactions[$index]->expense = $vendor_expense_lookup_result->data->expense;
+						
+					}
+					else if( $transaction->payment AND 
+							 $transaction->payment == "vendor" )
+					{
+						$vendor_payment_lookup = new Beans_Vendor_Payment_Lookup($this->_beans_data_auth((object)array(
+							'id' => $transaction->id,
+						)));
+						$vendor_payment_lookup_result = $vendor_payment_lookup->execute();
 
-					if( $this->_beans_result_check($vendor_payment_lookup_result) )
-						$account_transaction_search_result->data->transactions[$index]->payment = $vendor_payment_lookup_result->data->payment;
+						if( $this->_beans_result_check($vendor_payment_lookup_result) )
+							$account_transaction_search_result->data->transactions[$index]->payment = $vendor_payment_lookup_result->data->payment;
 
-				}
-				else if( $transaction->tax_payment AND 
-						 isset($transaction->tax_payment->id) )
-				{
-					$tax_payment_lookup = new Beans_Tax_Payment_Lookup($this->_beans_data_auth((object)array(
-						'id' => $transaction->tax_payment->id,
-					)));
-					$tax_payment_lookup_result = $tax_payment_lookup->execute();
+					}
+					else if( $transaction->tax_payment AND 
+							 isset($transaction->tax_payment->id) )
+					{
+						$tax_payment_lookup = new Beans_Tax_Payment_Lookup($this->_beans_data_auth((object)array(
+							'id' => $transaction->tax_payment->id,
+						)));
+						$tax_payment_lookup_result = $tax_payment_lookup->execute();
 
-					if( $this->_beans_result_check($tax_payment_lookup_result) )
-						$account_transaction_search_result->data->transactions[$index]->taxpayment = $tax_payment_lookup_result->data->payment;
+						if( $this->_beans_result_check($tax_payment_lookup_result) )
+							$account_transaction_search_result->data->transactions[$index]->taxpayment = $tax_payment_lookup_result->data->payment;
+					}
 				}
 			}
-
+			
 			$this->_view->noprintchecks = TRUE;
 
 			if( $this->_beans_result_check($account_transaction_search_result) )

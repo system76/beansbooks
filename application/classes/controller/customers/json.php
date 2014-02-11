@@ -788,18 +788,6 @@ class Controller_Customers_Json extends Controller_Json {
 			}
 		}
 
-		if( ! $this->request->post('invoice_view') AND 
-			$customer_sale_lookup_result->data->sale->date_billed )
-		{
-			$html = new View_Partials_Customers_Sales_Sale;
-			$html->sale = $customer_sale_lookup_result->data->sale;
-			$html->invoice_view = ( $this->request->post('invoice_view') );
-
-			$this->_return_object->data->sale = $customer_sale_lookup_result->data->sale;
-			$this->_return_object->data->sale->html = $html->render();
-			return;
-		}
-
 		// Update sale attributes only.
 		$customer_sale_update_sent_data = new stdClass;
 		$customer_sale_update_sent_data->id = $sale_id;

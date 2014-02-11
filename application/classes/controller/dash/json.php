@@ -58,14 +58,14 @@ class Controller_Dash_Json extends Controller_Json {
 		$date_end = $this->request->post('date_end');
 
 		if( ! $date_start )
-			$date_start = date("Y").'-01-01';
+			$date_start = date("Y-m",strtotime("-11 Months")).'-01';
 
 		if( ! $date_end )
 			$date_end = date("Y-m-d");
 
 		if( strtotime($date_end) < strtotime($date_start) )
 		{
-			$date_start = date("Y").'-01-01';
+			$date_start = date("Y-m",strtotime("-11 Months")).'-01';
 			$date_end = date("Y-m-d");
 		}
 
@@ -101,6 +101,15 @@ class Controller_Dash_Json extends Controller_Json {
 			$this->_return_object->data->net_income[] = $report_income_result->data->account_types['net']->balance;
 
 			$date_counter = date("Y-m",strtotime($date_counter." +1 Month"))."-01";
+		}
+
+		if( count($this->_return_object->data->date_ranges) == 1 ) 
+		{
+			$this->_return_object->data->date_ranges[] = $this->_return_object->data->date_ranges[0];
+			$this->_return_object->data->income[] = $this->_return_object->data->income[0];
+			$this->_return_object->data->gross_income[] = $this->_return_object->data->gross_income[0];
+			$this->_return_object->data->expense[] = $this->_return_object->data->expense[0];
+			$this->_return_object->data->net_income[] = $this->_return_object->data->net_income[0];
 		}
 	}
 
@@ -146,9 +155,20 @@ class Controller_Dash_Json extends Controller_Json {
 
 	public function action_closebooks()
 	{
+		$include_account_ids = array();
+		if( $this->request->post('include_account_ids') )
+		{
+			foreach( explode(',', $this->request->post('include_account_ids')) as $include_account_id )
+			{
+				if( trim($include_account_id) )
+					$include_account_ids[] = $include_account_id;
+			}
+		}
+
 		$account_closebooks = new Beans_Account_Closebooks($this->_beans_data_auth((object)array(
 			'date' => $this->request->post('date'),
 			'transfer_account_id' => $this->request->post('transfer_account_id'),
+			'include_account_ids' => $include_account_ids
 		)));
 		$account_closebooks_result = $account_closebooks->execute();
 

@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans {
 
-	protected $_BEANS_VERSION = '1.0.3';
+	protected $_BEANS_VERSION = '1.1';
 
 	private $_beans_settings;
 	private $_beans_config;
@@ -457,7 +457,7 @@ class Beans {
 		
 		$fye_transaction = ORM::Factory('transaction')->
 			where('close_books','IS NOT',NULL)->
-			where('close_books','>=',$date)->
+			where('close_books','>=',substr($date,0,7).'-00')->
 			find();
 		
 		if( $fye_transaction->loaded() )
