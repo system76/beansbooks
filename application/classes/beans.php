@@ -457,7 +457,7 @@ class Beans {
 		
 		$fye_transaction = ORM::Factory('transaction')->
 			where('close_books','IS NOT',NULL)->
-			where('close_books','>=',$date)->
+			where('close_books','>=',substr($date,0,7).'-00')->
 			find();
 		
 		if( $fye_transaction->loaded() )

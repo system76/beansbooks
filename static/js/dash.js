@@ -44,10 +44,42 @@ if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) 
 		});
 
 		// Close Books - Such a wonky use case.
+		
+		$('.dash-index-close-books-include_account_ids').live('change', function (e) {
+			$currentSelect = $(this);
+			$currentSelectDiv = $currentSelect.closest('div.select');
+			var createNew = true;
+			$('select.dash-index-close-books-include_account_ids').each(function () {
+				if( ! $(this).val() ||
+					! $(this).val().length ) {
+					createNew = false;
+				}
+			});
+			if( createNew ) {
+				$newSelectDiv = $currentSelectDiv.clone();
+				$newSelectDiv.find('select').val('');
+				$('.dash-index-close-books-include_accounts').append($newSelectDiv);
+			}
+		});
+
+		// In case an account is selected by default...
+		$('.dash-index-close-books-include_account_ids').trigger('change');
+
+
 		$('#dash-index-close-books-submit').click(function (e) {
 			e.preventDefault();
 			showPleaseWait();
 			$message = $(this).closest('.dash-index-message');
+			var include_account_ids = ',';
+			$('.dash-index-close-books-include_account_ids').each(function () {
+				if( $(this).val() && 
+					$(this).val().length ) {
+					include_account_ids += $(this).val()+',';
+				}
+			});
+
+			console.log(include_account_ids);
+			$message.find('input[name="include_account_ids"]').val(include_account_ids);
 			$.post(
 				'/dash/json/closebooks',
 				$message.find('input, select').serialize(),
