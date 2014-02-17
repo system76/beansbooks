@@ -304,8 +304,8 @@ class Beans_Account extends Beans {
 		if( get_class($account_transaction_form) != "Model_Account_Transaction_Form" )
 			throw new Exception("Invalid Account Transaction Form.");
 
-		if( isset($this->_return_account_transaction_form_element[$account_transaction_form->id]) )
-			return $this->_return_account_transaction_form_element[$account_transaction_form->id];
+		if( isset($this->_return_account_transaction_form_element_cache[$account_transaction_form->id]) )
+			return $this->_return_account_transaction_form_element_cache[$account_transaction_form->id];
 
 		// Don't link to objects - just reference by ID.
 		$return_object->id = $account_transaction_form->id;
@@ -313,8 +313,8 @@ class Beans_Account extends Beans {
 		$return_object->form_id = $account_transaction_form->form_id;
 		$return_object->amount = $account_transaction_form->amount;
 
-		$this->_return_account_transaction_form_element[$account_transaction_form->id] = $return_object;
-		return $this->_return_account_transaction_form_element[$account_transaction_form->id];
+		$this->_return_account_transaction_form_element_cache[$account_transaction_form->id] = $return_object;
+		return $this->_return_account_transaction_form_element_cache[$account_transaction_form->id];
 	}
 
 	/**

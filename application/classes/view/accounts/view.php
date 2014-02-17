@@ -179,12 +179,6 @@ class View_Accounts_View extends View_Template {
 				$element['transfer_account'] = FALSE;
 			}
 
-			/*
-			if( strpos($element['description'],ucwords($transaction->payment)." Payment Recorded") !== FALSE AND 
-				$transaction->payment )
-				$element['description'] = str_replace(ucwords($transaction->payment)." Payment Recorded", '<a href="'.$element['edit']['url'].'">'.ucwords($transaction->payment).' Payment Recorded</a>', strip_tags($element['description']));
-			*/
-			
 			$transactions[] = $element;
 		}
 		

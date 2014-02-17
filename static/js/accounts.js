@@ -237,6 +237,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		/**
 		 * VIEW
 		 */
+		
+
 		$('#accounts-view-jump').change(function() {
 			var month = $(this).val();
 			if( $('.account-transaction-month-'+month+':last').length == 1 ) {
@@ -283,13 +285,15 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 				);
 			}
 		});
-		
+
+
+		var loadMoreOffset = 1000;
 		if( $('#accounts-view-transactions').length > 0  &&
 			$('#accounts-import-upload').length == 0 &&
 			$('#accounts-import-classify').length == 0 &&
 			$('#accounts-import-save').length == 0 ) {
 			$(window).scroll(function () { 
-				if( ( $(window).height() + $(window).scrollTop() ) >= $('#accounts-view-transactions').height() ) {
+				if( ( $(window).height() + $(window).scrollTop() + loadMoreOffset ) >= $('#accounts-view-transactions').height() ) {
 					if( $('#accounts-view-loadtransactions').is(':visible') ||
 						$('#accounts-view-endtransactions').is(':visible') ) {
 						// Do nothing - we're already loading...
@@ -323,6 +327,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 										}
 										$('#accounts-view-loadtransactions').hide();
 										rowElementsColorVisible($('#accounts-view-transactions'));
+										// Load more if screen still isn't scrolled.
+										$(window).trigger('scroll');
 									}
 								}
 							},
@@ -1259,7 +1265,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		});
 
 
-		
+		// Trigger scroll to auto-load content if necessary.
+		$(window).trigger('scroll');
 
 	});
 
