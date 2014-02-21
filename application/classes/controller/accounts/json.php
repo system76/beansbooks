@@ -88,6 +88,58 @@ class Controller_Accounts_Json extends Controller_Json {
 		if( ! $month )
 			return $this->_return_error("An error occurred: no month was provided.");
 
+		$page_size = 250;
+		$page = 0;
+
+		$this->_return_object->data->transactions = array();
+
+		$account_lookup = new Beans_Account_Lookup($this->_beans_data_auth((object)array(
+			'id' => $account_id,
+		)));
+		$account_lookup_result = $account_lookup->execute();
+		
+		$account_transactions_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
+			'account_id' => $account_id,
+			'sort_by' => 'newest',
+			'before_transaction_id' => $last_transaction_id,
+			'date_after' => date("Y-m-d",strtotime($month."-01 -1 Day")),
+			'page_size' => $page_size,
+			'page' => $page,
+		)));
+		$account_transactions_search_result = $account_transactions_search->execute();
+
+		if( ! $account_transactions_search_result->success )
+			return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($account_transactions_search_result));
+
+		foreach( $account_transactions_search_result->data->transactions as $transaction )
+		{
+			$html = new View_Partials_Accounts_View_Transaction;
+			$html->account_lookup_result = $account_lookup_result;
+			$html->transaction = $transaction;
+			$html->account_id = $account_id;
+
+			$transaction->html = $html->render();
+
+			$this->_return_object->data->transactions[] = $transaction;
+		}
+	}
+
+	public function action_transactionsjumptomonthOLD()
+	{
+		$account_id = $this->request->post('account_id');
+		$last_transaction_id = $this->request->post('last_transaction_id');
+		$last_transaction_date = $this->request->post('last_transaction_date');
+		$month = $this->request->post('month');
+
+		if( ! $account_id )
+			return $this->_return_error("An error occurred: no account ID was provided.");
+
+		if( ! $last_transaction_id )
+			return $this->_return_error("An error occurred: no last transaction ID was provided.");
+
+		if( ! $month )
+			return $this->_return_error("An error occurred: no month was provided.");
+
 		$page_size = 50;
 		$page = 0;
 
@@ -153,42 +205,16 @@ class Controller_Accounts_Json extends Controller_Json {
 		)));
 		$account_lookup_result = $account_lookup->execute();
 		
-		$days_increment = 7;
+		$account_transactions_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
+			'account_id' => $account_id,
+			'sort_by' => 'newest',
+			'before_transaction_id' => $last_transaction_id,
+			'page_size' => $count,
+		)));
+		$account_transactions_search_result = $account_transactions_search->execute();
 
-		do
-		{
-			$account_transactions_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
-				'account_id' => $account_id,
-				'sort_by' => 'newest',
-				'before_transaction_id' => $last_transaction_id,
-				'date_after' => date("Y-m-d",strtotime($last_transaction_date.' -'.$days_increment.' Days')),	// Speeds up loading significantly
-				'page_size' => $count,
-			)));
-			$account_transactions_search_result = $account_transactions_search->execute();
-
-			if( ! $account_transactions_search_result->success )
-				return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($account_transactions_search_result));
-
-			$days_increment = $days_increment * 2 ;//pow($days_increment, 2);
-		}
-		while(
-			! count($account_transactions_search_result->data->transactions) &&
-			$days_increment < 1000
-		);
-
-		if( ! count($account_transactions_search_result->data->transactions) )
-		{
-			$account_transactions_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
-				'account_id' => $account_id,
-				'sort_by' => 'newest',
-				'before_transaction_id' => $last_transaction_id,
-				'page_size' => $count,
-			)));
-			$account_transactions_search_result = $account_transactions_search->execute();
-
-			if( ! $account_transactions_search_result->success )
-				return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($account_transactions_search_result));
-		}
+		if( ! $account_transactions_search_result->success )
+			return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($account_transactions_search_result));
 
 
 		foreach( $account_transactions_search_result->data->transactions as $transaction )

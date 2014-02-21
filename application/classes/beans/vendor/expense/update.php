@@ -214,6 +214,9 @@ class Beans_Vendor_Expense_Update extends Beans_Vendor_Expense {
 		$account_create_transaction_data->reference = ( isset($this->_data->check_number) )
 													? $this->_data->check_number
 													: $this->_expense->create_transaction->reference;
+		
+		$account_create_transaction_data->form_type = 'expense';
+		$account_create_transaction_data->form_id = $this->_expense->id;
 
 		foreach( $this->_account_transactions as $account_id => $amount )
 		{

@@ -223,9 +223,11 @@ class Beans_Account extends Beans {
 	@attribute balance DECIMAL The account balance after this transaction. 
 	@attribute reconciled BOOLEAN 
 	@attribute account OBJECT The #Beans_Account# this transaction is tied to. 
-	@attribute account_transaction_forms ARRAY An array of #Beans_Account_Transaction_Form# delineating how this transaction affects form balances. 
 	---BEANSENDSPEC---
 	 */
+
+	// Removed & Deprecated
+	// @attribute account_transaction_forms ARRAY An array of #Beans_Account_Transaction_Form# delineating how this transaction affects form balances. 
 
 	/**
 	 * Returns an object of the properties for the given Model_Account_Transaction (ORM)
@@ -252,7 +254,8 @@ class Beans_Account extends Beans {
 		$return_object->reconciled = $account_transaction->account_reconcile_id ? TRUE : FALSE;
 
 		// Reference IDs
-		$return_object->account_transaction_forms = $this->_return_account_transaction_forms_array($account_transaction->account_transaction_forms->find_all());
+		// REMOVED - Greatly improved query time 
+		// $return_object->_return_account_transaction_forms_array = $this->_return_account_transaction_forms_array($account_transaction->account_transaction_forms->find_all());
 		
 		// OBJECT?
 		// *** FAT ***
@@ -383,7 +386,21 @@ class Beans_Account extends Beans {
 
 		// If this is directly tied to a form.
 		$return_object->form = FALSE;
+		$return_object->tax_payment = FALSE;
 		
+		if( $transaction->form_type == "tax_payment" )
+		{
+			$return_object->tax_payment = new stdClass;
+			$return_object->tax_payment->id = $transaction->form_id;
+		}
+		else if ( $transaction->form_type )
+		{
+			$return_object->form = new stdClass;
+			$return_object->form->id = $transaction->form_id;
+			$return_object->form->type = $transaction->form_type;
+		}
+
+		/*
 		// V2Item - See if we can replace this in the views with betterlogic and remove these loads.
 		if( $transaction->create_form->loaded() )
 		{
@@ -411,7 +428,8 @@ class Beans_Account extends Beans {
 			$return_object->tax_payment = new stdClass;
 			$return_object->tax_payment->id = $transaction->tax_payment->id;
 		}
-		
+		*/
+
 		$return_object->account_transactions = $this->_return_account_transactions_array($transaction->account_transactions->find_all());
 
 		$return_object->reconciled = FALSE;
@@ -475,6 +493,16 @@ class Beans_Account extends Beans {
 		if( $transaction->entity_id AND 
 			! ORM::Factory('entity',$transaction->entity_id)->loaded() )
 			throw new Exception("Internal error: invalid entity referenced on transaction.");
+
+		if( (
+				$this->_transaction->form_type OR
+				$this->_transaction->form_id 
+			) AND
+			(
+				! $this->_transaction->form_type OR
+				! $this->_transaction->form_id 
+			) )
+			throw new Exception("Invalid transaction form information: must provide both form_type and form_id.");
 
 	}
 

@@ -297,6 +297,8 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 		$account_create_transaction_data->description = "purchase ".$this->_purchase->code;
 		$account_create_transaction_data->date = $this->_purchase->date_created;
 		$account_create_transaction_data->account_transactions = array();
+		$account_create_transaction_data->form_type = 'purchase';
+		$account_create_transaction_data->form_id = $this->_purchase->id;
 
 		foreach( $this->_account_transactions as $account_id => $amount )
 		{

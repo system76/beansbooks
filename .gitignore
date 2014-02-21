@@ -1,2 +1,4 @@
 .htaccess
 application/classes/beans/config.php
+deployfile
+application/classes/controller/test.php

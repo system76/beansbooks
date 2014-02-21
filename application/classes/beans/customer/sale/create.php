@@ -346,6 +346,8 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 		$sale_create_transaction_data->date = $this->_sale->date_created;
 		$sale_create_transaction_data->account_transactions = array();
 		$sale_create_transaction_data->entity_id = $this->_sale->entity_id;
+		$sale_create_transaction_data->form_type = 'sale';
+		$sale_create_transaction_data->form_id = $this->_sale->id;
 
 		foreach( $this->_account_transactions as $account_id => $amount )
 		{

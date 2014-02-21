@@ -238,56 +238,103 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		 * VIEW
 		 */
 		
+		var jumpLoadMore = false;
+		var jumpMonth = false;
+
+		function accountsViewJumpCancel() {
+			jumpLoadMore = false;
+			showPleaseWait('Finishing Last Query...');
+		}
+
+		function accountsViewJump() {
+			if ( ! jumpLoadMore ) {
+				rowElementsColorVisible($('#accounts-view-transactions'));
+				hidePleaseWait();
+				$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction-month-'+jumpMonth+':last');
+				if( $scrollTo.length == 0 ) {
+					$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction:last');
+				}
+				$('html,body').animate(
+					{
+						scrollTop: parseInt($scrollTo.offset().top - 100)
+					},
+					2000
+				);
+				return;
+			}
+			$.post(
+				'/accounts/json/transactionsjumptomonth',
+				{
+					account_id: $('#accounts-view-fields-account_id').val(),
+					last_transaction_id: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last').attr('rel'),
+					last_transaction_date: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last span.account-transaction-date').text(),
+					month: jumpMonth
+				},
+				function(data) {
+					if( data.success != 1 ) {
+						hidePleaseWait();
+						showError(data.error);
+					} else {
+						var lastDate = false;
+						for( index in data.data.transactions ) {
+							$('#accounts-view-transactions > ul').append(data.data.transactions[index].html);
+							lastDate = data.data.transactions[index].date;
+						}
+						if( data.data.transactions.length > 0 ) {
+							showPleaseWait(
+								'Loading... '+lastDate,
+								'Cancel',
+								accountsViewJumpCancel
+							);
+							setTimeout(function() {
+								accountsViewJump();
+							},150);
+							return;
+						}
+						jumpLoadMore = false;
+						rowElementsColorVisible($('#accounts-view-transactions'));
+						hidePleaseWait();
+						$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction-month-'+jumpMonth+':last');
+						if( $scrollTo.length == 0 ) {
+							$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction:last');
+						}
+						$('html,body').animate(
+							{
+								scrollTop: parseInt($scrollTo.offset().top - 100)
+							},
+							2000
+						);
+					}
+				},
+				'json'
+			);
+		}
 
 		$('#accounts-view-jump').change(function() {
-			var month = $(this).val();
-			if( $('.account-transaction-month-'+month+':last').length == 1 ) {
+			jumpMonth = $(this).val();
+			if( $('.account-transaction-month-'+jumpMonth+':last').length == 1 ) {
 				// Scroll
 				$('html,body').animate(
 					{
-						scrollTop: parseInt($('.account-transaction-month-'+month+':last').offset().top - 100)
+						scrollTop: parseInt($('.account-transaction-month-'+jumpMonth+':last').offset().top - 100)
 					},
 					2000
 				);
 			} else {
-				showPleaseWait();
-				$.post(
-					'/accounts/json/transactionsjumptomonth',
-					{
-						account_id: $('#accounts-view-fields-account_id').val(),
-						last_transaction_id: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last').attr('rel'),
-						last_transaction_date: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last span.account-transaction-date').text(),
-						month: month
-					},
-					function(data) {
-						if( data.success != 1 ) {
-							hidePleaseWait();
-							showError(data.error);
-						} else {
-							for( index in data.data.transactions ) {
-								$('#accounts-view-transactions > ul').append(data.data.transactions[index].html);
-							}
-							rowElementsColorVisible($('#accounts-view-transactions'));
-							hidePleaseWait();
-							$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction-month-'+month+':last');
-							if( $scrollTo.length == 0 ) {
-								$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction:last');
-							}
-							$('html,body').animate(
-								{
-									scrollTop: parseInt($scrollTo.offset().top - 100)
-								},
-								2000
-							);
-						}
-					},
-					'json'
+				showPleaseWait(
+					'Loading...',
+					'Cancel',
+					accountsViewJumpCancel
 				);
+				jumpLoadMore = true;
+				setTimeout(function() {
+					accountsViewJump();
+				},150);
 			}
 		});
 
 
-		var loadMoreOffset = 1000;
+		var loadMoreOffset = 2000;
 		if( $('#accounts-view-transactions').length > 0  &&
 			$('#accounts-import-upload').length == 0 &&
 			$('#accounts-import-classify').length == 0 &&

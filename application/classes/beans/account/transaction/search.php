@@ -53,6 +53,7 @@ class Beans_Account_Transaction_Search extends Beans_Account_Transaction {
 			'date' => 'desc',
 			'close_books' => 'asc',
 			'id' => 'desc',
+			//'sort' => 'desc'
 		),
 		'oldest' => array(
 			'date' => 'asc',
@@ -128,6 +129,7 @@ class Beans_Account_Transaction_Search extends Beans_Account_Transaction {
 			if( ! $after_transaction->loaded() )
 				throw new Exception("Invalid after_transaction_id provided: transaction not found.");
 
+			
 			$transaction_ids_query_where .= ' ( '.
 			' 	( date > DATE("'.$after_transaction->date.'") ) OR '.
 			' 	( date = DATE("'.$after_transaction->date.'") AND close_books < '.( $after_transaction->close_books ? '1' : '0' ).' ) OR '.
@@ -142,12 +144,16 @@ class Beans_Account_Transaction_Search extends Beans_Account_Transaction {
 			if( ! $before_transaction->loaded() )
 				throw new Exception("Invalid before_transaction_id provided: transaction not found.");
 
+			
 			$transaction_ids_query_where .= ' ( '.
 			' 	( date < DATE("'.$before_transaction->date.'") ) OR '.
 			' 	( date = DATE("'.$before_transaction->date.'") AND close_books > '.( $before_transaction->close_books ? '1' : '0' ).' ) OR '.
 			' 	( date = DATE("'.$before_transaction->date.'") AND close_books >= '.( $before_transaction->close_books ? '1' : '0' ).' AND transaction_id < '.$before_transaction->id.' ) '.
 			') AND ';
 		}
+
+		if( strlen($transaction_ids_query_where) > strlen(' id IS NOT NULL AND ') )
+			$transaction_ids_query_where = str_replace(' id IS NOT NULL AND', '' , $transaction_ids_query_where);
 
 		$transaction_ids_query_where = substr($transaction_ids_query_where, 0, -4).' ';
 

@@ -191,6 +191,8 @@ class Beans_Vendor_Expense_Create extends Beans_Vendor_Expense {
 													: NULL;
 
 		$account_create_transaction_data->entity_id = $this->_expense->entity_id;
+		$account_create_transaction_data->form_type = 'expense';
+		$account_create_transaction_data->form_id = $this->_expense->id;
 
 		$account_transfer_total = 0.00;
 

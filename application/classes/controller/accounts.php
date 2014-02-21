@@ -240,29 +240,14 @@ class Controller_Accounts extends Controller_View {
 
 			$account_transactions = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
 				'account_id' => $account_lookup_result->data->account->id,
-				'page_size' => 25,
+				'page_size' => 50,
 				'page' => 0,
-				'date_after' => date("Y-m-d",strtotime("-14 Days") ),
 				'sort_by' => 'newest',
 			)));
 			$account_transactions_result = $account_transactions->execute();
 
 			if( $this->_beans_result_check($account_transactions_result) )
 				$this->_view->account_transactions_result = $account_transactions_result;
-
-			if( ! count($account_transactions_result->data->transactions) )
-			{
-				$account_transactions = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
-					'account_id' => $account_lookup_result->data->account->id,
-					'page_size' => 25,
-					'page' => 0,
-					'sort_by' => 'newest',
-				)));
-				$account_transactions_result = $account_transactions->execute();
-
-				if( $this->_beans_result_check($account_transactions_result) )
-					$this->_view->account_transactions_result = $account_transactions_result;
-			}
 
 			$this->_action_tab_name = $account_lookup_result->data->account->name;
 			$this->_action_tab_uri = '/'.$this->request->uri();
