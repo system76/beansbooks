@@ -164,12 +164,14 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 					( isset($purchase_payment->date_billed) AND $purchase_payment->date_billed ) 
 				) )
 			{
-				$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(
-					'id' => $purchase->id,
-					'invoice_number' => $purchase_payment->invoice_number,
-					'date_billed' => $purchase_payment->date_billed,
-					'validate_only' => $this->_validate_only,
-				)));
+				$vendor_purchase_invoice_data = new stdClass;
+				$vendor_purchase_invoice_data->id = $purchase->id;
+				if( isset($purchase_payment->invoice_number) )
+					$vendor_purchase_invoice_data->invoice_number = $purchase_payment->invoice_number;
+				if( isset($purchase_payment->date_billed) )
+					$vendor_purchase_invoice_data->date_billed = $purchase_payment->date_billed;
+				
+				$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth($vendor_purchase_invoice_data));
 				$vendor_purchase_invoice_result = $vendor_purchase_invoice->execute();
 
 				if( ! $vendor_purchase_invoice_result->success )

@@ -242,14 +242,13 @@ class Controller_Accounts extends Controller_View {
 				'account_id' => $account_lookup_result->data->account->id,
 				'page_size' => 50,
 				'page' => 0,
-				'search_include_cancelled' => TRUE,
 				'sort_by' => 'newest',
 			)));
 			$account_transactions_result = $account_transactions->execute();
 
 			if( $this->_beans_result_check($account_transactions_result) )
 				$this->_view->account_transactions_result = $account_transactions_result;
-		
+
 			$this->_action_tab_name = $account_lookup_result->data->account->name;
 			$this->_action_tab_uri = '/'.$this->request->uri();
 		}
@@ -503,7 +502,7 @@ class Controller_Accounts extends Controller_View {
 					'account_id' => $account_lookup_result->data->account->id,
 					'page_size' => 50000,
 					'page' => 0,
-					'not_reconciled' => TRUE,
+					'reconciled' => FALSE,
 					'sort_by' => 'oldest',
 				)));
 				$account_transactions_result = $account_transactions->execute();

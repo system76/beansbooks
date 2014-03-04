@@ -172,6 +172,8 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 		$purchase_invoice_transaction_data->description = "Invoice - Purchase ".$this->_purchase->code;
 		$purchase_invoice_transaction_data->date = $this->_date_billed;
 		$purchase_invoice_transaction_data->entity_id = $this->_purchase->entity_id;
+		$purchase_invoice_transaction_data->form_type = 'purchase';
+		$purchase_invoice_transaction_data->form_id = $this->_purchase->id;
 		
 		$account_transactions = array();
 

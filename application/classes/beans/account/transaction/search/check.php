@@ -160,4 +160,43 @@ class Beans_Account_Transaction_Search_Check extends Beans_Account_Transaction_S
 		);
 	}
 
+	protected function _find_transactions()
+	{
+		$return_object = new stdClass;
+
+		if( $this->_page < 0 )
+			throw new Exception("Invalid page: must be >= 0.");
+
+		if( $this->_page_size < 1 )
+			throw new Exception("Invalid page size: must be >= 1.");
+		
+		if( $this->_sort_by AND 
+			! isset($this->_sort_by_patterns[$this->_sort_by]) )
+			throw new Exception("Invalid sort by value.");
+
+		$transactions_count = clone($this->_transactions);
+		$return_object->total_results = $transactions_count->count_all('transaction.id');
+		$return_object->pages = $return_object->total_results / $this->_page_size;
+		$return_object->page = $this->_page;
+
+		// Fix pages.
+		$return_object->pages = ( (int)$return_object->pages == $return_object->pages )
+							  ? $return_object->pages
+							  : ((int)$return_object->pages + 1);
+
+		$this->_transactions = $this->_transactions->
+			limit($this->_page_size)->
+			offset($this->_page * $this->_page_size);
+
+		if( $this->_sort_by AND 
+			isset($this->_sort_by_patterns[$this->_sort_by]) ) 
+			foreach( $this->_sort_by_patterns[$this->_sort_by] as $column => $direction )
+				$this->_transactions = $this->_transactions->
+					order_by($column,$direction);
+
+		$return_object->transactions = $this->_transactions->find_all();
+
+		return $return_object;
+	}
+
 }

@@ -250,7 +250,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 						strtotime($sale->date_billed) < strtotime($update_transaction_data->date) OR 
 						(
 							$sale->date_billed == $update_transaction_data->date &&
-							$sale->invoice_transaction_id < $this->_payment->id
+							$sale->invoice_transaction_id < $this->_old_payment->id
 						)
 					)
 				) OR
@@ -261,7 +261,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 						strtotime($sale->date_cancelled) < strtotime($update_transaction_data->date) OR 
 						(
 							$sale->date_cancelled == $update_transaction_data->date &&
-							$sale->invoice_transaction_id < $this->_payment->id
+							$sale->invoice_transaction_id < $this->_old_payment->id
 						)
 					)
 				) ) 
@@ -467,7 +467,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
 		}
 
-		// Update invoices if necessary
+		// Update Invoices
 		$invoice_update_errors = '';
 		foreach( $sales_invoice_update as $sale_id ) 
 		{
@@ -482,6 +482,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 			}
 		}
 
+		// Update Cancellations
 		foreach( $sales_cancel_update as $sale_id )
 		{
 			$customer_sale_cancel_update = new Beans_Customer_Sale_Cancel_Update($this->_beans_data_auth((object)array(
