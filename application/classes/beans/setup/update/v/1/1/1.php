@@ -68,7 +68,7 @@ class Beans_Setup_Update_V_1_1_1 extends Beans_Setup_Update_V {
 			$tax_payments = DB::Query(Database::SELECT, ' SELECT id, transaction_id FROM tax_payments WHERE transaction_id IS NOT NULL')->execute()->as_array();
 
 			foreach( $tax_payments as $tax_payment )
-				DB::Query(Database::UPDATE,'UPDATE transactions SET form_type = "tax_payment", form_id = '.$tax_payment['id'].' WHERE id = '.$form['transaction_id'])->execute();
+				DB::Query(Database::UPDATE,'UPDATE transactions SET form_type = "tax_payment", form_id = '.$tax_payment['id'].' WHERE id = '.$tax_payment['transaction_id'])->execute();
 		}
 		catch( Exception $e )
 		{
