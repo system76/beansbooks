@@ -98,6 +98,8 @@ class Beans_Customer_Sale_Cancel extends Beans_Customer_Sale {
 		$sale_cancel_transaction_data->description = "Sale Cancelled ".$this->_sale->code;
 		$sale_cancel_transaction_data->date = $date_cancelled;
 		$sale_cancel_transaction_data->account_transactions = array();
+		$sale_cancel_transaction_data->form_type = 'sale';
+		$sale_cancel_transaction_data->form_id = $this->_sale->id;
 
 		$calibrate_payments = array();
 

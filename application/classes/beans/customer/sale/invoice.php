@@ -127,6 +127,8 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 		$sale_invoice_transaction_data->description = "Invoice - Sale ".$this->_sale->code;
 		$sale_invoice_transaction_data->date = $this->_date_billed;
 		$sale_invoice_transaction_data->entity_id = $this->_sale->entity_id;
+		$sale_invoice_transaction_data->form_type = 'sale';
+		$sale_invoice_transaction_data->form_id = $this->_sale->id;
 		
 		$account_transactions = array();
 

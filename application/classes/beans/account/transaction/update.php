@@ -138,6 +138,9 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 										   ? $this->_data->entity_id
 										   : $this->_old_transaction->entity_id;
 
+		$this->_transaction->form_type = $this->_old_transaction->form_type;
+		$this->_transaction->form_id = $this->_old_transaction->form_id;
+
 		// If this was previously a payment we retain that attribute
 		// However, if this is a new payment ( i.e. Payment/Replace ) then we want 
 		// to apply the new flag appropriately.

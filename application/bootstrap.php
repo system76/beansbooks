@@ -82,7 +82,7 @@ if (isset($_SERVER['KOHANA_ENV']))
  */
 Kohana::init(array(
 	'base_url'   => '/',
-	'profile'	 => TRUE,
+	'profile'	 => ( Kohana::$environment == Kohana::DEVELOPMENT ) ? TRUE : FALSE,
 	'index_file' => FALSE,
 ));
 

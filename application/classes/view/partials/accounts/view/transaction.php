@@ -68,54 +68,53 @@ class View_Partials_Accounts_View_Transaction extends Kostache {
 		$this->description = $this->transaction->description;
 
 		$this->edit = FALSE;
-
 		if( $this->transaction->payment )
-			{
-				$element['edit'] = array();
+		{
+			$this->edit = array();
 
-				if( $this->transaction->payment == "customer" )
-				{
-					$element['edit']['url'] = "/customers/payments/".$this->transaction->id;
-					$element['type'] = "customer payment";
-				}
-				else if( $this->transaction->payment == "expense" )
-				{
-					$element['edit']['url'] = "/vendors/expenses/".$this->transaction->form->id;
-					$element['type'] = "vendor expense";
-				}
-				else if( $this->transaction->payment = "vendor" )
-				{
-					$element['edit']['url'] = "/vendors/payments/".$this->transaction->id;
-					$element['type'] = "vendor payment";
-				}
-
-			}
-			else if( $this->transaction->form )
+			if( $this->transaction->payment == "customer" )
 			{
-				$element['edit'] = array();
-
-				if( $this->transaction->form->type == "sale" )
-				{
-					$element['edit']['url'] = "/customers/sales/".$this->transaction->form->id;
-					$element['type'] = "customer sale";
-				}
-				else if( $this->transaction->form->type = "purchase" )
-				{
-					$element['edit']['url'] = "/vendors/purchases/".$this->transaction->form->id;
-					$element['type'] = "vendor purchase order";
-				}
-				else if( $this->transaction->form->type = "expense" )
-				{
-					$element['edit']['url'] = "/vendors/expenses/".$this->transaction->form->id;
-					$element['type'] = "vendor expense";
-				}
-				// Probably won't hit last one.
+				$this->edit['url'] = "/customers/payments/".$this->transaction->id;
+				$element['type'] = "customer payment";
 			}
-			else if( $this->transaction->tax_payment )
+			else if( $this->transaction->payment == "expense" )
 			{
-				$element['edit']['url'] = "/vendors/taxpayments/".$this->transaction->tax_payment->id;
-				$element['type'] = "tax payment";
+				$this->edit['url'] = "/vendors/expenses/".$this->transaction->form->id;
+				$element['type'] = "vendor expense";
 			}
+			else if( $this->transaction->payment = "vendor" )
+			{
+				$this->edit['url'] = "/vendors/payments/".$this->transaction->id;
+				$element['type'] = "vendor payment";
+			}
+
+		}
+		else if( $this->transaction->form )
+		{
+			$this->edit = array();
+
+			if( $this->transaction->form->type == "sale" )
+			{
+				$this->edit['url'] = "/customers/sales/".$this->transaction->form->id;
+				$element['type'] = "customer sale";
+			}
+			else if( $this->transaction->form->type = "purchase" )
+			{
+				$this->edit['url'] = "/vendors/purchases/".$this->transaction->form->id;
+				$element['type'] = "vendor purchase order";
+			}
+			else if( $this->transaction->form->type = "expense" )
+			{
+				$this->edit['url'] = "/vendors/expenses/".$this->transaction->form->id;
+				$element['type'] = "vendor expense";
+			}
+			// Probably won't hit last one.
+		}
+		else if( $this->transaction->tax_payment )
+		{
+			$this->edit['url'] = "/vendors/taxpayments/".$this->transaction->tax_payment->id;
+			$element['type'] = "tax payment";
+		}
 
 		// One of these will be replaced with FALSE.
 		// Same logic as View_Accounts_View.php -> transactions()
@@ -165,9 +164,15 @@ class View_Partials_Accounts_View_Transaction extends Kostache {
 		$this->transfer_account = $this->transaction_splits[0];
 
 		if( count($this->transaction_splits) == 1 )
+		{
+			$this->transfer_account['name'] = $this->transaction_splits[0]['name'];
+			$this->transfer_account['id'] = $this->transaction_splits[0]['id'];
 			$this->transaction_splits = FALSE;
+		}
 		else
+		{
 			$this->transfer_account = FALSE;
+		}
 	}
 
 }

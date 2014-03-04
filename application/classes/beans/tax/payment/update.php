@@ -144,6 +144,9 @@ class Beans_Tax_Payment_Update extends Beans_Tax_Payment {
 		if( ! $create_transaction_data->code AND 
 			$create_transaction_data->reference ) 
 			$create_transaction_data->code = $create_transaction_data->reference;
+		
+		$create_transaction_data->form_type = 'tax_payment';
+		$create_transaction_data->form_id = $this->_payment->id;
 
 		// Positive Payment = Negative to Balance
 		$create_transaction_data->account_transactions = array();
