@@ -26,8 +26,6 @@ class Beans_Setup_Update_V_1_1_1 extends Beans_Setup_Update_V {
 	
 	protected function _execute()
 	{
-		throw new Exception("TODO - ENABLE v1.1.1 Update");
-		
 		try
 		{
 			$form_type_exist_check = DB::Query(Database::SELECT, 'SELECT COUNT(COLUMN_NAME) as exist_check FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "transactions" AND COLUMN_NAME = "form_type"')->execute()->as_array();
