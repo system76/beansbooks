@@ -82,6 +82,7 @@ class Beans_Account_Closebooks extends Beans_Account {
 
 		// In case we change our mind on the format.
 		$balance_report_date = $this->_date;
+		$balance_report_start_date = substr($balance_report_date,0,4).'-01-01';
 
 		if( strtotime($balance_report_date) > time() )
 			throw new Exception("Invalid date: must be a date in the past.");
@@ -117,7 +118,7 @@ class Beans_Account_Closebooks extends Beans_Account {
 					strpos($account->account_type->code, 'pending_') === FALSE
 				) )
 			{
-				$balance = $this->_generate_simple_account_balance($account->id,$balance_report_date);
+				$balance = $this->_generate_simple_account_balance($account->id,$balance_report_date,$balance_report_start_date);
 				if( $balance != 0.00 )
 				{
 					$transfer_account_total = $this->_beans_round( $transfer_account_total + $balance );
