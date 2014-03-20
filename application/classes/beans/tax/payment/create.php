@@ -111,6 +111,8 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 			);
 		}
 
+		$this->_payment->save();
+
 		// Formulate data request object for Beans_Account_Transaction_Create
 		$create_transaction_data = new stdClass;
 
@@ -198,7 +200,11 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 		$create_transaction_result = $create_transaction->execute();
 
 		if( ! $create_transaction_result->success )
+		{
+			$this->_payment->delete();
+			
 			throw new Exception("An error occurred creating that tax payment: ".$create_transaction_result->error);
+		}
 
 		if( $this->_validate_only )
 			return (object)array();
