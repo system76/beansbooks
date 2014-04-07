@@ -73,6 +73,7 @@ class View_Accounts_View extends View_Template {
 			$element['date'] = $transaction->date;
 			$element['month'] = substr($transaction->date,0,7);
 			$element['number'] = $transaction->code;
+			$element['closebooks'] = $transaction->close_books ? TRUE : FALSE;
 			$element['check_number'] = $transaction->check_number;
 			$element['description'] = $transaction->description;
 
