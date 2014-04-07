@@ -32,6 +32,7 @@ class View_Partials_Accounts_View_Transaction extends Kostache {
 	public $date;
 	public $month;
 	public $number;
+	public $closebooks;
 	public $description;
 	public $transfer_account;
 	public $reconciled;
@@ -62,6 +63,8 @@ class View_Partials_Accounts_View_Transaction extends Kostache {
 		$this->month = substr($this->date,0,7);
 
 		$this->number = $this->transaction->code;
+
+		$this->closebooks = $this->transaction->close_books ? TRUE : FALSE;
 
 		$this->check_number = $this->transaction->check_number;
 

@@ -390,11 +390,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		$('#accounts-view-transactions li:not(.new,.import,.edit) span.account-transaction-split a').live('click',function (e) {
 			e.preventDefault();
 
-			$transactionSplits = $(this).closest('li.account-transaction').next('.split-transaction');
-			if( $transactionSplits.is(':visible') ) {
-				$transactionSplits.slideUp();
+			$transaction = $(this).closest('.account-transaction');
+			$id = $transaction.attr('rel');
+			$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
+
+			if( $transactionSplit.is(':visible') ) {
+				$transactionSplit.slideUp();
 			} else {
-				$transactionSplits.slideDown();
+				$transactionSplit.slideDown();
 			}
 		});
 
@@ -510,6 +513,76 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		});
 
 		/**
+		 * View -> Delete
+		 */
+		$('#accounts-view-transactions li.account-transaction[rel] span.account-transaction-delete a').live('click',function (e) {
+			e.preventDefault();
+
+			// Load transaction to edit.
+			$transaction = $(this).closest('li.account-transaction');
+			
+			$deleteTransaction = $($('#accounts-view-delete-transaction-template').html());
+			$deleteTransaction.addClass('hidden');
+			$deleteTransaction.find('input[name="transaction-id"]').val($transaction.attr('rel'));
+			$transaction.after($deleteTransaction);
+			$deleteTransaction.slideDown();
+		});
+
+		$('#accounts-view-transactions li.account-transaction a.accounts-view-delete-transaction-cancel').live('click',function (e) {
+			e.preventDefault();
+
+			$deleteTransaction = $(this).closest('li.account-transaction');
+			$deleteTransactionContainer = $deleteTransaction.closest('.list-container');
+			$id = $deleteTransaction.find('input[name="transaction-id"]').val();
+			
+			$deleteTransactionContainer.slideUp(function () {
+				$deleteTransactionContainer.remove();
+			});
+		});
+
+		$('#accounts-view-transactions li.account-transaction a.accounts-view-delete-transaction-save').live('click',function (e) {
+			e.preventDefault();
+
+			$deleteTransaction = $(this).closest('li.account-transaction');
+			$deleteTransactionContainer = $deleteTransaction.closest('.list-container');
+			$id = $deleteTransaction.find('input[name="transaction-id"]').val();
+
+			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
+			$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
+
+			if( confirm("Are you sure you want to delete this transaction?") ) {
+				showPleaseWait();
+				$.post(
+					'/accounts/json/transactiondelete',
+					{
+						transaction_id: $id
+					},
+					function(data) {
+						hidePleaseWait();
+						if( data.success ) {
+							$transaction.slideUp(function () {
+								$transaction.remove();
+								rowElementsColorVisible($('#accounts-view-transactions'));
+							});
+							if( $transactionSplit ) {
+								$transactionSplit.slideUp(function () {
+									$transactionSplit.remove();
+
+								});
+							}
+							$deleteTransactionContainer.slideUp(function() {
+								$deleteTransactionContainer.remove();
+							});
+						} else {
+							showError(data.error);
+						}
+					},
+					'json'
+				);
+			}
+		});
+
+		/**
 		 * View -> Edit
 		 */
 		$('#accounts-view-transactions li.account-transaction[rel] span.account-transaction-edit a').live('click',function (e) {
@@ -522,6 +595,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			} else {
 				// Load transaction to edit.
 				$transaction = $(this).closest('li.account-transaction');
+				$id = $transaction.attr('rel');
 				$transactionSplit = false;
 
 				$editTransaction = $($('#accounts-view-edit-transaction-template').html());
@@ -553,7 +627,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 				 		$editTransaction.find('span.account-transaction-transfer select option[value="'+$('#accounts-view-fields-account_id').val()+'"]').html().split('&nbsp;').join('')
 				 	).removeClass('text-center').addClass('text-left');
 
-					$transactionSplit = $transaction.next('li.list-container');
+					$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 
 					$transactionSplit.find('li.account-transaction').each(function() {
 						$currentSplit = $(this);
@@ -597,9 +671,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			$id = $editTransaction.find('input[name="transaction-id"]').val();
 			
 			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
-			$splitTransaction = false;
+			$transactionSplit = false;
 			if( $transaction.next('li.account-transaction').hasClass('transaction-split') ) {
-				$splitTransaction = $transaction.next('li.account-transaction');
+				$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 			}
 
 			$editTransaction.slideUp(function() {
@@ -609,8 +683,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 					$transaction.slideDown(function() {
 						rowElementsColorVisible($('#accounts-view-transactions'));
 					});
-					if( $splitTransaction ) {
-						$splitTransaction.slideDown();
+					if( $transactionSplit ) {
+						$transactionSplit.slideDown();
 					}
 				});
 			});
@@ -624,9 +698,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			$id = $editTransaction.find('input[name="transaction-id"]').val();
 
 			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
-			$splitTransaction = false;
-			if( $transaction.next('li.account-transaction').hasClass('transaction-split') ) {
-				$splitTransaction = $transaction.next('li.account-transaction');
+			$transactionSplit = false;
+			if( $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]').length ) {
+				$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 			}
 			
 			if( confirm("Are you sure you want to delete this transaction?") ) {
@@ -664,9 +738,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			$id = $editTransaction.find('input[name="transaction-id"]').val();
 
 			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
-			$splitTransaction = false;
-			if( $transaction.next('li.account-transaction').hasClass('transaction-split') ) {
-				$splitTransaction = $transaction.next('li.account-transaction');
+			$transactionSplit = false;
+			if( $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]').length ) {
+				$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 			}
 
 			showPleaseWait();
@@ -716,12 +790,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			e.preventDefault();
 		 	
 			$accountTransaction = $(this).closest('li.account-transaction');
+			$id = $accountTransaction.attr('rel');
 
 		 	$accountTransaction.find('span.account-transaction-transfer').html(
 		 		$accountTransaction.find('span.account-transaction-transfer select option[value="'+$('#accounts-view-fields-account_id').val()+'"]').html().split('&nbsp;').join('')
 		 	).removeClass('text-center').addClass('text-left');
 			$(this).closest('span.account-transaction-split').html('&nbsp;');
-		 	
+
 			$splitContainer = $accountTransaction.next('li.list-container');
 			$newTransactionSplit = $($('#accounts-view-edit-split-template').html()).addClass('hidden');
 		 	$anotherNewTransactionSplit = $($('#accounts-view-edit-split-template').html()).addClass('hidden');
@@ -1173,7 +1248,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		$('a.account-reconcile-transaction-new-save').live('click', function (e) {
 			e.preventDefault();
 			$target = $(this).closest('.reconcile-form').find('div.row-elements ul');
-			// SPLIT XYZXYZ 
 			
 			e.preventDefault();
 

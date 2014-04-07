@@ -1,5 +1,10 @@
 <li rel="{{id}}" class="account-transaction {{#cancelled}}cancelled{{/cancelled}} account-transaction-month-{{month}}">
-	<span class="account-transaction-edit {{#edit}}account-transaction-form{{/edit}}"><a rel="{{#edit}}{{type}}{{/edit}}" href="{{#edit}}{{url}}{{/edit}}{{^edit}}#{{/edit}}">&nbsp;</a></span>
+	{{#closebooks}}
+		<span class="account-transaction-delete account-transaction-form"><a href="#">&nbsp;</a></span>
+	{{/closebooks}}
+	{{^closebooks}}
+		<span class="account-transaction-edit {{#edit}}account-transaction-form{{/edit}}"><a rel="{{#edit}}{{type}}{{/edit}}" href="{{#edit}}{{url}}{{/edit}}{{^edit}}#{{/edit}}">&nbsp;</a></span>
+	{{/closebooks}}
 	<span class="account-transaction-date text-center">{{date}}</span>
 	<span class="account-transaction-number text-center">{{#check_number}}{{check_number}}{{/check_number}}{{^check_number}}{{number}}{{/check_number}}</span>
 	<span class="account-transaction-description text-left">{{{description}}}</span>
@@ -14,7 +19,7 @@
 	<span class="account-transaction-balance text-left">${{balance}}</span>
 </li>
 {{^transfer_account}}
-	<li class="list-container split-transaction hidden">
+	<li class="list-container split-transaction hidden" rel="{{id}}">
 		<ul>
 			{{#transaction_splits}}
 				{{>accounts_view_transactionsplit}}
