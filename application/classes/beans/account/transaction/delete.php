@@ -64,9 +64,6 @@ class Beans_Account_Transaction_Delete extends Beans_Account_Transaction {
 		if( $this->_check_books_closed($this->_transaction->date) )
 			throw new Exception("FYE for that transaction has been closed.");
 
-		if( $this->_transaction->close_books )
-			throw new Exception("Close books transactions cannot be deleted.");
-
 		// If this transaction is tied to a form, we limit the action to 
 		// internal requests only ( and require that form type to be specified 
 		// as a safety check ).

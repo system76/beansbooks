@@ -379,6 +379,7 @@ class Beans_Account extends Beans {
 		$return_object->check_number = $transaction->reference;
 		$return_object->description = $transaction->description;
 		$return_object->date = $transaction->date;
+		$return_object->close_books = $transaction->close_books;
 		$return_object->amount = $transaction->amount;
 		$return_object->payment = ( $transaction->payment )
 								? $transaction->payment

@@ -242,6 +242,20 @@ li.account-transaction > span.text-left {
 	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAARCAYAAADpPU2iAAAABmJLR0QAcgByAHKTL6T+AAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3AwaFBoXe61YvgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAABTSURBVCjP7Y+xDcAwCASPyIs8KzKHV/QqpLDcpHBIE6XISUiAnn9hkpIHNIAxRkns7vNgDTuWabsu7rD3foiIrbj3PhtJWUVS/gnfSDgAzKxUACfatvKxP/Es6AAAAABJRU5ErkJggg==');
 }
 
+.account-transaction-delete {
+	width: 20px;
+}
+
+.account-transaction-delete > a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAALCAYAAABGbhwYAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gQHDxAY3kWEvAAAAORJREFUGNNd0D8rhXEUB/DP7/Es/gxKdGWgJJHV9Q4YTIbL8Aw2sbNS3oKNDYuXwGC/RUkWVyQRKXkJx/D8bt2cOp1T3+/5fs85KdjHIJ4Tx3oi2EUDbwWuMIK1YD4T+oJFrGAA1wXaeMUoqmAS09hEPzqJh67FVLAXfAVbwXbwE+wEY/7tsxBcBPfBTXASzHbxIki5/8CLGpzDO76ziDLVVb6ugUcUmME4fhPKPDGBZaziUO1ygHbUxM8yq7WwjnNc9ihuZPyoCJrqn8EZntDBaR5YCpoFKgzlf96l2jdwm3MY1R+OVkK2AsbdRQAAAABJRU5ErkJggg==');
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
 
 .account-transaction-jump {
 	width: 20px;
@@ -275,6 +289,11 @@ li.account-transaction > span.text-left {
 	width: 20px;
 	font-weight: bold;
 	padding-top: 2px;
+}
+
+.account-transaction-action-prompt {
+	width: 734px;
+	text-indent: 10px;
 }
 
 .account-transaction-credit {
@@ -391,6 +410,8 @@ li.account-transaction > span.text-left {
 li.split-transaction.list-container li.account-transaction.actions a.button.short {
 	width: 65px;
 	text-align: center;
+	position: relative;
+	top: 1px;
 }
 /*
 li.split-transaction.list-container li.account-transaction.actions a.delete {
