@@ -297,11 +297,22 @@ function showConfirm(message,yesButtonText,noButtonText,yesButtonCallback) {
 	});
 }
 
-function showPleaseWait() {
+function showPleaseWait(message,buttonText,buttonAction) {
+	if( ! message ) message = 'Please wait...';
+	$('#please-wait-dialog p.please-wait-dialog-message').text(message);
+	$button = false;
+	if( buttonText && buttonAction ) {
+		$button = $('<a href="#" class="button">'+buttonText+'</a>');
+		$('#please-wait-dialog p.please-wait-dialog-button').html('').append($button).show();
+		$button.click(buttonAction);
+	} else {
+		$('#please-wait-dialog p.please-wait-dialog-button').html('&nbsp;').hide();
+	}
+	
 	$('#please-wait-dialog').modaldialog({
 		buttons: [],
 		width: 300,
-		height: 100
+		height: ( $button ? 140 : 100 )
 	});
 	$('#please-wait-dialog .spinme').spin();
 }

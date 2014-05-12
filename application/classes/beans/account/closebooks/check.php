@@ -49,7 +49,34 @@ class Beans_Account_Closebooks_Check extends Beans_Account {
 			 ? $this->_beans_setting_get('company_fye')
 			 : "12-31";
 		
-		$fye_date = date("Y").'-'.$fye;
+		// Determine the appropriate year to check.
+		$last_closebooks = ORM::Factory('transaction')->where('close_books','IS NOT',NULL)->order_by('close_books','desc')->find();
+
+		$fye_date = NULL;
+		if( $last_closebooks->loaded() )
+		{
+			// Next Year FYE
+			$fye_date = (intval(substr($last_closebooks->close_books,0,4))+1).'-'.$fye;
+		}
+		else
+		{
+			// Oldest Year
+			$first_transaction = ORM::Factory('transaction')->order_by('date','asc')->find();
+
+			if( ! $first_transaction->loaded() )
+				return (object)array(
+					'ready' => FALSE,
+					'fye_date' => FALSE,
+				);
+
+			$fye_date = substr($first_transaction->date,0,4).'-'.$fye;
+		}
+
+		if( $fye_date === NULL )
+			return (object)array(
+				'ready' => FALSE,
+				'fye_date' => FALSE,
+			);
 
 		// Prevent from showing on last date of the fiscal year.
 		if( $fye_date == date("Y-m-d") )

@@ -494,12 +494,12 @@ class Controller_Dash extends Controller_View {
 		if( ! $company_settings_result->success )
 			return $messages;
 
-		// Two Checks right now
 		$messages = array_merge($messages,$this->_dash_index_messages_setup($company_settings_result));
 		$messages = array_merge($messages,$this->_dash_index_messages_chart($company_settings_result));
 		$messages = array_merge($messages,$this->_dash_index_messages_startingbalance());
 		$messages = array_merge($messages,$this->_dash_index_messages_taxes());
 		$messages = array_merge($messages,$this->_dash_index_messages_closebooks($company_settings_result));
+		$messages = array_merge($messages,$this->_dash_index_messages_balancecheck());
 		
 		if( count($messages) == 0 ) 
 			return FALSE;
@@ -593,6 +593,56 @@ class Controller_Dash extends Controller_View {
 		return array();
 	}
 
+	private function _dash_index_messages_balancecheck()
+	{
+		$setup_company_list = new Beans_Setup_Company_List($this->_beans_data_auth());
+		$setup_company_list_result = $setup_company_list->execute();
+
+		$incomplete_calibration = FALSE;
+		$report_balancecheck_result = FALSE;
+
+		if( isset($setup_company_list_result->data) &&
+			isset($setup_company_list_result->data->settings) &&
+			isset($setup_company_list_result->data->settings->calibrate_date_next) &&
+			$setup_company_list_result->data->settings->calibrate_date_next )
+			$incomplete_calibration = TRUE;
+
+		if( ! $incomplete_calibration )
+		{
+			$report_balancecheck = new Beans_Report_Balancecheck($this->_beans_data_auth((object)array(
+				'date' => date("Y-m-d"),
+			)));
+			$report_balancecheck_result = $report_balancecheck->execute();
+
+			if( ! $report_balancecheck_result->success )
+				return array();
+		}
+
+		if( $incomplete_calibration ||
+			(
+				$report_balancecheck_result &&
+				! $report_balancecheck_result->data->balanced 
+			) )
+		{
+			return array(
+				(object)array(
+					'title' => "Calibration Required",
+					'text' => "Your books need to be calibrated due to an update
+								in BeansBooks.  Your accounts will function correctly until then,
+								but may display an incorrect balance.",
+					'actions' => array(
+						(object)array(
+							'text' => "Calibrate Accounts",
+							'url' => "/setup/calibrate"
+						),
+					),
+				),
+			);
+		}
+
+		return array();
+	}
+
 	private function _dash_index_messages_closebooks($company_settings_result)
 	{
 		$account_closebooks_check = new Beans_Account_Closebooks_Check($this->_beans_data_auth());
@@ -634,6 +684,19 @@ class Controller_Dash extends Controller_View {
 		$text .= '<div class="bump-down-more float-left" style="width: 215px;">'.$fye_date.'</div>';
 		$text .= '<div class="clear"></div>';
 		
+		$text .= '<div class="text-bold bump-down-more float-left" style="width: 180px;">Equity Accounts to Close:</div>';
+		$text .= '<div class="bump-down float-left dash-index-close-books-include_accounts" style="width: 215px;"><div class="select" style="width: 200px;"><select class="dash-index-close-books-include_account_ids">';
+		$text .= '<option value="">&nbsp;</option>';
+		foreach( $account_search_result->data->accounts as $account ) {
+			if( isset($account->type) AND 
+				isset($account->type->type) AND 
+				strtolower($account->type->type) == "equity" )
+				$text .= '<option value="'.$account->id.'" '.( stripos($account->name,'owners distribution') !== FALSE ? 'selected="selected"' : '' ).' >'.$account->name.'</option>';
+		}
+		$text .= '</select></div></div>';
+
+		$text .= '<div class="clear"></div>';
+
 		$text .= '<div class="text-bold bump-down-more float-left" style="width: 180px;">Closing Transfer Account:</div>';
 		$text .= '<div class="bump-down float-left" style="width: 215px;"><div class="select" style="width: 200px;"><select name="transfer_account_id">';
 		foreach( $account_search_result->data->accounts as $account ) {
@@ -645,9 +708,12 @@ class Controller_Dash extends Controller_View {
 		$text .= '</select></div></div>';
 		$text .= '<div class="clear"></div>';
 
+		
+
 
 
 		$text .= '<input type="hidden" name="date" value="'.$fye_date.'">';
+		$text .= '<input type="hidden" name="include_account_ids" value="">';
 
 		return array(
 			(object)array(

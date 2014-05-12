@@ -59,7 +59,6 @@ class Beans_Report_Balance extends Beans_Report {
 		$account_types['asset']->balance = 0.00;
 		$account_types['asset']->accounts = array();
 		
-		
 		$account_types['liability'] = new stdClass;
 		$account_types['liability']->name = "Liabilities";
 		$account_types['liability']->balance = 0.00;
@@ -98,6 +97,7 @@ class Beans_Report_Balance extends Beans_Report {
 		// Net Income Year = Last un-closed year.
 		$fye_transaction = ORM::Factory('transaction')->
 							where('close_books','IS NOT',NULL)->
+							where('date','<',$this->_date)->
 							order_by('close_books','DESC')->
 							find();
 

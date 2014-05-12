@@ -59,6 +59,8 @@ class View_Accounts_View extends View_Template {
 		if( ! isset($this->account_transactions_result) )
 			return FALSE;
 		
+		$current_table_sign = $this->account_lookup_result->data->account->type->table_sign;
+
 		$transactions = array();
 
 		if( ! count($this->account_transactions_result->data->transactions) )
@@ -71,6 +73,7 @@ class View_Accounts_View extends View_Template {
 			$element['date'] = $transaction->date;
 			$element['month'] = substr($transaction->date,0,7);
 			$element['number'] = $transaction->code;
+			$element['closebooks'] = $transaction->close_books ? TRUE : FALSE;
 			$element['check_number'] = $transaction->check_number;
 			$element['description'] = $transaction->description;
 
@@ -130,29 +133,20 @@ class View_Accounts_View extends View_Template {
 			{
 				$amount_credit = (
 									(
-										$account_transaction->account->type->table_sign > 0 AND 
-										$account_transaction->amount > 0
+										$current_table_sign == $account_transaction->account->type->table_sign AND 
+										$account_transaction->amount * $account_transaction->account->type->table_sign > 0
 									) OR
 									(
-										$account_transaction->account->type->table_sign < 0 AND 
-										$account_transaction->amount < 0
+										$current_table_sign != $account_transaction->account->type->table_sign AND 
+										$account_transaction->amount * $account_transaction->account->type->table_sign < 0
 									)
 								) 
 							   ? $this->_company_currency().number_format(abs($account_transaction->amount),2,'.',',')
 							   : FALSE;
 
-				$amount_debit = (
-									(
-										$account_transaction->account->type->table_sign < 0 AND 
-										$account_transaction->amount > 0
-									) OR
-									(
-										$account_transaction->account->type->table_sign > 0 AND 
-										$account_transaction->amount < 0
-									)
-								) 
-							   ? $this->_company_currency().number_format(abs($account_transaction->amount),2,'.',',')
-							   : FALSE;
+				$amount_debit = $amount_credit
+							   ? FALSE
+							   : $this->_company_currency().number_format(abs($account_transaction->amount),2,'.',',');
 
 				if( $account_transaction->account->id == $this->account_lookup_result->data->account->id )
 				{
@@ -186,12 +180,6 @@ class View_Accounts_View extends View_Template {
 				$element['transfer_account'] = FALSE;
 			}
 
-			/*
-			if( strpos($element['description'],ucwords($transaction->payment)." Payment Recorded") !== FALSE AND 
-				$transaction->payment )
-				$element['description'] = str_replace(ucwords($transaction->payment)." Payment Recorded", '<a href="'.$element['edit']['url'].'">'.ucwords($transaction->payment).' Payment Recorded</a>', strip_tags($element['description']));
-			*/
-			
 			$transactions[] = $element;
 		}
 		

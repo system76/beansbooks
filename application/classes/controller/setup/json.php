@@ -238,6 +238,152 @@ class Controller_Setup_Json extends Controller_Json {
 		$this->_return_object->data->auth = $auth_login_result->data->auth;
 	}
 
+	public function action_calibratestartdate()
+	{
+		set_time_limit(60 * 10);
+		ini_set('memory_limit', '256M');
+
+		// Get First Transaction and Last Transaction
+		// then simple bisection...
+		$date_start = NULL;
+		$date_end = NULL;
+
+		$account_transaction_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
+			'sort_by' => 'oldest',
+			'page_size' => 1,
+		)));
+		$account_transaction_search_result = $account_transaction_search->execute();
+
+		if( ! $account_transaction_search_result->success ||
+			! count($account_transaction_search_result->data->transactions) )
+			return $this->_return_error('Error getting starting transaction: '.$account_transaction_search_result->error);
+
+		$date_start = $account_transaction_search_result->data->transactions[0]->date;
+
+		$account_transaction_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
+			'sort_by' => 'newest',
+			'page_size' => 1,
+		)));
+		$account_transaction_search_result = $account_transaction_search->execute();
+
+		if( ! $account_transaction_search_result->success ||
+			! count($account_transaction_search_result->data->transactions) )
+			return $this->_return_error('Error getting ending transaction: '.$account_transaction_search_result->error);
+
+		$date_end = $account_transaction_search_result->data->transactions[0]->date;
+
+
+		while( $date_start != $date_end &&
+			   ( strtotime($date_end) - strtotime($date_start) ) > ( 60 * 60 * 24 * 2 ) ) 
+		{
+			$report_balancecheck = new Beans_Report_Balancecheck($this->_beans_data_auth((object)array(
+				'date' => date("Y-m-d", strtotime($date_start) + floor( ( strtotime($date_end) - strtotime($date_start) ) / 2) ),
+			)));
+			$report_balancecheck_result = $report_balancecheck->execute();
+
+			if( ! $report_balancecheck_result->success )
+				return $this->_return_error('Error finding first good date: '.$report_balancecheck_result->error);
+
+			if( $report_balancecheck_result->data->balanced )
+				$date_start = $report_balancecheck_result->data->date;
+			else
+				$date_end = $report_balancecheck_result->data->date;
+		}
+
+		$this->_return_object->data->date = $date_start;
+
+		$setup_company_list = new Beans_Setup_Company_List($this->_beans_data_auth());
+		$setup_company_list_result = $setup_company_list->execute();
+
+		if( isset($setup_company_list_result->data->settings) &&
+			isset($setup_company_list_result->data->settings->calibrate_date_next) &&
+			$setup_company_list_result->data->settings->calibrate_date_next && 
+			strtotime($setup_company_list_result->data->settings->calibrate_date_next) < strtotime($this->_return_object->data->date) )
+			$this->_return_object->data->date = $setup_company_list_result->data->settings->calibrate_date_next;
+	}
+
+	public function action_calibratedate()
+	{
+		$date = $this->request->post('date');
+
+		if( ! $date OR 
+			$date != date("Y-m-d",strtotime($date)) )
+			return $this->_return_error('Invalid date provided: '.$date.' expected YYYY-MM-DD');
+
+		// This can take a while.
+		set_time_limit(60 * 10);
+		ini_set('memory_limit', '256M');
+
+		$customer_invoice_updatebatch = new Beans_Customer_Sale_Invoice_Updatebatch($this->_beans_data_auth((object)array(
+			'date' => $date,
+		)));
+		$customer_invoice_updatebatch_result = $customer_invoice_updatebatch->execute();
+
+		if( ! $customer_invoice_updatebatch_result->success )
+			return $this->_return_error('Error updating customer invoices: '.$customer_invoice_updatebatch_result->error);
+
+		$customer_cancel_updatebatch = new Beans_Customer_Sale_Cancel_Updatebatch($this->_beans_data_auth((object)array(
+			'date' => $date,
+		)));
+		$customer_cancel_updatebatch_result = $customer_cancel_updatebatch->execute();
+
+		if( ! $customer_cancel_updatebatch_result->success )
+			return $this->_return_error('Error updating cancelled customer sales: '.$customer_cancel_updatebatch_result->error);
+
+		$customer_payment_calibratebatch = new Beans_Customer_Payment_Calibratebatch($this->_beans_data_auth((object)array(
+			'date' => $date,
+		)));
+		$customer_payment_calibratebatch_result = $customer_payment_calibratebatch->execute();
+
+		if( ! $customer_payment_calibratebatch_result->success )
+			return $this->_return_error('Error updating customer payments: '.$customer_payment_calibratebatch_result->error);
+
+		$this->_return_object->data->date_next = date("Y-m-d",strtotime($date." +1 Day"));		
+
+		$account_transaction_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
+			'sort_by' => 'newest',
+			'page_size' => 1,
+		)));
+		$account_transaction_search_result = $account_transaction_search->execute();
+
+		if( ! $account_transaction_search_result->success ||
+			! count($account_transaction_search_result->data->transactions) )
+			return $this->_return_error('Error getting ending transaction: '.$account_transaction_search_result->error);
+
+		$date_end = $account_transaction_search_result->data->transactions[0]->date;
+
+		if( strtotime($date_end) < strtotime($this->_return_object->data->date_next) )
+		{
+			$this->_return_object->data->date_next = FALSE;
+
+			// Calibrate Account Balances
+			$account_search = new Beans_Account_Search($this->_beans_data_auth());
+			$account_search_result = $account_search->execute();
+
+			if( ! $account_search_result->success )
+				return $this->_return_error('Could not look up accounts for final calibration.');
+
+			$success = '';
+
+			foreach( $account_search_result->data->accounts as $account )
+			{
+				$account_calibrate = new Beans_Account_Calibrate($this->_beans_data_auth((object)array('id' => $account->id)));
+				$account_calibrate_result = $account_calibrate->execute();
+
+				if( ! $account_calibrate_result->success )
+					return $this->_return_error('Error calibrating account balance for '.$account->name.'.');
+			}
+		}
+
+		// Update our latest date in case user pauses and comes back later.
+		$setup_company_update = new Beans_Setup_Company_Update($this->_beans_data_auth((object)array(
+			'settings' => array(
+				'calibrate_date_next' => $this->_return_object->data->date_next,
+			)
+		)));
+		$setup_company_update_result = $setup_company_update->execute();
+	}
+
 	private function _generate_random_string()
 	{
 		$string = '';

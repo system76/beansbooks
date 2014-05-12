@@ -345,6 +345,8 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		$account_create_transaction_data->description = "Sale ".$this->_sale->code;
 		$account_create_transaction_data->date = $this->_sale->date_created;
 		$account_create_transaction_data->account_transactions = array();
+		$account_create_transaction_data->form_type = 'sale';
+		$account_create_transaction_data->form_id = $this->_sale->id;
 
 		foreach( $this->_account_transactions as $account_id => $amount )
 		{

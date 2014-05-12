@@ -276,4 +276,21 @@ class Controller_Setup extends Controller_View {
 			$this->_view->api_role_lookup_result = $api_role_lookup_result;
 	}
 
+	public function action_calibrate()
+	{
+		$report_balancecheck = new Beans_Report_Balancecheck($this->_beans_data_auth((object)array(
+			'date' => date("Y-m-d"),
+		)));
+		$report_balancecheck_result = $report_balancecheck->execute();
+
+		if( $this->_beans_result_check($report_balancecheck_result) )
+			$this->_view->report_balancecheck_result = $report_balancecheck_result;
+
+		$setup_company_list = new Beans_Setup_Company_List($this->_beans_data_auth());
+		$setup_company_list_result = $setup_company_list->execute();
+
+		if( $this->_beans_result_check($setup_company_list_result) )
+			$this->_view->setup_company_list_result = $setup_company_list_result;
+	}
+
 }

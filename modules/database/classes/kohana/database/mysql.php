@@ -51,12 +51,12 @@ class Kohana_Database_MySQL extends Database {
 			if ($persistent)
 			{
 				// Create a persistent connection
-				$this->_connection = mysql_pconnect($hostname, $username, $password);
+				$this->_connection = @mysql_pconnect($hostname, $username, $password);
 			}
 			else
 			{
 				// Create a connection and force it to be a new link
-				$this->_connection = mysql_connect($hostname, $username, $password, TRUE);
+				$this->_connection = @mysql_connect($hostname, $username, $password, TRUE);
 			}
 		}
 		catch (Exception $e)

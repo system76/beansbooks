@@ -223,9 +223,11 @@ class Beans_Account extends Beans {
 	@attribute balance DECIMAL The account balance after this transaction. 
 	@attribute reconciled BOOLEAN 
 	@attribute account OBJECT The #Beans_Account# this transaction is tied to. 
-	@attribute account_transaction_forms ARRAY An array of #Beans_Account_Transaction_Form# delineating how this transaction affects form balances. 
 	---BEANSENDSPEC---
 	 */
+
+	// Removed & Deprecated
+	// @attribute account_transaction_forms ARRAY An array of #Beans_Account_Transaction_Form# delineating how this transaction affects form balances. 
 
 	/**
 	 * Returns an object of the properties for the given Model_Account_Transaction (ORM)
@@ -252,7 +254,8 @@ class Beans_Account extends Beans {
 		$return_object->reconciled = $account_transaction->account_reconcile_id ? TRUE : FALSE;
 
 		// Reference IDs
-		$return_object->account_transaction_forms = $this->_return_account_transaction_forms_array($account_transaction->account_transaction_forms->find_all());
+		// REMOVED - Greatly improved query time 
+		// $return_object->_return_account_transaction_forms_array = $this->_return_account_transaction_forms_array($account_transaction->account_transaction_forms->find_all());
 		
 		// OBJECT?
 		// *** FAT ***
@@ -304,8 +307,8 @@ class Beans_Account extends Beans {
 		if( get_class($account_transaction_form) != "Model_Account_Transaction_Form" )
 			throw new Exception("Invalid Account Transaction Form.");
 
-		if( isset($this->_return_account_transaction_form_element[$account_transaction_form->id]) )
-			return $this->_return_account_transaction_form_element[$account_transaction_form->id];
+		if( isset($this->_return_account_transaction_form_element_cache[$account_transaction_form->id]) )
+			return $this->_return_account_transaction_form_element_cache[$account_transaction_form->id];
 
 		// Don't link to objects - just reference by ID.
 		$return_object->id = $account_transaction_form->id;
@@ -313,8 +316,8 @@ class Beans_Account extends Beans {
 		$return_object->form_id = $account_transaction_form->form_id;
 		$return_object->amount = $account_transaction_form->amount;
 
-		$this->_return_account_transaction_form_element[$account_transaction_form->id] = $return_object;
-		return $this->_return_account_transaction_form_element[$account_transaction_form->id];
+		$this->_return_account_transaction_form_element_cache[$account_transaction_form->id] = $return_object;
+		return $this->_return_account_transaction_form_element_cache[$account_transaction_form->id];
 	}
 
 	/**
@@ -376,6 +379,7 @@ class Beans_Account extends Beans {
 		$return_object->check_number = $transaction->reference;
 		$return_object->description = $transaction->description;
 		$return_object->date = $transaction->date;
+		$return_object->close_books = $transaction->close_books;
 		$return_object->amount = $transaction->amount;
 		$return_object->payment = ( $transaction->payment )
 								? $transaction->payment
@@ -383,7 +387,21 @@ class Beans_Account extends Beans {
 
 		// If this is directly tied to a form.
 		$return_object->form = FALSE;
+		$return_object->tax_payment = FALSE;
 		
+		if( $transaction->form_type == "tax_payment" )
+		{
+			$return_object->tax_payment = new stdClass;
+			$return_object->tax_payment->id = $transaction->form_id;
+		}
+		else if ( $transaction->form_type )
+		{
+			$return_object->form = new stdClass;
+			$return_object->form->id = $transaction->form_id;
+			$return_object->form->type = $transaction->form_type;
+		}
+
+		/*
 		// V2Item - See if we can replace this in the views with betterlogic and remove these loads.
 		if( $transaction->create_form->loaded() )
 		{
@@ -411,7 +429,8 @@ class Beans_Account extends Beans {
 			$return_object->tax_payment = new stdClass;
 			$return_object->tax_payment->id = $transaction->tax_payment->id;
 		}
-		
+		*/
+
 		$return_object->account_transactions = $this->_return_account_transactions_array($transaction->account_transactions->find_all());
 
 		$return_object->reconciled = FALSE;
@@ -475,6 +494,16 @@ class Beans_Account extends Beans {
 		if( $transaction->entity_id AND 
 			! ORM::Factory('entity',$transaction->entity_id)->loaded() )
 			throw new Exception("Internal error: invalid entity referenced on transaction.");
+
+		if( (
+				$this->_transaction->form_type OR
+				$this->_transaction->form_id 
+			) AND
+			(
+				! $this->_transaction->form_type OR
+				! $this->_transaction->form_id 
+			) )
+			throw new Exception("Invalid transaction form information: must provide both form_type and form_id.");
 
 	}
 

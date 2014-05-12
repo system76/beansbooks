@@ -148,11 +148,13 @@ class Beans_Setup_Init extends Beans_Setup {
 
 			if( ! $beans_account_create_result->success )
 			{
-				echo "Error occurred creating account ".$account['name']." (".$account['type'].") : ".$beans_account_create_result->error."\n";
+				if( Kohana::$is_cli )
+					echo "Error occurred creating account ".$account['name']." (".$account['type'].") : ".$beans_account_create_result->error."\n";
 			}
 			else
 			{
-				echo "Created account: ".$beans_account_create_result->data->account->name."\n";
+				if( Kohana::$is_cli )
+					echo "Created account: ".$beans_account_create_result->data->account->name."\n";
 
 				if ( isset($account['default_setting_account']) )
 				{

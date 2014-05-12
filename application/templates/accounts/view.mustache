@@ -123,6 +123,22 @@
 	</li>
 </div>
 
+{{! Used for deleting a close books transaction }}
+<div id="accounts-view-delete-transaction-template" class="hidden">
+	<li class="list-container split-transaction delete">
+		<ul>
+			<li class="account-transaction delete color-force-yellow actions">
+				<input type="hidden" name="transaction-account-id" value="{{#account}}{{id}}{{/account}}">
+				<input type="hidden" name="transaction-account-table_sign" value="{{#account}}{{table_sign}}{{/account}}">
+				<input type="hidden" name="transaction-id" value="">
+				<span class="account-transaction-action-prompt">Deleting this transaction will re-open your books for this fiscal year.  You will be able to re-close your books through the dash.</span>
+				<span class="account-transaction-debit text-center"><a href="#" class="cancel button short accounts-view-delete-transaction-cancel">Cancel</a></span>
+				<span class="account-transaction-balance text-center"><a href="#" class="accounts-view-delete-transaction-save save button short">Delete</a></span>
+			</li>
+		</ul>
+	</li>
+</div>
+
 {{! These are used for editing transactions }}
 <div id="accounts-view-edit-transaction-template" class="hidden">
 	<li class="account-transaction edit color-force-green">

@@ -83,6 +83,9 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 		if( $this->_check_books_closed($this->_old_transaction->date) )
 			throw new Exception("FYE for that transaction has been closed.");
 
+		if( $this->_old_transaction->close_books )
+			throw new Exception("Close books transactions cannot be changed.");
+
 		// VALIDATE IF TIED TO A FORM.
 		if( (
 				$this->_old_transaction->create_form->loaded() AND
@@ -134,6 +137,9 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 											   $this->_data->entity_id )
 										   ? $this->_data->entity_id
 										   : $this->_old_transaction->entity_id;
+
+		$this->_transaction->form_type = $this->_old_transaction->form_type;
+		$this->_transaction->form_id = $this->_old_transaction->form_id;
 
 		// If this was previously a payment we retain that attribute
 		// However, if this is a new payment ( i.e. Payment/Replace ) then we want 

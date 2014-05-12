@@ -237,59 +237,110 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		/**
 		 * VIEW
 		 */
+		
+		var jumpLoadMore = false;
+		var jumpMonth = false;
+
+		function accountsViewJumpCancel() {
+			jumpLoadMore = false;
+			showPleaseWait('Finishing Last Query...');
+		}
+
+		function accountsViewJump() {
+			if ( ! jumpLoadMore ) {
+				rowElementsColorVisible($('#accounts-view-transactions'));
+				hidePleaseWait();
+				$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction-month-'+jumpMonth+':last');
+				if( $scrollTo.length == 0 ) {
+					$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction:last');
+				}
+				$('html,body').animate(
+					{
+						scrollTop: parseInt($scrollTo.offset().top - 100)
+					},
+					2000
+				);
+				return;
+			}
+			$.post(
+				'/accounts/json/transactionsjumptomonth',
+				{
+					account_id: $('#accounts-view-fields-account_id').val(),
+					last_transaction_id: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last').attr('rel'),
+					last_transaction_date: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last span.account-transaction-date').text(),
+					month: jumpMonth
+				},
+				function(data) {
+					if( data.success != 1 ) {
+						hidePleaseWait();
+						showError(data.error);
+					} else {
+						var lastDate = false;
+						for( index in data.data.transactions ) {
+							$('#accounts-view-transactions > ul').append(data.data.transactions[index].html);
+							lastDate = data.data.transactions[index].date;
+						}
+						if( data.data.transactions.length > 0 ) {
+							showPleaseWait(
+								'Loading... '+lastDate,
+								'Cancel',
+								accountsViewJumpCancel
+							);
+							setTimeout(function() {
+								accountsViewJump();
+							},150);
+							return;
+						}
+						jumpLoadMore = false;
+						rowElementsColorVisible($('#accounts-view-transactions'));
+						hidePleaseWait();
+						$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction-month-'+jumpMonth+':last');
+						if( $scrollTo.length == 0 ) {
+							$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction:last');
+						}
+						$('html,body').animate(
+							{
+								scrollTop: parseInt($scrollTo.offset().top - 100)
+							},
+							2000
+						);
+					}
+				},
+				'json'
+			);
+		}
+
 		$('#accounts-view-jump').change(function() {
-			var month = $(this).val();
-			if( $('.account-transaction-month-'+month+':last').length == 1 ) {
+			jumpMonth = $(this).val();
+			if( $('.account-transaction-month-'+jumpMonth+':last').length == 1 ) {
 				// Scroll
 				$('html,body').animate(
 					{
-						scrollTop: parseInt($('.account-transaction-month-'+month+':last').offset().top - 100)
+						scrollTop: parseInt($('.account-transaction-month-'+jumpMonth+':last').offset().top - 100)
 					},
 					2000
 				);
 			} else {
-				showPleaseWait();
-				$.post(
-					'/accounts/json/transactionsjumptomonth',
-					{
-						account_id: $('#accounts-view-fields-account_id').val(),
-						last_transaction_id: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last').attr('rel'),
-						last_transaction_date: $('#accounts-view-transactions  li.account-transaction:not(.static-row):last span.account-transaction-date').text(),
-						month: month
-					},
-					function(data) {
-						if( data.success != 1 ) {
-							hidePleaseWait();
-							showError(data.error);
-						} else {
-							for( index in data.data.transactions ) {
-								$('#accounts-view-transactions > ul').append(data.data.transactions[index].html);
-							}
-							rowElementsColorVisible($('#accounts-view-transactions'));
-							hidePleaseWait();
-							$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction-month-'+month+':last');
-							if( $scrollTo.length == 0 ) {
-								$scrollTo = $('#accounts-view-transactions > ul >li.account-transaction:last');
-							}
-							$('html,body').animate(
-								{
-									scrollTop: parseInt($scrollTo.offset().top - 100)
-								},
-								2000
-							);
-						}
-					},
-					'json'
+				showPleaseWait(
+					'Loading...',
+					'Cancel',
+					accountsViewJumpCancel
 				);
+				jumpLoadMore = true;
+				setTimeout(function() {
+					accountsViewJump();
+				},150);
 			}
 		});
-		
+
+
+		var loadMoreOffset = 2000;
 		if( $('#accounts-view-transactions').length > 0  &&
 			$('#accounts-import-upload').length == 0 &&
 			$('#accounts-import-classify').length == 0 &&
 			$('#accounts-import-save').length == 0 ) {
 			$(window).scroll(function () { 
-				if( ( $(window).height() + $(window).scrollTop() ) >= $('#accounts-view-transactions').height() ) {
+				if( ( $(window).height() + $(window).scrollTop() + loadMoreOffset ) >= $('#accounts-view-transactions').height() ) {
 					if( $('#accounts-view-loadtransactions').is(':visible') ||
 						$('#accounts-view-endtransactions').is(':visible') ) {
 						// Do nothing - we're already loading...
@@ -323,6 +374,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 										}
 										$('#accounts-view-loadtransactions').hide();
 										rowElementsColorVisible($('#accounts-view-transactions'));
+										// Load more if screen still isn't scrolled.
+										$(window).trigger('scroll');
 									}
 								}
 							},
@@ -337,11 +390,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		$('#accounts-view-transactions li:not(.new,.import,.edit) span.account-transaction-split a').live('click',function (e) {
 			e.preventDefault();
 
-			$transactionSplits = $(this).closest('li.account-transaction').next('.split-transaction');
-			if( $transactionSplits.is(':visible') ) {
-				$transactionSplits.slideUp();
+			$transaction = $(this).closest('.account-transaction');
+			$id = $transaction.attr('rel');
+			$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
+
+			if( $transactionSplit.is(':visible') ) {
+				$transactionSplit.slideUp();
 			} else {
-				$transactionSplits.slideDown();
+				$transactionSplit.slideDown();
 			}
 		});
 
@@ -457,6 +513,76 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		});
 
 		/**
+		 * View -> Delete
+		 */
+		$('#accounts-view-transactions li.account-transaction[rel] span.account-transaction-delete a').live('click',function (e) {
+			e.preventDefault();
+
+			// Load transaction to edit.
+			$transaction = $(this).closest('li.account-transaction');
+			
+			$deleteTransaction = $($('#accounts-view-delete-transaction-template').html());
+			$deleteTransaction.addClass('hidden');
+			$deleteTransaction.find('input[name="transaction-id"]').val($transaction.attr('rel'));
+			$transaction.after($deleteTransaction);
+			$deleteTransaction.slideDown();
+		});
+
+		$('#accounts-view-transactions li.account-transaction a.accounts-view-delete-transaction-cancel').live('click',function (e) {
+			e.preventDefault();
+
+			$deleteTransaction = $(this).closest('li.account-transaction');
+			$deleteTransactionContainer = $deleteTransaction.closest('.list-container');
+			$id = $deleteTransaction.find('input[name="transaction-id"]').val();
+			
+			$deleteTransactionContainer.slideUp(function () {
+				$deleteTransactionContainer.remove();
+			});
+		});
+
+		$('#accounts-view-transactions li.account-transaction a.accounts-view-delete-transaction-save').live('click',function (e) {
+			e.preventDefault();
+
+			$deleteTransaction = $(this).closest('li.account-transaction');
+			$deleteTransactionContainer = $deleteTransaction.closest('.list-container');
+			$id = $deleteTransaction.find('input[name="transaction-id"]').val();
+
+			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
+			$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
+
+			if( confirm("Are you sure you want to delete this transaction?") ) {
+				showPleaseWait();
+				$.post(
+					'/accounts/json/transactiondelete',
+					{
+						transaction_id: $id
+					},
+					function(data) {
+						hidePleaseWait();
+						if( data.success ) {
+							$transaction.slideUp(function () {
+								$transaction.remove();
+								rowElementsColorVisible($('#accounts-view-transactions'));
+							});
+							if( $transactionSplit ) {
+								$transactionSplit.slideUp(function () {
+									$transactionSplit.remove();
+
+								});
+							}
+							$deleteTransactionContainer.slideUp(function() {
+								$deleteTransactionContainer.remove();
+							});
+						} else {
+							showError(data.error);
+						}
+					},
+					'json'
+				);
+			}
+		});
+
+		/**
 		 * View -> Edit
 		 */
 		$('#accounts-view-transactions li.account-transaction[rel] span.account-transaction-edit a').live('click',function (e) {
@@ -469,6 +595,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			} else {
 				// Load transaction to edit.
 				$transaction = $(this).closest('li.account-transaction');
+				$id = $transaction.attr('rel');
 				$transactionSplit = false;
 
 				$editTransaction = $($('#accounts-view-edit-transaction-template').html());
@@ -488,8 +615,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 					$editTransaction.find('input[name="transaction-debit"]').val('');
 				}
 
-				$account_table_sign = parseFloat($editTransaction.find('input[name="transaction-account-table_sign"]').val());
-
 				$editTransactionSplit = $($('#accounts-view-edit-transaction-container-template').html());
 
 				if( $transaction.find('.account-transaction-transfer').attr('rel') ) {
@@ -502,43 +627,23 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 				 		$editTransaction.find('span.account-transaction-transfer select option[value="'+$('#accounts-view-fields-account_id').val()+'"]').html().split('&nbsp;').join('')
 				 	).removeClass('text-center').addClass('text-left');
 
-					$transactionSplit = $transaction.next('li.list-container');
+					$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 
 					$transactionSplit.find('li.account-transaction').each(function() {
 						$currentSplit = $(this);
-						$split_table_sign = parseFloat($currentSplit.find('input.table_sign').val());
-
 						$newEditSplit = $($('#accounts-view-edit-split-template').html());
 						$newEditSplit.find('select[name="transaction-split-transfer"]').val($currentSplit.find('.account-transaction-transfer').attr('rel'));
-						$amount = monetaryRound(parseFloat($currentSplit.find('input.amount').val()));
-						$amount = $amount * 
-							$account_table_sign *
-							$split_table_sign;
 
-						if( $editTransaction.find('input[name="transaction-credit"]').val().length > 0 ) {
-							if( $amount < 0 && 
-								$account_table_sign == $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount * -1);
-							} else if ( $amount < 0 ) {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount * -1);
-							} else if ( $account_table_sign != $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount);
-							} else {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount);
-							}
-						} else {
-							if( $amount > 0 && 
-								$account_table_sign == $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount);
-							} else if ( $amount > 0 ) {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount);
-							} else if ( $account_table_sign != $split_table_sign ) {
-								$newEditSplit.find('input[name="transaction-split-debit"]').val($amount * -1);
-							} else {
-								$newEditSplit.find('input[name="transaction-split-credit"]').val($amount * -1);
-							}
+						$newEditSplit.find('input[name="transaction-split-credit"]').val(convertCurrencyToNumber($currentSplit.find('.account-transaction-credit').text().trim()));
+						$newEditSplit.find('input[name="transaction-split-debit"]').val(convertCurrencyToNumber($currentSplit.find('.account-transaction-debit').text().trim()));
+						
+						if( $newEditSplit.find('input[name="transaction-split-credit"]').val() == "0" ) {
+							$newEditSplit.find('input[name="transaction-split-credit"]').val('');
 						}
-
+						if( $newEditSplit.find('input[name="transaction-split-debit"]').val() == "0" ) {
+							$newEditSplit.find('input[name="transaction-split-debit"]').val('');
+						}
+						
 						$editTransactionSplit.find('li.account-transaction.actions').before($newEditSplit);
 					});
 
@@ -566,9 +671,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			$id = $editTransaction.find('input[name="transaction-id"]').val();
 			
 			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
-			$splitTransaction = false;
+			$transactionSplit = false;
 			if( $transaction.next('li.account-transaction').hasClass('transaction-split') ) {
-				$splitTransaction = $transaction.next('li.account-transaction');
+				$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 			}
 
 			$editTransaction.slideUp(function() {
@@ -578,8 +683,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 					$transaction.slideDown(function() {
 						rowElementsColorVisible($('#accounts-view-transactions'));
 					});
-					if( $splitTransaction ) {
-						$splitTransaction.slideDown();
+					if( $transactionSplit ) {
+						$transactionSplit.slideDown();
 					}
 				});
 			});
@@ -593,9 +698,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			$id = $editTransaction.find('input[name="transaction-id"]').val();
 
 			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
-			$splitTransaction = false;
-			if( $transaction.next('li.account-transaction').hasClass('transaction-split') ) {
-				$splitTransaction = $transaction.next('li.account-transaction');
+			$transactionSplit = false;
+			if( $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]').length ) {
+				$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 			}
 			
 			if( confirm("Are you sure you want to delete this transaction?") ) {
@@ -633,9 +738,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			$id = $editTransaction.find('input[name="transaction-id"]').val();
 
 			$transaction = $('#accounts-view-transactions li.account-transaction:not(.edit)[rel="'+$id+'"]');
-			$splitTransaction = false;
-			if( $transaction.next('li.account-transaction').hasClass('transaction-split') ) {
-				$splitTransaction = $transaction.next('li.account-transaction');
+			$transactionSplit = false;
+			if( $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]').length ) {
+				$transactionSplit = $('#accounts-view-transactions li.split-transaction:not(.edit)[rel="'+$id+'"]');
 			}
 
 			showPleaseWait();
@@ -685,12 +790,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 			e.preventDefault();
 		 	
 			$accountTransaction = $(this).closest('li.account-transaction');
+			$id = $accountTransaction.attr('rel');
 
 		 	$accountTransaction.find('span.account-transaction-transfer').html(
 		 		$accountTransaction.find('span.account-transaction-transfer select option[value="'+$('#accounts-view-fields-account_id').val()+'"]').html().split('&nbsp;').join('')
 		 	).removeClass('text-center').addClass('text-left');
 			$(this).closest('span.account-transaction-split').html('&nbsp;');
-		 	
+
 			$splitContainer = $accountTransaction.next('li.list-container');
 			$newTransactionSplit = $($('#accounts-view-edit-split-template').html()).addClass('hidden');
 		 	$anotherNewTransactionSplit = $($('#accounts-view-edit-split-template').html()).addClass('hidden');
@@ -1142,7 +1248,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		$('a.account-reconcile-transaction-new-save').live('click', function (e) {
 			e.preventDefault();
 			$target = $(this).closest('.reconcile-form').find('div.row-elements ul');
-			// SPLIT XYZXYZ 
 			
 			e.preventDefault();
 
@@ -1281,7 +1386,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		});
 
 
-		
+		// Trigger scroll to auto-load content if necessary.
+		$(window).trigger('scroll');
 
 	});
 

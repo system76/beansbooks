@@ -193,7 +193,8 @@ class Beans_Report extends Beans {
 			if( $account->balance )
 				$balance = $this->_beans_round( $balance + $account->balance );
 			
-			$balance = $this->_beans_round( $balance + $this->_generate_account_balance_total($account->accounts) );
+			if( isset($account->accounts) )
+				$balance = $this->_beans_round( $balance + $this->_generate_account_balance_total($account->accounts) );
 		}
 
 		return $balance;
@@ -230,9 +231,11 @@ class Beans_Report extends Beans {
 		
 		if( isset($account->accounts) AND 
 			count($account->accounts) )
+		{
 			foreach( $account->accounts as $key => $child_account )
 				$account->accounts[$key] = $this->_generate_account_balance($child_account,$date_end,$date_start);
-		
+		}
+
 		return $account;
 	}
 

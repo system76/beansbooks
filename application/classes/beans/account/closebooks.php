@@ -43,6 +43,8 @@ class Beans_Account_Closebooks extends Beans_Account {
 	{
 		parent::__construct($data);
 
+		$this->_data = $data;
+
 		$this->_transfer_account_id = ( isset($data->transfer_account_id) ) 
 				   ? (int)$data->transfer_account_id
 				   : 0;
@@ -69,8 +71,18 @@ class Beans_Account_Closebooks extends Beans_Account {
 		if( date("Y-m-d",strtotime($this->_date)) != $this->_date ) 
 			throw new Exception("Invalid date: must be in YYYY-MM-DD format.");
 
+		$include_account_ids = array();
+
+		if( isset($this->_data->include_account_ids) &&
+			is_array($this->_data->include_account_ids) )
+			$include_account_ids = $this->_data->include_account_ids;
+
+		if( in_array($this->_transfer_account->id, $include_account_ids) )
+			throw new Exception("You cannot close out the same account you are retaining earnings to.");
+
 		// In case we change our mind on the format.
 		$balance_report_date = $this->_date;
+		$balance_report_start_date = substr($balance_report_date,0,4).'-01-01';
 
 		if( strtotime($balance_report_date) > time() )
 			throw new Exception("Invalid date: must be a date in the past.");
@@ -99,13 +111,14 @@ class Beans_Account_Closebooks extends Beans_Account {
 			if( (
 					strtolower($account->account_type->type) == "income" OR 
 					strtolower($account->account_type->type) == "cost of goods sold" OR 
-					strtolower($account->account_type->type) == "expense" 
+					strtolower($account->account_type->type) == "expense" OR
+					in_array($account->id, $include_account_ids)
 				) AND
 				(
 					strpos($account->account_type->code, 'pending_') === FALSE
 				) )
 			{
-				$balance = $this->_generate_simple_account_balance($account->id,$balance_report_date);
+				$balance = $this->_generate_simple_account_balance($account->id,$balance_report_date,$balance_report_start_date);
 				if( $balance != 0.00 )
 				{
 					$transfer_account_total = $this->_beans_round( $transfer_account_total + $balance );
