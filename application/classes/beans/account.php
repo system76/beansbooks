@@ -657,6 +657,38 @@ class Beans_Account extends Beans {
 	 */
 	protected function _account_transaction_insert($account_transaction)
 	{
+		// Split avoids deadlocks
+		$balance_sql = 'SELECT IFNULL(SUM(bbalance),0.00) as new_balance FROM ('.
+					   '		SELECT IFNULL(balance,0.00) as bbalance FROM '.
+					   '		account_transactions as aaccount_transactions WHERE '.
+					   '		account_id = "'.$account_transaction->account_id.'" AND '.
+					   '		date <= DATE("'.$account_transaction->date.'") AND ( '.
+					   ' 		transaction_id < '.$account_transaction->transaction_id.' OR '.
+					   ' 		( close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' AND '.
+					   ' 		transaction_id < '.$account_transaction->transaction_id.' ) '.
+					   ' 	) ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
+					   ') as baccount_transactions';
+		$balance_result = DB::Query(Database::SELECT,$balance_sql)->execute();
+
+		$insert_sql = 'INSERT INTO account_transactions '.
+					  '(transaction_id, account_id, date, amount, transfer, writeoff, close_books, account_reconcile_id, balance) '.
+					  'VALUES ( '.
+					  $account_transaction->transaction_id.', '.
+					  $account_transaction->account_id.', '.
+					  'DATE("'.$account_transaction->date.'"), '.
+					  $account_transaction->amount.', '.
+					  ( $account_transaction->transfer ? '1' : '0' ).', '.
+					  ( $account_transaction->writeoff ? '1' : '0' ).', '.
+					  ( $account_transaction->close_books ? '1' : '0' ).', '.
+					  ( $account_transaction->account_reconcile_id ? $account_transaction->account_reconcile_id : 'NULL' ).', '.
+					  $balance_result[0]['new_balance'].' '.
+					  ') ';
+		
+		$insert_result = DB::Query(Database::INSERT,$insert_sql)->execute();
+
+		$account_transaction_id = $insert_result[0];
+
+		/*
 		// Insert new account transaction.
 		$insert_sql = 'INSERT INTO account_transactions '.
 					  '(transaction_id, account_id, date, amount, transfer, writeoff, close_books, account_reconcile_id, balance) '.
@@ -684,7 +716,8 @@ class Beans_Account extends Beans {
 		$insert_result = DB::Query(Database::INSERT,$insert_sql)->execute();
 
 		$account_transaction_id = $insert_result[0];
-
+		*/
+		
 		// Update transaction balances.
 		$update_sql = 'UPDATE account_transactions '.
 					  'SET balance = balance + '.$account_transaction->amount.' WHERE '.
@@ -747,13 +780,16 @@ class Beans_Account extends Beans {
 		if( ! $form_id )
 			throw new Exception("Invalid form ID - none provided.");
 
+		$balance_sql = 'SELECT IFNULL(balance,0.00) as new_balance FROM ( '.
+					   ' 	SELECT SUM(amount) as balance '.
+					   '		FROM account_transaction_forms '.
+					   '		WHERE form_id = '.$form_id.' '.
+					   ') as aforms';
+		
+		$balance_result = DB::Query(Database::SELECT,$balance_sql)->execute();
+
 		$update_sql = 'UPDATE forms '.
-					  'SET balance = ( '.
-					  '		SELECT IFNULL(balance,0.00) FROM ( '.
-					  ' 		SELECT SUM(amount) as balance '.
-					  '			FROM account_transaction_forms '.
-					  '			WHERE form_id = '.$form_id.' '.
-					  '		) as aforms ) '.
+					  'SET balance = '.$balance_result[0]['new_balance'].' '.
 					  'WHERE id = "'.$form_id.'"';
 
 		DB::Query(Database::UPDATE, $update_sql)->execute();
