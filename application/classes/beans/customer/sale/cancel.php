@@ -83,13 +83,12 @@ class Beans_Customer_Sale_Cancel extends Beans_Customer_Sale {
 			throw new Exception("Sale has already been cancelled.");
 
 		if( $this->_check_books_closed($this->_sale->date_created) )
-			throw new Exception("Sale could not be deleted.  The financial year has been closed already.");
+			throw new Exception("Sale could not be cancelled.  The financial year has been closed already.");
 
 		if( $this->_sale->refund_form_id AND 
 			$this->_sale->refund_form_id > $this->_sale->id )
-			throw new Exception("Sale could not be deleted - it has a refund attached to it.");
+			throw new Exception("Sale could not be cancelled - it has a refund attached to it.");
 
-		// ? Any other req's ?
 		$date_cancelled = date("Y-m-d");
 
 		// Create Cancel Transaction

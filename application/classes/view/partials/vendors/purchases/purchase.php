@@ -83,14 +83,15 @@ class View_Partials_Vendors_Purchases_Purchase extends KOstache {
 
 	public function can_cancel()
 	{
-		return ( ! $this->purchase->date_billed )
+		return ( ! $this->purchase->date_cancelled )
 			? TRUE
 			: FALSE;
 	}
 
 	public function can_refund()
 	{
-		return ( ! $this->purchase->refund_purchase_id AND 
+		return ( ! $this->purchase->date_cancelled AND
+				 ! $this->purchase->refund_purchase_id AND 
 				 $this->purchase->date_billed )
 			? TRUE
 			: FALSE;	

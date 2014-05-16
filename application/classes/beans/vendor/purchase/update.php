@@ -130,10 +130,9 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 		if( $this->_check_books_closed($this->_purchase->date_created) )
 			throw new Exception("purchase could not be updated.  The financial year has been closed already.");
 
-		if( $this->_purchase->date_billed OR
-			$this->_purchase->invoice_transaction_id )
-			throw new Exception("A purchase cannot be updated after it has been converted to an invoice.");
-
+		if( $this->_purchase->date_cancelled )
+			throw new Exception("A purchase cannot be updated after it has been cancelled.");
+		
 		if( isset($this->_data->vendor_id) )
 			$this->_purchase->entity_id = $this->_data->vendor_id;
 
@@ -356,7 +355,26 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 
 			return $vendor_purchase_invoice_result;
 		}
-		
+
+		// MUTABILITY CHANGE
+		// Calibrate Payments
+		/*
+		// Calibrate Payments
+		foreach( $calibrate_payments as $calibrate_payment )
+		{
+			$beans_calibrate_payment = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
+				'id' => $calibrate_payment->id,
+			)));
+			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
+
+			// V2Item
+			// Fatal error!  Ensure coverage or ascertain 100% success.
+			if( ! $beans_calibrate_payment_result->success )
+				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
+		}
+		 */
+
+
 		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
 		
 		return (object)array(

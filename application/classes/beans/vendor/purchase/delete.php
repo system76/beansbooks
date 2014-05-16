@@ -53,10 +53,13 @@ class Beans_Vendor_Purchase_Delete extends Beans_Vendor_Purchase {
 		if( $this->_check_books_closed($this->_purchase->date_created) )
 			throw new Exception("Purchase purchase could not be deleted.  The financial year has been closed already.");
 
+		if( $this->_purchase->date_cancelled )
+			throw new Exception("A purchase cannot be deleted after it has been cancelled.");
+
 		if( $this->_purchase->date_billed OR 
 			$this->_purchase->invoice_transaction_id )
 			throw new Exception("Purchase cannot be deleted after it has been converted to an invoice.");
-
+		
 		if( $this->_purchase->refund_form_id AND 
 			$this->_purchase->refund_form_id > $this->_purchase->id )
 			throw new Exception("Purchase could not be deleted - it has a refund attached to it.");
@@ -66,7 +69,7 @@ class Beans_Vendor_Purchase_Delete extends Beans_Vendor_Purchase {
 		// A giant query wouldn't solve that much more probably.
 		foreach( $this->_purchase->account_transaction_forms->find_all() as $account_transaction_form )
 			if( $account_transaction_form->account_transaction->transaction->payment )
-				throw new Exception("Purchase purchase could not be deleted. There are payments attached to this purchase. Are you trying to create a refund?");
+				throw new Exception("Purchase could not be deleted because there are payments attached to it. Are you trying to create a refund?");
 
 		// Cancel Transaction.
 		if( $this->_purchase->create_transaction_id )

@@ -1276,7 +1276,22 @@ class Controller_Vendors_Json extends Controller_Json {
 		$purchase_delete_result = $purchase_delete->execute();
 
 		if( ! $purchase_delete_result->success )
-			return $this->_return_error("An error occurred when trying to delete that purchase purchase:<br>".$this->_beans_result_get_error($purchase_delete_result));
+		{
+			$purchase_cancel = new Beans_Vendor_Purchase_Cancel($this->_beans_data_auth((object)array(
+				'id' => $purchase_id,
+			)));
+			$purchase_cancel_result = $purchase_cancel->execute();
+
+			if( ! $purchase_cancel_result->success )
+				return $this->_return_error("An error occurred when trying to cancel that purchase:<br>".$this->_beans_result_get_error($purchase_cancel_result));
+
+			$html = new View_Partials_Vendors_Purchases_Purchase;
+			$html->purchase = $purchase_cancel_result->data->purchase;
+			
+			$purchase_cancel_result->data->purchase->html = $html->render();
+
+			$this->_return_object->data->purchase = $purchase_cancel_result->data->purchase;
+		}
 	}
 
 	public function action_purchasesloadmore()

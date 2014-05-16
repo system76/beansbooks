@@ -195,8 +195,11 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				! $purchase->invoice_transaction_id )
 				throw new Exception("Invalid payment purchase: ".$purchase->code." has not been invoiced.  Please include an invoice number and date.");
 
+			// MUTABILITY CHANGE
+			/*
 			if( strtotime($purchase->date_billed) > strtotime($update_transaction_data->date) )
 				throw new Exception("Invalid payment purchase: ".$purchase->code." cannot be paid before its invoice date: ".$purchase->date_billed.".");
+			*/
 			
 			// Simplifies copied code.
 			$purchase_id = $purchase->id;
