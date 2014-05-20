@@ -454,7 +454,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 			throw new Exception("Update failure - could not update payment: ".$update_transaction_result->error);
 
 		if( count($calibrate_payments) )
-			usort($calibrate_payments, array($this,'_calibrate_payments_sort') );
+			usort($calibrate_payments, array($this,'_journal_usort') );
 
 		// Calibrate Payments
 		foreach( $calibrate_payments as $calibrate_payment )

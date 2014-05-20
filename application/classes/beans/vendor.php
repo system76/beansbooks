@@ -1352,15 +1352,5 @@ class Beans_Vendor extends Beans {
 		$this->_return_account_type_element_cache[$account_type->id] = $return_object;
 		return $this->_return_account_type_element_cache[$account_type->id];
 	}
-
-	protected function _calibrate_payments_sort($a,$b)
-	{
-		if( strtotime($a->date) < strtotime($b->date) ) 
-			return -1;
-		else if( strtotime($a->date) > strtotime($b->date) )
-			return 1;
-
-		return ( $a->id < $b->id ? -1 : 1 );
-	}
-
+	
 }

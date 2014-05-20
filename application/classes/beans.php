@@ -466,4 +466,22 @@ class Beans {
 		return FALSE;
 	}
 
+	// Sort mechanism for usort() to properly order journal entries.
+	// Priority is date, close_books, id
+	protected function _journal_usort($a,$b)
+	{
+		if( strtotime($a->date) < strtotime($b->date) ) 
+			return -1;
+		else if( strtotime($a->date) > strtotime($b->date) )
+			return 1;
+
+		// Reverse order - close books transactions take place "in between dates"
+		if( $a->closebooks > $b->closebooks )
+			return -1;
+		else if( $a->closebooks < $b->closebooks )
+			return 1;
+
+		return ( $a->id < $b->id ? -1 : 1 );
+	}
+
 }

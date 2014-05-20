@@ -425,7 +425,7 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 			return (object)array();
 
 		if( count($calibrate_payments) )
-			usort($calibrate_payments, array($this,'_calibrate_payments_sort') );
+			usort($calibrate_payments, array($this,'_journal_usort') );
 
 		// Calibrate Payments
 		foreach( $calibrate_payments as $calibrate_payment )
