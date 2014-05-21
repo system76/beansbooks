@@ -289,7 +289,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 		{
 			$sale_line->form_id = $this->_sale->id;
 			$sale_line->save();
-
+			/*
 			if( ! isset($this->_account_transactions[$this->_transaction_sale_line_account_id]) )
 				$this->_account_transactions[$this->_transaction_sale_line_account_id] = 0.00;
 
@@ -297,7 +297,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 				$this->_account_transactions[$this->_transaction_sale_line_account_id] + 
 				( $sale_line->amount * $sale_line->quantity )
 			);
-			
+			*/
 			foreach( $this->_sale_lines_taxes[$j] as $sale_line_tax )
 			{
 				$sale_line_tax->form_line_id = $sale_line->id;
@@ -321,7 +321,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->percent * $sale_tax->amount ) );
 			
 			$this->_sale_taxes[$t]->save();
-
+			/*
 			if( ! isset($this->_account_transactions[$this->_transaction_sale_tax_account_id]) )
 				$this->_account_transactions[$this->_transaction_sale_tax_account_id] = 0.00;
 
@@ -329,16 +329,19 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 				$this->_account_transactions[$this->_transaction_sale_tax_account_id] + 
 				$this->_sale_taxes[$t]->total 
 			);
-
+			*/
 			$this->_sale->total = $this->_beans_round( $this->_sale->total + $this->_sale_taxes[$t]->total );
 		}
 
 		if( $this->_sale->code == "AUTOGENERATE" )
 			$this->_sale->code = $this->_sale->id;
 		
+		/*
 		// Generate the account transaction for this SO.
 		$this->_account_transactions[$this->_transaction_sale_account_id] = $this->_sale->total;
-
+		*/
+		
+		/*
 		// Generate Account Transaction
 		$sale_create_transaction_data = new stdClass;
 		$sale_create_transaction_data->code = $this->_sale->code;
@@ -397,7 +400,34 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 		// We're good!
 		$this->_sale->create_transaction_id = $account_create_transaction_result->data->transaction->id;
 		$this->_sale->save();
+		*/
+		
+		$this->_sale->save();
 
+		$sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_sale->id),
+		)));
+		$sale_calibrate_result = $sale_calibrate->execute();
+
+		if( ! $sale_calibrate_result->success )
+		{
+			// We've had an account transaction failure and need to delete the sale we just created.
+			$delete_sale = new Beans_Customer_Sale_Delete($this->_beans_data_auth((object)array(
+				'id' => $this->_sale->id,
+			)));
+			$delete_sale_result = $delete_sale->execute();
+
+			// NOW WE HAVE A REALLY BIG PROBLEM ON OUR HANDS.
+			if( ! $delete_sale_result->success )
+				throw new Exception("Error creating account transaction for sale. COULD NOT DELETE SALE! ".$delete_sale_result->error);
+
+			throw new Exception("Error trying to create sale: ".$sale_calibrate_result->error);
+		}
+
+		// Reload the sale.
+		$this->_sale = $this->_load_customer_sale($this->_sale->id);
+
+		// TODO - IMPROVE...
 		if( $this->_date_billed )
 		{
 			$customer_sale_invoice = new Beans_Customer_Sale_Invoice($this->_beans_data_auth((object)array(

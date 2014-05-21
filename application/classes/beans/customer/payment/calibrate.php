@@ -96,6 +96,10 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			$sale_tax_total = $this->_beans_round( $sale->total - $sale->amount );
 			
 			$sale_balance = 0.00;
+			// // // // // // // // // // 
+			// DEDUPLICATE THIS CODE   // 
+			// // // // // // // // // // 
+			
 			foreach( $sale->account_transaction_forms->find_all() as $account_transaction_form )
 			{
 				if( $account_transaction_form->account_transaction->transaction_id == $sale->create_transaction_id OR

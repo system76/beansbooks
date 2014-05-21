@@ -484,4 +484,44 @@ class Beans {
 		return ( $a->id < $b->id ? -1 : 1 );
 	}
 
+
+	// Would love to replace this with a query - requires adding fields to account_transaction_forms
+	// Some enumerated field that could be "create", "invoice", "cancel", "payment"
+	protected function _get_form_effective_balance($form,$date,$transaction_id)
+	{
+		$sale_balance = 0.00;
+
+		foreach( $form->account_transaction_forms->find_all() as $account_transaction_form )
+		{
+			// If a transaction is either the creation transaction for this form OR
+			// it is a payment that occurred on or before the creation date AND
+			// optionally before the transaction_id - then we add it into the balance.
+			if( (
+					$account_transaction_form->account_transaction->transaction_id == $form->create_transaction_id OR
+					( 
+						$account_transaction_form->account_transaction->transaction->payment 
+						AND 
+						( 
+							strtotime($account_transaction_form->account_transaction->date) < strtotime($date) OR
+							(
+								$account_transaction_form->account_transaction->date == $date &&
+								(
+									! $transaction_id || 
+									$account_transaction_form->account_transaction->transaction_id < $transaction_id
+								)
+							)
+						)
+					) 
+				) )
+			{
+				$sale_balance = $this->_beans_round(
+					$sale_balance +
+					$account_transaction_form->amount
+				);
+			}
+		}
+
+		return $sale_balance;
+	}
+
 }

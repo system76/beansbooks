@@ -122,6 +122,151 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 			strtotime($this->_date_due) < strtotime($this->_date_billed) )
 			throw new Exception("Invalid due date: must be on or after the bill date.");
 
+		$calibrate_payments = array();
+
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// TODO - REPLACE WITH Calibrate_Payments with form_ids array ?
+		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
+		{
+			if( $account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id OR
+				(
+					$account_transaction_form->account_transaction->transaction->payment AND 
+					strtotime($account_transaction_form->account_transaction->date) <= strtotime($this->_date_billed) 
+				) )
+			{
+				// NADA
+			}
+			else if( $account_transaction_form->account_transaction->transaction->payment AND 
+					 strtotime($sale_invoice_transaction_data->date) <= strtotime($this->_date_billed) AND
+					 ! in_array((object)array(
+						'id' => $account_transaction_form->account_transaction->transaction->id,
+						'date' => $account_transaction_form->account_transaction->transaction->date,
+					), $calibrate_payments) )
+			{
+					$calibrate_payments[] = (object)array(
+						'id' => $account_transaction_form->account_transaction->transaction->id,
+						'date' => $account_transaction_form->account_transaction->transaction->date,
+					);
+			}
+		}
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		
+		$this->_sale->date_billed = $this->_date_billed;
+		$this->_sale->date_due = ( $this->_date_due )
+							   ? $this->_date_due
+							   : date("Y-m-d",strtotime($this->_sale->date_billed.' +'.$this->_sale->account->terms.' Days'));
+		$this->_sale->save();
+
+		$sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_sale->id),
+		)));
+		$sale_calibrate_result = $sale_calibrate->execute();
+
+		if( ! $sale_calibrate_result->success )
+		{
+			$this->_sale->date_billed = NULL;
+			$this->_sale->date_due = NULL;
+			$this->_sale->save();
+
+			throw new Exception("Error trying to invoice sale: ".$sale_calibrate_result->error);
+		}
+
+		// Reload the sale.
+		$this->_sale = $this->_load_customer_sale($this->_sale->id);
+
+		if( count($calibrate_payments) )
+			usort($calibrate_payments, array($this,'_journal_usort') );
+
+		// Re-Calibrate Payments
+		foreach( $calibrate_payments as $calibrate_payment )
+		{
+			$beans_calibrate_payment = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+				'id' => $calibrate_payment->id,
+			)));
+			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
+
+			// V2Item
+			// Fatal error!  Ensure coverage or ascertain 100% success.
+			if( ! $beans_calibrate_payment_result->success )
+				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
+		}
+
+		// Update tax balances only if we're successful.
+		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
+			$this->_tax_adjust_balance($sale_tax->tax_id,$sale_tax->total);
+		
+		$this->_sale->save();
+
+		// Reload Sale per Payment Calibration.
+		$this->_sale = $this->_load_customer_sale($this->_sale->id);
+		
+		return (object)array(
+			"sale" => $this->_return_customer_sale_element($this->_sale),
+		);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		$sale_invoice_transaction_data = new stdClass;
 		$sale_invoice_transaction_data->code = $this->_sale->code;
 		$sale_invoice_transaction_data->description = "Invoice - Sale ".$this->_sale->code;

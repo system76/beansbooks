@@ -91,12 +91,137 @@ class Beans_Customer_Sale_Cancel extends Beans_Customer_Sale {
 
 		$date_cancelled = date("Y-m-d");
 
+		$calibrate_payments = array();
+
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// TODO - REPLACE WITH Calibrate_Payments with form_ids array ?
+		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
+		{
+			if( $account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id OR
+				(
+					$account_transaction_form->account_transaction->transaction->payment AND 
+					strtotime($account_transaction_form->account_transaction->date) <= strtotime($date_cancelled) 
+				) )
+			{
+				// NADA
+			}
+			else if( $account_transaction_form->account_transaction->transaction->payment AND 
+					 strtotime($date_cancelled) <= strtotime($account_transaction_form->account_transaction->transaction->date) AND
+					 ! in_array((object)array(
+						'id' => $account_transaction_form->account_transaction->transaction->id,
+						'date' => $account_transaction_form->account_transaction->transaction->date,
+					), $calibrate_payments) )
+			{
+					$calibrate_payments[] = (object)array(
+						'id' => $account_transaction_form->account_transaction->transaction->id,
+						'date' => $account_transaction_form->account_transaction->transaction->date,
+					);
+			}
+		}
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		// // // // // // // // // // // // // // // // // // // // // // // // // 
+		
+		$this->_sale->date_cancelled = $date_cancelled;
+		$this->_sale->save();
+
+		$sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_sale->id),
+		)));
+		$sale_calibrate_result = $sale_calibrate->execute();
+
+		if( ! $sale_calibrate_result->success )
+		{
+			$this->_sale->date_cancelled = NULL;
+			$this->_sale->save();
+
+			throw new Exception("Error trying to cancel sale: ".$sale_calibrate_result->error);
+		}
+
+		// Reload Sale
+		$this->_sale = $this->_load_customer_sale($this->_sale->id);
+
+		// If we're successful - reverse taxes.
+		if( $this->_sale->date_billed )
+		{
+			foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
+				$this->_tax_adjust_balance($sale_tax->tax_id,( -1 * $sale_tax->total) );
+		}
+
+		// Remove the refund form from the corresponding form.
+		if( $this->_sale->refund_form->loaded() )
+		{
+			$this->_sale->refund_form->refund_form_id = NULL;
+			$this->_sale->refund_form->save();
+		}
+		
+		// Re-Calibrate Payments
+		if( count($calibrate_payments) )
+			usort($calibrate_payments, array($this,'_journal_usort') );
+
+		foreach( $calibrate_payments as $calibrate_payment )
+		{
+			$beans_calibrate_payment = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+				'id' => $calibrate_payment->id,
+			)));
+			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
+
+			// V2Item
+			// Fatal error!  Ensure coverage or ascertain 100% success.
+			if( ! $beans_calibrate_payment_result->success )
+				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
+		}
+
+		// Reload Sale per Payment Calibration.
+		$this->_sale = $this->_load_customer_sale($this->_sale->id);
+		
+		return (object)array(
+			"sale" => $this->_return_customer_sale_element($this->_sale),
+		);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		// Create Cancel Transaction
 		$sale_cancel_transaction_data = new stdClass;
 		$sale_cancel_transaction_data->code = $this->_sale->code;
 		$sale_cancel_transaction_data->description = "Sale Cancelled ".$this->_sale->code;
 		$sale_cancel_transaction_data->date = $date_cancelled;
 		$sale_cancel_transaction_data->account_transactions = array();
+		$sale_cancel_transaction_data->entity_id = $this->_sale->entity_id;
 		$sale_cancel_transaction_data->form_type = 'sale';
 		$sale_cancel_transaction_data->form_id = $this->_sale->id;
 

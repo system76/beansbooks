@@ -292,7 +292,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		{
 			$sale_line->form_id = $this->_sale->id;
 			$sale_line->save();
-
+			/*
 			if( ! isset($this->_account_transactions[$this->_transaction_sale_line_account_id]) )
 				$this->_account_transactions[$this->_transaction_sale_line_account_id] = 0.00;
 
@@ -300,6 +300,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 				$this->_account_transactions[$this->_transaction_sale_line_account_id] + 
 				( $sale_line->amount * $sale_line->quantity )
 			);
+			*/
 			
 			foreach( $this->_sale_lines_taxes[$j] as $sale_line_tax )
 			{
@@ -324,7 +325,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->percent * $sale_tax->amount ) );
 			
 			$this->_sale_taxes[$t]->save();
-
+			/*
 			if( ! isset($this->_account_transactions[$this->_transaction_sale_tax_account_id]) )
 				$this->_account_transactions[$this->_transaction_sale_tax_account_id] = 0.00;
 
@@ -332,13 +333,17 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 				$this->_account_transactions[$this->_transaction_sale_tax_account_id] + 
 				$this->_sale_taxes[$t]->total 
 			);
+			*/
 
 			$this->_sale->total = $this->_beans_round( $this->_sale->total + $this->_sale_taxes[$t]->total );
 		}
 
+		/*
 		// We need to make sure we're "increasing" this account.
 		$this->_account_transactions[$this->_transaction_sale_account_id] = $this->_sale->total;
-		
+		*/
+	
+		/*
 		// Generate Account Transaction
 		$account_create_transaction_data = new stdClass;
 		$account_create_transaction_data->code = $this->_sale->code;
@@ -388,14 +393,30 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 		// We're good!
 		$this->_sale->create_transaction_id = $account_create_transaction_result->data->transaction->id;
+		*/
 		
+		$this->_sale->save();
+
+		$sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_sale->id),
+		)));
+		$sale_calibrate_result = $sale_calibrate->execute();
+
+		if( ! $sale_calibrate_result->success )
+		{
+			throw new Exception("Error trying to create sale: ".$sale_calibrate_result->error);
+		}
+
+		// Reload the sale.
+		$this->_sale = $this->_load_customer_sale($this->_sale->id);
+
 		// Upon updating a sale, if the total has changed we change the sent flag.
 		if( $this->_sale->total != $sale_original_total AND 
 			! isset($this->_data->sent) )
 			$this->_sale->sent = FALSE;
 		
-		$this->_sale->save();
 
+		// TODO - IMPROVE THIS
 		$calibrate_payments = array();
 		
 		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
@@ -413,6 +434,8 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			}
 		}
 
+		// This is handled in $sale_calibrate
+		/*
 		if( $this->_sale->date_billed )
 		{
 			// This also re-calibrates any payments tied to the sale/invoice...
@@ -424,6 +447,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			if( ! $customer_sale_invoice_update_result->success ) 
 				throw new Exception("UNEXPECTED ERROR: Error updating customer sale invoice transaction. ".$customer_sale_invoice_update_result->error);
 		}
+		*/
 
 		if( count($calibrate_payments) )
 			usort($calibrate_payments, array($this,'_journal_usort') );
@@ -442,6 +466,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
 		}
 
+		// We need to reload the sale so that we can get the correct balance, etc.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);
 		
 		return (object)array(

@@ -16,12 +16,12 @@ See the BeansBooks Public License for more details.
 You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
-class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
+
+class Beans_Customer_Sale_Calibrate_Cancel extends Beans_Customer_Sale {
 
 	protected $_auth_role_perm = "customer_sale_write";
 
-	protected $_id;
-	protected $_sale;
+	protected $_data;
 
 	protected $_transaction_sale_account_id;
 	protected $_transaction_sale_line_account_id;
@@ -32,12 +32,8 @@ class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
-		
-		$this->_id = ( isset($data->id) ) 
-				   ? (int)$data->id
-				   : 0;
 
-		$this->_sale = $this->_load_customer_sale($this->_id);
+		$this->_data = $data;
 
 		$this->_transaction_sale_account_id = $this->_beans_setting_get('sale_default_account_id');
 		$this->_transaction_sale_line_account_id = $this->_beans_setting_get('sale_default_line_account_id');
@@ -66,58 +62,88 @@ class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
 		if( ! $this->_transaction_sale_deferred_liability_account_id )
 			throw new Exception("INTERNAL ERROR: Could not find default SO deferred liability account.");
 
-		if( ! $this->_sale->loaded() )
-			throw new Exception("Sale could not be found.");
+		$valid_field = FALSE;
 
-		if( ! $this->_sale->date_cancelled || 
-			! $this->_sale->cancel_transaction_id )
-			throw new Exception("Cancellations can only be updated once they've been billed.");
+		$sales = ORM::Factory('form_sale')->
+			where('type','=','sale')->
+			and_where_open();
+
+		if( isset($this->_data->ids) )
+		{
+			if( ! is_array($this->_data->ids) )
+				throw new Exception("Invalid ids provided: not an array.");
+
+			$valid_field = TRUE;
+
+			$sales = $sales->
+				or_where_open()->
+					where('id','IN',$this->_data->ids)->
+					where('date_cancelled','IS NOT',NULL)->
+				or_where_close();
+		}
+
+		if( isset($this->_data->date_after) ||
+			isset($this->_data->date_before) )
+		{
+			if( ! isset($this->_data->date_after) || 
+				! $this->_data->date_after || 
+				date("Y-m-d",strtotime($this->_data->date_after)) != $this->_data->date_after )
+				throw new Exception("Missing or invalid date_after: must be in YYYY-MM-DD format.");
+
+			if( ! isset($this->_data->date_before) || 
+				! $this->_data->date_before || 
+				date("Y-m-d",strtotime($this->_data->date_before)) != $this->_data->date_before )
+				throw new Exception("Missing or invalid date_before: must be in YYYY-MM-DD format.");
+
+			$valid_field = TRUE;
+
+			$sales = $sales->
+				or_where_open()->
+					where('date_cancelled','>=',$this->_data->date_after)->
+					where('date_cancelled','<=',$this->_data->date_before)->
+				or_where_close();
+		}
+
+		if( ! $valid_field )
+			throw new Exception("Must provide either ids or date_after and date_before.");
+
+		$sales = $sales->
+			and_where_close()->
+			find_all();
+
+		foreach( $sales as $sale )
+			$this->_calibrate_sale_cancel($sale);
+
+		return (object)array();
+	}
+
+	protected function _calibrate_sale_cancel($sale)
+	{
+		// Not sure how we got here - but if the above query messes up at all this prevents us 
+		// from messing up the journal with a weird transaction.
+		if( ! $sale->date_cancelled )
+			return;
 
 		$sale_cancel_transaction_data = new stdClass;
-		$sale_cancel_transaction_data->code = $this->_sale->code;
-		$sale_cancel_transaction_data->description = "Sale Cancelled ".$this->_sale->code;
-		$sale_cancel_transaction_data->date = $this->_sale->date_cancelled;
+		$sale_cancel_transaction_data->code = $sale->code;
+		$sale_cancel_transaction_data->description = "Sale Cancelled ".$sale->code;
+		$sale_cancel_transaction_data->date = $sale->date_cancelled;
+		$sale_cancel_transaction_data->form_type = 'sale';
+		$sale_cancel_transaction_data->form_id = $sale->id;
 		
-		$sale_balance = 0.00;
-		// // // // // // // // // // 
-		// DEDUPLICATE THIS CODE   // 
-		// // // // // // // // // // 
-		
-		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
-		{
-			if( (
-					$account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id OR
-					( 
-						$account_transaction_form->account_transaction->transaction->payment 
-						AND 
-						( 
-							strtotime($account_transaction_form->account_transaction->date) < strtotime($sale_cancel_transaction_data->date) OR
-							(
-								$account_transaction_form->account_transaction->date == $sale_cancel_transaction_data->date &&
-								$account_transaction_form->account_transaction->transaction_id < $this->_sale->invoice_transaction_id
-							)
-						)
-					) 
-				) )
-			{
-				$sale_balance = $this->_beans_round(
-					$sale_balance +
-					$account_transaction_form->amount
-				);
-			}
-		}
+		$sale_balance = $this->_get_form_effective_balance($sale,$sale->date_cancelled,$sale->cancel_transaction_id);
 
 		$account_transactions = array();
 
 		// If Invoiced - We reverse the income & tax due, 
 		// and put the total into the AR account.
-		if( $this->_sale->date_billed )
+		if( $sale->date_billed )
 		{
 			// Total into AR
-			$account_transactions[$this->_sale->account_id] = $this->_sale->total;
+			$account_transactions[$sale->account_id] = $sale->total;
 
 			// Income Lines
-			foreach( $this->_sale->form_lines->find_all() as $sale_line )
+			foreach( $sale->form_lines->find_all() as $sale_line )
 			{
 				if( ! isset($account_transactions[$sale_line->account_id]) )
 					$account_transactions[$sale_line->account_id] = 0.00;
@@ -129,7 +155,7 @@ class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
 			}
 
 			// Taxes
-			foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
+			foreach( $sale->form_taxes->find_all() as $sale_tax )
 			{
 				if( ! isset($account_transactions[$sale_tax->tax->account_id]) )
 					$account_transactions[$sale_tax->tax->account_id] = 0.00;
@@ -146,9 +172,9 @@ class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
 		{
 			// Get some transfer values.
 			// $sale_balance is defined above
-			$sale_line_total = $this->_sale->amount;
-			$sale_tax_total = $this->_beans_round( $this->_sale->total - $this->_sale->amount );
-			$sale_paid = $this->_sale->total + $sale_balance;
+			$sale_line_total = $sale->amount;
+			$sale_tax_total = $this->_beans_round( $sale->total - $sale->amount );
+			$sale_paid = $sale->total + $sale_balance;
 
 			$deferred_amounts = $this->_calculate_deferred_invoice($sale_paid, $sale_line_total, $sale_tax_total);
 
@@ -157,7 +183,7 @@ class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
 			
 			// Total into Pending AR AND AR
 			$account_transactions[$this->_transaction_sale_account_id] = ( -1 ) * $sale_balance;
-			$account_transactions[$this->_sale->account_id] = $sale_paid;
+			$account_transactions[$sale->account_id] = $sale_paid;
 			
 			// Deferred Income
 			$account_transactions[$this->_transaction_sale_deferred_income_account_id] = ( $income_transfer_amount * -1 );
@@ -186,10 +212,10 @@ class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
 				$account_transaction->account_id = $account_id;
 				$account_transaction->amount = $amount;
 				if( $account_id == $this->_transaction_sale_account_id OR 
-					$account_id == $this->_sale->account_id )
+					$account_id == $sale->account_id )
 					$account_transaction->forms = array(
 						(object)array(
-							"form_id" => $this->_sale->id,
+							"form_id" => $sale->id,
 							"amount" => $account_transaction->amount,
 						),
 					);
@@ -198,19 +224,28 @@ class Beans_Customer_Sale_Cancel_Update extends Beans_Customer_Sale {
 			}
 		}
 
-		$sale_cancel_transaction_data->id = $this->_sale->cancel_transaction_id;
-		$sale_cancel_transaction_data->form_type_handled = "sale";
-		$sale_cancel_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($sale_cancel_transaction_data));
-		$sale_cancel_transaction_result = $sale_cancel_transaction->execute();
+		$sale_cancel_transaction_result = FALSE;
+
+		if( $sale->cancel_transaction_id )
+		{
+			$sale_cancel_transaction_data->id = $sale->cancel_transaction_id;
+			$sale_cancel_transaction_data->form_type_handled = "sale";
+			$sale_cancel_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($sale_cancel_transaction_data));
+			$sale_cancel_transaction_result = $sale_cancel_transaction->execute();
+		}
+		else
+		{
+			$sale_cancel_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($sale_cancel_transaction_data));
+			$sale_cancel_transaction_result = $sale_cancel_transaction->execute();
+		}
 
 		if( ! $sale_cancel_transaction_result->success )
 			throw new Exception("Error creating cancellation transaction in journal: ".$sale_cancel_transaction_result->error."<br><br><br>\n\n\n".print_r($sale_cancel_transaction_data->account_transactions,TRUE));
 
-		// Reload the sale to get correct balances.
-		$this->_sale = $this->_load_customer_sale($this->_sale->id);
-		
-		return (object)array(
-			"sale" => $this->_return_customer_sale_element($this->_sale),
-		);
+		if( ! $sale->cancel_transaction_id )
+		{
+			$sale->cancel_transaction_id = $sale_cancel_transaction_result->data->transaction->id;
+			$sale->save();
+		}
 	}
 }
