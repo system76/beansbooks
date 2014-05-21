@@ -16,7 +16,7 @@ See the BeansBooks Public License for more details.
 You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
-class Beans_Customer_Payment_Calibratebatch extends Beans_Customer_Payment {
+class Beans_Customer_Payment_Calibratebatchold extends Beans_Customer_Payment {
 
 	protected $_auth_role_perm = "customer_payment_write";
 

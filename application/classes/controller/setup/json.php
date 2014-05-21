@@ -314,6 +314,29 @@ class Controller_Setup_Json extends Controller_Json {
 		set_time_limit(60 * 10);
 		ini_set('memory_limit', '256M');
 
+
+
+		// Recalibrate Customer Invoices / Cancellations
+		$customer_sale_calibrate = new Beans_customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
+		)));
+		$customer_sale_calibrate_result = $customer_sale_calibrate->execute();
+
+		if( ! $customer_sale_calibrate_result->success )
+			return $this->_return_error('Error updating customer sales: '.$customer_sale_calibrate_result->error);
+
+		// Recalibrate any payments tied to these sales AFTER this transaction date.
+		$customer_payment_calibrate = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
+		)));
+		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
+
+		if( ! $customer_payment_calibrate_result->success )
+			return $this->_return_error('Error updating customer payments: '.$customer_payment_calibrate_result->error);
+
+		/*
 		$customer_invoice_updatebatch = new Beans_Customer_Sale_Invoice_Updatebatch($this->_beans_data_auth((object)array(
 			'date' => $date,
 		)));
@@ -337,6 +360,8 @@ class Controller_Setup_Json extends Controller_Json {
 
 		if( ! $customer_payment_calibratebatch_result->success )
 			return $this->_return_error('Error updating customer payments: '.$customer_payment_calibratebatch_result->error);
+		*/
+	
 
 		$this->_return_object->data->date_next = date("Y-m-d",strtotime($date." +1 Day"));		
 

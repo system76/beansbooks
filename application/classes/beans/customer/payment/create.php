@@ -125,11 +125,13 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 		$sale_account_transfers = array();
 		$sale_account_transfers_forms = array();
 		
+		/*
 		// Array of IDs for sales to have their invoices updated.
 		$sales_invoice_update = array();
 		$sales_cancel_update = array();
 		$calibrate_payments = array();
-
+		*/
+		
 		$writeoff_account_transfer_total = 0.00;
 		$writeoff_account_transfers_forms = array();
 
@@ -171,6 +173,9 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 			$sale_line_total = $sale->amount;
 			$sale_tax_total = $this->_beans_round( $sale->total - $sale->amount );
 			
+			$sale_balance = $this->_get_form_effective_balance($sale,$create_transaction_data->date,NULL);
+			
+			/*
 			$sale_balance = 0.00;
 			foreach( $sale->account_transaction_forms->find_all() as $account_transaction_form )
 			{
@@ -205,6 +210,7 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 						);
 				}
 			}
+			*/
 
 			// This makes the math a bit easier to read.
 			$sale_paid = $sale->total + $sale_balance;
@@ -260,12 +266,14 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 			}
 			else
 			{
+				/*
 				if( $sale->date_billed AND 
 					$sale->invoice_transaction_id )
 					$sales_invoice_update[] = $sale->id;
 				else if( $sale->date_cancelled AND 
 						 $sale->cancel_transaction_id )
 					$sales_cancel_update[] = $sale->id;
+				*/
 
 				$deferred_amounts = $this->_calculate_deferred_payment($sale_payment_amount, $sale_paid, $sale_line_total, $sale_tax_total);
 				
@@ -424,6 +432,35 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 		if( $this->_validate_only )
 			return (object)array();
 
+		// Recalibrate Customer Invoices / Cancellations
+		$customer_sale_calibrate_invoice = new Beans_customer_Sale_Calibrate_Invoice($this->_beans_data_auth((object)array(
+			'ids' => $handled_sales_ids,
+		)));
+		$customer_sale_calibrate_invoice_result = $customer_sale_calibrate_invoice->execute();
+
+		if( ! $customer_sale_calibrate_invoice_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER SALES: ".$customer_sale_calibrate_invoice_result->error);
+
+		// Recalibrate Customer Invoices / Cancellations
+		$customer_sale_calibrate_cancel = new Beans_customer_Sale_Calibrate_Cancel($this->_beans_data_auth((object)array(
+			'ids' => $handled_sales_ids,
+		)));
+		$customer_sale_calibrate_cancel_result = $customer_sale_calibrate_cancel->execute();
+
+		if( ! $customer_sale_calibrate_cancel_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER SALES: ".$customer_sale_calibrate_cancel_result->error);
+
+		// Recalibrate any payments tied to these sales AFTER this transaction date.
+		$customer_payment_calibrate = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'form_ids' => $handled_sales_ids,
+			'after_payment_id' => $create_transaction_result->data->transaction->id,
+		)));
+		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
+
+		if( ! $customer_payment_calibrate_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER PAYMENTS: ".$customer_sale_calibrate_result->error);
+
+		/*
 		if( count($calibrate_payments) )
 			usort($calibrate_payments, array($this,'_journal_usort') );
 
@@ -470,7 +507,7 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 
 		if( $invoice_update_errors )
 			throw new Exception($invoice_update_errors);
-
+		*/
 		
 		return (object)array(
 			"payment" => $this->_return_customer_payment_element($this->_load_customer_payment($create_transaction_result->data->transaction->id)),

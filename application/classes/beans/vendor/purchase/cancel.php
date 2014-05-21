@@ -188,7 +188,7 @@ class Beans_Vendor_Purchase_Cancel extends Beans_Vendor_Purchase {
 
 		foreach( $calibrate_payments as $calibrate_payment )
 		{
-			$beans_calibrate_payment = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+			$beans_calibrate_payment = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
 				'id' => $calibrate_payment->id,
 			)));
 			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();

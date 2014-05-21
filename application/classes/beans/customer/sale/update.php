@@ -403,10 +403,8 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		$sale_calibrate_result = $sale_calibrate->execute();
 
 		if( ! $sale_calibrate_result->success )
-		{
-			throw new Exception("Error trying to create sale: ".$sale_calibrate_result->error);
-		}
-
+			throw new Exception("Error trying to create sale transactions: ".$sale_calibrate_result->error);
+		
 		// Reload the sale.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);
 
@@ -415,7 +413,19 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			! isset($this->_data->sent) )
 			$this->_sale->sent = FALSE;
 		
+		$customer_payment_calibrate = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'form_ids' => array($this->_sale->id),
+		)));
+		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
 
+		if( ! $customer_payment_calibrate_result->success )
+			throw new Exception("Error trying to calibrate sale payments: ".$customer_payment_calibrate_result->error);
+		
+		// Update tax balances.
+		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
+			$this->_tax_adjust_balance($sale_tax->tax_id,$sale_tax->total);
+
+		/*
 		// TODO - IMPROVE THIS
 		$calibrate_payments = array();
 		
@@ -433,6 +443,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 					);
 			}
 		}
+		*/
 
 		// This is handled in $sale_calibrate
 		/*
@@ -449,6 +460,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		}
 		*/
 
+		/*
 		if( count($calibrate_payments) )
 			usort($calibrate_payments, array($this,'_journal_usort') );
 
@@ -465,6 +477,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			if( ! $beans_calibrate_payment_result->success )
 				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
 		}
+		*/
 
 		// We need to reload the sale so that we can get the correct balance, etc.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);

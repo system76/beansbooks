@@ -76,10 +76,10 @@ class Beans_Customer_Sale_Calibrate_Cancel extends Beans_Customer_Sale {
 			$valid_field = TRUE;
 
 			$sales = $sales->
-				or_where_open()->
+				and_where_open()->
 					where('id','IN',$this->_data->ids)->
 					where('date_cancelled','IS NOT',NULL)->
-				or_where_close();
+				and_where_close();
 		}
 
 		if( isset($this->_data->date_after) ||
@@ -98,10 +98,10 @@ class Beans_Customer_Sale_Calibrate_Cancel extends Beans_Customer_Sale {
 			$valid_field = TRUE;
 
 			$sales = $sales->
-				or_where_open()->
+				and_where_open()->
 					where('date_cancelled','>=',$this->_data->date_after)->
 					where('date_cancelled','<=',$this->_data->date_before)->
-				or_where_close();
+				and_where_close();
 		}
 
 		if( ! $valid_field )
