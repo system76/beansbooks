@@ -55,11 +55,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 	protected $_sale_lines;
 	protected $_sale_lines_taxes;
 	protected $_sale_taxes;
-	protected $_account_transactions;
-
-	protected $_transaction_sale_account_id;
-	protected $_transaction_sale_line_account_id;
-	protected $_transaction_sale_tax_account_id;
 
 	protected $_date_billed;
 
@@ -82,11 +77,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		$this->_sale_lines = array();
 		$this->_sale_lines_taxes = array();
 		$this->_sale_taxes = array();
-		$this->_account_transactions = array();
-
-		$this->_transaction_sale_account_id = $this->_beans_setting_get('sale_default_account_id');
-		$this->_transaction_sale_line_account_id = $this->_beans_setting_get('sale_default_line_account_id');
-		$this->_transaction_sale_tax_account_id = $this->_beans_setting_get('sale_default_tax_account_id');
 
 		$this->_date_billed = ( isset($this->_data->date_billed) )
 							? $this->_data->date_billed
@@ -98,15 +88,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		if( ! $this->_sale->loaded() )
 			throw new Exception("Sale could not be found.");
 
-		if( ! $this->_transaction_sale_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO account.");
-
-		if( ! $this->_transaction_sale_line_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO Line account.");
-
-		if( ! $this->_transaction_sale_tax_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO Tax account.");
-		
 		if( $this->_check_books_closed($this->_sale->date_created) )
 			throw new Exception("Sale could not be updated.  The financial year has been closed already.");
 
@@ -292,15 +273,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		{
 			$sale_line->form_id = $this->_sale->id;
 			$sale_line->save();
-			/*
-			if( ! isset($this->_account_transactions[$this->_transaction_sale_line_account_id]) )
-				$this->_account_transactions[$this->_transaction_sale_line_account_id] = 0.00;
-
-			$this->_account_transactions[$this->_transaction_sale_line_account_id] = $this->_beans_round( 
-				$this->_account_transactions[$this->_transaction_sale_line_account_id] + 
-				( $sale_line->amount * $sale_line->quantity )
-			);
-			*/
 			
 			foreach( $this->_sale_lines_taxes[$j] as $sale_line_tax )
 			{
@@ -325,76 +297,10 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->percent * $sale_tax->amount ) );
 			
 			$this->_sale_taxes[$t]->save();
-			/*
-			if( ! isset($this->_account_transactions[$this->_transaction_sale_tax_account_id]) )
-				$this->_account_transactions[$this->_transaction_sale_tax_account_id] = 0.00;
-
-			$this->_account_transactions[$this->_transaction_sale_tax_account_id] = $this->_beans_round( 
-				$this->_account_transactions[$this->_transaction_sale_tax_account_id] + 
-				$this->_sale_taxes[$t]->total 
-			);
-			*/
-
+			
 			$this->_sale->total = $this->_beans_round( $this->_sale->total + $this->_sale_taxes[$t]->total );
 		}
 
-		/*
-		// We need to make sure we're "increasing" this account.
-		$this->_account_transactions[$this->_transaction_sale_account_id] = $this->_sale->total;
-		*/
-	
-		/*
-		// Generate Account Transaction
-		$account_create_transaction_data = new stdClass;
-		$account_create_transaction_data->code = $this->_sale->code;
-		$account_create_transaction_data->description = "Sale ".$this->_sale->code;
-		$account_create_transaction_data->date = $this->_sale->date_created;
-		$account_create_transaction_data->account_transactions = array();
-		$account_create_transaction_data->form_type = 'sale';
-		$account_create_transaction_data->form_id = $this->_sale->id;
-
-		foreach( $this->_account_transactions as $account_id => $amount )
-		{
-			$account_transaction = new stdClass;
-
-			$account_transaction->account_id = $account_id;
-			$account_transaction->amount = ( $account_id == $this->_transaction_sale_account_id )
-										 ? ( $amount * -1 )
-										 : ( $amount );
-
-			// Realistically, this will only hit on the first condition, but the logic applies
-			// throughout the form process.  The AR or Pending AR account manages the form balance.
-			if( $account_transaction->account_id == $this->_transaction_sale_account_id OR
-				$account_transaction->account_id == $this->_sale->account_id )
-			{
-				// Add a form for the sale.
-				// This updates the balance on the form.
-				$account_transaction->forms = array(
-					(object)array(
-						"form_id" => $this->_sale->id,
-						"amount" => $account_transaction->amount,	// This works because the account for the sale is table_sign -1
-					),
-				);
-			}
-
-			
-			$account_create_transaction_data->account_transactions[] = $account_transaction;
-		}
-		
-		$account_create_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($account_create_transaction_data));
-		$account_create_transaction_result = $account_create_transaction->execute();
-
-		if( ! $account_create_transaction_result->success )
-		{
-			// V2Item
-			// Fatal error!  Ensure coverage or ascertain 100% success.
-			throw new Exception("Error creating account transaction: ".$account_create_transaction_result->error);
-		}
-
-		// We're good!
-		$this->_sale->create_transaction_id = $account_create_transaction_result->data->transaction->id;
-		*/
-		
 		$this->_sale->save();
 
 		$sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
@@ -424,60 +330,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		// Update tax balances.
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
 			$this->_tax_adjust_balance($sale_tax->tax_id,$sale_tax->total);
-
-		/*
-		// TODO - IMPROVE THIS
-		$calibrate_payments = array();
-		
-		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
-		{
-			if( $account_transaction_form->account_transaction->transaction->payment AND
-				! in_array((object)array(
-					'id' => $account_transaction_form->account_transaction->transaction->id,
-					'date' => $account_transaction_form->account_transaction->transaction->date,
-				), $calibrate_payments) )
-			{
-					$calibrate_payments[] = (object)array(
-						'id' => $account_transaction_form->account_transaction->transaction->id,
-						'date' => $account_transaction_form->account_transaction->transaction->date,
-					);
-			}
-		}
-		*/
-
-		// This is handled in $sale_calibrate
-		/*
-		if( $this->_sale->date_billed )
-		{
-			// This also re-calibrates any payments tied to the sale/invoice...
-			$customer_sale_invoice_update = new Beans_Customer_Sale_Invoice_Update($this->_beans_data_auth((object)array(
-				'id' => $this->_sale->id,
-			)));
-			$customer_sale_invoice_update_result = $customer_sale_invoice_update->execute();
-
-			if( ! $customer_sale_invoice_update_result->success ) 
-				throw new Exception("UNEXPECTED ERROR: Error updating customer sale invoice transaction. ".$customer_sale_invoice_update_result->error);
-		}
-		*/
-
-		/*
-		if( count($calibrate_payments) )
-			usort($calibrate_payments, array($this,'_journal_usort') );
-
-		// Calibrate Payments
-		foreach( $calibrate_payments as $calibrate_payment )
-		{
-			$beans_calibrate_payment = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
-				'id' => $calibrate_payment->id,
-			)));
-			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
-
-			// V2Item
-			// Fatal error!  Ensure coverage or ascertain 100% success.
-			if( ! $beans_calibrate_payment_result->success )
-				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
-		}
-		*/
 
 		// We need to reload the sale so that we can get the correct balance, etc.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);

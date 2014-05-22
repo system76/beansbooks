@@ -54,12 +54,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 	protected $_sale_lines;
 	protected $_sale_lines_taxes;
 	protected $_sale_taxes;
-	protected $_account_transactions;
-
-	protected $_transaction_sale_account_id;
-	protected $_transaction_sale_line_account_id;
-	protected $_transaction_sale_tax_account_id;
-
+	
 	protected $_date_billed;
 	protected $_date_due;
 
@@ -76,12 +71,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 		$this->_sale_lines = array();
 		$this->_sale_lines_taxes = array();
 		$this->_sale_taxes = array();
-		$this->_account_transactions = array();
-
-		$this->_transaction_sale_account_id = $this->_beans_setting_get('sale_default_account_id');
-		$this->_transaction_sale_line_account_id = $this->_beans_setting_get('sale_default_line_account_id');
-		$this->_transaction_sale_tax_account_id = $this->_beans_setting_get('sale_default_tax_account_id');
-
+		
 		$this->_date_billed = ( isset($this->_data->date_billed) )
 							? $this->_data->date_billed
 							: FALSE;
@@ -92,15 +82,6 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 
 	protected function _execute()
 	{
-		if( ! $this->_transaction_sale_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO account.");
-
-		if( ! $this->_transaction_sale_line_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO Line account.");
-
-		if( ! $this->_transaction_sale_tax_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO Tax account.");
-		
 		// Independently validate $this->_date_billed
 		if( $this->_date_billed AND 
 			$this->_date_billed != date("Y-m-d",strtotime($this->_date_billed)) )
@@ -289,15 +270,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 		{
 			$sale_line->form_id = $this->_sale->id;
 			$sale_line->save();
-			/*
-			if( ! isset($this->_account_transactions[$this->_transaction_sale_line_account_id]) )
-				$this->_account_transactions[$this->_transaction_sale_line_account_id] = 0.00;
-
-			$this->_account_transactions[$this->_transaction_sale_line_account_id] = $this->_beans_round( 
-				$this->_account_transactions[$this->_transaction_sale_line_account_id] + 
-				( $sale_line->amount * $sale_line->quantity )
-			);
-			*/
+			
 			foreach( $this->_sale_lines_taxes[$j] as $sale_line_tax )
 			{
 				$sale_line_tax->form_line_id = $sale_line->id;
@@ -321,86 +294,12 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->percent * $sale_tax->amount ) );
 			
 			$this->_sale_taxes[$t]->save();
-			/*
-			if( ! isset($this->_account_transactions[$this->_transaction_sale_tax_account_id]) )
-				$this->_account_transactions[$this->_transaction_sale_tax_account_id] = 0.00;
-
-			$this->_account_transactions[$this->_transaction_sale_tax_account_id] = $this->_beans_round( 
-				$this->_account_transactions[$this->_transaction_sale_tax_account_id] + 
-				$this->_sale_taxes[$t]->total 
-			);
-			*/
+			
 			$this->_sale->total = $this->_beans_round( $this->_sale->total + $this->_sale_taxes[$t]->total );
 		}
 
 		if( $this->_sale->code == "AUTOGENERATE" )
 			$this->_sale->code = $this->_sale->id;
-		
-		/*
-		// Generate the account transaction for this SO.
-		$this->_account_transactions[$this->_transaction_sale_account_id] = $this->_sale->total;
-		*/
-		
-		/*
-		// Generate Account Transaction
-		$sale_create_transaction_data = new stdClass;
-		$sale_create_transaction_data->code = $this->_sale->code;
-		$sale_create_transaction_data->description = "Sale ".$this->_sale->code;
-		$sale_create_transaction_data->date = $this->_sale->date_created;
-		$sale_create_transaction_data->account_transactions = array();
-		$sale_create_transaction_data->entity_id = $this->_sale->entity_id;
-		$sale_create_transaction_data->form_type = 'sale';
-		$sale_create_transaction_data->form_id = $this->_sale->id;
-
-		foreach( $this->_account_transactions as $account_id => $amount )
-		{
-			$account_transaction = new stdClass;
-
-			$account_transaction->account_id = $account_id;
-			$account_transaction->amount = ( $account_id == $this->_transaction_sale_account_id )
-										 ? ( $amount * -1 )
-										 : ( $amount );
-
-			// Realistically, this will only hit on the first condition, but the logic applies
-			// throughout the form process.  The AR or Pending AR account manages the form balance.
-			if( $account_transaction->account_id == $this->_transaction_sale_account_id OR
-				$account_transaction->account_id == $this->_sale->account_id )
-			{
-				// Add a form for the sale.
-				// This updates the balance on the form.
-				$account_transaction->forms = array(
-					(object)array(
-						"form_id" => $this->_sale->id,
-						"amount" => $account_transaction->amount,	// This works because the account for the sale is table_sign -1
-					),
-				);
-			}
-
-			$sale_create_transaction_data->account_transactions[] = $account_transaction;
-		}
-		
-		$account_create_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($sale_create_transaction_data));
-		$account_create_transaction_result = $account_create_transaction->execute();
-
-		if( ! $account_create_transaction_result->success )
-		{
-			// We've had an account transaction failure and need to delete the sale we just created.
-			$delete_sale = new Beans_Customer_Sale_Delete($this->_beans_data_auth((object)array(
-				'id' => $this->_sale->id,
-			)));
-			$delete_sale_result = $delete_sale->execute();
-
-			// NOW WE HAVE A REALLY BIG PROBLEM ON OUR HANDS.
-			if( ! $delete_sale_result->success )
-				throw new Exception("Error creating account transaction for sale. COULD NOT DELETE SALE! ".$delete_sale_result->error);
-			
-			throw new Exception("Error creating account transaction: ".$account_create_transaction_result->error);
-		}
-
-		// We're good!
-		$this->_sale->create_transaction_id = $account_create_transaction_result->data->transaction->id;
-		$this->_sale->save();
-		*/
 		
 		$this->_sale->save();
 

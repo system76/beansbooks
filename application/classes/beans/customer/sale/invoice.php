@@ -41,12 +41,6 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 
 	protected $_validate_only;
 
-	protected $_transaction_sale_account_id;
-	protected $_transaction_sale_line_account_id;
-	protected $_transaction_sale_tax_account_id;
-	protected $_transaction_sale_deferred_income_account_id;
-	protected $_transaction_sale_deferred_liability_account_id;
-
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -74,31 +68,10 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 		$this->_date_due = ( isset($data->date_due) )
 						 ? $data->date_due
 						 : FALSE;
-
-		$this->_transaction_sale_account_id = $this->_beans_setting_get('sale_default_account_id');
-		$this->_transaction_sale_line_account_id = $this->_beans_setting_get('sale_default_line_account_id');
-		$this->_transaction_sale_tax_account_id = $this->_beans_setting_get('sale_default_tax_account_id');
-		$this->_transaction_sale_deferred_income_account_id = $this->_beans_setting_get('sale_deferred_income_account_id');
-		$this->_transaction_sale_deferred_liability_account_id = $this->_beans_setting_get('sale_deferred_liability_account_id');
 	}
 
 	protected function _execute()
 	{
-		if( ! $this->_transaction_sale_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO receivable account.");
-
-		if( ! $this->_transaction_sale_line_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO line account.");
-
-		if( ! $this->_transaction_sale_tax_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO tax account.");
-
-		if( ! $this->_transaction_sale_deferred_income_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO deferred income account.");
-
-		if( ! $this->_transaction_sale_deferred_liability_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default SO deferred liability account.");
-
 		if( ! $this->_sale->loaded() )
 			throw new Exception("That sale could not be found.");
 
@@ -122,45 +95,6 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 			strtotime($this->_date_due) < strtotime($this->_date_billed) )
 			throw new Exception("Invalid due date: must be on or after the bill date.");
 
-		/*
-		$calibrate_payments = array();
-		
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// TODO - REPLACE WITH Calibrate_Payments with form_ids array ?
-		foreach( $this->_sale->account_transaction_forms->find_all() as $account_transaction_form )
-		{
-			if( $account_transaction_form->account_transaction->transaction_id == $this->_sale->create_transaction_id OR
-				(
-					$account_transaction_form->account_transaction->transaction->payment AND 
-					strtotime($account_transaction_form->account_transaction->date) <= strtotime($this->_date_billed) 
-				) )
-			{
-				// NADA
-			}
-			else if( $account_transaction_form->account_transaction->transaction->payment AND 
-					 strtotime($sale_invoice_transaction_data->date) <= strtotime($this->_date_billed) AND
-					 ! in_array((object)array(
-						'id' => $account_transaction_form->account_transaction->transaction->id,
-						'date' => $account_transaction_form->account_transaction->transaction->date,
-					), $calibrate_payments) )
-			{
-					$calibrate_payments[] = (object)array(
-						'id' => $account_transaction_form->account_transaction->transaction->id,
-						'date' => $account_transaction_form->account_transaction->transaction->date,
-					);
-			}
-		}
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		// // // // // // // // // // // // // // // // // // // // // // // // // 
-		*/
-		
 		$this->_sale->date_billed = $this->_date_billed;
 		$this->_sale->date_due = ( $this->_date_due )
 							   ? $this->_date_due
@@ -184,30 +118,12 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 		// Reload the sale.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);
 
+		// Recalibrate Payments 
 		$customer_payment_calibrate = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
 			'form_ids' => array($this->_sale->id),
 		)));
 		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
 		
-		/*
-		if( count($calibrate_payments) )
-			usort($calibrate_payments, array($this,'_journal_usort') );
-
-		// Re-Calibrate Payments
-		foreach( $calibrate_payments as $calibrate_payment )
-		{
-			$beans_calibrate_payment = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
-				'id' => $calibrate_payment->id,
-			)));
-			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
-
-			// V2Item
-			// Fatal error!  Ensure coverage or ascertain 100% success.
-			if( ! $beans_calibrate_payment_result->success )
-				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
-		}
-		*/
-
 		// Update tax balances only if we're successful.
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
 			$this->_tax_adjust_balance($sale_tax->tax_id,$sale_tax->total);

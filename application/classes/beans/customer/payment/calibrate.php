@@ -284,15 +284,6 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			}
 			else
 			{
-				/*
-				if( $sale->date_billed AND 
-					$sale->invoice_transaction_id )
-					$sales_invoice_update[] = $sale->id;
-				else if( $sale->date_cancelled AND 
-						 $sale->cancel_transaction_id )
-					$sales_cancel_update[] = $sale->id;
-				*/
-				
 				$deferred_amounts = $this->_calculate_deferred_payment($sale_payment_amount, $sale_paid, $sale_line_total, $sale_tax_total);
 				
 				$income_transfer_amount = $deferred_amounts->income_transfer_amount;
