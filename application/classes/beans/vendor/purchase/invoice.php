@@ -167,6 +167,7 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 			$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
 		}
 
+		/*
 		$purchase_invoice_transaction_data = new stdClass;
 		$purchase_invoice_transaction_data->code = $this->_purchase->code;
 		$purchase_invoice_transaction_data->description = "Invoice - Purchase ".$this->_purchase->code;
@@ -227,16 +228,41 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 
 		if( $this->_validate_only )
 			return (object)array();
-
+		*/
+		
 		$this->_purchase->date_billed = $this->_date_billed;
 		$this->_purchase->date_due = date("Y-m-d",strtotime($this->_purchase->date_billed.' +'.$this->_purchase->account->terms.' Days'));
+		/*
 		$this->_purchase->invoice_transaction_id = $purchase_invoice_transaction_result->data->transaction->id;
+		*/
 		$this->_purchase->aux_reference = $this->_invoice_number;
 		if( $this->_so_number )
 			$this->_purchase->reference = $this->_so_number;
 
 		$this->_purchase->save();
 
+		$purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_sale->id),
+		)));
+		$purchase_calibrate_result = $purchase_calibrate->execute();
+
+		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
+
+		if( ! $purchase_calibrate_result->success )
+		{
+			$this->_purchase->date_billed = NULL;
+			$this->_purchase->date_due = NULL;
+			$this->_purchase->aux_reference = NULL;
+			$this->_purchase->reference = NULL;
+			$this->_purchase->save();
+
+			throw new Exception("Error trying to invoice purchase: ".$sale_calibrate_result->error);
+		}
+
+		// // // // // // // // // // // 
+		// VENDOR PAYMENT CALIBRATE   // 
+		// // // // // // // // // // // 
+		
 		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
 		
 		return (object)array(

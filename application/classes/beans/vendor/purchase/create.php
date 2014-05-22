@@ -49,10 +49,13 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 	protected $_data;
 	protected $_purchase;
 	protected $_purchase_lines;
+	/*
 	protected $_account_transactions;
+	*/
 
 	protected $_transaction_purchase_account_id;
 	protected $_transaction_purchase_line_account_id;
+	protected $_transaction_purchase_prepaid_purchase_account_id;
 
 	protected $_date_billed;
 	protected $_invoice_number;
@@ -64,11 +67,14 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 		$this->_data = $data;
 		$this->_purchase = $this->_default_vendor_purchase();
 		$this->_purchase_lines = array();
+		/*
 		$this->_account_transactions = array();
+		*/
 
 		$this->_transaction_purchase_account_id = $this->_beans_setting_get('purchase_default_account_id');
 		$this->_transaction_purchase_line_account_id = $this->_beans_setting_get('purchase_default_line_account_id');
-		
+		$this->_transaction_purchase_prepaid_purchase_account_id = $this->_beans_setting_get('purchase_prepaid_purchase_account_id');
+
 		$this->_date_billed = ( isset($this->_data->date_billed) )
 							? $this->_data->date_billed
 							: FALSE;
@@ -85,6 +91,9 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 
 		if( ! $this->_transaction_purchase_line_account_id )
 			throw new Exception("INTERNAL ERROR: Could not find default PO Line account.");
+
+		if( ! $this->_transaction_purchase_prepaid_purchase_account_id )
+			throw new Exception("INTERNAL ERROR: Could not find default deferred asset account.");
 
 		// Independently validate $this->_date_billed and $this->_invoice_number
 		if( $this->_date_billed AND 
@@ -222,13 +231,16 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 		if( $this->_purchase->code == "AUTOGENERATE" )
 			$this->_purchase->code = $this->_purchase->id;
 
+		/*
 		$this->_account_transactions[$this->_transaction_purchase_account_id] = $this->_purchase->total;
-
+		*/
+		
 		foreach( $this->_purchase_lines as $j => $purchase_line )
 		{
 			$purchase_line->form_id = $this->_purchase->id;
 			$purchase_line->save();
 
+			/*
 			if( ! isset($this->_account_transactions[$this->_transaction_purchase_line_account_id]) )
 				$this->_account_transactions[$this->_transaction_purchase_line_account_id] = 0;
 
@@ -236,8 +248,9 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 				$this->_account_transactions[$this->_transaction_purchase_line_account_id] + 
 				( $purchase_line->amount * $purchase_line->quantity )
 			);
+			*/
 		}
-
+		/*
 		// Generate Account Transaction
 		$account_create_transaction_data = new stdClass;
 		$account_create_transaction_data->code = $this->_purchase->code;
@@ -294,6 +307,35 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 		// We're good!
 		$this->_purchase->create_transaction_id = $account_create_transaction_result->data->transaction->id;
 		$this->_purchase->save();
+		*/
+	
+		$this->_purchase->save();
+
+		$purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_sale->id),
+		)));
+		$purchase_calibrate_result = $purchase_calibrate->execute();
+
+		if( ! $purchase_calibrate_result->success )
+		{
+			// We've had an account transaction failure and need to delete the purchase we just created.
+			$delete_purchase = new Beans_Vendor_Purchase_Delete($this->_beans_data_auth((object)array(
+				'id' => $this->_purchase->id,
+			)));
+			$delete_purchase_result = $delete_purchase->execute();
+
+			// V2Item
+			// Fatal error!  Ensure coverage or ascertain 100% success.
+			if( ! $delete_purchase_result->success )
+				throw new Exception("Error creating account transaction for purchase purchase. ".
+									"COULD NOT DELETE PURCHASE ORDER! ".
+									$delete_purchase_result->error);
+			
+			throw new Exception("Error trying to create purchase: ".$purchase_calibrate_result->error);
+		}
+
+		// Reload the sale.
+		$this->_sale = $this->_load_customer_sale($this->_sale->id);
 
 		if( $this->_date_billed )
 		{

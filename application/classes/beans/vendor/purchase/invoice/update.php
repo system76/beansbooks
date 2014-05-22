@@ -25,6 +25,7 @@ class Beans_Vendor_Purchase_Invoice_Update extends Beans_Vendor_Purchase_Invoice
 
 	protected $_transaction_purchase_account_id;
 	protected $_transaction_purchase_line_account_id;
+	protected $_transaction_purchase_prepaid_purchase_account_id;
 
 	public function __construct($data = NULL)
 	{
@@ -38,6 +39,7 @@ class Beans_Vendor_Purchase_Invoice_Update extends Beans_Vendor_Purchase_Invoice
 		
 		$this->_transaction_purchase_account_id = $this->_beans_setting_get('purchase_default_account_id');
 		$this->_transaction_purchase_line_account_id = $this->_beans_setting_get('purchase_default_line_account_id');
+		$this->_transaction_purchase_prepaid_purchase_account_id = $this->_beans_setting_get('purchase_prepaid_purchase_account_id');
 	}
 
 	protected function _execute()
@@ -50,6 +52,9 @@ class Beans_Vendor_Purchase_Invoice_Update extends Beans_Vendor_Purchase_Invoice
 
 		if( ! $this->_transaction_purchase_line_account_id )
 			throw new Exception("INTERNAL ERROR: Could not find default PO Line account.");
+
+		if( ! $this->_transaction_purchase_prepaid_purchase_account_id )
+			throw new Exception("INTERNAL ERROR: Could not find default deferred asset account.");
 
 		if( ! $this->_purchase->loaded() )
 			throw new Exception("That purchase could not be found.");
