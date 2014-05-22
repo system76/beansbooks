@@ -312,7 +312,7 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 		$this->_purchase->save();
 
 		$purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
-			'ids' => array($this->_sale->id),
+			'ids' => array($this->_purchase->id),
 		)));
 		$purchase_calibrate_result = $purchase_calibrate->execute();
 
@@ -335,8 +335,8 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 		}
 
 		// Reload the sale.
-		$this->_sale = $this->_load_customer_sale($this->_sale->id);
-
+		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
+		
 		if( $this->_date_billed )
 		{
 			$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(

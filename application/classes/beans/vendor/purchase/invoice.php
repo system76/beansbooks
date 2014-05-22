@@ -242,7 +242,7 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 		$this->_purchase->save();
 
 		$purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
-			'ids' => array($this->_sale->id),
+			'ids' => array($this->_purchase->id),
 		)));
 		$purchase_calibrate_result = $purchase_calibrate->execute();
 
@@ -256,7 +256,7 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 			$this->_purchase->reference = NULL;
 			$this->_purchase->save();
 
-			throw new Exception("Error trying to invoice purchase: ".$sale_calibrate_result->error);
+			throw new Exception("Error trying to invoice purchase: ".$purchase_calibrate_result->error);
 		}
 
 		// // // // // // // // // // // 

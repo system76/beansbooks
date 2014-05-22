@@ -43,7 +43,7 @@ class Beans_Vendor_Purchase_Calibrate extends Beans_Vendor_Purchase {
 		$vendor_purchase_calibrate_create_result = $vendor_purchase_calibrate_create->execute();
 
 		if( ! $vendor_purchase_calibrate_create_result->success )
-			throw new Exception("Unexpected error - could not calibrate invoiced sales: ".$vendor_purchase_calibrate_create_result->error);
+			throw new Exception("Unexpected error - could not calibrate purchases: ".$vendor_purchase_calibrate_create_result->error);
 
 		$vendor_purchase_calibrate_invoice = new Beans_Vendor_Purchase_Calibrate_Invoice($this->_beans_data_auth((object)array(
 			'ids' => isset($this->_data->ids) ? $this->_data->ids : NULL,
@@ -53,7 +53,7 @@ class Beans_Vendor_Purchase_Calibrate extends Beans_Vendor_Purchase {
 		$vendor_purchase_calibrate_invoice_result = $vendor_purchase_calibrate_invoice->execute();
 
 		if( ! $vendor_purchase_calibrate_invoice_result->success )
-			throw new Exception("Unexpected error - could not calibrate invoiced sales: ".$vendor_purchase_calibrate_invoice_result->error);
+			throw new Exception("Unexpected error - could not calibrate invoiced purchases: ".$vendor_purchase_calibrate_invoice_result->error);
 
 		$vendor_purchase_calibrate_cancel = new Beans_Vendor_Purchase_Calibrate_Cancel($this->_beans_data_auth((object)array(
 			'ids' => isset($this->_data->ids) ? $this->_data->ids : NULL,
@@ -63,7 +63,7 @@ class Beans_Vendor_Purchase_Calibrate extends Beans_Vendor_Purchase {
 		$vendor_purchase_calibrate_cancel_result = $vendor_purchase_calibrate_cancel->execute();
 
 		if( ! $vendor_purchase_calibrate_cancel_result->success )
-			throw new Exception("Unexpected error - could not calibrate cancelled sales: ".$vendor_purchase_calibrate_cancel_result->error);
+			throw new Exception("Unexpected error - could not calibrate cancelled purchases: ".$vendor_purchase_calibrate_cancel_result->error);
 		
 		return (object)array();
 	}

@@ -111,7 +111,7 @@ class Beans_Vendor_Purchase_Calibrate_Cancel extends Beans_Vendor_Purchase {
 	protected function _calibrate_purchase_cancel($purchase)
 	{
 		// Should be impossible - but catches bugs from the above query...
-		if( ! $sale->date_cancelled )
+		if( ! $purchase->date_cancelled )
 			return;
 
 		$purchase_cancel_transaction_data = new stdClass;
@@ -155,7 +155,7 @@ class Beans_Vendor_Purchase_Calibrate_Cancel extends Beans_Vendor_Purchase {
 
 			// Line Item Transfers
 			$account_transactions[$this->_transaction_purchase_line_account_id] = $purchase_balance;
-			$account_transactions[$this->_transaction_purchase_prepaid_purchase_account_id] = ( $sale_paid * -1 );
+			$account_transactions[$this->_transaction_purchase_prepaid_purchase_account_id] = ( $purchase_paid * -1 );
 		}
 
 		foreach( $account_transactions as $account_id => $amount ) 
@@ -167,11 +167,11 @@ class Beans_Vendor_Purchase_Calibrate_Cancel extends Beans_Vendor_Purchase {
 				$account_transaction->amount = $amount;
 
 				if( $account_transaction->account_id == $this->_transaction_purchase_account_id OR
-					$account_transaction->account_id == $this->_purchase->account_id )
+					$account_transaction->account_id == $purchase->account_id )
 				{
 					$account_transaction->forms = array(
 						(object)array(
-							"form_id" => $this->_purchase->id,
+							"form_id" => $purchase->id,
 							"amount" => $account_transaction->amount,
 						),
 					);
@@ -197,7 +197,7 @@ class Beans_Vendor_Purchase_Calibrate_Cancel extends Beans_Vendor_Purchase {
 		}
 
 		if( ! $purchase_cancel_transaction_result->success )
-			throw new Exception("Error creating purchase cancellation transaction in journal: ".$purchase_cancel_transaction_result->error."<br><br><br>\n\n\n".print_r($sale_create_transaction_result->account_transactions,TRUE));
+			throw new Exception("Error creating purchase invoice transaction in journal: ".$purchase_cancel_transaction_result->error."<br><br><br>\n\n\n".print_r($purchase_cancel_transaction_data->account_transactions,TRUE));
 
 		if( ! $purchase->cancel_transaction_id )
 		{
