@@ -50,24 +50,17 @@ class Beans_Customer_Payment_Cancel extends Beans_Customer_Payment {
 		if( ! $this->_payment->loaded() )
 			throw new Exception("Payment could not be found.");
 
-		// Array of IDs for sales to have their invoices updated.
-		$sales_invoice_update = array();
+		$form_ids_query = ' SELECT DISTINCT(account_transaction_forms.form_id) as form_id FROM account_transaction_forms '.
+						  ' INNER JOIN account_transactions ON account_transaction_forms.account_transaction_id = account_transactions.id WHERE '.
+						  ' account_transactions.transaction_id = '.$this->_payment->id;
+		$form_ids = DB::Query(Database::SELECT, $form_ids_query)->execute()->as_array();
 
-		foreach( $this->_payment->account_transactions->find_all() as $account_transaction )
-		{
-			if( ! $account_transaction->writeoff )
-			{
-				foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form )
-				{
-					if( $account_transaction_form->form->account_id != $account_transaction->account_id AND 
-						( 
-							$account_transaction_form->form->date_billed AND 
-							strtotime($account_transaction_form->form->date_billed) >= strtotime($this->_payment->date)
-						) )
-						$sales_invoice_update[] = $account_transaction_form->form_id;
-				}
-			}
-		}
+		$handled_sales_ids = array();
+		foreach( $form_ids as $form_id )
+			$handled_sales_ids[] = $form_id['form_id'];
+
+		$payment_date = $this->_payment->date;
+		$payment_id = $this->_payment->id;
 
 		// Try to cancel payment.
 		$account_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
@@ -79,17 +72,30 @@ class Beans_Customer_Payment_Cancel extends Beans_Customer_Payment {
 		if( ! $account_transaction_delete_result->success )
 			throw new Exception("Error cancelling payment: ".$account_transaction_delete_result->error);
 
-		// Update invoices if necessary
-		foreach( $sales_invoice_update as $sale_id ) 
-		{
-			$customer_sale_invoice_update = new Beans_Customer_Sale_Invoice_Update($this->_beans_data_auth((object)array(
-				'id' => $sale_id,
-			)));
-			$customer_sale_invoice_update_result = $customer_sale_invoice_update->execute();
+		// Recalibrate Customer Invoices / Cancellations
+		$customer_sale_calibrate_invoice = new Beans_Customer_Sale_Calibrate_Invoice($this->_beans_data_auth((object)array(
+			'ids' => $handled_sales_ids,
+		)));
+		$customer_sale_calibrate_invoice_result = $customer_sale_calibrate_invoice->execute();
 
-			if( ! $customer_sale_invoice_update_result->success ) 
-				throw new Exception("UNEXPECTED ERROR: Error updating customer sale invoice transaction. ".$customer_sale_invoice_update_result->error);
-		}
+		if( ! $customer_sale_calibrate_invoice_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER SALES: ".$customer_sale_calibrate_invoice_result->error);
+
+		// Recalibrate Customer Invoices / Cancellations
+		$customer_sale_calibrate_cancel = new Beans_Customer_Sale_Calibrate_Cancel($this->_beans_data_auth((object)array(
+			'ids' => $handled_sales_ids,
+		)));
+		$customer_sale_calibrate_cancel_result = $customer_sale_calibrate_cancel->execute();
+
+		if( ! $customer_sale_calibrate_cancel_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER SALES: ".$customer_sale_calibrate_cancel_result->error);
+
+		// Recalibrate any payments tied to these sales AFTER this transaction date.
+		$customer_payment_calibrate = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'form_ids' => $handled_sales_ids,
+			// TODO - ADD A MEANS TO SEND AFTER PAYMENT ID AND AFTER PAYMENT DATE
+		)));
+		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
 
 		return (object)array(
 			"success" => TRUE,

@@ -450,7 +450,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		$vendor_payment_calibrate_result = $vendor_payment_calibrate->execute();
 
 		if( ! $vendor_payment_calibrate_result->success )
-			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER PAYMENTS: ".$vendor_payment_calibrate_result->error);
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE VENDOR PAYMENTS: ".$vendor_payment_calibrate_result->error);
 
 		return(object)array(
 			"payment" => $this->_return_vendor_payment_element($this->_load_vendor_payment($update_transaction_result->data->transaction->id)),
