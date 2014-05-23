@@ -167,74 +167,9 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 			$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
 		}
 
-		/*
-		$purchase_invoice_transaction_data = new stdClass;
-		$purchase_invoice_transaction_data->code = $this->_purchase->code;
-		$purchase_invoice_transaction_data->description = "Invoice - Purchase ".$this->_purchase->code;
-		$purchase_invoice_transaction_data->date = $this->_date_billed;
-		$purchase_invoice_transaction_data->entity_id = $this->_purchase->entity_id;
-		$purchase_invoice_transaction_data->form_type = 'purchase';
-		$purchase_invoice_transaction_data->form_id = $this->_purchase->id;
-		
-		$account_transactions = array();
-
-		// Line Items
-		foreach( $this->_purchase->form_lines->find_all() as $purchase_line )
-		{
-			if( ! isset($account_transactions[$purchase_line->account_id]) )
-				$account_transactions[$purchase_line->account_id] = 0.00;
-
-			$account_transactions[$purchase_line->account_id] = $this->_beans_round(
-				$account_transactions[$purchase_line->account_id] -
-				$purchase_line->total
-			);
-		}
-
-		// Misc.
-		$account_transactions[$this->_transaction_purchase_line_account_id] = $this->_purchase->total;
-		$account_transactions[$this->_transaction_purchase_account_id] = (-1) * $this->_purchase->total;
-		$account_transactions[$this->_purchase->account_id] = $this->_purchase->total;
-		
-		// Associate array over to objects.
-		$purchase_invoice_transaction_data->account_transactions = array();
-
-		foreach( $account_transactions as $account_id => $amount ) 
-		{
-			$account_transaction = new stdClass;
-			$account_transaction->account_id = $account_id;
-			$account_transaction->amount = $amount;
-
-			if( $account_transaction->account_id == $this->_transaction_purchase_account_id OR
-				$account_transaction->account_id == $this->_purchase->account_id )
-			{
-				$account_transaction->forms = array(
-					(object)array(
-						"form_id" => $this->_purchase->id,
-						"amount" => $account_transaction->amount,
-					),
-				);
-			}
-			
-			$purchase_invoice_transaction_data->account_transactions[] = $account_transaction;
-		}
-
-		$purchase_invoice_transaction_data->validate_only = $this->_validate_only;
-
-		$purchase_invoice_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($purchase_invoice_transaction_data));
-		$purchase_invoice_transaction_result = $purchase_invoice_transaction->execute();
-
-		if( ! $purchase_invoice_transaction_result->success )
-			throw new Exception("Could not create invoice transaction: ".$purchase_invoice_transaction_result->error);
-
-		if( $this->_validate_only )
-			return (object)array();
-		*/
-		
 		$this->_purchase->date_billed = $this->_date_billed;
 		$this->_purchase->date_due = date("Y-m-d",strtotime($this->_purchase->date_billed.' +'.$this->_purchase->account->terms.' Days'));
-		/*
-		$this->_purchase->invoice_transaction_id = $purchase_invoice_transaction_result->data->transaction->id;
-		*/
+		
 		$this->_purchase->aux_reference = $this->_invoice_number;
 		if( $this->_so_number )
 			$this->_purchase->reference = $this->_so_number;

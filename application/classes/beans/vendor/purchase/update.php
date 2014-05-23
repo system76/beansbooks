@@ -353,26 +353,12 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 									$vendor_purchase_invoice_result->error);
 			}
 
-			return $vendor_purchase_invoice_result;
+			return $vendor_purchase_invoice_result->data;
 		}
 
-		// MUTABILITY CHANGE
-		// Calibrate Payments
-		/*
-		// Calibrate Payments
-		foreach( $calibrate_payments as $calibrate_payment )
-		{
-			$beans_calibrate_payment = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
-				'id' => $calibrate_payment->id,
-			)));
-			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
-
-			// V2Item
-			// Fatal error!  Ensure coverage or ascertain 100% success.
-			if( ! $beans_calibrate_payment_result->success )
-				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
-		}
-		 */
+		// // // // // // // // // // // 
+		// VENDOR PAYMENT CALIBRATE   // 
+		// // // // // // // // // // // 
 
 
 		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);

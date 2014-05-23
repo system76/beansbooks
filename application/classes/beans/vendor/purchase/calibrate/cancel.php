@@ -128,12 +128,12 @@ class Beans_Vendor_Purchase_Calibrate_Cancel extends Beans_Vendor_Purchase {
 		$purchase_line_total = $purchase->total;
 		// These two could be moved into the else {} block below
 		$purchase_balance = $this->_get_form_effective_balance($purchase, $purchase->date_cancelled, $purchase->cancel_transaction_id);
-		$purchase_paid = $purchase_line_total + $purchase_balance;
+		$purchase_paid = $purchase_line_total - $purchase_balance;
 
 		// If invoiced - we reverse the AP accounts.
 		if( $purchase->date_billed )
 		{
-			$account_transaction[$purchase->account_id] = ( $purchase_line_total * -1 );
+			$account_transactions[$purchase->account_id] = ( $purchase_line_total * -1 );
 
 			foreach( $purchase->form_lines->find_all() as $purchase_line )
 			{
@@ -197,7 +197,15 @@ class Beans_Vendor_Purchase_Calibrate_Cancel extends Beans_Vendor_Purchase {
 		}
 
 		if( ! $purchase_cancel_transaction_result->success )
-			throw new Exception("Error creating purchase invoice transaction in journal: ".$purchase_cancel_transaction_result->error."<br><br><br>\n\n\n".print_r($purchase_cancel_transaction_data->account_transactions,TRUE));
+			throw new Exception(
+				"Error creating purchase cancellation transaction in journal: ".
+				"TOTAL: ".$purchase_line_total."\n<br>".
+				"BALANCE: ".$purchase_balance."\n<br>".
+				"PAID: ".$purchase_paid."\n<br>".
+				$purchase_cancel_transaction_result->error.
+				"<br><br><br>\n\n\n".
+				print_r($purchase_cancel_transaction_data->account_transactions,TRUE)
+			);
 
 		if( ! $purchase->cancel_transaction_id )
 		{

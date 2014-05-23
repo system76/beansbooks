@@ -180,7 +180,7 @@ class Beans_Vendor_Purchase_Calibrate_Create extends Beans_Vendor_Purchase {
 		}
 
 		if( ! $purchase_create_transaction_result->success )
-			throw new Exception("Error creating purchase invoice transaction in journal: ".$purchase_create_transaction_result->error."<br><br><br>\n\n\n".print_r($purchase_create_transaction_data->account_transactions,TRUE));
+			throw new Exception("Error creating purchase transaction in journal: ".$purchase_create_transaction_result->error."<br><br><br>\n\n\n".print_r($purchase_create_transaction_data->account_transactions,TRUE));
 
 		if( ! $purchase->create_transaction_id )
 		{

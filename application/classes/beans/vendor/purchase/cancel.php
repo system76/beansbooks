@@ -25,7 +25,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_key
 @required auth_expiration
 @required id INTEGER The ID of the #Beans_Vendor_Purchase# to cancel.
-@returns sale OBJECT The updated #Beans_Vendor_Purchase#.
+@returns purchase OBJECT The updated #Beans_Vendor_Purchase#.
 ---BEANSENDSPEC---
 */
 class Beans_Vendor_Purchase_Cancel extends Beans_Vendor_Purchase {
@@ -79,108 +79,11 @@ class Beans_Vendor_Purchase_Cancel extends Beans_Vendor_Purchase {
 
 		$date_cancelled = date("Y-m-d");
 		
-		/*
-		// Create Cancel Transaction
-		$purchase_cancel_transaction_data = new stdClass;
-		$purchase_cancel_transaction_data->code = $this->_purchase->code;
-		$purchase_cancel_transaction_data->description = "Purchase Cancelled ".$this->_purchase->code;
-		$purchase_cancel_transaction_data->date = $date_cancelled;
-		$purchase_cancel_transaction_data->account_transactions = array();
-		$purchase_cancel_transaction_data->form_type = 'purchase';
-		$purchase_cancel_transaction_data->form_id = $this->_purchase->id;
-
-		$calibrate_payments = array();
-
-		$purchase_balance = 0.00;
-		foreach( $this->_purchase->account_transaction_forms->find_all() as $account_transaction_form )
-		{
-			if( $account_transaction_form->account_transaction->transaction_id == $this->_purchase->create_transaction_id OR
-				(
-					$account_transaction_form->account_transaction->transaction->payment AND 
-					strtotime($account_transaction_form->account_transaction->date) <= strtotime($purchase_cancel_transaction_data->date) 
-				) )
-			{
-				$purchase_balance = $this->_beans_round(
-					$purchase_balance +
-					$account_transaction_form->amount
-				);
-			}
-			else if( $account_transaction_form->account_transaction->transaction->payment AND 
-					 strtotime($purchase_cancel_transaction_data->date) <= strtotime($account_transaction_form->account_transaction->transaction->date) AND
-					 ! in_array((object)array(
-						'id' => $account_transaction_form->account_transaction->transaction->id,
-						'date' => $account_transaction_form->account_transaction->transaction->date,
-					), $calibrate_payments) )
-			{
-					$calibrate_payments[] = (object)array(
-						'id' => $account_transaction_form->account_transaction->transaction->id,
-						'date' => $account_transaction_form->account_transaction->transaction->date,
-					);
-			}
-		}
-		
-		$account_transactions = array();
-
-		// If Invoiced - Reverse AP Account
-		if( $this->_purchase->date_billed )
-		{
-			$account_transactions[$this->_purchase->account_id] = ( -1 ) * $this->_purchase->total;
-
-			// Income Lines
-			foreach( $this->_purchase->form_lines->find_all() as $purchase_line )
-			{
-				if( ! isset($account_transactions[$purchase_line->account_id]) )
-					$account_transactions[$purchase_line->account_id] = 0.00;
-
-				$account_transactions[$purchase_line->account_id] = $this->_beans_round(
-					$account_transactions[$purchase_line->account_id] + // INCREASING
-					$purchase_line->total
-				);
-			}
-		}
-		
-		// Not Invoiced - Reverse Pending AP Account
-		else
-		{
-			$purchase_line_total = $this->_purchase->amount;
-			
-			// Total into Pending AR AND AR
-			$account_transactions[$this->_transaction_purchase_account_id] = ( -1 ) * $purchase_line_total;
-			$account_transactions[$this->_transaction_purchase_line_account_id] = $purchase_line_total;
-		}
-
-		foreach( $account_transactions as $account_id => $amount ) 
-		{
-			if( $amount != 0.00 ) 
-			{
-				$account_transaction = new stdClass;
-				$account_transaction->account_id = $account_id;
-				$account_transaction->amount = $amount;
-				if( $account_id == $this->_transaction_purchase_account_id OR 
-					$account_id == $this->_purchase->account_id )
-					$account_transaction->forms = array(
-						(object)array(
-							"form_id" => $this->_purchase->id,
-							"amount" => $account_transaction->amount,
-						),
-					);
-				
-				$purchase_cancel_transaction_data->account_transactions[] = $account_transaction;
-			}
-		}
-
-		$purchase_cancel_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($purchase_cancel_transaction_data));
-		$purchase_cancel_transaction_result = $purchase_cancel_transaction->execute();
-
-		if( ! $purchase_cancel_transaction_result->success )
-			throw new Exception("Error creating cancellation transaction in journal: ".$purchase_cancel_transaction_result->error);
-		*/
-		
 		$this->_purchase->date_cancelled = $date_cancelled;
 		$this->_purchase->save();
 
 		$purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
-			'ids' => array($this->_sale->id),
+			'ids' => array($this->_purchase->id),
 		)));
 		$purchase_calibrate_result = $purchase_calibrate->execute();
 

@@ -127,14 +127,14 @@ class Beans_Vendor_Purchase_Calibrate_Invoice extends Beans_Vendor_Purchase {
 
 		$purchase_line_total = $purchase->total;
 		$purchase_balance = $this->_get_form_effective_balance($purchase, $purchase->date_billed, $purchase->invoice_transaction_id);
-		$purchase_paid = $purchase_line_total + $purchase_balance;
+		$purchase_paid = $purchase_line_total - $purchase_balance;
 
 		// AP Transfers
 		$account_transactions[$this->_transaction_purchase_account_id] = ( $purchase_balance * -1 );
 		$account_transactions[$purchase->account_id] = $purchase_balance;
 
 		// Line Item Transfers
-		$account_transactions[$this->_transaction_purchase_line_account_id] = ( $purchase_balance * -1 );
+		$account_transactions[$this->_transaction_purchase_line_account_id] = $purchase_balance;
 		$account_transactions[$this->_transaction_purchase_prepaid_purchase_account_id] = $purchase_paid;
 
 		foreach( $purchase->form_lines->find_all() as $purchase_line )
@@ -187,7 +187,15 @@ class Beans_Vendor_Purchase_Calibrate_Invoice extends Beans_Vendor_Purchase {
 		}
 
 		if( ! $purchase_invoice_transaction_result->success )
-			throw new Exception("Error creating purchase invoice transaction in journal: ".$purchase_invoice_transaction_result->error."<br><br><br>\n\n\n".print_r($purchase_invoice_transaction_data->account_transactions,TRUE));
+			throw new Exception(
+				"Error creating purchase invoice transaction in journal: ".
+				"TOTAL: ".$purchase_line_total."\n<br>".
+				"BALANCE: ".$purchase_balance."\n<br>".
+				"PAID: ".$purchase_paid."\n<br>".
+				$purchase_invoice_transaction_result->error.
+				"<br><br><br>\n\n\n".
+				print_r($purchase_invoice_transaction_data->account_transactions,TRUE)
+			);
 
 		if( ! $purchase->invoice_transaction_id )
 		{
