@@ -177,11 +177,11 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		{
 			$payment = $this->_load_customer_payment($payment_id['payment_id']);
 
-			$this->_calibrate_payment_transaction($payment);
+			$this->_calibrate_customer_payment_transaction($payment);
 		}
 	}
 
-	protected function _calibrate_payment_transaction($payment)
+	protected function _calibrate_customer_payment_transaction($payment)
 	{
 		if( ! is_array($this->_data->form_ids) )
 				throw new Exception("Invalid form_ids provided: not an array.");

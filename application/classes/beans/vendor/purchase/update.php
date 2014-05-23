@@ -356,10 +356,14 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 			return $vendor_purchase_invoice_result->data;
 		}
 
-		// // // // // // // // // // // 
-		// VENDOR PAYMENT CALIBRATE   // 
-		// // // // // // // // // // // 
+		// Recalibrate Payments 
+		$vendor_payment_calibrate = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'form_ids' => array($this->_purchase->id),
+		)));
+		$vendor_payment_calibrate_result = $vendor_payment_calibrate->execute();
 
+		if( ! $vendor_payment_calibrate_result->success )
+			throw new Exception("Error encountered when calibrating payments: ".$vendor_payment_calibrate_result->error);
 
 		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
 		

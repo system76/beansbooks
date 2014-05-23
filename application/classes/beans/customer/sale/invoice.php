@@ -123,6 +123,9 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 			'form_ids' => array($this->_sale->id),
 		)));
 		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
+
+		if( ! $customer_payment_calibrate_result->success )
+			throw new Exception("Error encountered when calibrating payments: ".$customer_payment_calibrate_result->error);
 		
 		// Update tax balances only if we're successful.
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )

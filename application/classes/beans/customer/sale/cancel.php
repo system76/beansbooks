@@ -103,6 +103,9 @@ class Beans_Customer_Sale_Cancel extends Beans_Customer_Sale {
 		)));
 		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
 
+		if( ! $customer_payment_calibrate_result->success )
+			throw new Exception("Error encountered when calibrating payments: ".$customer_payment_calibrate_result->error);
+
 		// Reload Sale per Payment Calibration.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);
 		

@@ -124,7 +124,7 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 		$writeoff_account_transfer_total = 0.00;
 		$writeoff_account_transfers_forms = array();
 
-		// Write one for cleaner code
+		// Write once for cleaner code
 		$purchase_account_transfers[$this->_transaction_purchase_account_id] = 0.00;
 		$purchase_account_transfers_forms[$this->_transaction_purchase_account_id] = array();
 		$purchase_account_transfers[$this->_transaction_purchase_line_account_id] = 0.00;
@@ -212,38 +212,6 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 			$purchase_id = $purchase->id;
 
 			$purchase_balance = $this->_get_form_effective_balance($purchase, $create_transaction_data->date, NULL);
-
-			/*
-			$purchase_balance = 0.00;
-			foreach( $purchase->account_transaction_forms->find_all() as $account_transaction_form )
-			{
-				if( (
-						$account_transaction_form->account_transaction->transaction->payment AND 
-						strtotime($account_transaction_form->account_transaction->transaction->date) <= strtotime($create_transaction_data->date) 
-					) OR
-					$account_transaction_form->account_transaction->transaction_id == $purchase->create_transaction_id )
-				{
-					$purchase_balance = $this->_beans_round(
-						$purchase_balance +
-						$account_transaction_form->amount
-					);
-				}
-				// Realistically, we're only adjusting writeoffs
-				else if( $account_transaction_form->writeoff_amount AND 
-						 $account_transaction_form->account_transaction->transaction->payment AND 
-						 strtotime($create_transaction_data->date) < strtotime($account_transaction_form->account_transaction->transaction->date) AND
-						 ! in_array((object)array(
-							'id' => $account_transaction_form->account_transaction->transaction->id,
-							'date' => $account_transaction_form->account_transaction->transaction->date,
-						), $calibrate_payments) )
-				{
-						$calibrate_payments[] = (object)array(
-							'id' => $account_transaction_form->account_transaction->transaction->id,
-							'date' => $account_transaction_form->account_transaction->transaction->date,
-						);
-				}
-			}
-			*/
 
 			$purchase_transfer_amount = $purchase_payment->amount;
 			$purchase_writeoff_amount = ( isset($purchase_payment->writeoff_balance) AND
@@ -378,31 +346,34 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 
 		foreach( $purchase_account_transfers as $account_id => $amount )
 		{
-			$account_transaction = new stdClass;
-
-			$account_transaction->account_id = $account_id;
-			$account_transaction->amount = $amount;
-
-			if( $account_transaction->account_id == $payment_account->id )
-				$account_transaction->transfer = TRUE;
-
-			if( $writeoff_account AND 
-				$account_transaction->account_id == $writeoff_account->id )
-				$account_transaction->writeoff = TRUE;
-			
-			if( isset($purchase_account_transfers_forms[$account_id]) )
+			if( $amount != 0.00 )
 			{
-				$account_transaction->forms = array();
+				$account_transaction = new stdClass;
 
-				foreach($purchase_account_transfers_forms[$account_id] as $form)
-					$account_transaction->forms[] = (object)array(
-						'form_id' => $form->form_id,
-						'amount' => $form->amount,
-						'writeoff_amount' => $form->writeoff_amount,
-					);
+				$account_transaction->account_id = $account_id;
+				$account_transaction->amount = $amount;
+
+				if( $account_transaction->account_id == $payment_account->id )
+					$account_transaction->transfer = TRUE;
+
+				if( $writeoff_account AND 
+					$account_transaction->account_id == $writeoff_account->id )
+					$account_transaction->writeoff = TRUE;
+				
+				if( isset($purchase_account_transfers_forms[$account_id]) )
+				{
+					$account_transaction->forms = array();
+
+					foreach($purchase_account_transfers_forms[$account_id] as $form)
+						$account_transaction->forms[] = (object)array(
+							'form_id' => $form->form_id,
+							'amount' => $form->amount,
+							'writeoff_amount' => $form->writeoff_amount,
+						);
+				}
+
+				$create_transaction_data->account_transactions[] = $account_transaction;
 			}
-
-			$create_transaction_data->account_transactions[] = $account_transaction;
 		}
 		
 		$vendor = $this->_load_vendor($vendor_id);
@@ -444,39 +415,16 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 		if( ! $vendor_purchase_calibrate_cancel_result->success )
 			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE VENDOR PURCHASES: ".$vendor_purchase_calibrate_cancel_result->error);
 
-		/*
-		// Recalibrate any payments tied to these sales AFTER this transaction date.
-		$customer_payment_calibrate = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
-			'form_ids' => $handled_sales_ids,
+		// Recalibrate any payments tied to these purchases AFTER this transaction.
+		$vendor_payment_calibrate = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'form_ids' => $handles_purchases_ids,
 			'after_payment_id' => $create_transaction_result->data->transaction->id,
 		)));
-		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
+		$vendor_payment_calibrate_result = $vendor_payment_calibrate->execute();
 
-		if( ! $customer_payment_calibrate_result->success )
-			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER PAYMENTS: ".$customer_sale_calibrate_result->error);
-		*/
-
-
-
-		/*
-		if( count($calibrate_payments) )
-			usort($calibrate_payments, array($this,'_journal_usort') );
-
-		// Calibrate Payments
-		foreach( $calibrate_payments as $calibrate_payment )
-		{
-			$beans_calibrate_payment = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
-				'id' => $calibrate_payment->id,
-			)));
-			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
-
-			// V2Item
-			// Fatal error!  Ensure coverage or ascertain 100% success.
-			if( ! $beans_calibrate_payment_result->success )
-				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
-		}
-		*/
-
+		if( ! $vendor_payment_calibrate_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER PAYMENTS: ".$vendor_payment_calibrate_result->error);
+		
 		return (object)array(
 			"payment" => $this->_return_vendor_payment_element($this->_load_vendor_payment($create_transaction_result->data->transaction->id)),
 		);

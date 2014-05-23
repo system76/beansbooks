@@ -325,7 +325,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
 
 		if( ! $customer_payment_calibrate_result->success )
-			throw new Exception("Error trying to calibrate sale payments: ".$customer_payment_calibrate_result->error);
+			throw new Exception("Error encountered when calibrating payments: ".$customer_payment_calibrate_result->error);
 		
 		// Update tax balances.
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
