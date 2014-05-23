@@ -52,11 +52,7 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 	protected $_id;
 	protected $_purchase;
 	protected $_purchase_lines;
-	protected $_account_transactions;
-
-	protected $_transaction_purchase_account_id;
-	protected $_transaction_purchase_line_account_id;
-
+	
 	protected $_date_billed;
 	protected $_invoice_number;
 
@@ -157,12 +153,16 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 		if( isset($this->_data->invoice_number) )
 			$this->_purchase->aux_reference = $this->_data->invoice_number;
 
+		if( isset($this->_data->date_billed) )
+			$this->_purchase->date_billed = $this->_data->date_billed;
+
 		if( isset($this->_data->remit_address_id) )
 			$this->_purchase->remit_address_id = $this->_data->remit_address_id;
 
 		if( isset($this->_data->shipping_address_id) )
 			$this->_purchase->shipping_address_id = $this->_data->shipping_address_id;
 
+		
 		// Make sure we have good purchase information before moving on.
 		$this->_validate_vendor_purchase($this->_purchase);
 
@@ -252,21 +252,6 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 			throw new Exception("That refund total was greater than the original purchase total.");
 		
 
-		// Delete Create Transaction
-		if( $this->_purchase->create_transaction->loaded() )
-		{
-			$account_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
-				'id' => $this->_purchase->create_transaction_id,
-				'form_type_handled' => 'purchase',
-			)));
-			$account_transaction_delete_result = $account_transaction_delete->execute();
-
-			if( ! $account_transaction_delete_result->success )
-				throw new Exception("Error cancelling account transaction: ".$account_transaction_delete_result->error);
-			
-			$this->_purchase->create_transaction_id = NULL;
-		}
-
 		// Delete all current purchase children.
 		foreach( $this->_purchase->form_lines->find_all() as $purchase_line )
 			$purchase_line->delete();
@@ -274,87 +259,19 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 		// Save purchase + Children
 		$this->_purchase->save();
 
-		$this->_account_transactions[$this->_transaction_purchase_account_id] = $this->_purchase->total;
-
 		foreach( $this->_purchase_lines as $j => $purchase_line )
 		{
 			$purchase_line->form_id = $this->_purchase->id;
 			$purchase_line->save();
-
-			if( ! isset($this->_account_transactions[$this->_transaction_purchase_line_account_id]) )
-				$this->_account_transactions[$this->_transaction_purchase_line_account_id] = 0.00;
-
-			$this->_account_transactions[$this->_transaction_purchase_line_account_id] = $this->_beans_round( 
-				$this->_account_transactions[$this->_transaction_purchase_line_account_id] + 
-				$this->_beans_round($purchase_line->amount * $purchase_line->quantity) 
-			);
 		}
 
-		// Generate Account Transaction
-		$account_create_transaction_data = new stdClass;
-		$account_create_transaction_data->code = $this->_purchase->code;
-		$account_create_transaction_data->description = "purchase ".$this->_purchase->code;
-		$account_create_transaction_data->date = $this->_purchase->date_created;
-		$account_create_transaction_data->account_transactions = array();
-		$account_create_transaction_data->form_type = 'purchase';
-		$account_create_transaction_data->form_id = $this->_purchase->id;
+		$purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_purchase->id),
+		)));
+		$purchase_calibrate_result = $purchase_calibrate->execute();
 
-		foreach( $this->_account_transactions as $account_id => $amount )
-		{
-			$account_transaction = new stdClass;
-
-			$account_transaction->account_id = $account_id;
-			$account_transaction->amount = ( $account_id == $this->_transaction_purchase_account_id )
-										 ? ( $amount )
-										 : ( $amount * -1 );
-
-			if( $account_transaction->account_id == $this->_transaction_purchase_account_id )
-			{
-				$account_transaction->forms = array(
-					(object)array(
-						"form_id" => $this->_purchase->id,
-						"amount" => $account_transaction->amount,
-					),
-				);
-			}
-			
-			$account_create_transaction_data->account_transactions[] = $account_transaction;
-		}
-		
-		$account_create_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($account_create_transaction_data));
-		$account_create_transaction_result = $account_create_transaction->execute();
-
-		// V2Item
-		// Fatal error!  Ensure coverage or ascertain 100% success.
-		if( ! $account_create_transaction_result->success )
-		{
-			throw new Exception("FATAL Error creating account transaction: ".$account_create_transaction_result->error);
-		}
-
-		// We're good!
-		$this->_purchase->create_transaction_id = $account_create_transaction_result->data->transaction->id;
-		$this->_purchase->save();
-
-		if( $this->_date_billed )
-		{
-			$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(
-				'id' => $this->_purchase->id,
-				'date_billed' => $this->_date_billed,
-				'invoice_number' => $this->_invoice_number,
-			)));
-			$vendor_purchase_invoice_result = $vendor_purchase_invoice->execute();
-
-			// If it fails - we undo everything.
-			if( ! $vendor_purchase_invoice_result->success )
-			{
-				// V2Item
-				// Fatal error!  Ensure coverage or ascertain 100% success.
-				throw new Exception("Error creating purchase invoice transaction: ".
-									$vendor_purchase_invoice_result->error);
-			}
-
-			return $vendor_purchase_invoice_result->data;
-		}
+		if( ! $purchase_calibrate_result->success )
+			throw new Exception("Error encountered when calibrating payments: ".$purchase_calibrate_result->error);
 
 		// Recalibrate Payments 
 		$vendor_payment_calibrate = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
