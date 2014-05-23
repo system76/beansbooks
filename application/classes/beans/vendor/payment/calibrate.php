@@ -183,7 +183,7 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		$update_transaction_data->description = $payment->description;
 		$update_transaction_data->date = $payment->date;
 		$update_transaction_data->payment = "vendor";
-		$update_transaction_data->entity_id = $payment->vendor_id;
+		$update_transaction_data->entity_id = $payment->entity_id;
 		
 		$purchase_account_transfers = array();
 		$purchase_account_transfers_forms = array();

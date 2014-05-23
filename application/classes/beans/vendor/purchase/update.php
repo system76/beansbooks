@@ -154,7 +154,12 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 			$this->_purchase->aux_reference = $this->_data->invoice_number;
 
 		if( isset($this->_data->date_billed) )
+		{
 			$this->_purchase->date_billed = $this->_data->date_billed;
+
+			$account = $this->_load_account($this->_purchase->account_id);
+			$this->_purchase->date_due = date("Y-m-d",strtotime($this->_purchase->date_billed.' +'.$account->terms.' Days'));
+		}
 
 		if( isset($this->_data->remit_address_id) )
 			$this->_purchase->remit_address_id = $this->_data->remit_address_id;
@@ -250,7 +255,6 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 		if( $this->_purchase->refund_form_id AND 
 			$this->_purchase->total > $this->_load_vendor_purchase($this->_purchase->refund_form_id)->total )
 			throw new Exception("That refund total was greater than the original purchase total.");
-		
 
 		// Delete all current purchase children.
 		foreach( $this->_purchase->form_lines->find_all() as $purchase_line )
