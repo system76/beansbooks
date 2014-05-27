@@ -191,6 +191,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			{
 				$vendor_purchase_invoice_data = new stdClass;
 				$vendor_purchase_invoice_data->id = $purchase->id;
+				$vendor_purchase_invoice_data->validate_only = $this->_validate_only;
 				if( isset($purchase_payment->invoice_number) )
 					$vendor_purchase_invoice_data->invoice_number = $purchase_payment->invoice_number;
 				if( isset($purchase_payment->date_billed) )
@@ -216,6 +217,9 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				if( ! $vendor_purchase_update_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
 			}
+
+			if( $this->_validate_only )
+				return (object)array();
 			
 			// Simplifies copied code.
 			$purchase_id = $purchase->id;
@@ -400,9 +404,6 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 
 		$vendor = $this->_load_vendor($vendor_id);
 
-		if( $this->_validate_only )
-			$update_transaction_data->validate_only = TRUE;
-
 		// Shouldn't change... but we'll set it here to remind ourselves of what we should do.
 		$update_transaction_data->entity_id = $vendor_id;
 		$update_transaction_data->id = $this->_old_payment->id;
@@ -414,9 +415,6 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		if( ! $update_transaction_result->success )
 			throw new Exception("An error occurred creating that payment: ".$update_transaction_result->error);
 
-		if( $this->_validate_only )
-			return (object)array();
-		
 		// Recalibrate Customer Invoices / Cancellations
 		$vendor_purchase_calibrate_invoice = new Beans_Vendor_Purchase_Calibrate_Invoice($this->_beans_data_auth((object)array(
 			'ids' => $handles_purchases_ids,

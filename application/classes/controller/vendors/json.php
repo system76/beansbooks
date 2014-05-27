@@ -1446,7 +1446,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		// Validate
 		foreach( $purchases as $purchase )
 		{
-			$vendor_purchase_invoice_validate = new Beans_VEndor_Purchase_Invoice($this->_beans_data_auth((object)array(
+			$vendor_purchase_invoice_validate = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(
 				'id' => $purchase->id,
 				'so_number' => $purchase->so_number,
 				'date_billed' => $purchase->date_billed,
@@ -1738,7 +1738,6 @@ class Controller_Vendors_Json extends Controller_Json {
 				'purchases' => $purchases,
 			);
 
-			// REPLACE
 			$vendor_payment_replace_data->validate_only = TRUE;
 			$vendor_payment_replace_validate = new Beans_Vendor_Payment_Replace($this->_beans_data_auth($vendor_payment_replace_data));
 			$vendor_payment_replace_validate_result = $vendor_payment_replace_validate->execute();

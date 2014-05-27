@@ -153,19 +153,25 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 				'adjustment' => TRUE,
 			);
 
-			$vendor_purchase_update = new Beans_Vendor_Purchase_Update($this->_beans_data_auth((object)array(
-				'id' => $this->_purchase->id,
-				'lines' => $purchase_lines,
-			)));
-			$vendor_purchase_update_result = $vendor_purchase_update->execute();
+			if( ! $this->_validate_only )
+			{
+				$vendor_purchase_update = new Beans_Vendor_Purchase_Update($this->_beans_data_auth((object)array(
+					'id' => $this->_purchase->id,
+					'lines' => $purchase_lines,
+				)));
+				$vendor_purchase_update_result = $vendor_purchase_update->execute();
 
-			if( ! $vendor_purchase_update_result->success )
-				throw new Exception("Could not adjust purchase: ".
-									$vendor_purchase_update_result->error);
+				if( ! $vendor_purchase_update_result->success )
+					throw new Exception("Could not adjust purchase: ".
+										$vendor_purchase_update_result->error);
 
-			// Re-load purchase.
-			$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
+				// Re-load purchase.
+				$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
+			}
 		}
+
+		if( $this->_validate_only )
+			return (object)array();
 
 		$this->_purchase->date_billed = $this->_date_billed;
 		$this->_purchase->date_due = date("Y-m-d",strtotime($this->_purchase->date_billed.' +'.$this->_purchase->account->terms.' Days'));

@@ -204,15 +204,9 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 				if( ! $vendor_purchase_update_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
 			}
-			// MUTABILITY CHANGE
-			/*
-			else if( ! $purchase->date_billed AND 
-				! $purchase->invoice_transaction_id )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." has not been invoiced.  Please include an invoice number and date.");
-
-			if( strtotime($purchase->date_billed) > strtotime($update_transaction_data->date) )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." cannot be paid before its invoice date: ".$purchase->date_billed.".");
-			*/
+			
+			if( $this->_validate_only )
+				return (object)array();
 			
 			$purchase_id = $purchase->id;
 
@@ -394,9 +388,6 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 			}
 		}
 
-		if( $this->_validate_only )
-			$update_transaction_data->validate_only = TRUE;
-
 		$update_transaction_data->id = $this->_transaction->id;
 		$update_transaction_data->payment_type_handled = 'vendor';
 		$update_transaction_data->entity_id = $vendor_id;
@@ -407,9 +398,6 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 		if( ! $update_transaction_result->success )
 			throw new Exception("Update failure - could not convert transaction to payment: ".$update_transaction_result->error);
 
-		if( $this->_validate_only )
-			return (object)array();
-		
 		// Recalibrate Customer Invoices / Cancellations
 		$vendor_purchase_calibrate_invoice = new Beans_Vendor_Purchase_Calibrate_Invoice($this->_beans_data_auth((object)array(
 			'ids' => $handles_purchases_ids,
