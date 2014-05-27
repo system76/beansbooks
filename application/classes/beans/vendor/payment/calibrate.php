@@ -179,6 +179,7 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		$payment_object = $this->_return_vendor_payment_element($payment);
 
 		$update_transaction_data = new stdClass;
+		$update_transaction_data->id = $payment->id;
 		$update_transaction_data->code = $payment->reference;
 		$update_transaction_data->description = $payment->description;
 		$update_transaction_data->date = $payment->date;
@@ -204,6 +205,7 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		{
 			$purchase = $this->_load_vendor_purchase($purchase_id);
 			
+			/*
 			$purchase_balance = $this->_get_form_effective_balance($purchase, $payment->date, $payment->id);
 
 			$purchase_payment_amount = ( isset($purchase_payment->amount) ? ( -1 * $purchase_payment->amount ) : 0 );
@@ -218,17 +220,29 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 			$purchase_payment_amount = ( $purchase_writeoff_amount ) 
 									 ? $this->_beans_round( $purchase_transfer_amount + $purchase_writeoff_amount )
 									 : $purchase_transfer_amount;
+			*/
 
+			$purchase_balance = $this->_get_form_effective_balance($purchase, $payment->date, $payment->id);
+
+			$purchase_transfer_amount = $purchase_payment->amount;
+			$purchase_writeoff_amount = ( isset($purchase_payment->writeoff_amount) AND
+										  $purchase_payment->writeoff_amount )
+									  ? $this->_beans_round( $purchase_balance - $purchase_transfer_amount )
+									  : FALSE;
+			$purchase_payment_amount = ( $purchase_writeoff_amount ) 
+									 ? $this->_beans_round( $purchase_transfer_amount + $purchase_writeoff_amount )
+									 : $purchase_transfer_amount;
+			
 			// Apply to Realized Accounts
 			if( (
 					$purchase->date_billed AND 
 					$purchase->invoice_transaction_id AND 
-					strtotime($purchase->date_billed) <= strtotime($update_transaction_data->date)
+					$this->_journal_cmp($purchase->date_billed, $purchase->invoice_transaction_id, $update_transaction_data->date, $update_transaction_data->id) < 0
 				) OR
 				(
 					$purchase->date_cancelled AND 
 					$purchase->cancel_transaction_id AND 
-					strtotime($purchase->date_cancelled) <= strtotime($update_transaction_data->date)
+					$this->_journal_cmp($purchase->date_cancelled, $purchase->cancel_transaction_id, $update_transaction_data->date, $update_transaction_data->id) < 0
 				) ) 
 			{
 				// AP
@@ -322,6 +336,7 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		}
 
 		$purchase_account_transfers[$payment_account->id] = $payment_object->amount
+														 * -1 // FLIP THE SIGN
 														 * $payment_account->type->table_sign;
 
 		$update_transaction_data->account_transactions = array();

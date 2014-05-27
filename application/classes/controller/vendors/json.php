@@ -1505,8 +1505,8 @@ class Controller_Vendors_Json extends Controller_Json {
 					'amount' => $this->request->post('purchase-amount-'.$key),
 					'writeoff_balance' => ( $this->request->post('purchase-balance-writeoff-'.$key) ) ? TRUE : FALSE,
 					'writeoff_amount' => $this->request->post('purchase-balance-writeoff-'.$key),
-					'date_billed' => ( $this->request->post('purchase-date_billed-'.$key) ? $this->request->post('purchase-date_billed-'.$key) : date("Y-m-d") ),
-					'invoice_number' => $this->request->post('purchase-invoice_number-'.$key),
+					'date_billed' => ( $this->request->post('purchase-date_billed-'.$key) ) ? $this->request->post('purchase-date_billed-'.$key) : NULL,
+					'invoice_number' => ( $this->request->post('purchase-invoice_number-'.$key) ) ? $this->request->post('purchase-invoice_number-'.$key) : NULL,
 					// Adding 'so_number' here would also be updated upon invoicing if applicable
 				);
 

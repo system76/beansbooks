@@ -475,13 +475,40 @@ class Beans {
 		else if( strtotime($a->date) > strtotime($b->date) )
 			return 1;
 
-		// Reverse order - close books transactions take place "in between dates"
+		// Reverse numerical order - close books transactions take place "in between dates"
 		if( $a->closebooks > $b->closebooks )
 			return -1;
 		else if( $a->closebooks < $b->closebooks )
 			return 1;
 
 		return ( $a->id < $b->id ? -1 : 1 );
+	}
+
+	// Determine if $a_date + $a_id is decidedly before $b_date + $b_id
+	// Returns -1 if before, +1 if after, 0 if even
+	protected function _journal_cmp($a_date,$a_id,$b_date,$b_id)
+	{
+		if( $a_date < $b_date )
+		{
+			return -1;
+		}
+		else if( $a_date > $b_date )
+		{
+			return 1;
+		}
+		else
+		{
+			if( ! $a_id )
+				return 1;
+			
+			if( ! $b_id )
+				return -1;
+
+			if( $a_id == $b_id )
+				return 0;
+
+			return ( $a_id < $b_id ) ? -1 : 1;
+		}
 	}
 
 

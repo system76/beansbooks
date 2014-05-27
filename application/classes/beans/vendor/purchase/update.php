@@ -166,7 +166,6 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 
 		if( isset($this->_data->shipping_address_id) )
 			$this->_purchase->shipping_address_id = $this->_data->shipping_address_id;
-
 		
 		// Make sure we have good purchase information before moving on.
 		$this->_validate_vendor_purchase($this->_purchase);

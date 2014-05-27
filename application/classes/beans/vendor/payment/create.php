@@ -196,19 +196,7 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 				if( ! $vendor_purchase_update_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
 			}
-			// MUTABILITY CHANGE
-			/*
-			else if( ! $purchase->date_billed AND 
-				! $purchase->invoice_transaction_id )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." has not been invoiced.  Please include an invoice number and date.");
-			*/
 			
-			// MUTABILITY CHANGE
-			/*
-			if( strtotime($purchase->date_billed) > strtotime($create_transaction_data->date) )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." cannot be paid before its invoice date: ".$purchase->date_billed.".");
-			*/
-
 			$purchase_id = $purchase->id;
 
 			$purchase_balance = $this->_get_form_effective_balance($purchase, $create_transaction_data->date, NULL);
@@ -226,12 +214,12 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 			if( (
 					$purchase->date_billed AND 
 					$purchase->invoice_transaction_id AND 
-					strtotime($purchase->date_billed) <= strtotime($create_transaction_data->date)
+					$this->_journal_cmp($purchase->date_billed, $purchase->invoice_transaction_id, $create_transaction_data->date, NULL) < 0
 				) OR
 				(
 					$purchase->date_cancelled AND 
 					$purchase->cancel_transaction_id AND 
-					strtotime($purchase->date_cancelled) <= strtotime($create_transaction_data->date)
+					$this->_journal_cmp($purchase->date_cancelled, $purchase->cancel_transaction_id, $create_transaction_data->date, NULL) < 0
 				) ) 
 			{
 				// AP

@@ -115,6 +115,8 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		// Formulate data request object for Beans_Account_Transaction_Create
 		$update_transaction_data = new stdClass;
 
+		$update_transaction_data->id = $this->_old_payment->id;
+
 		$update_transaction_data->code = ( isset($this->_data->number) )
 									   ? $this->_data->number
 									   : $this->_old_payment->code;
@@ -214,15 +216,6 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				if( ! $vendor_purchase_update_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
 			}
-			// MUTABILITY CHANGE
-			/*
-			else if( ! $purchase->date_billed AND 
-				! $purchase->invoice_transaction_id )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." has not been invoiced.  Please include an invoice number and date.");
-
-			if( strtotime($purchase->date_billed) > strtotime($update_transaction_data->date) )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." cannot be paid before its invoice date: ".$purchase->date_billed.".");
-			*/
 			
 			// Simplifies copied code.
 			$purchase_id = $purchase->id;
@@ -242,12 +235,12 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			if( (
 					$purchase->date_billed AND 
 					$purchase->invoice_transaction_id AND 
-					strtotime($purchase->date_billed) <= strtotime($update_transaction_data->date)
+					$this->_journal_cmp($purchase->date_billed, $purchase->invoice_transaction_id, $update_transaction_data->date, $update_transaction_data->id) < 0
 				) OR
 				(
 					$purchase->date_cancelled AND 
 					$purchase->cancel_transaction_id AND 
-					strtotime($purchase->date_cancelled) <= strtotime($update_transaction_data->date)
+					$this->_journal_cmp($purchase->date_cancelled, $purchase->cancel_transaction_id, $update_transaction_data->date, $update_transaction_data->id) < 0
 				) ) 
 			{
 				// AP
