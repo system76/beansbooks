@@ -33,11 +33,6 @@ class Beans_Account_Lookup extends Beans_Account {
 	private $_id;
 	private $_account;
 
-	/**
-	 * Search by ID.
-	 * @param array $data Array of parameters by keys:
-	 *                    'id' => ID of the account to lookup.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
