@@ -4774,8 +4774,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$balance = parseFloat($line.find('.vendor-paymentpo-numeric.balance').attr('rel')).toFixed(2);
 			$line.find('.vendor-paymentpo-numeric.amount').find('input[type="text"]').val($balance);
 			$line.find('.vendor-paymentpo-numeric.amount').find('input[type="text"]').attr('readonly',false);
-			$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false);
-			$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false);
+			$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false).attr('placeholder','Optional');
+			if( ! $line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').val().length ) {
+				$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').val(dateYYYYMMDD());
+			}
+			$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false).attr('placeholder','Optional');;
 			$('#vendors-payments-create-purchases .vendor-paymentpo:first').after($line);
 			$line.addClass('selected');
 			$line.slideDown(function() {
@@ -4793,9 +4796,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$date_billed = $line.find('.vendor-paymentpo-date_billed').find('input[type="text"]');
 			$date_billed.attr('readonly',true);
 			$date_billed.val($date_billed.attr('rel'));
+			$date_billed.removeAttr('placeholder');
 			$invoice = $line.find('.vendor-paymentpo-invoice').find('input[type="text"]');
 			$invoice.attr('readonly',true);
 			$invoice.val($invoice.attr('rel'));
+			$invoice.removeAttr('placeholder');
 			$line.removeClass('selected');
 			// Where do we add this?
 			if( $('#vendors-payments-create-purchases .vendor-paymentpo.selected:last').length == 0 ) {
