@@ -505,6 +505,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		 */
 		
 		$('span.account-transaction-credit input:not(.ezpz-hint), span.account-transaction-debit input:not(.ezpz-hint)').live('change',function () {
+			$(this).val(convertCurrencyToNumber($(this).val()).toFixed(2));
 			if( $(this).closest('span').hasClass('account-transaction-credit') ) {
 				$(this).closest('li').find('.account-transaction-debit input:not(.ezpz-hint)').val('').focus().blur();
 			} else {
