@@ -71,7 +71,8 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 							? $data->date_billed
 							: date("Y-m-d");
 
-		$this->_invoice_number = ( isset($data->invoice_number) )
+		$this->_invoice_number = ( isset($data->invoice_number) AND 
+								   $data->invoice_number )
 							   ? $data->invoice_number
 							   : FALSE;
 
@@ -176,7 +177,9 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 		$this->_purchase->date_billed = $this->_date_billed;
 		$this->_purchase->date_due = date("Y-m-d",strtotime($this->_purchase->date_billed.' +'.$this->_purchase->account->terms.' Days'));
 		
-		$this->_purchase->aux_reference = $this->_invoice_number;
+		if( strlen($this->_invoice_number) )
+			$this->_purchase->aux_reference = $this->_invoice_number;
+		
 		if( $this->_so_number )
 			$this->_purchase->reference = $this->_so_number;
 
