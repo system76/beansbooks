@@ -85,7 +85,7 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 			throw new Exception("Invalid invoice date: must be in YYYY-MM-DD format.");
 
 		if( strtotime($this->_date_billed) < strtotime($this->_sale->date_created) )
-			throw new Exception("Invalid invoice date: must be on or after the creation date.");
+			throw new Exception("Invalid invoice date: must be on or after the creation date of ".$this->_sale->date_created.".");
 
 		if( $this->_date_due AND 
 			$this->_date_due != date("Y-m-d",strtotime($this->_date_due)) )

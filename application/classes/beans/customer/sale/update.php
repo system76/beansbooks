@@ -123,9 +123,15 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		if( isset($this->_data->shipping_address_id) )
 			$this->_sale->shipping_address_id = $this->_data->shipping_address_id;
 
+
+
 		// Field that can be updated ONLY after being invoiced.
 		if( $this->_sale->date_billed )
 		{
+			if( isset($this->_data->date_billed) AND 
+				strtotime($this->_data->date_billed) < strtotime($this->_sale->date_created) )
+				throw new Exception("Invalid invoice date: must be on or after the creation date of ".$this->_sale->date_created.".");
+
 			if( isset($this->_data->date_billed) )
 				$this->_sale->date_billed = $this->_data->date_billed;
 
