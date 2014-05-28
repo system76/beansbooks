@@ -40,9 +40,6 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 
 	protected function _execute()
 	{
-		if( ! $this->_beans_internal_call() )
-			throw new Exception("Restricted to internal calls.");
-
 		if( ! $this->_transaction_purchase_account_id )
 			throw new Exception("INTERNAL ERROR: Could not find default PO account.");
 

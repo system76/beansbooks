@@ -44,9 +44,6 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 
 	protected function _execute()
 	{
-		if( ! $this->_beans_internal_call() )
-			throw new Exception("This API function is restricted to internal use only.");
-
 		if( ! $this->_transaction_sale_account_id )
 			throw new Exception("INTERNAL ERROR: Could not find default SO receivable account.");
 
@@ -183,9 +180,6 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 
 	protected function _calibrate_customer_payment_transaction($payment)
 	{
-		if( ! is_array($this->_data->form_ids) )
-				throw new Exception("Invalid form_ids provided: not an array.");
-
 		$payment_object = $this->_return_customer_payment_element($payment);
 
 		$update_transaction_data = new stdClass;
