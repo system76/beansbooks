@@ -128,13 +128,6 @@ class Beans_Customer_Payment_Replace extends Beans_Customer_Payment {
 		$sale_account_transfers = array();
 		$sale_account_transfers_forms = array();
 		
-		// Array of IDs for sales to have their invoices updated.
-		/*
-		$sales_invoice_update = array();
-		$sales_cancel_update = array();
-		$calibrate_payments = array();
-		*/
-
 		$writeoff_account_transfer_total = 0.00;
 		$writeoff_account_transfers_forms = array();
 

@@ -151,12 +151,6 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 			if( in_array($sale->id, $handled_sales_ids) )
 				throw new Exception("Invalid payment sale: sale ".$sale->code." cannot be in payment more than once.");
 
-			// MUTABILITY CHANGE
-			/*
-			if( strtotime($sale->date_created) > strtotime($create_transaction_data->date) )
-				throw new Exception("Invalid payment sale: sale ".$sale->code." cannot be paid before its creation date: ".$sale->date_created.".");
-			*/
-			
 			$handled_sales_ids[] = $sale->id;
 
 			$sale_id = $sale->id;
