@@ -662,10 +662,15 @@ class Beans_Account extends Beans {
 					   '		SELECT IFNULL(balance,0.00) as bbalance FROM '.
 					   '		account_transactions as aaccount_transactions WHERE '.
 					   '		account_id = "'.$account_transaction->account_id.'" AND '.
-					   '		date <= DATE("'.$account_transaction->date.'") AND ( '.
-					   ' 		transaction_id < '.$account_transaction->transaction_id.' OR '.
-					   ' 		( close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' AND '.
-					   ' 		transaction_id < '.$account_transaction->transaction_id.' ) '.
+					   '		( '.
+					   '			date < DATE("'.$account_transaction->date.'") OR '.
+					   '			( '.
+					   '				date <= DATE("'.$account_transaction->date.'") AND ( '.
+					   ' 				transaction_id < '.$account_transaction->transaction_id.' OR '.
+					   ' 				( close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' AND '.
+					   ' 				transaction_id < '.$account_transaction->transaction_id.' ) '.
+					   '			) '.
+					   '		) '.
 					   ' 	) ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
 					   ') as baccount_transactions';
 		$balance_result = DB::Query(Database::SELECT,$balance_sql)->execute();
@@ -705,10 +710,15 @@ class Beans_Account extends Beans {
 					  '		SELECT IFNULL(balance,0.00) as bbalance FROM '.
 					  '		account_transactions as aaccount_transactions WHERE '.
 					  '		account_id = "'.$account_transaction->account_id.'" AND '.
-					  '		date <= DATE("'.$account_transaction->date.'") AND ( '.
-					  ' 		transaction_id < '.$account_transaction->transaction_id.' OR '.
-					  ' 		( close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' AND '.
-					  ' 		transaction_id < '.$account_transaction->transaction_id.' ) '.
+					  '		( '.
+					  '			date < DATE("'.$account_transaction->date.'") OR '.
+					  '			( '.
+					  '				date <= DATE("'.$account_transaction->date.'") AND ( '.
+					  ' 				transaction_id < '.$account_transaction->transaction_id.' OR '.
+					  ' 				( close_books >= '.( $account_transaction->close_books ? '1' : '0' ).' AND '.
+					  ' 				transaction_id < '.$account_transaction->transaction_id.' ) '.
+					  '			) '.
+					  '		) '.
 					  ' 	) ORDER BY date DESC, close_books ASC, transaction_id DESC LIMIT 1 FOR UPDATE '.
 					  ') as baccount_transactions ) '.
 					  ') ';
