@@ -599,7 +599,6 @@ span.account-reconcile-transaction-include div.checkbox {
 /**
  * New Transaction Overrides
  */
-/* XYZXYZ */
 li.account-reconcile-transaction.new, li.account-reconcile-transaction.new input[type="text"], li.account-reconcile-transaction.new div.select {
 	background-color: #b1d5ab!important;
 }
