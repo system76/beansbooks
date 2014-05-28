@@ -52,7 +52,6 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		$valid_field = FALSE;
 
 		$payment_ids_query = 	' SELECT DISTINCT(transactions.id) as payment_id FROM transactions '.
-		// 					 	' RIGHT JOIN account_transactions ON transactions.id = account_transactions.transaction_id '.
 							 	' WHERE '.
 							 	' transactions.payment = "vendor" AND ';
 
@@ -202,23 +201,6 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		{
 			$purchase = $this->_load_vendor_purchase($purchase_id);
 			
-			/*
-			$purchase_balance = $this->_get_form_effective_balance($purchase, $payment->date, $payment->id);
-
-			$purchase_payment_amount = ( isset($purchase_payment->amount) ? ( -1 * $purchase_payment->amount ) : 0 );
-			$purchase_writeoff_amount = ( isset($purchase_payment->writeoff_amount) ? ( -1 * $purchase_payment->writeoff_amount ) : FALSE );
-			
-			$purchase_transfer_amount = $purchase_payment_amount;// - $purchase_writeoff_amount;
-
-			$purchase_writeoff_amount = ( isset($purchase_payment->writeoff_amount) AND 
-										  $purchase_payment->writeoff_amount )
-									  ? $this->_beans_round( $purchase_balance - $purchase_transfer_amount )
-									  : FALSE;
-			$purchase_payment_amount = ( $purchase_writeoff_amount ) 
-									 ? $this->_beans_round( $purchase_transfer_amount + $purchase_writeoff_amount )
-									 : $purchase_transfer_amount;
-			*/
-
 			$purchase_balance = $this->_get_form_effective_balance($purchase, $payment->date, $payment->id);
 
 			$purchase_transfer_amount = $purchase_payment->amount;

@@ -62,7 +62,6 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		$valid_field = FALSE;
 
 		$payment_ids_query = 	' SELECT DISTINCT(transactions.id) as payment_id FROM transactions '.
-		// 					 	' RIGHT JOIN account_transactions ON transactions.id = account_transactions.transaction_id '.
 							 	' WHERE '.
 							 	' transactions.payment = "customer" AND ';
 
@@ -187,12 +186,6 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		$update_transaction_data->description = $payment->description;
 		$update_transaction_data->date = $payment->date;
 		$update_transaction_data->payment = "customer";
-		
-		/*
-		// Array of IDs for sales to have their invoices updated.
-		$sales_invoice_update = array();
-		$sales_cancel_update = array();
-		*/
 		
 		$sale_account_transfers = array();
 		$sale_account_transfers_forms = array();
