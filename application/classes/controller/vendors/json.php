@@ -1211,9 +1211,12 @@ class Controller_Vendors_Json extends Controller_Json {
 		$refund_purchase_data->date_created = ( $this->request->post('date_created') )
 										   ? date("Y-m-d",strtotime($this->request->post('date_created')))
 										   : date("Y-m-d");
+		$refund_purchase_data->date_billed = ( $this->request->post('date_billed') )
+										   ? date("Y-m-d",strtotime($this->request->post('date_billed')))
+										   : date("Y-m-d");
 		$refund_purchase_data->date_due = ( $this->request->post('date_due') )
 									   ? date("Y-m-d",strtotime($this->request->post('date_due')))
-									   : date("Y-m-d",strtotime($refund_purchase_data->date_created.' +'.$account_info[1].' Days'));
+									   : date("Y-m-d",strtotime($refund_purchase_data->date_billed.' +'.$account_info[1].' Days'));
 		$refund_purchase_data->remit_address_id = $this->request->post('remit_address_id');
 		$refund_purchase_data->account_id = $account_info[0];
 		$refund_purchase_data->purchase_number = $this->request->post('purchase_number'); 
