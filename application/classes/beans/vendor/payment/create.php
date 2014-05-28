@@ -181,6 +181,9 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 
 				if( ! $vendor_purchase_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_invoice_result->error);
+
+				// Reload the purchase
+				$purchase = $this->_load_vendor_purchase($purchase_payment->purchase_id);
 			}
 			else if( $purchase->date_billed AND 
 					 $purchase->invoice_transaction_id AND 
@@ -195,6 +198,9 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 
 				if( ! $vendor_purchase_update_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
+
+				// Reload the purchase
+				$purchase = $this->_load_vendor_purchase($purchase_payment->purchase_id);
 			}
 
 			if( $this->_validate_only )
