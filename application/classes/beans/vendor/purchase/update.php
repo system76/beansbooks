@@ -113,14 +113,8 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 			strlen($this->_invoice_number) > 16 )
 			throw new Exception("Invalid invoice number: maxmimum length of 16 characters.");
 
-		if( (
-				$this->_date_billed OR 
-				$this->_invoice_number
-			) AND
-			( 
-				! $this->_date_billed OR 
-				! $this->_invoice_number
-			) )
+		if( $this->_invoice_number AND
+			! $this->_date_billed )
 			throw new Exception("Both an invoice number and date are required.");
 		
 		if( $this->_check_books_closed($this->_purchase->date_created) )
@@ -155,6 +149,9 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 
 		if( isset($this->_data->date_billed) )
 		{
+			if( strtotime($this->_data->date_billed) < strtotime($this->_purchase->date_created) )
+				throw new Exception("Invalid invoice date: must be on or after the creation date of ".$this->_purchase->date_created.".");
+
 			$this->_purchase->date_billed = $this->_data->date_billed;
 
 			$account = $this->_load_account($this->_purchase->account_id);

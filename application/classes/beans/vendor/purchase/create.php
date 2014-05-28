@@ -146,6 +146,10 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 											  ? (int)$this->_data->shipping_address_id
 											  : NULL;
 
+		if( $this->_date_billed AND 
+			strtotime($this->_date_billed) < strtotime($this->_purchase->date_created) )
+			throw new Exception("Invalid invoice date: must be on or after the creation date of ".$this->_purchase->date_created.".");
+
 
 		// Handle Default Account Payable
 		

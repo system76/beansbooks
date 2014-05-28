@@ -116,6 +116,9 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 		if( $this->_date_billed != date("Y-m-d",strtotime($this->_date_billed)) )
 			throw new Exception("Invalid invoice date: must be in YYYY-MM-DD format.");
 
+		if( strtotime($this->_date_billed) < strtotime($this->_purchase->date_created) )
+			throw new Exception("Invalid invoice date: must be on or after the creation date of ".$this->_purchase->date_created.".");
+
 		if( $this->_invoice_number AND 
 			strlen($this->_invoice_number) > 16 )
 			throw new Exception("Invalid invoice number: maximum of 16 characters.");
