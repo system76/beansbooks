@@ -21,10 +21,6 @@ class Beans_Auth_Role extends Beans_Auth {
 
 	protected $_auth_role_perm = "setup";
 
-	/**
-	 * Empty constructor to pull in Beans data.
-	 * @param stdClass $data
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
