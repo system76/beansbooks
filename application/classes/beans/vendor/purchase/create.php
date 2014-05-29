@@ -49,10 +49,7 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 	protected $_data;
 	protected $_purchase;
 	protected $_purchase_lines;
-	/*
-	protected $_account_transactions;
-	*/
-
+	
 	protected $_transaction_purchase_account_id;
 	protected $_transaction_purchase_line_account_id;
 	protected $_transaction_purchase_prepaid_purchase_account_id;
