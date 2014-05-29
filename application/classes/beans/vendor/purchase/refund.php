@@ -50,10 +50,6 @@ class Beans_Vendor_Purchase_Refund extends Beans_Vendor_Purchase {
 	protected $_data;			// Will be passed along.
 	protected $_purchase;		// purchase that is being refunded.
 	
-	/**
-	 * Create a new vendor purchase.
-	 * @param stdClass $data Object to create new purchase.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);

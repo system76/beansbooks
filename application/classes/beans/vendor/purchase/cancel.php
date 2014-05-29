@@ -34,11 +34,7 @@ class Beans_Vendor_Purchase_Cancel extends Beans_Vendor_Purchase {
 
 	protected $_id;
 	protected $_purchase;
-	/*
-	protected $_transaction_purchase_account_id;
-	protected $_transaction_purchase_line_account_id;
-	*/
-
+	
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -48,21 +44,10 @@ class Beans_Vendor_Purchase_Cancel extends Beans_Vendor_Purchase {
 				   : 0;
 
 		$this->_purchase = $this->_load_vendor_purchase($this->_id);
-		/*
-		$this->_transaction_purchase_account_id = $this->_beans_setting_get('purchase_default_account_id');
-		$this->_transaction_purchase_line_account_id = $this->_beans_setting_get('purchase_default_line_account_id');
-		*/
 	}
 
 	protected function _execute()
 	{
-		/*
-		if( ! $this->_transaction_purchase_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default PO account.");
-
-		if( ! $this->_transaction_purchase_line_account_id )
-			throw new Exception("INTERNAL ERROR: Could not find default PO Line account.");
-		*/
 		if( ! $this->_purchase->loaded() )
 			throw new Exception("Purchase purchase could not be found.");
 
