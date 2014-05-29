@@ -640,6 +640,7 @@ class Beans_Vendor extends Beans {
 										   ? $purchase->refund_form->id
 										   : NULL;
 
+		$return_object->date_cancelled = $purchase->date_cancelled;
 		$return_object->date_created = $purchase->date_created;
 		$return_object->date_billed = $purchase->date_billed;
 		$return_object->date_due = $purchase->date_due;
@@ -700,6 +701,11 @@ class Beans_Vendor extends Beans {
 	protected function _vendor_purchase_status($purchase)
 	{
 
+		if( $purchase->date_cancelled AND
+			$purchase->balance != 0 )
+			return "Cancelled: Refund Pending";
+		if( $purchase->date_cancelled )
+			return "Cancelled";
 		if( $purchase->refund_purchase_id AND
 			$purchase->balance != 0 )
 			return "Refund Pending";
@@ -1346,15 +1352,5 @@ class Beans_Vendor extends Beans {
 		$this->_return_account_type_element_cache[$account_type->id] = $return_object;
 		return $this->_return_account_type_element_cache[$account_type->id];
 	}
-
-	protected function _calibrate_payments_sort($a,$b)
-	{
-		if( strtotime($a->date) < strtotime($b->date) ) 
-			return -1;
-		else if( strtotime($a->date) > strtotime($b->date) )
-			return 1;
-
-		return ( $a->id < $b->id ? -1 : 1 );
-	}
-
+	
 }

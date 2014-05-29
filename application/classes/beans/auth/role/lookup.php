@@ -17,6 +17,8 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+// TODO DOCME
+// Add documentation for this method even though it's not meant to be used by the API.
 class Beans_Auth_Role_Lookup extends Beans_Auth_Role {
 	
 	protected $_auth_role_perm = "setup";

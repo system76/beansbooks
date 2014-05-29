@@ -1211,15 +1211,4 @@ class Beans_Customer extends Beans {
 	{
 		DB::query(NULL,'UPDATE taxes SET balance = balance + '.$amount.', total = total + '.$amount.' WHERE id = "'.$tax_id.'"')->execute();
 	}
-
-	protected function _calibrate_payments_sort($a,$b)
-	{
-		if( strtotime($a->date) < strtotime($b->date) ) 
-			return -1;
-		else if( strtotime($a->date) > strtotime($b->date) )
-			return 1;
-
-		return ( $a->id < $b->id ? -1 : 1 );
-	}
-
 }

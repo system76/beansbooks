@@ -17,6 +17,8 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+// TODO DOCME
+// Add documentation for this method even though it's not meant to be used by the API.
 class Beans_Auth_User_Create extends Beans_Auth {
 
 	protected $_auth_role_perm = "setup";
@@ -24,15 +26,6 @@ class Beans_Auth_User_Create extends Beans_Auth {
 	protected $_data;
 	protected $_user;
 
-	/**
-	 * Create a new auth user.
-	 * 		Required parameters:
-	 * 			name
-	 * 			email
-	 * 			password
-	 * 			role_id
-	 * 			
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);

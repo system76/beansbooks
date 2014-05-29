@@ -51,6 +51,10 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 	protected $_transaction;
 	protected $_payment;
 
+	protected $_transaction_purchase_account_id;
+	protected $_transaction_purchase_line_account_id;
+	protected $_transaction_purchase_prepaid_purchase_account_id;
+
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -68,10 +72,23 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 							 		$this->_data->validate_only )
 							  ? TRUE
 							  : FALSE;
+
+		$this->_transaction_purchase_account_id = $this->_beans_setting_get('purchase_default_account_id');
+		$this->_transaction_purchase_line_account_id = $this->_beans_setting_get('purchase_default_line_account_id');
+		$this->_transaction_purchase_prepaid_purchase_account_id = $this->_beans_setting_get('purchase_prepaid_purchase_account_id');
 	}
 
 	protected function _execute()
 	{
+		if( ! $this->_transaction_purchase_account_id )
+			throw new Exception("INTERNAL ERROR: Could not find default PO account.");
+
+		if( ! $this->_transaction_purchase_line_account_id )
+			throw new Exception("INTERNAL ERROR: Could not find default PO Line account.");
+
+		if( ! $this->_transaction_purchase_prepaid_purchase_account_id )
+			throw new Exception("INTERNAL ERROR: Could not find default deferred asset account.");
+
 		if( ! $this->_transaction->loaded() )
 			throw new Exception("Transaction could not be found.");
 
@@ -115,13 +132,19 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 		$writeoff_account_transfer_total = 0.00;
 		$writeoff_account_transfers_forms = array();
 
+		// Write once for cleaner code
+		$purchase_account_transfers[$this->_transaction_purchase_account_id] = 0.00;
+		$purchase_account_transfers_forms[$this->_transaction_purchase_account_id] = array();
+		$purchase_account_transfers[$this->_transaction_purchase_line_account_id] = 0.00;
+		$purchase_account_transfers_forms[$this->_transaction_purchase_line_account_id] = array();
+		$purchase_account_transfers[$this->_transaction_purchase_prepaid_purchase_account_id] = 0.00;
+		$purchase_account_transfers_forms[$this->_transaction_purchase_prepaid_purchase_account_id] = array();
+		
 		if( ! $this->_data->purchases OR 
 			! count($this->_data->purchases) )
 			throw new Exception("Please provide at least one purchase for this payment.");
 
 		$vendor_id = FALSE;
-
-		$calibrate_payments = array();
 
 		$handles_purchases_ids = array();
 
@@ -166,6 +189,9 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 
 				if( ! $vendor_purchase_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_invoice_result->error);
+
+				// Reload the purchase
+				$purchase = $this->_load_vendor_purchase($purchase_payment->purchase_id);
 			}
 			else if( $purchase->date_billed AND 
 					 $purchase->invoice_transaction_id AND 
@@ -180,60 +206,17 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 
 				if( ! $vendor_purchase_update_invoice_result->success )
 					throw new Exception("Invalid purchase order invoice information for ".$purchase->code.": ".$vendor_purchase_update_invoice_result->error);
-			}
-			else if( ! $purchase->date_billed AND 
-				! $purchase->invoice_transaction_id )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." has not been invoiced.  Please include an invoice number and date.");
 
-			if( strtotime($purchase->date_billed) > strtotime($update_transaction_data->date) )
-				throw new Exception("Invalid payment purchase: ".$purchase->code." cannot be paid before its invoice date: ".$purchase->date_billed.".");
+				// Reload the purchase
+				$purchase = $this->_load_vendor_purchase($purchase_payment->purchase_id);
+			}
 			
-			// Simplifies copied code.
+			if( $this->_validate_only )
+				return (object)array();
+			
 			$purchase_id = $purchase->id;
 
-			$purchase_balance = 0.00;
-			foreach( $purchase->account_transaction_forms->find_all() as $account_transaction_form )
-			{
-				if( $this->_transaction->id == $account_transaction_form->account_transaction->transaction->id ) 
-				{
-					// NADA
-				}
-				else if( (
-						$account_transaction_form->account_transaction->transaction->payment AND 
-						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) < strtotime($update_transaction_data->date) OR
-							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
-								$account_transaction_form->account_transaction->transaction->id < $this->_transaction->id
-							)
-						)
-					) OR
-					$account_transaction_form->account_transaction->transaction_id == $purchase->create_transaction_id )
-				{
-					$purchase_balance = $this->_beans_round(
-						$purchase_balance +
-						$account_transaction_form->amount
-					);
-				}
-				else if( $account_transaction_form->account_transaction->transaction->payment AND 
-						(
-							strtotime($account_transaction_form->account_transaction->transaction->date) > strtotime($update_transaction_data->date) OR
-							(
-								strtotime($account_transaction_form->account_transaction->transaction->date) == strtotime($update_transaction_data->date) AND 
-								$account_transaction_form->account_transaction->transaction->id > $this->_transaction->id
-							)
-						) AND
-						 ! in_array((object)array(
-							'id' => $account_transaction_form->account_transaction->transaction->id,
-							'date' => $account_transaction_form->account_transaction->transaction->date,
-						), $calibrate_payments) )
-				{
-						$calibrate_payments[] = (object)array(
-							'id' => $account_transaction_form->account_transaction->transaction->id,
-							'date' => $account_transaction_form->account_transaction->transaction->date,
-						);
-				}
-			}
+			$purchase_balance = $this->_get_form_effective_balance($purchase, $update_transaction_data->date, $this->_transaction->id);
 
 			$purchase_transfer_amount = $purchase_payment->amount;
 			$purchase_writeoff_amount = ( isset($purchase_payment->writeoff_balance) AND
@@ -245,33 +228,81 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 									 : $purchase_transfer_amount;
 
 
-			// AP
-			if( ! isset($purchase_account_transfers[$purchase->account_id]) )
-				$purchase_account_transfers[$purchase->account_id] = 0.00;
+			// Apply to Realized Accounts
+			if( (
+					$purchase->date_billed AND 
+					$purchase->invoice_transaction_id AND 
+					strtotime($purchase->date_billed) <= strtotime($update_transaction_data->date)
+				) OR
+				(
+					$purchase->date_cancelled AND 
+					$purchase->cancel_transaction_id AND 
+					strtotime($purchase->date_cancelled) <= strtotime($update_transaction_data->date)
+				) ) 
+			{
+				// AP
+				if( ! isset($purchase_account_transfers[$purchase->account_id]) )
+					$purchase_account_transfers[$purchase->account_id] = 0.00;
 
-			if( ! isset($purchase_account_transfers_forms[$purchase->account_id]) )
-				$purchase_account_transfers_forms[$purchase->account_id] = array();
+				if( ! isset($purchase_account_transfers_forms[$purchase->account_id]) )
+					$purchase_account_transfers_forms[$purchase->account_id] = array();
 
-			$purchase_account_transfers[$purchase->account_id] = $this->_beans_round(
-				$purchase_account_transfers[$purchase->account_id] +
-				$purchase_payment_amount
-			);
-
-			// Writeoff
-			if( $purchase_writeoff_amount )
-				$writeoff_account_transfer_total = $this->_beans_round( 
-					$writeoff_account_transfer_total +
-					$purchase_writeoff_amount 
+				$purchase_account_transfers[$purchase->account_id] = $this->_beans_round(
+					$purchase_account_transfers[$purchase->account_id] +
+					$purchase_payment_amount
 				);
-			
-			$purchase_account_transfers_forms[$purchase->account_id][] = (object)array(
-				"form_id" => $purchase_id,
-				"amount" => $purchase_payment_amount * -1 ,
-				"writeoff_amount" => ( $purchase_writeoff_amount )
-								  ? $purchase_writeoff_amount * -1
-								  : NULL,
-			);
 
+				// Writeoff
+				if( $purchase_writeoff_amount )
+					$writeoff_account_transfer_total = $this->_beans_round( 
+						$writeoff_account_transfer_total +
+						$purchase_writeoff_amount 
+					);
+				
+				$purchase_account_transfers_forms[$purchase->account_id][] = (object)array(
+					"form_id" => $purchase_id,
+					"amount" => $purchase_payment_amount * -1 ,
+					"writeoff_amount" => ( $purchase_writeoff_amount )
+									  ? $purchase_writeoff_amount * -1
+									  : NULL,
+				);
+			}
+			// Apply to Pending / Deferred Acounts
+			else
+			{
+				// Pending AP
+				$purchase_account_transfers[$this->_transaction_purchase_account_id] = $this->_beans_round(
+					$purchase_account_transfers[$this->_transaction_purchase_account_id] +
+					$purchase_payment_amount
+				);
+
+				// Pending AP
+				$purchase_account_transfers[$this->_transaction_purchase_line_account_id] = $this->_beans_round(
+					$purchase_account_transfers[$this->_transaction_purchase_line_account_id] -
+					$purchase_payment_amount
+				);
+				
+				// Pending COGS
+				$purchase_account_transfers[$this->_transaction_purchase_prepaid_purchase_account_id] = $this->_beans_round(
+					$purchase_account_transfers[$this->_transaction_purchase_prepaid_purchase_account_id] +
+					$purchase_payment_amount
+				);
+
+				// Writeoff
+				if( $purchase_writeoff_amount )
+					$writeoff_account_transfer_total = $this->_beans_round( 
+						$writeoff_account_transfer_total +
+						$purchase_writeoff_amount 
+					);
+				
+				$purchase_account_transfers_forms[$this->_transaction_purchase_account_id][] = (object)array(
+					"form_id" => $purchase_id,
+					"amount" => $purchase_payment_amount * -1 ,
+					"writeoff_amount" => ( $purchase_writeoff_amount )
+									  ? $purchase_writeoff_amount * -1
+									  : NULL,
+				);
+			}
 		}
 
 		$vendor = $this->_load_vendor($vendor_id);
@@ -333,64 +364,73 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 
 		foreach( $purchase_account_transfers as $account_id => $amount )
 		{
-			$account_transaction = new stdClass;
-
-			$account_transaction->account_id = $account_id;
-			$account_transaction->amount = $amount;
-
-			if( $account_transaction->account_id == $payment_account->id )
-				$account_transaction->transfer = TRUE;
-
-			if( $writeoff_account AND 
-				$account_transaction->account_id == $writeoff_account->id )
-				$account_transaction->writeoff = TRUE;
-
-			if( isset($purchase_account_transfers_forms[$account_id]) )
+			if( $amount != 0.00 )
 			{
-				$account_transaction->forms = array();
+				$account_transaction = new stdClass;
 
-				foreach($purchase_account_transfers_forms[$account_id] as $form)
-					$account_transaction->forms[] = (object)array(
-						'form_id' => $form->form_id,
-						'amount' => $form->amount,
-						'writeoff_amount' => $form->writeoff_amount,
-					);
+				$account_transaction->account_id = $account_id;
+				$account_transaction->amount = $amount;
+
+				if( $account_transaction->account_id == $payment_account->id )
+					$account_transaction->transfer = TRUE;
+
+				if( $writeoff_account AND 
+					$account_transaction->account_id == $writeoff_account->id )
+					$account_transaction->writeoff = TRUE;
+
+				if( isset($purchase_account_transfers_forms[$account_id]) )
+				{
+					$account_transaction->forms = array();
+
+					foreach($purchase_account_transfers_forms[$account_id] as $form)
+						$account_transaction->forms[] = (object)array(
+							'form_id' => $form->form_id,
+							'amount' => $form->amount,
+							'writeoff_amount' => $form->writeoff_amount,
+						);
+				}
+
+				$update_transaction_data->account_transactions[] = $account_transaction;
 			}
-
-			$update_transaction_data->account_transactions[] = $account_transaction;
 		}
-
-		if( $this->_validate_only )
-			$update_transaction_data->validate_only = TRUE;
 
 		$update_transaction_data->id = $this->_transaction->id;
 		$update_transaction_data->payment_type_handled = 'vendor';
-		
+		$update_transaction_data->entity_id = $vendor_id;
+
 		$update_transaction = new Beans_Account_Transaction_Update($this->_beans_data_auth($update_transaction_data));
 		$update_transaction_result = $update_transaction->execute();
 
 		if( ! $update_transaction_result->success )
 			throw new Exception("Update failure - could not convert transaction to payment: ".$update_transaction_result->error);
 
-		if( $this->_validate_only )
-			return (object)array();
-		
-		if( count($calibrate_payments) )
-			usort($calibrate_payments, array($this,'_calibrate_payments_sort') );
+		// Recalibrate Customer Invoices / Cancellations
+		$vendor_purchase_calibrate_invoice = new Beans_Vendor_Purchase_Calibrate_Invoice($this->_beans_data_auth((object)array(
+			'ids' => $handles_purchases_ids,
+		)));
+		$vendor_purchase_calibrate_invoice_result = $vendor_purchase_calibrate_invoice->execute();
 
-		// Calibrate Payments
-		foreach( $calibrate_payments as $calibrate_payment )
-		{
-			$beans_calibrate_payment = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
-				'id' => $calibrate_payment->id,
-			)));
-			$beans_calibrate_payment_result = $beans_calibrate_payment->execute();
+		if( ! $vendor_purchase_calibrate_invoice_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE VENDOR PURCHASES: ".$vendor_purchase_calibrate_invoice_result->error);
 
-			// V2Item
-			// Fatal error!  Ensure coverage or ascertain 100% success.
-			if( ! $beans_calibrate_payment_result->success )
-				throw new Exception("UNEXPECTED ERROR: Error calibrating linked payments!".$beans_calibrate_payment_result->error);
-		}
+		// Recalibrate Customer Invoices / Cancellations
+		$vendor_purchase_calibrate_cancel = new Beans_Vendor_Purchase_Calibrate_Cancel($this->_beans_data_auth((object)array(
+			'ids' => $handles_purchases_ids,
+		)));
+		$vendor_purchase_calibrate_cancel_result = $vendor_purchase_calibrate_cancel->execute();
+
+		if( ! $vendor_purchase_calibrate_cancel_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE VENDOR PURCHASES: ".$vendor_purchase_calibrate_cancel_result->error);
+
+		// Recalibrate any payments tied to these purchases AFTER this transaction.
+		$vendor_payment_calibrate = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'form_ids' => $handles_purchases_ids,
+			'after_payment_id' => $update_transaction_result->data->transaction->id,
+		)));
+		$vendor_payment_calibrate_result = $vendor_payment_calibrate->execute();
+
+		if( ! $vendor_payment_calibrate_result->success )
+			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE CUSTOMER PAYMENTS: ".$vendor_payment_calibrate_result->error);
 
 		return(object)array(
 			"payment" => $this->_return_vendor_payment_element($this->_load_vendor_payment($update_transaction_result->data->transaction->id)),

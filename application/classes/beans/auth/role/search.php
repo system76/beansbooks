@@ -17,6 +17,8 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+// TODO DOCME
+// Add documentation for this method even though it's not meant to be used by the API.
 class Beans_Auth_Role_Search extends Beans_Auth_Role {
 	
 	protected $_auth_role_perm = "setup";
@@ -24,13 +26,6 @@ class Beans_Auth_Role_Search extends Beans_Auth_Role {
 	protected $_id;
 	protected $_roles;
 
-	// Special use case - no sorting or pages... we always show all in ID order.
-
-	/**
-	 * Search by ID.
-	 * @param array $data Array of parameters by keys:
-	 *                    'id' => ID of the tax to lookup.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);

@@ -71,7 +71,8 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 							? $data->date_billed
 							: date("Y-m-d");
 
-		$this->_invoice_number = ( isset($data->invoice_number) )
+		$this->_invoice_number = ( isset($data->invoice_number) AND 
+								   $data->invoice_number )
 							   ? $data->invoice_number
 							   : FALSE;
 
@@ -115,6 +116,9 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 		if( $this->_date_billed != date("Y-m-d",strtotime($this->_date_billed)) )
 			throw new Exception("Invalid invoice date: must be in YYYY-MM-DD format.");
 
+		if( strtotime($this->_date_billed) < strtotime($this->_purchase->date_created) )
+			throw new Exception("Invalid invoice date: must be on or after the creation date of ".$this->_purchase->date_created.".");
+
 		if( $this->_invoice_number AND 
 			strlen($this->_invoice_number) > 16 )
 			throw new Exception("Invalid invoice number: maximum of 16 characters.");
@@ -153,90 +157,64 @@ class Beans_Vendor_Purchase_Invoice extends Beans_Vendor_Purchase {
 				'adjustment' => TRUE,
 			);
 
-			$vendor_purchase_update = new Beans_Vendor_Purchase_Update($this->_beans_data_auth((object)array(
-				'id' => $this->_purchase->id,
-				'lines' => $purchase_lines,
-			)));
-			$vendor_purchase_update_result = $vendor_purchase_update->execute();
-
-			if( ! $vendor_purchase_update_result->success )
-				throw new Exception("Could not adjust purchase: ".
-									$vendor_purchase_update_result->error);
-
-			// Re-load purchase.
-			$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
-		}
-
-		$purchase_invoice_transaction_data = new stdClass;
-		$purchase_invoice_transaction_data->code = $this->_purchase->code;
-		$purchase_invoice_transaction_data->description = "Invoice - Purchase ".$this->_purchase->code;
-		$purchase_invoice_transaction_data->date = $this->_date_billed;
-		$purchase_invoice_transaction_data->entity_id = $this->_purchase->entity_id;
-		$purchase_invoice_transaction_data->form_type = 'purchase';
-		$purchase_invoice_transaction_data->form_id = $this->_purchase->id;
-		
-		$account_transactions = array();
-
-		// Line Items
-		foreach( $this->_purchase->form_lines->find_all() as $purchase_line )
-		{
-			if( ! isset($account_transactions[$purchase_line->account_id]) )
-				$account_transactions[$purchase_line->account_id] = 0.00;
-
-			$account_transactions[$purchase_line->account_id] = $this->_beans_round(
-				$account_transactions[$purchase_line->account_id] -
-				$purchase_line->total
-			);
-		}
-
-		// Misc.
-		$account_transactions[$this->_transaction_purchase_line_account_id] = $this->_purchase->total;
-		$account_transactions[$this->_transaction_purchase_account_id] = (-1) * $this->_purchase->total;
-		$account_transactions[$this->_purchase->account_id] = $this->_purchase->total;
-		
-		// Associate array over to objects.
-		$purchase_invoice_transaction_data->account_transactions = array();
-
-		foreach( $account_transactions as $account_id => $amount ) 
-		{
-			$account_transaction = new stdClass;
-			$account_transaction->account_id = $account_id;
-			$account_transaction->amount = $amount;
-
-			if( $account_transaction->account_id == $this->_transaction_purchase_account_id OR
-				$account_transaction->account_id == $this->_purchase->account_id )
+			if( ! $this->_validate_only )
 			{
-				$account_transaction->forms = array(
-					(object)array(
-						"form_id" => $this->_purchase->id,
-						"amount" => $account_transaction->amount,
-					),
-				);
+				$vendor_purchase_update = new Beans_Vendor_Purchase_Update($this->_beans_data_auth((object)array(
+					'id' => $this->_purchase->id,
+					'lines' => $purchase_lines,
+				)));
+				$vendor_purchase_update_result = $vendor_purchase_update->execute();
+
+				if( ! $vendor_purchase_update_result->success )
+					throw new Exception("Could not adjust purchase: ".
+										$vendor_purchase_update_result->error);
+
+				// Re-load purchase.
+				$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
 			}
-			
-			$purchase_invoice_transaction_data->account_transactions[] = $account_transaction;
 		}
-
-		$purchase_invoice_transaction_data->validate_only = $this->_validate_only;
-
-		$purchase_invoice_transaction = new Beans_Account_Transaction_Create($this->_beans_data_auth($purchase_invoice_transaction_data));
-		$purchase_invoice_transaction_result = $purchase_invoice_transaction->execute();
-
-		if( ! $purchase_invoice_transaction_result->success )
-			throw new Exception("Could not create invoice transaction: ".$purchase_invoice_transaction_result->error);
 
 		if( $this->_validate_only )
 			return (object)array();
 
 		$this->_purchase->date_billed = $this->_date_billed;
 		$this->_purchase->date_due = date("Y-m-d",strtotime($this->_purchase->date_billed.' +'.$this->_purchase->account->terms.' Days'));
-		$this->_purchase->invoice_transaction_id = $purchase_invoice_transaction_result->data->transaction->id;
-		$this->_purchase->aux_reference = $this->_invoice_number;
+		
+		if( strlen($this->_invoice_number) )
+			$this->_purchase->aux_reference = $this->_invoice_number;
+		
 		if( $this->_so_number )
 			$this->_purchase->reference = $this->_so_number;
 
 		$this->_purchase->save();
 
+		$purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
+			'ids' => array($this->_purchase->id),
+		)));
+		$purchase_calibrate_result = $purchase_calibrate->execute();
+
+		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
+
+		if( ! $purchase_calibrate_result->success )
+		{
+			$this->_purchase->date_billed = NULL;
+			$this->_purchase->date_due = NULL;
+			$this->_purchase->aux_reference = NULL;
+			$this->_purchase->reference = NULL;
+			$this->_purchase->save();
+
+			throw new Exception("Error trying to invoice purchase: ".$purchase_calibrate_result->error);
+		}
+
+		// Recalibrate Payments 
+		$vendor_payment_calibrate = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'form_ids' => array($this->_purchase->id),
+		)));
+		$vendor_payment_calibrate_result = $vendor_payment_calibrate->execute();
+
+		if( ! $vendor_payment_calibrate_result->success )
+			throw new Exception("Error encountered when calibrating payments: ".$vendor_payment_calibrate_result->error);
+		
 		$this->_purchase = $this->_load_vendor_purchase($this->_purchase->id);
 		
 		return (object)array(

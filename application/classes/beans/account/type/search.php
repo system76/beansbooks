@@ -32,9 +32,6 @@ class Beans_Account_Type_Search extends Beans_Account_Type {
 
 	protected $_account_types;
 
-	/**
-	 * Basic search ( i.e. list ) for account types.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);

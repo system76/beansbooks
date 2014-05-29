@@ -65,8 +65,7 @@ class Beans_Vendor_Purchase_Update_Invoice extends Beans_Vendor_Purchase {
 
 		if( $this->_validate_only )
 			return (object)array();
-
-
+		
 		$this->_purchase->save();
 
 		return (object)array(

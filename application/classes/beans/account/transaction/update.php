@@ -151,8 +151,6 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 				  $this->_data->payment )
 			$this->_transaction->payment = $this->_data->payment;
 
-		// TODO - If changing FYE transactions is enabled, add close_books here.
-
 		$this->_validate_transaction($this->_transaction);
 
 		$current_account_transactions = $this->_old_transaction->account_transactions->find_all();
@@ -228,9 +226,8 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 				$account_transaction->writeoff )
 				$new_account_transaction->writeoff = TRUE;
 
-			// TODO - If we ever allow updating close books transactions, 
-			// then add that above for $this->_transaction and add the proper logic here.
-			$new_account_transaction->close_books = FALSE;//( $account_transaction->close_books ) ? TRUE : FALSE;
+			// We do not allow updating close books transactions - no matter what.
+			$new_account_transaction->close_books = FALSE;
 
 			$this->_validate_account_transaction($new_account_transaction);
 
