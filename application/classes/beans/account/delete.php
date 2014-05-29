@@ -72,13 +72,6 @@ class Beans_Account_Delete extends Beans_Account {
 			$this->_account->id == $this->_transfer_account->id )
 			throw new Exception("Transfer account cannot match the account being removed.");
 
-		/*
-		if( count($transaction_id_rows) > 0 )
-			throw new Exception("Accounts with transactions currently cannot be removed.");
-		*/
-			
-		// FORMS ?
-
 		// Loop each transaction and update appropriately.
 		foreach( $transaction_id_rows as $transaction_id_row )
 		{

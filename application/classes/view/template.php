@@ -832,6 +832,8 @@ class View_Template extends Kostache_Layout {
 				'company_name' => $purchase->vendor->company_name,
 				'email' => $purchase->vendor->email,
 			),
+			'cancelled' => $purchase->date_cancelled ? TRUE : FALSE,
+			'invoiced' => $purchase->date_billed ? TRUE : FALSE,
 			'date_created' => $purchase->date_created,
 			'date_billed' => $purchase->date_billed,
 			'date_due' => $purchase->date_due,
@@ -845,10 +847,11 @@ class View_Template extends Kostache_Layout {
 			'balance_flipped' => ( $purchase->balance * -1 ),
 			'balance_flipped_formatted' => ( $purchase->balance > 0 ? '-' : '' ).$this->_company_currency().number_format(abs($purchase->balance),2,'.',','),
 			'status' => $purchase->status,
-			'can_cancel' => ( ! $purchase->date_billed )
+			'can_cancel' => ( ! $purchase->date_cancelled )
 						 ? TRUE
 						 : FALSE,
-			'can_refund' => ( ! $purchase->refund_purchase_id AND 
+			'can_refund' => ( ! $purchase->date_cancelled AND 
+							  ! $purchase->refund_purchase_id AND 
 							  $purchase->date_billed )
 						 ? TRUE
 						 : FALSE,

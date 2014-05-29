@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class View_Vendors_Print_Checks extends View_PDF {
 	
-	protected $_max_report_lines = 17; 
+	protected $_max_report_lines = 15;
 
 	public function __construct()
 	{
@@ -91,7 +91,7 @@ class View_Vendors_Print_Checks extends View_PDF {
 		$this->_render_check($expense_array);
 
 		// Skip 7 Lines
-		$this->_skip_lines(7);
+		$this->_skip_lines(5);
 
 		$this->_pdf->SetFont('Courier','',9);
 		$this->_render_expense_lines($expense_array);
@@ -114,7 +114,7 @@ class View_Vendors_Print_Checks extends View_PDF {
 		$this->_render_check($payment_array);
 
 		// Skip 7 Lines
-		$this->_skip_lines(7);
+		$this->_skip_lines(5);
 
 		$this->_pdf->SetFont('Courier','',9);
 		$this->_render_payment_lines($payment_array);
@@ -137,7 +137,7 @@ class View_Vendors_Print_Checks extends View_PDF {
 		$this->_render_check($taxpayment_array);
 		
 		// Skip 7 Lines
-		$this->_skip_lines(7);
+		$this->_skip_lines(5);
 
 		$this->_pdf->SetFont('Courier','',9);
 		$this->_render_taxpayment_lines($taxpayment_array);
@@ -150,6 +150,14 @@ class View_Vendors_Print_Checks extends View_PDF {
 
 	protected function _render_expense_lines($expense)
 	{
+		$this->_pdf->Cell(2,10,'',0,0,'L');
+		$this->_pdf->Cell(100,10,$expense['vendor']['name'],0,0,'L');
+		$this->_pdf->Cell(34,10,'',0,0,'C');
+		$this->_pdf->Cell(68,10,$expense['memo'],0,0,'R');
+		$this->_pdf->Ln(4);
+
+		$this->_skip_lines(1);
+
 		$this->_pdf->Cell(2,10,'',0,0,'L');
 		$this->_pdf->Cell(100,10,'Description',0,0,'L');
 		$this->_pdf->Cell(34,10,'Quantity',0,0,'C');
@@ -183,9 +191,9 @@ class View_Vendors_Print_Checks extends View_PDF {
 		if( $expense['expense_lines_total'] )
 		{
 			$this->_pdf->Cell(2,10,'',0,0,'L');
-			$this->_pdf->Cell(100,10,'',0,0,'L');
+			$this->_pdf->Cell(100,10,$expense['date'],0,0,'L');
 			$this->_pdf->Cell(34,10,'',0,0,'C');
-			$this->_pdf->Cell(34,10,'Total',0,0,'C');
+			$this->_pdf->Cell(34,10,'Total',0,0,'R');
 			$this->_pdf->Cell(34,10,$expense['expense_lines_total']['total_formatted'],0,0,'R');
 			$this->_pdf->Ln(4);
 		}
@@ -194,6 +202,14 @@ class View_Vendors_Print_Checks extends View_PDF {
 
 	protected function _render_payment_lines($payment)
 	{
+		$this->_pdf->Cell(2,10,'',0,0,'L');
+		$this->_pdf->Cell(100,10,$payment['vendor']['name'],0,0,'L');
+		$this->_pdf->Cell(34,10,'',0,0,'C');
+		$this->_pdf->Cell(68,10,$payment['memo'],0,0,'R');
+		$this->_pdf->Ln(4);
+
+		$this->_skip_lines(1);
+
 		// Headers
 		$this->_pdf->Cell(34,10,'PO Number',0,0,'C');
 		$this->_pdf->Cell(34,10,'PO Date',0,0,'C');
@@ -230,11 +246,10 @@ class View_Vendors_Print_Checks extends View_PDF {
 
 		if( $payment['payment_lines_total'] )
 		{
+			$this->_pdf->Cell(68,10,' '.$payment['date'],0,0,'L');
 			$this->_pdf->Cell(34,10,'',0,0,'C');
 			$this->_pdf->Cell(34,10,'',0,0,'C');
-			$this->_pdf->Cell(34,10,'',0,0,'C');
-			$this->_pdf->Cell(34,10,'',0,0,'C');
-			$this->_pdf->Cell(34,10,'Total',0,0,'C');
+			$this->_pdf->Cell(34,10,'Total',0,0,'R');
 			$this->_pdf->Cell(34,10,$payment['payment_lines_total']['total_formatted'],0,0,'R');
 			$this->_pdf->Ln(4);
 		}
@@ -243,6 +258,14 @@ class View_Vendors_Print_Checks extends View_PDF {
 
 	protected function _render_taxpayment_lines($taxpayment)
 	{
+		$this->_pdf->Cell(2,10,'',0,0,'L');
+		$this->_pdf->Cell(100,10,$taxpayment['vendor']['name'],0,0,'L');
+		$this->_pdf->Cell(34,10,'',0,0,'C');
+		$this->_pdf->Cell(68,10,$taxpayment['memo'],0,0,'R');
+		$this->_pdf->Ln(4);
+
+		$this->_skip_lines(1);
+
 		$this->_pdf->Cell(2,10,'',0,0,'L');
 		$this->_pdf->Cell(168,10,'Description',0,0,'L');
 		$this->_pdf->Cell(34,10,'Amount Paid',0,0,'R');
@@ -270,7 +293,8 @@ class View_Vendors_Print_Checks extends View_PDF {
 		if( $taxpayment['taxpayment_lines_total'] )
 		{
 			$this->_pdf->Cell(2,10,'',0,0,'L');
-			$this->_pdf->Cell(168,10,'Total',0,0,'R');
+			$this->_pdf->Cell(68,10,$taxpayment['date'],0,0,'L');
+			$this->_pdf->Cell(100,10,'Total',0,0,'R');
 			$this->_pdf->Cell(34,10,$taxpayment['taxpayment_lines_total']['total_formatted'],0,0,'R');
 			$this->_pdf->Ln(4);
 		}
@@ -279,11 +303,11 @@ class View_Vendors_Print_Checks extends View_PDF {
 	protected function _render_check($data)
 	{
 		// Line 1,2,3,4 Empty
-		$this->_skip_lines(4);
+		$this->_skip_lines(4,3.8);
 
 		// Date
 		$this->_pdf->setX(176);
-		$this->_pdf->Cell(0,10, $data['date'],0,0);
+		$this->_pdf->Cell(20,10, $data['date'],0,0);
 		$this->_pdf->Ln(4);
 
 		// Skip 6 & 7
@@ -292,8 +316,8 @@ class View_Vendors_Print_Checks extends View_PDF {
 		// Vendor & Amount
 		$this->_pdf->setX(23);
 		$this->_pdf->Cell(140, 10, $data['vendor']['name'],0,0);
-		$this->_pdf->setX(174);
-		$this->_pdf->Cell(0, 10, $data['amount_formatted'],0,0);
+		$this->_pdf->setX(170);
+		$this->_pdf->Cell(34, 10, $data['amount_formatted_filler'].' '.$data['amount_formatted'],0,0,'R');
 		$this->_pdf->Ln(4);
 
 		// Skip 9
@@ -301,7 +325,7 @@ class View_Vendors_Print_Checks extends View_PDF {
 
 		// Written Amount
 		$this->_pdf->setX(7);
-		$this->_pdf->Cell(0, 10, $data['amount_written'].' '.$data['amount_written_filler'],0,0);
+		$this->_pdf->Cell(200, 10, $data['amount_written'].' '.$data['amount_written_filler'],0,0);
 		$this->_pdf->Ln(4);
 
 		// Skip 11
@@ -334,6 +358,21 @@ class View_Vendors_Print_Checks extends View_PDF {
 		if( ! $data['remit_address']['address2'] )
 		{
 			$this->_skip_lines(1);
+		}
+
+		if( isset($data['memo']) && $data['memo'] )
+		{
+			$this->_skip_lines(1, 2.0);
+
+			$this->_pdf->setX(7);
+			$this->_pdf->Cell(170, 10, $data['memo'],0,0);
+			$this->_pdf->Ln(4);
+
+			$this->_skip_lines(1, 2.0);
+		}
+		else
+		{
+			$this->_skip_lines(2);
 		}
 
 	}
@@ -423,18 +462,27 @@ class View_Vendors_Print_Checks extends View_PDF {
 	{
 		$total_written = $this->_convert_number_to_words($expense->total);
 		$total_written_filler = '';
-		for( $i = strlen($total_written); $i < 88; $i++ ) {
-			$total_written_filler .= '-';
+		for( $i = strlen($total_written); $i < 87; $i++ ) {
+			$total_written_filler .= '*';
 		}
+
+		$amount_formatted = number_format($expense->total,2,'.',',');
+		$amount_formatted_filler = '';
+		for( $i = 0; $i < ( 12 - strlen($amount_formatted) ); $i++ ) {
+			$amount_formatted_filler .= '*';
+		}
+
 		$expense_lines = $this->_expense_lines($expense);
 
 		return array(
 			'amount' => $expense->total,
-			'amount_formatted' => number_format($expense->total,2,'.',','),
+			'amount_formatted_filler' => $amount_formatted_filler,
+			'amount_formatted' => $amount_formatted,
 			'amount_written' => $total_written,
 			'amount_written_filler' => $total_written_filler,
-			'date' => $expense->date_created,
+			'date' => date("m/d/Y", strtotime($expense->date_created)),
 			'vendor' => $this->_vendor_array($expense->vendor),
+			'memo' => $expense->invoice_number ? 'Invoice '.$expense->invoice_number : '',
 			'remit_address' => $this->_remit_address_array($expense->remit_address),
 			'expense_lines' => $this->_expense_lines_crop($expense_lines),
 			'expense_lines_extra' => $this->_expense_lines_extra($expense_lines),
@@ -545,13 +593,22 @@ class View_Vendors_Print_Checks extends View_PDF {
 		for( $i = strlen($amount_written); $i < 88; $i++ ) {
 			$amount_written_filler .= '-';
 		}
+
+		$amount_formatted = number_format($payment->amount,2,'.',',');
+		$amount_formatted_filler = '';
+		for( $i = 0; $i < ( 12 - strlen($amount_formatted) ); $i++ ) {
+			$amount_formatted_filler .= '*';
+		}
+
 		$payment_lines = $this->_payment_lines($payment);
 		return array(
 			'amount' => $payment->amount,
-			'amount_formatted' => number_format($payment->amount,2,'.',','),
+			'amount_formatted_filler' => $amount_formatted_filler,
+			'amount_formatted' => $amount_formatted,
 			'amount_written' => $amount_written,
 			'amount_written_filler' => $amount_written_filler,
-			'date' => $payment->date,
+			'date' => date("m/d/Y", strtotime($payment->date)),
+			'memo' => '',
 			'vendor' => $this->_vendor_array($payment->vendor),
 			'remit_address' => $this->_remit_address_array($payment->remit_address),
 			'payment_lines' => $this->_payment_lines_crop($payment_lines),
@@ -611,7 +668,7 @@ class View_Vendors_Print_Checks extends View_PDF {
 		return array(
 			'count' => $count,
 			'total' => $total,
-			'total_formatted' => ( $total < 0 ? '-' : '' ).number_format(abs($total),2,'.',','), 
+			'total_formatted' => ( $total < 0 ? '*' : '' ).number_format(abs($total),2,'.',','), 
 		);
 	}
 
@@ -629,7 +686,7 @@ class View_Vendors_Print_Checks extends View_PDF {
 		return array(
 			'count' => $count,
 			'total' => $total,
-			'total_formatted' => ( $total < 0 ? '-' : '' ).number_format(abs($total),2,'.',','), 
+			'total_formatted' => ( $total < 0 ? '*' : '' ).number_format(abs($total),2,'.',','), 
 		);
 	}
 
@@ -688,16 +745,25 @@ class View_Vendors_Print_Checks extends View_PDF {
 		$total_written = $this->_convert_number_to_words($taxpayment->amount);
 		$total_written_filler = '';
 		for( $i = strlen($total_written); $i < 88; $i++ ) {
-			$total_written_filler .= '-';
+			$total_written_filler .= '*';
 		}
+
+		$amount_formatted = number_format($taxpayment->amount,2,'.',',');
+		$amount_formatted_filler = '';
+		for( $i = 0; $i < ( 12 - strlen($amount_formatted) ); $i++ ) {
+			$amount_formatted_filler .= '*';
+		}
+
 		$taxpayment_lines = $this->_taxpayment_lines($taxpayment);
 
 		return array(
 			'amount' => $taxpayment->amount,
-			'amount_formatted' => number_format($taxpayment->amount,2,'.',','),
+			'amount_formatted_filler' => $amount_formatted_filler,
+			'amount_formatted' => $amount_formatted,
 			'amount_written' => $total_written,
 			'amount_written_filler' => $total_written_filler,
-			'date' => $taxpayment->date,
+			'date' => date("m/d/Y", strtotime($taxpayment->date)),
+			'memo' => '',
 			'vendor' => $this->_tax_array($taxpayment->tax),
 			'remit_address' => $this->_remit_address_array($taxpayment->tax),
 			'taxpayment_lines' => $this->_taxpayment_lines_crop($taxpayment_lines),
@@ -730,7 +796,7 @@ class View_Vendors_Print_Checks extends View_PDF {
 		$return_array[] = array(
 			'description' => $taxpayment->tax->name." remittance for ".$taxpayment->date_start.' - '.$taxpayment->date_end,
 			'amount' => $taxpayment->amount,
-			'amount_formatted' => ( $taxpayment->amount < 0 ? '-' : '' ).number_format($taxpayment->amount, 2, '.', ','),
+			'amount_formatted' => ( $taxpayment->amount < 0 ? '*' : '' ).number_format($taxpayment->amount, 2, '.', ','),
 		);
 
 		return $return_array;

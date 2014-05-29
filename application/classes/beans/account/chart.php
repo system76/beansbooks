@@ -66,7 +66,7 @@ class Beans_Account_Chart extends Beans_Account {
 			foreach( $account->child_accounts->find_all() as $child_account )
 				$return_object->accounts[] = $this->_discover_account_children($child_account);
 
-			usort($return_object->accounts,array($this,'_sort_accounts_by_name'));
+			usort($return_object->accounts,array($this,'_sort_accounts_chart'));
 		}
 
 		return $return_object;
@@ -82,12 +82,17 @@ class Beans_Account_Chart extends Beans_Account {
 		return $total;
 	}
 
-	private function _sort_accounts_by_name($a,$b)
+	private function _sort_accounts_chart($a,$b)
 	{
-		if( $a->name == $b->name )
-			return 0;
+		if( $a->reserved == $b->reserved )
+		{
+			if( $a->name == $b->name )
+				return 0;
 
-		return ( strcmp($a->name,$b->name) < 0 ? -1 : 1 );
+			return ( strcmp($a->name,$b->name) < 0 ? -1 : 1 );
+		}
+
+		return ( $a->reserved < $b->reserved ? -1 : 1 );
 	}
 
 }

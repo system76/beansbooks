@@ -92,7 +92,6 @@ class Controller_Dash extends Controller_View {
 		// Not Sent Sales
 		$purchases_not_invoiced = new Beans_Vendor_Purchase_Search($this->_beans_data_auth((object)array(
 			'invoiced' => FALSE,
-			'has_balance' => TRUE,
 			'sort_by' => 'oldest',
 			'page_size' => 100,
 			'date_created_before' => date("Y-m-d",strtotime("-30 Days")),

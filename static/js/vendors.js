@@ -1346,6 +1346,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 		$('#vendors-purchases-create-form-delete').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			cancel_vendor_purchase_id = $('#vendors-purchases-create').attr('rel');
 			showConfirm("Are you certain you want to delete this purchase purchase?","Yes, Delete.","No.",cancelVendorPurchase);
 			return false;
@@ -1353,24 +1356,32 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 		$('#vendors-purchases-create-form-return').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			loadPurchase($('#vendors-purchases-create').attr('rel'),true);
 		});
 
 		$('#vendors-purchases-create-form-print').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			printVendorPurchase($('#vendors-purchases-create').attr('rel'));
 		});
 
 		$('#vendors-purchases-create-form-editcancel').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			createPurchaseClearForm();
 			return false;
 		});
 
 		$('#vendors-purchases-create-form-edit').click(function(e) {
 			e.preventDefault();
-			if( $(this).attr('disabled') &&
-				$(this).attr('disabled').length ) {
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
 				return false;
 			}
 			if( ! $('#vendors-purchases-create').attr('rel') ||
@@ -4428,7 +4439,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 									$('#vendors-purchases-create input[name="shipping_address_id"]').select2('data',{});
 								}
 								
-								if( purchase_data.data.purchase.date_billed ) {
+								if( purchase_data.data.purchase.date_cancelled ) {
 									$('#vendors-purchases-create-form-edit').attr('disabled','disabled');
 									$('#vendors-purchases-create-form-delete').attr('disabled','disabled');
 								} else {
@@ -4436,7 +4447,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 									$('#vendors-purchases-create-form-delete').attr('disabled',false);
 								}
 
-								if( purchase_data.data.purchase.date_billed &&
+								if( ! purchase_data.data.purchase.date_cancelled &&
+									purchase_data.data.purchase.date_billed &&
 									purchase_data.data.purchase.balance == 0.00 ) {
 									$('#vendors-purchases-create-form-return').attr('disabled',false);
 								} else {
@@ -4762,8 +4774,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$balance = parseFloat($line.find('.vendor-paymentpo-numeric.balance').attr('rel')).toFixed(2);
 			$line.find('.vendor-paymentpo-numeric.amount').find('input[type="text"]').val($balance);
 			$line.find('.vendor-paymentpo-numeric.amount').find('input[type="text"]').attr('readonly',false);
-			$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false);
-			$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false);
+			$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false).attr('placeholder','Optional');
+			if( ! $line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').val().length ) {
+				$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').val(dateYYYYMMDD());
+			}
+			$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false).attr('placeholder','Optional');;
 			$('#vendors-payments-create-purchases .vendor-paymentpo:first').after($line);
 			$line.addClass('selected');
 			$line.slideDown(function() {
@@ -4781,9 +4796,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$date_billed = $line.find('.vendor-paymentpo-date_billed').find('input[type="text"]');
 			$date_billed.attr('readonly',true);
 			$date_billed.val($date_billed.attr('rel'));
+			$date_billed.removeAttr('placeholder');
 			$invoice = $line.find('.vendor-paymentpo-invoice').find('input[type="text"]');
 			$invoice.attr('readonly',true);
 			$invoice.val($invoice.attr('rel'));
+			$invoice.removeAttr('placeholder');
 			$line.removeClass('selected');
 			// Where do we add this?
 			if( $('#vendors-payments-create-purchases .vendor-paymentpo.selected:last').length == 0 ) {
