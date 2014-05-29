@@ -316,6 +316,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 			)));
 			$delete_sale_result = $delete_sale->execute();
 
+			// TODO - 100PERCENTWORKING
 			// NOW WE HAVE A REALLY BIG PROBLEM ON OUR HANDS.
 			if( ! $delete_sale_result->success )
 				throw new Exception("Error creating account transaction for sale. COULD NOT DELETE SALE! ".$delete_sale_result->error);
@@ -344,6 +345,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 				)));
 				$delete_sale_result = $delete_sale->execute();
 
+				// TODO - 100PERCENTWORKING
 				if( ! $delete_sale_result->success )
 					throw new Exception("Error creating account transaction for sale. COULD NOT DELETE SALE! ".$delete_sale_result->error);
 				

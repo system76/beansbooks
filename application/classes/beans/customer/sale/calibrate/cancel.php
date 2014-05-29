@@ -119,8 +119,7 @@ class Beans_Customer_Sale_Calibrate_Cancel extends Beans_Customer_Sale {
 
 	protected function _calibrate_sale_cancel($sale)
 	{
-		// Not sure how we got here - but if the above query messes up at all this prevents us 
-		// from messing up the journal with a weird transaction.
+		// Just to be safe in case the above passes a bad sale.
 		if( ! $sale->date_cancelled )
 			return;
 

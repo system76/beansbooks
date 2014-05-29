@@ -354,7 +354,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		$deposit_account = $payment_object->deposit_transaction->account;
 
 		// All of the accounts on sales are Accounts Receivable and should be assets.
-		// But to be on the safe side we're going to do table sign adjustments to be on the safe side.
+		// But to be on the safe side we're going to do table sign adjustments.
 		foreach( $sale_account_transfers as $account_id => $transfer_amount )
 			$sale_account_transfers[$account_id] = ( $writeoff_account AND 
 													  $writeoff_account->id == $account_id )

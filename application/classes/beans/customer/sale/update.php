@@ -58,10 +58,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 	protected $_date_billed;
 
-	/**
-	 * Create a new customer sale.
-	 * @param stdClass $data Object to create new sale.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -122,9 +118,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 		if( isset($this->_data->shipping_address_id) )
 			$this->_sale->shipping_address_id = $this->_data->shipping_address_id;
-
-
-
+		
 		// Field that can be updated ONLY after being invoiced.
 		if( $this->_sale->date_billed )
 		{
