@@ -1395,6 +1395,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$('#vendors-purchases-create input.datepicker').each(function() {
 				$(this).attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
 			});
+			$('#vendors-purchases-create-form-lines select.account_id').each(function () {
+				$(this).select2("enable");
+			});
 
 			$('#vendors-purchases-create input[name="shipping_address_id"]').select2('enable');
 			$('#vendors-purchases-create div.select').removeClass('disabled');
