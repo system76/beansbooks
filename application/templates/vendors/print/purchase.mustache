@@ -9,8 +9,7 @@
 				{{phone}} {{#phone}}{{#email}}|{{/email}}{{/phone}} {{email}}
 			{{/remit}}
 			{{^remit}}
-				Vendor: {{vendor_company_name}}<br>
-				{{vendor_name}}
+				Vendor: {{#vendor}}{{display_name}}{{/vendor}}
 			{{/remit}}
 		</td>
 
@@ -23,8 +22,7 @@
 				{{phone}} {{#phone}}{{#email}}|{{/email}}{{/phone}} {{email}}
 			{{/shipping}}
 			{{^shipping}}
-				Ship To: {{vendor_company_name}}<br>
-				{{vendor_name}}
+				Ship To: {{#vendor}}{{display_name}}{{/vendor}}
 			{{/shipping}}
 		</td>
 		

@@ -658,7 +658,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		});
 
 		/**
-		 * Purchase Purchase Dialogs - Vendor and Address
+		 * Purchase Order Dialogs - Vendor and Address
 		 */
 		$('#vendors-purchases-dialog-vendor-create').modaldialog({
 			autoOpen: false,
@@ -799,7 +799,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 
 		/**
-		 * Vendors / Purchase Purchases
+		 * Vendors / Purchase Orders
 		 */
 		// Add one expense line by default.
 		if( $('#vendors-purchases-create-form-lines').length ) {

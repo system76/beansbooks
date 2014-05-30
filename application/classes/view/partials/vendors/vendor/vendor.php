@@ -25,9 +25,9 @@ class View_Partials_Vendors_Vendor_Vendor extends Kostache {
 		return $this->vendor->id;
 	}
 
-	public function company_name()
+	public function display_name()
 	{
-		return $this->vendor->company_name;
+		return $this->vendor->display_name;
 	}
 
 	public function email()

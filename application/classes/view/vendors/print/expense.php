@@ -24,7 +24,7 @@ class View_Vendors_Print_Expense extends View_Print {
 	public function vendor()
 	{
 		return array(
-			'name' => $this->expense->vendor->company_name,
+			'name' => $this->expense->vendor->display_name,
 			'email' => $this->expense->vendor->email,
 			'phone' => $this->expense->vendor->phone_number,
 		);

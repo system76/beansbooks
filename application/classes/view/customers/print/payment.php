@@ -89,7 +89,7 @@ class View_Customers_Print_Payment extends View_Print {
 		foreach( $this->payment->sale_payments as $sale_payment )
 			$this->_payment_lines[] = array(
 				'odd' => ( $i++ % 2 == 0 ? TRUE : FALSE ),
-				'customer_name' => $sale_payment->sale->customer->first_name.' '.$sale_payment->sale->customer->last_name,
+				'customer_name' => $sale_payment->sale->customer->display_name,
 				'sale_number' => $sale_payment->sale->sale_number,
 				'quote_number' => $sale_payment->sale->quote_number,
 				'order_number' => $sale_payment->sale->order_number,

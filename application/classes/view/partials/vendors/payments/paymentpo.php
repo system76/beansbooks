@@ -19,26 +19,12 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 
 class View_Partials_Vendors_Payments_Paymentpo extends KOstache {
-	// Receives $this->purchase_payment
-	// 					->id
-	// 					->amount ( paid )
-	// 					->purchase ( object )
-
+	
 	public function id()
 	{
 		return $this->purchase_payment->purchase->id;
 	}
-
 	
-	public function vendor()
-	{
-		return array(
-			'id' => $this->purchase_payment->purchase->vendor->id,
-			'name' => $this->purchase_payment->purchase->vendor->first_name.' '.$this->purchase_payment->purchase->vendor->last_name,
-			'company_name' => $this->purchase_payment->purchase->vendor->company_name,
-		);
-	}
-
 	public function purchase_number()
 	{
 		return $this->purchase_payment->purchase->purchase_number;

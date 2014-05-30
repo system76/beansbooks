@@ -43,6 +43,7 @@ class Beans_Customer extends Beans {
 	@attribute first_name STRING
 	@attribute last_name STRING
 	@attribute company_name STRING
+	@attribute display_name STRING Company Name if it exists, or else First Last.
 	@attribute email STRING
 	@attribute phone_number STRING
 	@attribute fax_number STRING
@@ -72,6 +73,9 @@ class Beans_Customer extends Beans {
 		$return_object->first_name = $customer->first_name;
 		$return_object->last_name = $customer->last_name;
 		$return_object->company_name = $customer->company_name;
+		$return_object->display_name = $return_object->company_name
+									 ? $return_object->company_name
+									 : $return_object->first_name.' '.$return_object->last_name;
 		$return_object->email = $customer->email;
 		$return_object->phone_number = $customer->phone_number;
 		$return_object->fax_number = $customer->fax_number;

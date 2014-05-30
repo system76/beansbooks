@@ -42,9 +42,7 @@ class View_Partials_Vendors_Invoices_Purchase extends KOstache {
 
 	public function vendor_name()
 	{
-		return ( $this->purchase->vendor->company_name )
-			? $this->purchase->vendor->company_name
-			: $this->purchase->vendor->first_name.' '.$this->purchase->vendor->last_name;
+		return $this->purchase->vendor->display_name;
 	}
 	
 	public function purchase_number()

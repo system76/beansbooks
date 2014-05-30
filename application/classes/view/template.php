@@ -524,9 +524,7 @@ class View_Template extends Kostache_Layout {
 	{
 		return array(
 			"id" => $customer->id,
-			"first_name" => $customer->first_name,
-			"last_name" => $customer->last_name,
-			"company_name" => $customer->company_name,
+			"display_name" => $customer->display_name,
 			"email" => $customer->email,
 			"phone_number" => $customer->phone_number,
 			"fax_number" => $customer->fax_number,
@@ -566,8 +564,7 @@ class View_Template extends Kostache_Layout {
 			'id' => $sale->id,
 			'customer' => array(
 				'id' => $sale->customer->id,
-				'name' => $sale->customer->first_name.' '.$sale->customer->last_name,
-				'email' => $sale->customer->email,
+				'display_name' => $sale->customer->display_name,
 			),
 			'invoiced' => ( $sale->date_billed ? TRUE : FALSE ),
 			'cancelled' => ( $sale->date_cancelled ? TRUE : FALSE ),
@@ -689,9 +686,7 @@ class View_Template extends Kostache_Layout {
 	{
 		return array(
 			"id" => $vendor->id,
-			"first_name" => $vendor->first_name,
-			"last_name" => $vendor->last_name,
-			"company_name" => $vendor->company_name,
+			"display_name" => $vendor->display_name,
 			"email" => $vendor->email,
 			"phone_number" => $vendor->phone_number,
 			"fax_number" => $vendor->fax_number,
@@ -742,8 +737,7 @@ class View_Template extends Kostache_Layout {
 
 		$return_array['vendor'] = array(
 			'id' => $payment->vendor->id,
-			'name' => $payment->vendor->first_name.' '.$payment->vendor->last_name,
-			'company_name' => $payment->vendor->company_name,
+			'display_name' => $payment->vendor->display_name,
 		);
 
 		return $return_array;
@@ -783,8 +777,7 @@ class View_Template extends Kostache_Layout {
 			'id' => $expense->id,
 			'vendor' => array(
 				'id' => $expense->vendor->id,
-				'name' => $expense->vendor->first_name.' '.$expense->vendor->last_name,
-				'company_name' => $expense->vendor->company_name,
+				'display_name' => $expense->vendor->display_name,
 			),
 			'date_created' => $expense->date_created,
 			'invoice_number' => $expense->invoice_number,
@@ -828,8 +821,7 @@ class View_Template extends Kostache_Layout {
 			'id' => $purchase->id,
 			'vendor' => array(
 				'id' => $purchase->vendor->id,
-				'name' => $purchase->vendor->first_name.' '.$purchase->vendor->last_name,
-				'company_name' => $purchase->vendor->company_name,
+				'display_name' => $purchase->vendor->display_name,
 				'email' => $purchase->vendor->email,
 			),
 			'cancelled' => $purchase->date_cancelled ? TRUE : FALSE,
