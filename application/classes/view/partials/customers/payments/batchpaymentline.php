@@ -33,7 +33,7 @@ class View_Partials_Customers_Payments_Batchpaymentline extends KOstache {
 	{
 		return array(
 			'id' => $this->sale_payment->sale->customer->id,
-			'name' => $this->sale_payment->sale->customer->first_name.' '.$this->sale_payment->sale->customer->last_name,
+			'name' => $this->sale_payment->sale->customer->display_name,
 		);
 	}
 

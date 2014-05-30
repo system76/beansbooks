@@ -26,15 +26,6 @@ class View_Partials_Vendors_Payments_Paymentpoform extends KOstache {
 		return $this->purchase->id;
 	}
 
-	public function vendor()
-	{
-		return array(
-			'id' => $this->purchase->vendor->id,
-			'name' => $this->purchase->vendor->first_name.' '.$this->purchase->vendor->last_name,
-			'company_name' => $this->purchase->vendor->company_name,
-		);
-	}
-
 	public function purchase_number()
 	{
 		return $this->purchase->purchase_number;

@@ -858,7 +858,7 @@ class Controller_Vendors_Json extends Controller_Json {
 	}
 
 	/**
-	 * Purchase Purchase Actions
+	 * Purchase Order Actions
 	 */
 	
 	public function action_purchasecreate()

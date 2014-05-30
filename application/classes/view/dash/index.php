@@ -282,8 +282,8 @@ class View_Dash_Index extends View_Template {
 					  ? '/customers/invoices/'.$form->id
 					  : '/vendors/purchases/'.$form->id,
 				'name' => ( isset($form->customer) )
-					   ? $form->customer->first_name.' '.$form->customer->last_name
-					   : $form->vendor->company_name,
+					   ? $form->customer->display_name
+					   : $form->vendor->display_name,
 				'amount_formatted' => ( ( ( isset($form->customer) AND $form->balance > 0 ) OR ( ! isset($form->customer) AND $form->balance < 0 ) ) ? '<span class="text-red">-' : '' ).
 										$settings->company_currency.
 										number_format(abs($form->balance),2,'.',',').

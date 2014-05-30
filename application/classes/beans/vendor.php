@@ -46,6 +46,7 @@ class Beans_Vendor extends Beans {
 	@attribute first_name STRING
 	@attribute last_name STRING
 	@attribute company_name STRING
+	@attribute display_name STRING Company Name if it exists, or else First Last.  Will always be Company Name as current spec requires one for Vendors.
 	@attribute email STRING
 	@attribute phone_number STRING
 	@attribute fax_number STRING
@@ -78,6 +79,9 @@ class Beans_Vendor extends Beans {
 		$return_object->first_name = $vendor->first_name;
 		$return_object->last_name = $vendor->last_name;
 		$return_object->company_name = $vendor->company_name;
+		$return_object->display_name = $return_object->company_name
+									 ? $return_object->company_name
+									 : $return_object->first_name.' '.$return_object->last_name;
 		$return_object->email = $vendor->email;
 		$return_object->phone_number = $vendor->phone_number;
 		$return_object->fax_number = $vendor->fax_number;

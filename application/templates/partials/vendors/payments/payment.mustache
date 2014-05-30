@@ -1,6 +1,6 @@
 <li class="vendor-payment" rel="{{id}}">
 	<span class="vendor-payment-date text-left">{{date}}</span>
-	<span class="vendor-payment-vendor text-left">{{#vendor}}{{company_name}}{{/vendor}}</span>
+	<span class="vendor-payment-vendor text-left">{{#vendor}}{{display_name}}{{/vendor}}</span>
 	<span class="vendor-payment-amount text-right">{{amount_formatted}}</span>
 	<span class="vendor-payment-check text-center">{{check_number}}{{^check_number}}&nbsp;{{/check_number}}</span>
 	<span class="vendor-payment-actions text-right"><a href="#" class="print">Print Payment Report</a> | <a href="/vendors/payments/{{id}}" rel="{{id}}" class="view">View</a></span>

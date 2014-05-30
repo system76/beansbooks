@@ -22,7 +22,7 @@ class View_Vendors_Print_Payment extends View_Print {
 	public function vendor()
 	{
 		return array(
-			'name' => $this->payment->vendor->company_name,
+			'name' => $this->payment->vendor->display_name,
 			'email' => $this->payment->vendor->email,
 			'phone' => $this->payment->vendor->phone_number,
 			'address' => ( isset($this->vendor_address) AND 

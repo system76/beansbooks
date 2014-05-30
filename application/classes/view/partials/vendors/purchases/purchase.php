@@ -30,8 +30,7 @@ class View_Partials_Vendors_Purchases_Purchase extends KOstache {
 	{
 		return array(
 			'id' => $this->purchase->vendor->id,
-			'name' => $this->purchase->vendor->first_name.' '.$this->purchase->vendor->last_name,
-			'company_name' => $this->purchase->vendor->company_name,
+			'display_name' => $this->purchase->vendor->display_name,
 			'email' => $this->purchase->vendor->email,
 		);
 	}

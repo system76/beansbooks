@@ -1,9 +1,6 @@
 <li class="vendor-paymentpo" rel="{{id}}">
 	<input type="hidden" class="remit_address_id" value="{{remit_address_id}}">
 	<span class="vendor-paymentpo-po text-center">{{purchase_number}}{{^purchase_number}}&nbsp;{{/purchase_number}}</span>
-	<!--
-	<span class="vendor-paymentpo-so text-center"><input type="text" name="purchase-so_number-{{id}}" rel="{{so_number}}" value="{{so_number}}" readonly="readonly"></span>
-	-->
 	<span class="vendor-paymentpo-invoice text-center"><input type="text" name="purchase-invoice_number-{{id}}" rel="{{invoice_number}}" value="{{invoice_number}}" readonly="readonly"></span>
 	<span class="vendor-paymentpo-date_billed text-center"><input type="text" name="purchase-date_billed-{{id}}" rel="{{date_billed}}" value="{{date_billed}}" readonly="readonly"></span>
 	<span class="vendor-paymentpo-numeric balance text-right" rel="{{balance_flipped}}">{{balance_flipped_formatted}}</span>

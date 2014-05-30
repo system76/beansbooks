@@ -898,7 +898,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 								// KISS
 								var customer = data.data.customer;
 								var select2data = {
-									text: customer.first_name+' '+customer.last_name
+									text: customer.display_name
 								};
 								if( customer.default_account ) {
 									select2data.id = 	customer.id+'#'+
@@ -1263,7 +1263,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					var results = new Array();
 					for( index in data.data.customers ) {
 						results[index] = {
-							text: data.data.customers[index].first_name+' '+data.data.customers[index].last_name,
+							text: data.data.customers[index].display_name,
 							id: 
 								data.data.customers[index].id
 								+'#'+
@@ -1285,21 +1285,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 									data.data.customers[index].default_account != null && 
 									typeof data.data.customers[index].default_account.terms != "undefined" ? data.data.customers[index].default_account.terms : '' )
 						};
-						console.log(results[index].id);
-						// CHECK AND ADD TERNARY
-						/*
-						if( data.data.customers[index].default_account ) {
-							results[index] = {
-								id: data.data.customers[index].id+'#'+data.data.customers[index].default_billing_address_id+'#'+data.data.customers[index].default_shipping_address_id+'#'+data.data.customers[index].default_account.id+'#'+data.data.customers[index].default_account.terms,
-								text: data.data.customers[index].first_name+' '+data.data.customers[index].last_name
-							}
-						} else {
-							results[index] = {
-								id: data.data.customers[index].id+'#'+data.data.customers[index].default_billing_address_id+'#'+data.data.customers[index].default_shipping_address_id+'#',
-								text: data.data.customers[index].first_name+' '+data.data.customers[index].last_name
-							}
-						}
-						*/
 					}
 					return {results: results};
 				}
@@ -2498,9 +2483,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 								}
 
 								if( sale_data.data.sale.customer.default_account ) {
-									$('#customers-sales-create input[name="customer"]').select2("data", {id: sale_data.data.sale.customer.id+'#'+sale_data.data.sale.customer.default_billing_address_id+'#'+sale_data.data.sale.customer.default_shipping_address_id+'#'+sale_data.data.sale.customer.default_account.id+'#'+sale_data.data.sale.customer.default_account.terms, text: sale_data.data.sale.customer.first_name+' '+sale_data.data.sale.customer.last_name});
+									$('#customers-sales-create input[name="customer"]').select2("data", {id: sale_data.data.sale.customer.id+'#'+sale_data.data.sale.customer.default_billing_address_id+'#'+sale_data.data.sale.customer.default_shipping_address_id+'#'+sale_data.data.sale.customer.default_account.id+'#'+sale_data.data.sale.customer.default_account.terms, text: sale_data.data.sale.customer.display_name});
 								} else {
-									$('#customers-sales-create input[name="customer"]').select2("data", {id: sale_data.data.sale.customer.id+'#'+sale_data.data.sale.customer.default_billing_address_id+'#'+sale_data.data.sale.customer.default_shipping_address_id+'#', text: sale_data.data.sale.customer.first_name+' '+sale_data.data.sale.customer.last_name});
+									$('#customers-sales-create input[name="customer"]').select2("data", {id: sale_data.data.sale.customer.id+'#'+sale_data.data.sale.customer.default_billing_address_id+'#'+sale_data.data.sale.customer.default_shipping_address_id+'#', text: sale_data.data.sale.customer.display_name});
 								}
 								
 								if( sale_data.data.sale.billing_address ) {

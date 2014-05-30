@@ -140,9 +140,7 @@ class View_Vendors_Vendor extends View_Template {
 	{
 		return array(
 			'id' => $expense->id,
-			'vendor' => ( $expense->vendor->company_name )
-				? $expense->vendor->company_name
-				: $expense->vendor->first_name.' '.$expense->vendor->last_name,
+			'vendor' => $expense->vendor->display_name,
 			'date' => $expense->date_created,
 			'type' => "expense",
 			'amount' => $expense->total,
@@ -154,9 +152,7 @@ class View_Vendors_Vendor extends View_Template {
 	{
 		return array(
 			'id' => $payment->id,
-			'vendor' => ( $payment->vendor->company_name )
-				? $payment->vendor->company_name
-				: $payment->vendor->first_name.' '.$payment->vendor->last_name,
+			'vendor' => $payment->vendor->display_name,
 			'date' => $payment->date,
 			'type' => "payment",
 			'typeformatted' => "Payment",
@@ -189,9 +185,7 @@ class View_Vendors_Vendor extends View_Template {
 		$return_array['id'] = $expense->id;
 
 		$return_array['date'] = $expense->date_created;
-		$return_array['vendor'] = ( $expense->vendor->company_name )
-			? $expense->vendor->company_name
-			: $expense->vendor->first_name.' '.$expense->vendor->last_name;
+		$return_array['vendor'] = $expense->vendor->display_name;
 		$return_array['amount'] = $expense->total;
 		$return_array['amount_formatted'] = ( $expense->total < 0 ? '-' : '' ).number_format( abs($expense->total), 2, '.', ',');
 		$return_array['check_number'] = $expense->check_number;
@@ -212,9 +206,7 @@ class View_Vendors_Vendor extends View_Template {
 		$return_array['id'] = $payment->id;
 
 		$return_array['date'] = $payment->date;
-		$return_array['vendor'] = ( $payment->vendor->company_name )
-			? $payment->vendor->company_name
-			: $payment->vendor->first_name.' '.$payment->vendor->last_name;
+		$return_array['vendor'] = $payment->vendor->display_name;
 		$return_array['amount'] = $payment->amount;
 		$return_array['amount_formatted'] = ( $payment->amount < 0 ? '-' : '' ).number_format(abs($payment->amount), 2, '.', ',');
 		$return_array['check_number'] = $payment->check_number;
