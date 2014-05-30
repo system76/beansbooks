@@ -17,6 +17,7 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+// V2Item - TODO - Write a new ORM or remove altogether.
 class Database_Query_Builder_Select extends Kohana_Database_Query_Builder_Select {
 	public $_distinct;
 }

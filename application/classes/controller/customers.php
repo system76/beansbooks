@@ -140,7 +140,7 @@ class Controller_Customers extends Controller_View {
 		if( $this->_beans_result_check($customer_lookup_result) )
 		{
 			$this->_view->customer_lookup_result = $customer_lookup_result;
-			$this->_action_tab_name = $customer_lookup_result->data->customer->first_name.' '.$customer_lookup_result->data->customer->last_name;
+			$this->_action_tab_name = $customer_lookup_result->data->customer->display_name;
 			$this->_action_tab_uri = '/'.$this->request->uri();
 
 			$customer_address_search = new Beans_Customer_Address_Search($this->_beans_data_auth((object)array(

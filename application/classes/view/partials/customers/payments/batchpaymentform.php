@@ -29,7 +29,7 @@ class View_Partials_Customers_Payments_Batchpaymentform extends KOstache {
 	{
 		return array(
 			'id' => $this->sale->customer->id,
-			'name' => $this->sale->customer->first_name.' '.$this->sale->customer->last_name,
+			'name' => $this->sale->customer->display_name,
 		);
 	}
 

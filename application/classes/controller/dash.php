@@ -626,9 +626,9 @@ class Controller_Dash extends Controller_View {
 			return array(
 				(object)array(
 					'title' => "Calibration Required",
-					'text' => "Your books need to be calibrated due to an update
-								in BeansBooks.  Your accounts will function correctly until then,
-								but may display an incorrect balance.",
+					'text' => "Your books need to be calibrated due to an update in BeansBooks. 
+								Your accounts function correctly but may display an incorrect 
+								balance until they're calibrated.",
 					'actions' => array(
 						(object)array(
 							'text' => "Calibrate Accounts",

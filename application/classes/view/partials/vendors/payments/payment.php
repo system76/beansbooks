@@ -30,8 +30,7 @@ class View_Partials_Vendors_Payments_Payment extends KOstache {
 	{
 		return array(
 			'id' => $this->payment->vendor->id,
-			'name' => $this->payment->vendor->first_name.' '.$this->payment->vendor->last_name,
-			'company_name' => $this->payment->vendor->company_name,
+			'display_name' => $this->payment->vendor->display_name,
 		);
 	}
 

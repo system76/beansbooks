@@ -340,9 +340,7 @@ class View_Vendors_Print_Checkshtml extends View_Print {
 	protected function _vendor_array($vendor)
 	{
 		return array(
-			'name' => ( $vendor->company_name )
-				   ? $vendor->company_name
-				   : $vendor->first_name.' '.$vendor->last_name,
+			'name' => $vendor->display_name,
 		);
 	}
 

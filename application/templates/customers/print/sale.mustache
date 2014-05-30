@@ -9,8 +9,7 @@
 				{{phone}} {{#phone}}{{#email}}|{{/email}}{{/phone}} {{email}}
 			{{/billing}}
 			{{^billing}}
-				Bill To: {{customer_company_name}}<br>
-				{{customer_name}}
+				Bill To: {{#customer}}{{display_name}}{{/customer}}
 			{{/billing}}
 		</td>
 		<td style="vertical-align: top; padding-left: 5px; width: 32%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
@@ -22,8 +21,7 @@
 				{{phone}} {{#phone}}{{#email}}|{{/email}}{{/phone}} {{email}}
 			{{/shipping}}
 			{{^shipping}}
-				Ship To: {{customer_company_name}}<br>
-				{{customer_name}}
+				Ship To: {{#customer}}{{display_name}}{{/customer}}
 			{{/shipping}}
 		</td>
 		<td style="vertical-align: top; padding-right: 5px; width: 36%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px;">
