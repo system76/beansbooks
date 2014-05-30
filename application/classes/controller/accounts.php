@@ -296,7 +296,7 @@ class Controller_Accounts extends Controller_View {
 							$account_transactions[] = (object)array(
 								'account_id' => $account_id,
 								'hash' => $i++,
-								'amount' => ( $transaction->TRNAMT * $account_table_sign ),
+								'amount' => ( floatval($transaction->TRNAMT) * $account_table_sign ),
 								'description' => $transaction->NAME,
 								'date' => substr($transaction->DTPOSTED,0,4).'-'.substr($transaction->DTPOSTED,4,2).'-'.substr($transaction->DTPOSTED,6,2),
 								'number' =>  isset($transaction->CHECKNUM) ? $transaction->CHECKNUM : $transaction->TRNTYPE ,
