@@ -476,7 +476,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 						}
 						results[index] = {
 							id: id,
-							text: data.data.vendors[index].company_name
+							text: data.data.vendors[index].display_name
 						}
 					}
 					return {results: results};
@@ -584,7 +584,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 							} else {
 								var vendor = data.data.vendor;
 								var select2data = {
-									text: vendor.company_name,
+									text: vendor.display_name,
 									id: vendor.id+'#'
 								};
 								if( vendor.default_remit_address_id !== undefined &&
@@ -682,7 +682,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								// KISS
 								var vendor = data.data.vendor;
 								var select2data = {
-									text: vendor.company_name,
+									text: vendor.display_name,
 									id: vendor.id+'#'
 								};
 								if( vendor.default_remit_address_id !== undefined &&
@@ -1549,7 +1549,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					var results = new Array();
 					for( index in data.data.vendors ) {
 						results[index] = {
-							text: data.data.vendors[index].company_name,
+							text: data.data.vendors[index].display_name,
 							id: 
 								data.data.vendors[index].id
 								+'#'+
@@ -2253,7 +2253,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					var results = new Array();
 					for( index in data.data.vendors ) {
 						results[index] = {
-							text: data.data.vendors[index].company_name,
+							text: data.data.vendors[index].display_name,
 							id: 
 								data.data.vendors[index].id
 								+'#'+
@@ -4111,9 +4111,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								}
 
 								if( expense_data.data.expense.vendor.default_account ) {
-									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#'+expense_data.data.expense.vendor.default_account.id+'#'+expense_data.data.expense.vendor.default_account.terms, text: expense_data.data.expense.vendor.company_name});
+									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#'+expense_data.data.expense.vendor.default_account.id+'#'+expense_data.data.expense.vendor.default_account.terms, text: expense_data.data.expense.vendor.display_name});
 								} else {
-									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#', text: expense_data.data.expense.vendor.company_name});
+									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#', text: expense_data.data.expense.vendor.display_name});
 								}
 
 								$('#vendors-expenses-create input[name="vendor"]').select2("disable");
@@ -4500,9 +4500,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								}
 								
 								if( purchase_data.data.purchase.vendor.default_account ) {
-									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#'+purchase_data.data.purchase.vendor.default_account.id+'#'+purchase_data.data.purchase.vendor.default_account.terms, text: purchase_data.data.purchase.vendor.company_name});
+									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#'+purchase_data.data.purchase.vendor.default_account.id+'#'+purchase_data.data.purchase.vendor.default_account.terms, text: purchase_data.data.purchase.vendor.display_name});
 								} else {
-									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#', text: purchase_data.data.purchase.vendor.company_name});
+									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#', text: purchase_data.data.purchase.vendor.display_name});
 								}
 
 								$('#vendors-purchases-create input[name="vendor"]').select2("disable");
@@ -4725,7 +4725,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					$('#vendors-payments-create').attr('rel',data.data.payment.id);
 					// Assign appropriate values to batch payment form and make everything readonly.
 					$('#vendors-payments-create input[name="date"]').val(data.data.payment.date);
-					$('#vendors-payments-create input[name="vendor_id"]').select2('data',{id:data.data.payment.vendor.id, text: data.data.payment.vendor.company_name});
+					$('#vendors-payments-create input[name="vendor_id"]').select2('data',{id:data.data.payment.vendor.id, text: data.data.payment.vendor.display_name});
 
 					createVendorPaymentFetchAddresses();
 
