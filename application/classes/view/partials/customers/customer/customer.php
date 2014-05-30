@@ -26,6 +26,11 @@ class View_Partials_Customers_Customer_Customer extends Kostache {
 		return $this->customer->id;
 	}
 
+	public function display_name()
+	{
+		return $this->customer->display_name;
+	}
+
 	public function first_name()
 	{
 		return $this->customer->first_name;

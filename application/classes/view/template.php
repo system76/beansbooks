@@ -525,6 +525,9 @@ class View_Template extends Kostache_Layout {
 		return array(
 			"id" => $customer->id,
 			"display_name" => $customer->display_name,
+			'first_name' => $customer->first_name,
+			'last_name' => $customer->last_name,
+			'company_name' => $customer->company_name,
 			"email" => $customer->email,
 			"phone_number" => $customer->phone_number,
 			"fax_number" => $customer->fax_number,
@@ -565,6 +568,7 @@ class View_Template extends Kostache_Layout {
 			'customer' => array(
 				'id' => $sale->customer->id,
 				'display_name' => $sale->customer->display_name,
+				'name' => $sale->customer->display_name,
 			),
 			'invoiced' => ( $sale->date_billed ? TRUE : FALSE ),
 			'cancelled' => ( $sale->date_cancelled ? TRUE : FALSE ),
@@ -687,6 +691,9 @@ class View_Template extends Kostache_Layout {
 		return array(
 			"id" => $vendor->id,
 			"display_name" => $vendor->display_name,
+			'first_name' => $vendor->first_name,
+			'last_name' => $vendor->last_name,
+			'company_name' => $vendor->company_name,
 			"email" => $vendor->email,
 			"phone_number" => $vendor->phone_number,
 			"fax_number" => $vendor->fax_number,
