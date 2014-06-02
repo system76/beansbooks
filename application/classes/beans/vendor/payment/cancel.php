@@ -71,7 +71,7 @@ class Beans_Vendor_Payment_Cancel extends Beans_Vendor_Payment {
 		if( ! $account_transaction_delete_result->success )
 			throw new Exception("Error cancelling payment: ".$account_transaction_delete_result->error);
 		
-		// Recalibrate Customer Invoices / Cancellations
+		// Recalibrate Vendor Invoices / Cancellations
 		$vendor_purchase_calibrate_invoice = new Beans_Vendor_Purchase_Calibrate_Invoice($this->_beans_data_auth((object)array(
 			'ids' => $handled_purchase_ids,
 		)));
@@ -80,7 +80,7 @@ class Beans_Vendor_Payment_Cancel extends Beans_Vendor_Payment {
 		if( ! $vendor_purchase_calibrate_invoice_result->success )
 			throw new Exception("UNEXPECTED ERROR: COULD NOT CALIBRATE VENDOR PURCHASES: ".$vendor_purchase_calibrate_invoice_result->error);
 
-		// Recalibrate Customer Invoices / Cancellations
+		// Recalibrate Vendor Invoices / Cancellations
 		$vendor_purchase_calibrate_cancel = new Beans_Vendor_Purchase_Calibrate_Cancel($this->_beans_data_auth((object)array(
 			'ids' => $handled_purchase_ids,
 		)));
