@@ -25,10 +25,23 @@ class Controller_Dash_Json extends Controller_Json {
 		$date_end = $this->request->post('date_end');
 
 		if( ! $date_start )
-			$date_start = date("Y-m-d",strtotime("-6 Months"));
+		{
+			if( Session::instance()->get('dash_incomeexpense_date_start') )
+				$date_start = Session::instance()->get('dash_incomeexpense_date_start');
+			else
+				$date_start = date("Y-m-d",strtotime("-6 Months"));
+		}
 
 		if( ! $date_end )
-			$date_end = date("Y-m-d");
+		{
+			if( Session::instance()->get('dash_incomeexpense_date_end') )
+				$date_end = Session::instance()->get('dash_incomeexpense_date_end');
+			else
+				$date_end = date("Y-m-d");
+		}
+
+		Session::instance()->set('dash_incomeexpense_date_start',$date_start);
+		Session::instance()->set('dash_incomeexpense_date_end',$date_end);
 
 		$report_budget = new Beans_Report_Budget($this->_beans_data_auth((object)array(
 			'date_start' => $date_start,
@@ -58,16 +71,29 @@ class Controller_Dash_Json extends Controller_Json {
 		$date_end = $this->request->post('date_end');
 
 		if( ! $date_start )
-			$date_start = date("Y-m",strtotime("-11 Months")).'-01';
+		{
+			if( Session::instance()->get('dash_income_date_start') )
+				$date_start = Session::instance()->get('dash_income_date_start');
+			else
+				$date_start = date("Y-m",strtotime("-11 Months")).'-01';
+		}
 
 		if( ! $date_end )
-			$date_end = date("Y-m-d");
+		{
+			if( Session::instance()->get('dash_income_date_end') )
+				$date_end = Session::instance()->get('dash_income_date_end');
+			else
+				$date_end = date("Y-m-d");
+		}
 
 		if( strtotime($date_end) < strtotime($date_start) )
 		{
 			$date_start = date("Y-m",strtotime("-11 Months")).'-01';
 			$date_end = date("Y-m-d");
 		}
+
+		Session::instance()->set('dash_income_date_start',$date_start);
+		Session::instance()->set('dash_income_date_end',$date_end);
 
 		$date_counter = $date_start;
 
@@ -118,7 +144,14 @@ class Controller_Dash_Json extends Controller_Json {
 		$date = $this->request->post('date');
 
 		if( ! $date )
-			$date = date("Y-m-d");
+		{
+			if( Session::instance()->get('dash_expense_date') )
+				$date = Session::instance()->get('dash_expense_date');
+			else
+				$date = date("Y-m-d");
+		}
+
+		Session::instance()->set('dash_expense_date',$date);
 
 		$report_budget = new Beans_Report_Budget($this->_beans_data_auth((object)array(
 			'date_start' => date("Y-m",strtotime($date))."-01",
