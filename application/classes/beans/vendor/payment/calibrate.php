@@ -17,6 +17,20 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+/*
+---BEANSAPISPEC---
+@action Beans_Vendor_Payment_Calibrate
+@description Re-calibrate the transactions tied to one or more payments.  This is used mostly by internal functions.  Requires at least one parameter to be provided.
+@required auth_uid
+@required auth_key
+@required auth_expiration
+@optional ids ARRAY The IDs of the #Beans_Vendor_Payment# objects to calibrate.
+@optional date_before STRING Filter for all payments before a specific date.
+@optional date_after STRING Filter for all payments after a specific date.
+@optional after_payment_id INTEGER Filter for all payments after a particular payment in the journal.
+@optional before_payment_id INTEGER Filter for all payments before a particular payment in the journal.
+---BEANSENDSPEC---
+*/
 class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 
 	protected $_auth_role_perm = "vendor_payment_write";

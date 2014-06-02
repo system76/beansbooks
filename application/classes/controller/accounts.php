@@ -176,54 +176,25 @@ class Controller_Accounts extends Controller_View {
 		}
 	}
 
-	public function action_calibrate()
-	{
-		$account_id = $this->request->param('id');
-
-		$account_calibrate = new Beans_Account_Calibrate($this->_beans_data_auth((object)array('id' => $account_id)));
-		$account_calibrate_result = $account_calibrate->execute();
-
-		if( $this->_beans_result_check($account_calibrate_result) )
-		{
-			$this->_view->account_calibrate_result = $account_calibrate_result;
-		}
-
-	}
-
 	public function action_calibrateall()
 	{
 		set_time_limit(60 * 10);
 		
-		$account_search = new Beans_Account_Search($this->_beans_data_auth());
-		$account_search_result = $account_search->execute();
+		$account_calibrate = new Beans_Account_Calibrate($this->_beans_data_auth());
+		$account_calibrate_result = $account_calibrate->execute();
 
-		if( ! $account_search_result->success )
+		if( ! $account_calibrate_result->success )
 		{
-			Session::instance()->set('global_error_message',$account_search_result->error.$account_search_result->auth_error.$account_search_result->config_error);
+			Session::instance()->set('global_error_message',$account_calibrate_result->error.$account_calibrate_result->auth_error.$account_calibrate_result->config_error);
 			$this->request->redirect('/accounts/');
 		}
 
-		$success = '';
-
-		foreach( $account_search_result->data->accounts as $account )
-		{
-			$account_calibrate = new Beans_Account_Calibrate($this->_beans_data_auth((object)array('id' => $account->id)));
-			$account_calibrate_result = $account_calibrate->execute();
-
-			if( ! $account_calibrate_result->success )
-			{
-				Session::instance()->set('global_error_message',$account_calibrate_result->error.$account_calibrate_result->auth_error.$account_calibrate_result->config_error);
-				$this->request->redirect('/accounts/');
-			}
-
-			if( $account_calibrate_result->data->calibrated_balance_shift != 0.00 )
-				$success .= 'Calibrated '.$account->name.' by '.$account_calibrate_result->data->calibrated_balance_shift.'<br>';
-		}
-
-		if( strlen($success) == 0 )
-			$success .= 'Calibration successful: no changes made.';
-		
-		Session::instance()->set('global_success_message',$success);
+		Session::instance()->set('global_success_message',
+			'Calibration successful. Adjusted '.
+			count($account_calibrate_result->data->calibrated_account_ids). 
+			' Account'.( count($account_calibrate_result->data->calibrated_account_ids) != 1 ? 's' : '' ).
+			' and '.count($account_calibrate_result->data->calibrated_form_ids).
+			' Form'.( count($account_calibrate_result->data->calibrated_form_ids) != 1 ? 's' : '' ).'.');
 		$this->request->redirect('/accounts/');
 	}
 

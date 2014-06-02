@@ -28,7 +28,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required account_id INTEGER The ID for the AP #Beans_Account# this purchase is being added to.
 @required date_created STRING The date of the purchase in YYYY-MM-DD format.
 @optional date_billed STRING The bill date in YYYY-MM-DD for the sale; adding this will automatically convert it to an invoice.
-@optional invoice_number STRING This is required if date_billed is provided.
+@optional invoice_number STRING An invoice number to be tied to the purchase.
 @optional purchase_number STRING An purchase number to reference this purchase.  If none is created, it will auto-generate.
 @optional so_number STRING An SO number to reference this purchase.
 @optional quote_number STRING A quote number to reference this purchase.

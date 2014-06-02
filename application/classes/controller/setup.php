@@ -278,6 +278,12 @@ class Controller_Setup extends Controller_View {
 
 	public function action_calibrate()
 	{
+		$account_calibrate_check = new Beans_Account_Calibrate_Check($this->_beans_data_auth());
+		$account_calibrate_check_result = $account_calibrate_check->execute();
+
+		if( $this->_beans_result_check($account_calibrate_check_result) )
+			$this->_view->account_calibrate_check_result = $account_calibrate_check_result;
+
 		$report_balancecheck = new Beans_Report_Balancecheck($this->_beans_data_auth((object)array(
 			'date' => date("Y-m-d"),
 		)));

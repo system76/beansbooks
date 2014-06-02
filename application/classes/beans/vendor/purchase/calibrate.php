@@ -17,9 +17,18 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
-// This is a proxy function to both 
-// Beans_Vendor_Purchase_Calibrate_Invoice 
-// Beans_Vendor_Purchase_Calibrate_Cancel 
+/*
+---BEANSAPISPEC---
+@action Beans_Vendor_Purchase_Calibrate
+@description Re-calibrate the transactions tied to a particular purchase.  This is used mostly by internal functions.  Requires at least one parameter to be provided.
+@required auth_uid
+@required auth_key
+@required auth_expiration
+@optional ids ARRAY The IDs of the #Beans_Vendor_Purchase# objects to calibrate.
+@optional date_before STRING Filter for all purchases before a specific date.
+@optional date_after STRING Filter for all purchases after a specific date.
+---BEANSENDSPEC---
+*/
 class Beans_Vendor_Purchase_Calibrate extends Beans_Vendor_Purchase {
 
 	protected $_auth_role_perm = "vendor_purchase_write";

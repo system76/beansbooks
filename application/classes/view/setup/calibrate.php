@@ -21,6 +21,10 @@ class View_Setup_Calibrate extends View_Template {
 	
 	public function calibrate_required()
 	{
+		if( isset($this->account_calibrate_check_result->data->account_ids) &&
+			count($this->account_calibrate_check_result->data->account_ids) )
+			return TRUE;
+		
 		if( isset($this->setup_company_list_result->data->settings) &&
 			isset($this->setup_company_list_result->data->settings->calibrate_date_next) &&
 			$this->setup_company_list_result->data->settings->calibrate_date_next )
