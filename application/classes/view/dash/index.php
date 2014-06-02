@@ -107,28 +107,46 @@ class View_Dash_Index extends View_Template {
 	}
 
 	public function incomeexpense_date_start() {
-		return date("Y-m",strtotime("-5 Months")).'-01';
+		if( Session::instance()->get('dash_incomeexpense_date_start') )
+			return Session::instance()->get('dash_incomeexpense_date_start');
+
+		date("Y-m",strtotime("-5 Months")).'-01';
 	}
 
 	public function incomeexpense_date_end() {
+		if( Session::instance()->get('dash_incomeexpense_date_end') )
+			return Session::instance()->get('dash_incomeexpense_date_end');
+
 		return date("Y-m-d");
 	}
 
 	public function income_date_start() {
+		if( Session::instance()->get('dash_income_date_start') )
+			return Session::instance()->get('dash_income_date_start');
+
 		return date("Y-m",strtotime("-11 Months")).'-01';
 	}
 
 	public function income_date_end() {
+		if( Session::instance()->get('dash_income_date_end') )
+			return Session::instance()->get('dash_income_date_end');
+
 		return date("Y-m-d");
 	}
 
 	public function expenses_months() {
 		$return_array = array();
 
+		$date = date("Y-m-d");
+
+		if( Session::instance()->get('dash_expense_date') )
+			$date = Session::instance()->get('dash_expense_date');
+
 		for( $i = 0; $i <= 36; $i++ )
 			$return_array[] = array(
 				'value' => date("Y-m-d",strtotime("-".$i." Months")),
-				'label' => date("F Y",strtotime("-".$i." Months"))
+				'label' => date("F Y",strtotime("-".$i." Months")),
+				'default' => ( $date == date("Y-m-d",strtotime("-".$i." Months")) ) ? TRUE : FALSE,
 			);
 
 		return $return_array;
