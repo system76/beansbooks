@@ -35,8 +35,8 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required purchases ARRAY An array of objects representing the amount received for each sale.
 @required @attribute purchases purchase_id INTEGER The ID for the #Beans_Vendor_Purchase# being paid.
 @required @attribute purchases amount DECIMAL The amount being paid.
-@required @attribute purchases invoice_number STRING The invoice number being paid.
-@required @attribute purchases date_billed STRING The bill date in YYYY-MM-DD format.
+@optional @attribute purchases invoice_number STRING The invoice number being paid.
+@optional @attribute purchases date_billed STRING The bill date in YYYY-MM-DD format.
 @optional @attribute purchases writeoff_balance BOOLEAN Write off the remaining balance of the sale.
 @returns payment OBJECT The updated #Beans_Vendor_Payment#.
 ---BEANSENDSPEC---

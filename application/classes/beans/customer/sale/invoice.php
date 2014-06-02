@@ -25,7 +25,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_key
 @required auth_expiration
 @required id INTEGER The ID for the #Beans_Customer_Sale#.
-@required date_billed STRING The bill date in YYYY-MM-DD for the sale.
+@optional date_billed STRING The bill date in YYYY-MM-DD for the sale.  Default is today.
 @optional date_due STRING The due date in YYYY-MM-DD for the sale.  If not provided, will default to the date_billed + the terms days on the AR #Beans_Account#.
 @returns sale OBJECT The updated #Beans_Customer_Sale#.
 ---BEANSENDSPEC---

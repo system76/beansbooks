@@ -17,9 +17,18 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
-// This is a proxy function to both 
-// Beans_Customer_Sale_Calibrate_Invoice 
-// Beans_Customer_Sale_Calibrate_Cancel 
+/*
+---BEANSAPISPEC---
+@action Beans_Customer_Sale_Calibrate
+@description Re-calibrate the transactions tied to a particular sale.  This is used mostly by internal functions.  Requires at least one parameter to be provided.
+@required auth_uid
+@required auth_key
+@required auth_expiration
+@optional ids ARRAY The IDs of the #Beans_Customer_Sale# objects to calibrate.
+@optional date_before STRING Filter for all sales before a specific date.
+@optional date_after STRING Filter for all sales after a specific date.
+---BEANSENDSPEC---
+*/
 class Beans_Customer_Sale_Calibrate extends Beans_Customer_Sale {
 
 	protected $_auth_role_perm = "customer_sale_write";
