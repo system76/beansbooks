@@ -110,7 +110,7 @@ class View_Dash_Index extends View_Template {
 		if( Session::instance()->get('dash_incomeexpense_date_start') )
 			return Session::instance()->get('dash_incomeexpense_date_start');
 
-		date("Y-m",strtotime("-5 Months")).'-01';
+		return date("Y-m",strtotime("-5 Months")).'-01';
 	}
 
 	public function incomeexpense_date_end() {
