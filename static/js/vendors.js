@@ -2666,6 +2666,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 				$line.find('.vendor-paymentpo-numeric.amount input[type="text"]').attr('readonly',false);
 				$line.find('.vendor-paymentpo-so').find('input[type="text"]').attr('readonly',false);
 				$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false);
+				$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false);
 				$line.find('.vendor-paymentpo-add input[type="checkbox"]').attr('checked','checked');
 				checkboxUpdate($line.find('.vendor-paymentpo-add input[type="checkbox"]'));
 				checkboxUpdate($writeoffBalance);
