@@ -448,7 +448,7 @@ class Beans_Setup_Init extends Beans_Setup {
 			'balance' => NULL,
 		),
 		array(
-			'name' => 'BeansBooks Tracking Accounts ',
+			'name' => 'BeansBooks Tracking Accounts',
 			'code' => 'beans',
 			'parent_account_id' => NULL,
 			'account_type_id' => NULL,
@@ -771,7 +771,7 @@ class Beans_Setup_Init extends Beans_Setup {
 								'type' => "bankaccount",
 								'reserved' => TRUE,
 								'default_setting_account' => "purchase_prepaid_purchase_account_id",
-							)
+							),
 						),
 					),
 					array(

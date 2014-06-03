@@ -29,7 +29,7 @@ class Controller_Dash_Json extends Controller_Json {
 			if( Session::instance()->get('dash_incomeexpense_date_start') )
 				$date_start = Session::instance()->get('dash_incomeexpense_date_start');
 			else
-				$date_start = date("Y-m-d",strtotime("-6 Months"));
+				$date_start = date("Y-m",strtotime("-5 Months")).'-01';
 		}
 
 		if( ! $date_end )
