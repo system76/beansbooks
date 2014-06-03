@@ -771,7 +771,7 @@ class Beans_Setup_Init extends Beans_Setup {
 								'type' => "bankaccount",
 								'reserved' => TRUE,
 								'default_setting_account' => "purchase_prepaid_purchase_account_id",
-							)
+							),
 						),
 					),
 					array(
