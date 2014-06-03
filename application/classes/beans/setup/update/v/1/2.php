@@ -62,7 +62,7 @@ class Beans_Setup_Update_V_1_2 extends Beans_Setup_Update_V {
 				{
 					if( $account->name == "Current Assets" )
 						$parent_account_id = $account->id;
-					else if( $account->name == "BeansBooks Tracking Accounts" )
+					else if( strpos($account->name,"BeansBooks Tracking Accounts") !== FALSE )
 						$fallback_parent_account_id = $account->id;
 				}
 
