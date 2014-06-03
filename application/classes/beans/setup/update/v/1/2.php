@@ -60,9 +60,13 @@ class Beans_Setup_Update_V_1_2 extends Beans_Setup_Update_V {
 
 				foreach( ORM::Factory('account')->find_all() as $account )
 				{
+					// Find "Current Assets"
 					if( $account->name == "Current Assets" )
 						$parent_account_id = $account->id;
-					else if( strpos($account->name,"BeansBooks Tracking Accounts") !== FALSE )
+					// Fallback to "BeansBooks Tracking Accounts"
+					else if( ! $account->account_type_id &&
+							 ! $account->parent_account_id &&
+							 $account->reserved )
 						$fallback_parent_account_id = $account->id;
 				}
 
