@@ -183,21 +183,17 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				throw new Exception("Invalid payment purchase ".$purchase->code." included: vendor mismatch. All purchase purchases must belong to the same vendor.");
 
 			if( ! $purchase->date_billed AND 
-				! $purchase->invoice_transaction_id AND 
 				( 
 					( isset($purchase_payment->invoice_number) AND $purchase_payment->invoice_number ) OR
 					( isset($purchase_payment->date_billed) AND $purchase_payment->date_billed ) 
 				) )
 			{
-				$vendor_purchase_invoice_data = new stdClass;
-				$vendor_purchase_invoice_data->id = $purchase->id;
-				$vendor_purchase_invoice_data->validate_only = $this->_validate_only;
-				if( isset($purchase_payment->invoice_number) )
-					$vendor_purchase_invoice_data->invoice_number = $purchase_payment->invoice_number;
-				if( isset($purchase_payment->date_billed) )
-					$vendor_purchase_invoice_data->date_billed = $purchase_payment->date_billed;
-				
-				$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth($vendor_purchase_invoice_data));
+				$vendor_purchase_invoice = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(
+					'id' => $purchase->id,
+					'invoice_number' => $purchase_payment->invoice_number,
+					'date_billed' => $purchase_payment->date_billed,
+					'validate_only' => $this->_validate_only,
+				)));
 				$vendor_purchase_invoice_result = $vendor_purchase_invoice->execute();
 
 				if( ! $vendor_purchase_invoice_result->success )
@@ -206,13 +202,16 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 				// Reload the purchase
 				$purchase = $this->_load_vendor_purchase($purchase_payment->purchase_id);
 			}
-			else if( $purchase->date_billed AND 
-					 $purchase->invoice_transaction_id AND 
-					 ( isset($purchase_payment->invoice_number) AND $purchase_payment->invoice_number ) )
+			else if( $purchase->date_billed AND  
+					 ( 
+						( isset($purchase_payment->invoice_number) AND $purchase_payment->invoice_number ) OR
+						( isset($purchase_payment->date_billed) AND $purchase_payment->date_billed ) 
+					 ) )
 			{
 				$vendor_purchase_update_invoice = new Beans_Vendor_Purchase_Update_Invoice($this->_beans_data_auth((object)array(
 					'id' => $purchase->id,
 					'invoice_number' => $purchase_payment->invoice_number,
+					'date_billed' => $purchase_payment->date_billed,
 					'validate_only' => $this->_validate_only,
 				)));
 				$vendor_purchase_update_invoice_result = $vendor_purchase_update_invoice->execute();
