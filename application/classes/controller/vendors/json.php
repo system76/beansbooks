@@ -858,7 +858,7 @@ class Controller_Vendors_Json extends Controller_Json {
 	}
 
 	/**
-	 * Purchase Purchase Actions
+	 * Purchase Order Actions
 	 */
 	
 	public function action_purchasecreate()
@@ -1211,9 +1211,12 @@ class Controller_Vendors_Json extends Controller_Json {
 		$refund_purchase_data->date_created = ( $this->request->post('date_created') )
 										   ? date("Y-m-d",strtotime($this->request->post('date_created')))
 										   : date("Y-m-d");
+		$refund_purchase_data->date_billed = ( $this->request->post('date_billed') )
+										   ? date("Y-m-d",strtotime($this->request->post('date_billed')))
+										   : date("Y-m-d");
 		$refund_purchase_data->date_due = ( $this->request->post('date_due') )
 									   ? date("Y-m-d",strtotime($this->request->post('date_due')))
-									   : date("Y-m-d",strtotime($refund_purchase_data->date_created.' +'.$account_info[1].' Days'));
+									   : date("Y-m-d",strtotime($refund_purchase_data->date_billed.' +'.$account_info[1].' Days'));
 		$refund_purchase_data->remit_address_id = $this->request->post('remit_address_id');
 		$refund_purchase_data->account_id = $account_info[0];
 		$refund_purchase_data->purchase_number = $this->request->post('purchase_number'); 
@@ -1276,7 +1279,22 @@ class Controller_Vendors_Json extends Controller_Json {
 		$purchase_delete_result = $purchase_delete->execute();
 
 		if( ! $purchase_delete_result->success )
-			return $this->_return_error("An error occurred when trying to delete that purchase purchase:<br>".$this->_beans_result_get_error($purchase_delete_result));
+		{
+			$purchase_cancel = new Beans_Vendor_Purchase_Cancel($this->_beans_data_auth((object)array(
+				'id' => $purchase_id,
+			)));
+			$purchase_cancel_result = $purchase_cancel->execute();
+
+			if( ! $purchase_cancel_result->success )
+				return $this->_return_error("An error occurred when trying to cancel that purchase:<br>".$this->_beans_result_get_error($purchase_cancel_result));
+
+			$html = new View_Partials_Vendors_Purchases_Purchase;
+			$html->purchase = $purchase_cancel_result->data->purchase;
+			
+			$purchase_cancel_result->data->purchase->html = $html->render();
+
+			$this->_return_object->data->purchase = $purchase_cancel_result->data->purchase;
+		}
 	}
 
 	public function action_purchasesloadmore()
@@ -1431,7 +1449,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		// Validate
 		foreach( $purchases as $purchase )
 		{
-			$vendor_purchase_invoice_validate = new Beans_VEndor_Purchase_Invoice($this->_beans_data_auth((object)array(
+			$vendor_purchase_invoice_validate = new Beans_Vendor_Purchase_Invoice($this->_beans_data_auth((object)array(
 				'id' => $purchase->id,
 				'so_number' => $purchase->so_number,
 				'date_billed' => $purchase->date_billed,
@@ -1490,8 +1508,8 @@ class Controller_Vendors_Json extends Controller_Json {
 					'amount' => $this->request->post('purchase-amount-'.$key),
 					'writeoff_balance' => ( $this->request->post('purchase-balance-writeoff-'.$key) ) ? TRUE : FALSE,
 					'writeoff_amount' => $this->request->post('purchase-balance-writeoff-'.$key),
-					'date_billed' => ( $this->request->post('purchase-date_billed-'.$key) ? $this->request->post('purchase-date_billed-'.$key) : date("Y-m-d") ),
-					'invoice_number' => $this->request->post('purchase-invoice_number-'.$key),
+					'date_billed' => ( $this->request->post('purchase-date_billed-'.$key) ) ? $this->request->post('purchase-date_billed-'.$key) : NULL,
+					'invoice_number' => ( $this->request->post('purchase-invoice_number-'.$key) ) ? $this->request->post('purchase-invoice_number-'.$key) : NULL,
 					// Adding 'so_number' here would also be updated upon invoicing if applicable
 				);
 
@@ -1703,6 +1721,7 @@ class Controller_Vendors_Json extends Controller_Json {
 					'writeoff_balance' => ( $this->request->post('purchase-balance-writeoff-'.$key) ) ? TRUE : FALSE,
 					'writeoff_amount' => $this->request->post('purchase-balance-writeoff-'.$key),
 					'so_number' => $this->request->post('purchase-so_number-'.$key),
+					'date_billed' => ( $this->request->post('purchase-date_billed-'.$key) ) ? $this->request->post('purchase-date_billed-'.$key) : NULL,
 					'invoice_number' => $this->request->post('purchase-invoice_number-'.$key),
 				);
 
@@ -1723,7 +1742,6 @@ class Controller_Vendors_Json extends Controller_Json {
 				'purchases' => $purchases,
 			);
 
-			// REPLACE
 			$vendor_payment_replace_data->validate_only = TRUE;
 			$vendor_payment_replace_validate = new Beans_Vendor_Payment_Replace($this->_beans_data_auth($vendor_payment_replace_data));
 			$vendor_payment_replace_validate_result = $vendor_payment_replace_validate->execute();

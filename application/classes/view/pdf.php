@@ -26,12 +26,12 @@ class View_PDF {
 		return Helper_Address::CountryName($code);
 	}
 
-	protected function _skip_lines($count)
+	protected function _skip_lines($count, $line_height = 4)
 	{
 		for( $i = 0; $i < $count; $i++ )
 		{
 			$this->_pdf->Cell(0,10, '',0,0);
-			$this->_pdf->Ln(4);
+			$this->_pdf->Ln($line_height);
 		}
 	}
 

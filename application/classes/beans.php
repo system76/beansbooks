@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans {
 
-	protected $_BEANS_VERSION = '1.1.1';
+	protected $_BEANS_VERSION = '1.2';
 
 	private $_beans_settings;
 	private $_beans_config;
@@ -464,6 +464,91 @@ class Beans {
 			return TRUE;
 
 		return FALSE;
+	}
+
+	// Sort mechanism for usort() to properly order journal entries.
+	// Priority is date, close_books, id
+	protected function _journal_usort($a,$b)
+	{
+		if( strtotime($a->date) < strtotime($b->date) ) 
+			return -1;
+		else if( strtotime($a->date) > strtotime($b->date) )
+			return 1;
+
+		// Reverse numerical order - close books transactions take place "in between dates"
+		if( $a->closebooks > $b->closebooks )
+			return -1;
+		else if( $a->closebooks < $b->closebooks )
+			return 1;
+
+		return ( $a->id < $b->id ? -1 : 1 );
+	}
+
+	// Determine if $a_date + $a_id is decidedly before $b_date + $b_id
+	// Returns -1 if before, +1 if after, 0 if even
+	protected function _journal_cmp($a_date,$a_id,$b_date,$b_id)
+	{
+		if( $a_date < $b_date )
+		{
+			return -1;
+		}
+		else if( $a_date > $b_date )
+		{
+			return 1;
+		}
+		else
+		{
+			if( ! $a_id )
+				return 1;
+			
+			if( ! $b_id )
+				return -1;
+
+			if( $a_id == $b_id )
+				return 0;
+
+			return ( $a_id < $b_id ) ? -1 : 1;
+		}
+	}
+
+
+	// Would love to replace this with a query - requires adding fields to account_transaction_forms
+	// Some enumerated field that could be "create", "invoice", "cancel", "payment"
+	protected function _get_form_effective_balance($form,$date,$transaction_id)
+	{
+		$sale_balance = 0.00;
+
+		foreach( $form->account_transaction_forms->find_all() as $account_transaction_form )
+		{
+			// If a transaction is either the creation transaction for this form OR
+			// it is a payment that occurred on or before the creation date AND
+			// optionally before the transaction_id - then we add it into the balance.
+			if( (
+					$account_transaction_form->account_transaction->transaction_id == $form->create_transaction_id OR
+					( 
+						$account_transaction_form->account_transaction->transaction->payment 
+						AND 
+						( 
+							strtotime($account_transaction_form->account_transaction->date) < strtotime($date) OR
+							(
+								$account_transaction_form->account_transaction->date == $date &&
+								(
+									! $transaction_id || 
+									$account_transaction_form->account_transaction->transaction_id < $transaction_id
+								)
+							)
+						)
+					) 
+				) )
+			{
+				$sale_balance = $this->_beans_round(
+					$sale_balance +
+					$account_transaction_form->amount
+				);
+			}
+		}
+
+		return $sale_balance;
 	}
 
 }

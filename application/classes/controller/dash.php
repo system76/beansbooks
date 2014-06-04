@@ -598,16 +598,28 @@ class Controller_Dash extends Controller_View {
 		$setup_company_list = new Beans_Setup_Company_List($this->_beans_data_auth());
 		$setup_company_list_result = $setup_company_list->execute();
 
-		$incomplete_calibration = FALSE;
+		$require_calibration = FALSE;
 		$report_balancecheck_result = FALSE;
 
 		if( isset($setup_company_list_result->data) &&
 			isset($setup_company_list_result->data->settings) &&
 			isset($setup_company_list_result->data->settings->calibrate_date_next) &&
 			$setup_company_list_result->data->settings->calibrate_date_next )
-			$incomplete_calibration = TRUE;
+			$require_calibration = TRUE;
 
-		if( ! $incomplete_calibration )
+		if( ! $require_calibration )
+		{
+			$account_calibrate_check = new Beans_Account_Calibrate_Check($this->_beans_data_auth());
+			$account_calibrate_check_result = $account_calibrate_check->execute();
+
+			if( ! $account_calibrate_check_result->success )
+				return array();
+
+			if( count($account_calibrate_check_result->data->account_ids) )
+				$require_calibration = TRUE;
+		}
+
+		if( ! $require_calibration )
 		{
 			$report_balancecheck = new Beans_Report_Balancecheck($this->_beans_data_auth((object)array(
 				'date' => date("Y-m-d"),
@@ -618,7 +630,7 @@ class Controller_Dash extends Controller_View {
 				return array();
 		}
 
-		if( $incomplete_calibration ||
+		if( $require_calibration ||
 			(
 				$report_balancecheck_result &&
 				! $report_balancecheck_result->data->balanced 

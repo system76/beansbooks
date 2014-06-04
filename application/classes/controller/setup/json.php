@@ -272,7 +272,21 @@ class Controller_Setup_Json extends Controller_Json {
 
 		$date_end = $account_transaction_search_result->data->transactions[0]->date;
 
+		// First check if books are balanced as of yesterday - if so, just return yesterday.
+		$report_balancecheck = new Beans_Report_Balancecheck($this->_beans_data_auth((object)array(
+			'date' => date("Y-m-d", strtotime("-1 Day")),
+		)));
+		$report_balancecheck_result = $report_balancecheck->execute();
 
+		if( ! $report_balancecheck_result->success )
+			return $this->_return_error('Error finding first good date: '.$report_balancecheck_result->error);
+
+		if( $report_balancecheck_result->data->balanced )
+			$date_start = $report_balancecheck_result->data->date;
+		else
+			$date_end = $report_balancecheck_result->data->date;
+
+		// By default we calibrate the last two days - forces a smooth JS experience.
 		while( $date_start != $date_end &&
 			   ( strtotime($date_end) - strtotime($date_start) ) > ( 60 * 60 * 24 * 2 ) ) 
 		{
@@ -314,29 +328,25 @@ class Controller_Setup_Json extends Controller_Json {
 		set_time_limit(60 * 10);
 		ini_set('memory_limit', '256M');
 
-		$customer_invoice_updatebatch = new Beans_Customer_Sale_Invoice_Updatebatch($this->_beans_data_auth((object)array(
-			'date' => $date,
+		// Recalibrate Customer Invoices / Cancellations
+		$customer_sale_calibrate = new Beans_customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
 		)));
-		$customer_invoice_updatebatch_result = $customer_invoice_updatebatch->execute();
+		$customer_sale_calibrate_result = $customer_sale_calibrate->execute();
 
-		if( ! $customer_invoice_updatebatch_result->success )
-			return $this->_return_error('Error updating customer invoices: '.$customer_invoice_updatebatch_result->error);
+		if( ! $customer_sale_calibrate_result->success )
+			return $this->_return_error('Error updating customer sales: '.$customer_sale_calibrate_result->error);
 
-		$customer_cancel_updatebatch = new Beans_Customer_Sale_Cancel_Updatebatch($this->_beans_data_auth((object)array(
-			'date' => $date,
+		// Recalibrate any payments tied to these sales AFTER this transaction date.
+		$customer_payment_calibrate = new Beans_Customer_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
 		)));
-		$customer_cancel_updatebatch_result = $customer_cancel_updatebatch->execute();
+		$customer_payment_calibrate_result = $customer_payment_calibrate->execute();
 
-		if( ! $customer_cancel_updatebatch_result->success )
-			return $this->_return_error('Error updating cancelled customer sales: '.$customer_cancel_updatebatch_result->error);
-
-		$customer_payment_calibratebatch = new Beans_Customer_Payment_Calibratebatch($this->_beans_data_auth((object)array(
-			'date' => $date,
-		)));
-		$customer_payment_calibratebatch_result = $customer_payment_calibratebatch->execute();
-
-		if( ! $customer_payment_calibratebatch_result->success )
-			return $this->_return_error('Error updating customer payments: '.$customer_payment_calibratebatch_result->error);
+		if( ! $customer_payment_calibrate_result->success )
+			return $this->_return_error('Error updating customer payments: '.$customer_payment_calibrate_result->error);
 
 		$this->_return_object->data->date_next = date("Y-m-d",strtotime($date." +1 Day"));		
 
@@ -356,23 +366,11 @@ class Controller_Setup_Json extends Controller_Json {
 		{
 			$this->_return_object->data->date_next = FALSE;
 
-			// Calibrate Account Balances
-			$account_search = new Beans_Account_Search($this->_beans_data_auth());
-			$account_search_result = $account_search->execute();
+			$account_calibrate = new Beans_Account_Calibrate($this->_beans_data_auth());
+			$account_calibrate_result = $account_calibrate->execute();
 
-			if( ! $account_search_result->success )
-				return $this->_return_error('Could not look up accounts for final calibration.');
-
-			$success = '';
-
-			foreach( $account_search_result->data->accounts as $account )
-			{
-				$account_calibrate = new Beans_Account_Calibrate($this->_beans_data_auth((object)array('id' => $account->id)));
-				$account_calibrate_result = $account_calibrate->execute();
-
-				if( ! $account_calibrate_result->success )
-					return $this->_return_error('Error calibrating account balance for '.$account->name.'.');
-			}
+			if( ! $account_calibrate_result->success )
+				return $this->_return_error('Error calibrating individual account balances: '.$account_calibrate_result->error);
 		}
 
 		// Update our latest date in case user pauses and comes back later.

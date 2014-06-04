@@ -34,11 +34,6 @@ class Beans_Customer_Sale_Delete extends Beans_Customer_Sale {
 	protected $_id;
 	protected $_sale;
 
-	/**
-	 * Delete and sale with a given ID.
-	 * @param array $data Array of parameters by keys:
-	 *                    'id' => ID of the customer to lookup.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);

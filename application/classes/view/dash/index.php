@@ -107,28 +107,46 @@ class View_Dash_Index extends View_Template {
 	}
 
 	public function incomeexpense_date_start() {
+		if( Session::instance()->get('dash_incomeexpense_date_start') )
+			return Session::instance()->get('dash_incomeexpense_date_start');
+
 		return date("Y-m",strtotime("-5 Months")).'-01';
 	}
 
 	public function incomeexpense_date_end() {
+		if( Session::instance()->get('dash_incomeexpense_date_end') )
+			return Session::instance()->get('dash_incomeexpense_date_end');
+
 		return date("Y-m-d");
 	}
 
 	public function income_date_start() {
+		if( Session::instance()->get('dash_income_date_start') )
+			return Session::instance()->get('dash_income_date_start');
+
 		return date("Y-m",strtotime("-11 Months")).'-01';
 	}
 
 	public function income_date_end() {
+		if( Session::instance()->get('dash_income_date_end') )
+			return Session::instance()->get('dash_income_date_end');
+
 		return date("Y-m-d");
 	}
 
 	public function expenses_months() {
 		$return_array = array();
 
+		$date = date("Y-m-d");
+
+		if( Session::instance()->get('dash_expense_date') )
+			$date = Session::instance()->get('dash_expense_date');
+
 		for( $i = 0; $i <= 36; $i++ )
 			$return_array[] = array(
 				'value' => date("Y-m-d",strtotime("-".$i." Months")),
-				'label' => date("F Y",strtotime("-".$i." Months"))
+				'label' => date("F Y",strtotime("-".$i." Months")),
+				'default' => ( $date == date("Y-m-d",strtotime("-".$i." Months")) ) ? TRUE : FALSE,
 			);
 
 		return $return_array;
@@ -282,8 +300,8 @@ class View_Dash_Index extends View_Template {
 					  ? '/customers/invoices/'.$form->id
 					  : '/vendors/purchases/'.$form->id,
 				'name' => ( isset($form->customer) )
-					   ? $form->customer->first_name.' '.$form->customer->last_name
-					   : $form->vendor->company_name,
+					   ? $form->customer->display_name
+					   : $form->vendor->display_name,
 				'amount_formatted' => ( ( ( isset($form->customer) AND $form->balance > 0 ) OR ( ! isset($form->customer) AND $form->balance < 0 ) ) ? '<span class="text-red">-' : '' ).
 										$settings->company_currency.
 										number_format(abs($form->balance),2,'.',',').

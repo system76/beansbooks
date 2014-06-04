@@ -17,15 +17,13 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+// TODO DOCME
 class Beans_Auth_Reset extends Beans_Auth {
 
-	protected $_auth_role_perm = FALSE;		// Make sure this is available to any user ( not logged in ).
+	protected $_auth_role_perm = FALSE;
 
 	protected $_data;
 
-	/**
-	 * Attempt to login and establish session authentication.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -33,7 +31,6 @@ class Beans_Auth_Reset extends Beans_Auth {
 		$this->_data = $data;
 	}
 
-	// This is a bit non-standard but it fits two sides of the same coin.
 	protected function _execute()
 	{
 		if( ! isset($this->_data->email) )

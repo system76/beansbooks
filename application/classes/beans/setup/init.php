@@ -448,7 +448,7 @@ class Beans_Setup_Init extends Beans_Setup {
 			'balance' => NULL,
 		),
 		array(
-			'name' => 'BeansBooks Tracking Accounts ',
+			'name' => 'BeansBooks Tracking Accounts',
 			'code' => 'beans',
 			'parent_account_id' => NULL,
 			'account_type_id' => NULL,
@@ -682,6 +682,11 @@ class Beans_Setup_Init extends Beans_Setup {
 			'value' => NULL,
 			'reserved' => TRUE,
 		),
+		array(
+			'key' => 'purchase_prepaid_purchase_account_id',
+			'value' => NULL,
+			'reserved' => TRUE,
+		),
 		
 	);
 
@@ -732,116 +737,12 @@ class Beans_Setup_Init extends Beans_Setup {
 						'type' => "shorttermdebt",
 						'reserved' => TRUE,
 						'default_setting_account' => "sale_deferred_liability_account_id",
-					)
-				),
-			),
-		),
-		'minimal' => array(
-			'name' => "Minimal",
-			'description' => "A minimal structure for broken-out expenses, assets, liabilities, etc.",
-			'accounts' => array(
-				'assets' => array(
+					),
 					array(
-						'name' => "Current Assets",
+						'name' => 'Prepaid Purchase Orders',
 						'type' => "bankaccount",
-					),
-					array(
-						'name' => "Accounts Receivable",
-						'type' => "accountsreceivable",
-						'terms' => 0,
-					),
-					array(
-						'name' => "Fixed Assets",
-						'type' => "fixedasset",
-					),
-				),
-
-				'liabilities' => array(
-					array(
-						'name' => "Long Term Debt",
-						'type' => "longtermdebt",
-					),
-					array(
-						'name' => "Short Term Debt",
-						'type' => 'shorttermdebt',
-					),
-				),
-
-				'income' => array(
-					array(
-						'name' => "Sales",
-						'type' => "income",
-						'default_setting_account' => "account_default_income",
-						'writeoff' => TRUE,
-					),
-				),
-
-				'costofgoods' => array(
-					array(
-						'name' => "Cost of Goods Sold",
-						'type' => "costofgoods",
-						'default_setting_account' => "account_default_costofgoods",
-						'writeoff' => TRUE,
-					),
-				),
-				'expenses' => array(
-					array(
-						'name' => "Generic Expense",
-						'type' => "expense",
-					),
-				),
-				'equity' => array(
-					array(
-						'name' => "Retained Earnings",
-						'type' => "equity",
-					),
-					array(
-						'name' => "Owners Distribution",
-						'type' => "equity",
-					),
-				),
-				'beans' => array(
-					array(
-						'name' => "Pending AR for Sales Orders",
-						'type' => "pending_ar",
 						'reserved' => TRUE,
-						'default_setting_account' => "sale_default_account_id",
-					),
-					array(
-						'name' => "Pending AP for Purchase Orders",
-						'type' => "pending_ap",
-						'reserved' => TRUE,
-						'default_setting_account' => "purchase_default_account_id",
-					),
-					array(
-						'name' => "Pending Income for Sales Orders",
-						'type' => "pending_income",
-						'reserved' => TRUE,
-						'default_setting_account' => "sale_default_line_account_id",
-					),
-					array(
-						'name' => "Pending Cost for Purchase Orders",
-						'type' => "pending_cost",
-						'reserved' => TRUE,
-						'default_setting_account' => "purchase_default_line_account_id",
-					),
-					array(
-						'name' => "Pending Liability for Sales Tax",
-						'type' => "pending_liability",
-						'reserved' => TRUE,
-						'default_setting_account' => "sale_default_tax_account_id",
-					),
-					array(
-						'name' => 'Deferred Income',
-						'type' => "shorttermdebt",
-						'reserved' => TRUE,
-						'default_setting_account' => "sale_deferred_income_account_id",
-					),
-					array(
-						'name' => 'Deferred Tax',
-						'type' => "shorttermdebt",
-						'reserved' => TRUE,
-						'default_setting_account' => "sale_deferred_liability_account_id",
+						'default_setting_account' => "purchase_prepaid_purchase_account_id",
 					)
 				),
 			),
@@ -864,6 +765,12 @@ class Beans_Setup_Init extends Beans_Setup {
 							array(
 								'name' => "Savings Account",
 								'type' => "bankaccount",
+							),
+							array(
+								'name' => 'Prepaid Purchase Orders',
+								'type' => "bankaccount",
+								'reserved' => TRUE,
+								'default_setting_account' => "purchase_prepaid_purchase_account_id",
 							),
 						),
 					),

@@ -17,16 +17,14 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+// TODO DOCME
 class Beans_Auth_Revoke extends Beans_Auth {
 
-	protected $_auth_role_perm = 'setup';		// Make sure this is available to any user ( not logged in ).
+	protected $_auth_role_perm = 'setup';
 
 	protected $_id;
 	protected $_user;
 
-	/**
-	 * Revoke the current auth expiration, effectively disabling an access key.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);

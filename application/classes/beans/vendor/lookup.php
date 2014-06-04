@@ -48,7 +48,7 @@ class Beans_Vendor_Lookup extends Beans_Vendor {
 	protected function _execute()
 	{
 		if( ! $this->_vendor->loaded() )
-			throw new Exception("Customer could not be found.");
+			throw new Exception("Vendor could not be found.");
 
 		$vendor_purchase_search = new Beans_Vendor_Purchase_Search($this->_beans_data_auth((object)array(
 			'vendor_id' => $this->_vendor->id,

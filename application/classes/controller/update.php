@@ -131,9 +131,9 @@ class Controller_Update extends Controller_View {
 				die(
 					'Error running update to version '.
 					$target_version.': '.
-					$setup_update_pending_result->error.
-					$setup_update_pending_result->auth_error.
-					$setup_update_pending_result->config_error."\n"
+					$setup_update_run_result->error.
+					$setup_update_run_result->auth_error.
+					$setup_update_run_result->config_error."\n"
 				);
 			}
 

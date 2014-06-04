@@ -30,8 +30,7 @@ class View_Partials_Vendors_Purchases_Purchase extends KOstache {
 	{
 		return array(
 			'id' => $this->purchase->vendor->id,
-			'name' => $this->purchase->vendor->first_name.' '.$this->purchase->vendor->last_name,
-			'company_name' => $this->purchase->vendor->company_name,
+			'display_name' => $this->purchase->vendor->display_name,
 			'email' => $this->purchase->vendor->email,
 		);
 	}
@@ -83,14 +82,15 @@ class View_Partials_Vendors_Purchases_Purchase extends KOstache {
 
 	public function can_cancel()
 	{
-		return ( ! $this->purchase->date_billed )
+		return ( ! $this->purchase->date_cancelled )
 			? TRUE
 			: FALSE;
 	}
 
 	public function can_refund()
 	{
-		return ( ! $this->purchase->refund_purchase_id AND 
+		return ( ! $this->purchase->date_cancelled AND
+				 ! $this->purchase->refund_purchase_id AND 
 				 $this->purchase->date_billed )
 			? TRUE
 			: FALSE;	

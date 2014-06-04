@@ -30,8 +30,7 @@ class View_Partials_Vendors_Expenses_Expense extends KOstache {
 	{
 		return array(
 			'id' => $this->expense->vendor->id,
-			'name' => $this->expense->vendor->first_name.' '.$this->expense->vendor->last_name,
-			'company_name' => $this->expense->vendor->company_name,
+			'display_name' => $this->expense->vendor->display_name,
 		);
 	}
 

@@ -17,15 +17,15 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
+
+// TODO DOCME
+// Add documentation for this method even though it's not meant to be used by the API.
 class Beans_Auth_Login extends Beans_Auth {
 
-	protected $_auth_role_perm = FALSE;		// Make sure this is available to any user ( not logged in ).
+	protected $_auth_role_perm = FALSE;
 
 	protected $_data;
 
-	/**
-	 * Attempt to login and establish session authentication.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -65,7 +65,7 @@ class Beans_Auth_Login extends Beans_Auth {
 
 		$expiration = ( $user->role->auth_expiration_length != 0 )
 					? ( time() + $user->role->auth_expiration_length )
-					: rand(11111,99999);						// Generate a random for salt.
+					: rand(11111,99999);
 
 		$user->auth_expiration = $expiration;
 		$user->save();

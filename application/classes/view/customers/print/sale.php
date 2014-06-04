@@ -32,16 +32,14 @@ class View_Customers_Print_Sale extends View_Print {
 		return $this->sale->title;
 	}
 
-	public function customer_company_name()
+	public function customer()
 	{
-		return ( $this->sale->customer->company_name ? $this->sale->customer->company_name : FALSE );
+		return array(
+			'id' => $this->sale->customer->id,
+			'display_name' => $this->sale->customer->display_name,
+		);
 	}
-
-	public function customer_name()
-	{
-		return $this->sale->customer->first_name.' '.$this->sale->customer->last_name;
-	}
-
+	
 	public function billing()
 	{
 		if( ! $this->sale->billing_address )

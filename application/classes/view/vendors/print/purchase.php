@@ -19,17 +19,14 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class View_Vendors_Print_Purchase extends View_Print {
 
-	// Receives $this->purchase
-	public function vendor_company_name()
+	public function vendor()
 	{
-		return ( $this->purchase->vendor->company_name ? $this->purchase->vendor->company_name : FALSE );
+		return array(
+			'id' => $this->purchase->vendor->id,
+			'display_name' => $this->purchase->vendor->display_name,
+		);
 	}
-
-	public function vendor_name()
-	{
-		return $this->purchase->vendor->first_name.' '.$this->purchase->vendor->last_name;
-	}
-
+	
 	public function remit()
 	{
 		if( ! $this->purchase->remit_address ) 

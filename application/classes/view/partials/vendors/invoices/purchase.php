@@ -21,6 +21,13 @@ along with BeansBooks; if not, email info@beansbooks.com.
 class View_Partials_Vendors_Invoices_Purchase extends KOstache {
 	// Receives $this->purchase
 	
+	public function cancelled()
+	{
+		return ( $this->purchase->date_cancelled )
+			? TRUE 
+			: FALSE;
+	}
+
 	public function invoiced()
 	{
 		return ( $this->purchase->date_billed )
@@ -35,9 +42,7 @@ class View_Partials_Vendors_Invoices_Purchase extends KOstache {
 
 	public function vendor_name()
 	{
-		return ( $this->purchase->vendor->company_name )
-			? $this->purchase->vendor->company_name
-			: $this->purchase->vendor->first_name.' '.$this->purchase->vendor->last_name;
+		return $this->purchase->vendor->display_name;
 	}
 	
 	public function purchase_number()

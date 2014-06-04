@@ -52,13 +52,12 @@ class Beans_Account_Transaction_Search extends Beans_Account_Transaction {
 		'newest' => array(
 			'date' => 'desc',
 			'close_books' => 'asc',
-			'id' => 'desc',
-			//'sort' => 'desc'
+			'transaction_id' => 'desc',
 		),
 		'oldest' => array(
 			'date' => 'asc',
 			'close_books' => 'desc',
-			'id' => 'asc',
+			'transaction_id' => 'asc',
 		)
 	);
 

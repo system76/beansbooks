@@ -281,7 +281,7 @@ li.vendor-purchase > span.text-left {
 }
 
 .vendor-purchase-po, .vendor-purchase-so, .vendor-purchase-quote, .vendor-purchase-status {
-	width: 110px;
+	width: 100px;
 }
 
 .vendor-purchase-total {
@@ -294,7 +294,7 @@ li.vendor-purchase > span.text-left {
 
 
 .vendor-purchase-actions {
-	width: 203px;
+	width: 245px;
 }
 
 .vendor-purchase-actions a {

@@ -476,7 +476,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 						}
 						results[index] = {
 							id: id,
-							text: data.data.vendors[index].company_name
+							text: data.data.vendors[index].display_name
 						}
 					}
 					return {results: results};
@@ -584,7 +584,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 							} else {
 								var vendor = data.data.vendor;
 								var select2data = {
-									text: vendor.company_name,
+									text: vendor.display_name,
 									id: vendor.id+'#'
 								};
 								if( vendor.default_remit_address_id !== undefined &&
@@ -658,7 +658,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		});
 
 		/**
-		 * Purchase Purchase Dialogs - Vendor and Address
+		 * Purchase Order Dialogs - Vendor and Address
 		 */
 		$('#vendors-purchases-dialog-vendor-create').modaldialog({
 			autoOpen: false,
@@ -682,7 +682,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								// KISS
 								var vendor = data.data.vendor;
 								var select2data = {
-									text: vendor.company_name,
+									text: vendor.display_name,
 									id: vendor.id+'#'
 								};
 								if( vendor.default_remit_address_id !== undefined &&
@@ -799,7 +799,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 
 		/**
-		 * Vendors / Purchase Purchases
+		 * Vendors / Purchase Orders
 		 */
 		// Add one expense line by default.
 		if( $('#vendors-purchases-create-form-lines').length ) {
@@ -1346,6 +1346,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 		$('#vendors-purchases-create-form-delete').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			cancel_vendor_purchase_id = $('#vendors-purchases-create').attr('rel');
 			showConfirm("Are you certain you want to delete this purchase purchase?","Yes, Delete.","No.",cancelVendorPurchase);
 			return false;
@@ -1353,24 +1356,32 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 		$('#vendors-purchases-create-form-return').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			loadPurchase($('#vendors-purchases-create').attr('rel'),true);
 		});
 
 		$('#vendors-purchases-create-form-print').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			printVendorPurchase($('#vendors-purchases-create').attr('rel'));
 		});
 
 		$('#vendors-purchases-create-form-editcancel').click(function (e) {
 			e.preventDefault();
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
+				return false;
+			}
 			createPurchaseClearForm();
 			return false;
 		});
 
 		$('#vendors-purchases-create-form-edit').click(function(e) {
 			e.preventDefault();
-			if( $(this).attr('disabled') &&
-				$(this).attr('disabled').length ) {
+			if( $(this).attr('disabled') && $(this).attr('disabled').length ) {
 				return false;
 			}
 			if( ! $('#vendors-purchases-create').attr('rel') ||
@@ -1383,6 +1394,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			});
 			$('#vendors-purchases-create input.datepicker').each(function() {
 				$(this).attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
+			});
+			$('#vendors-purchases-create-form-lines select.account_id').each(function () {
+				$(this).select2("enable");
 			});
 
 			$('#vendors-purchases-create input[name="shipping_address_id"]').select2('enable');
@@ -1538,7 +1552,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					var results = new Array();
 					for( index in data.data.vendors ) {
 						results[index] = {
-							text: data.data.vendors[index].company_name,
+							text: data.data.vendors[index].display_name,
 							id: 
 								data.data.vendors[index].id
 								+'#'+
@@ -2242,7 +2256,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					var results = new Array();
 					for( index in data.data.vendors ) {
 						results[index] = {
-							text: data.data.vendors[index].company_name,
+							text: data.data.vendors[index].display_name,
 							id: 
 								data.data.vendors[index].id
 								+'#'+
@@ -2652,6 +2666,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 				$line.find('.vendor-paymentpo-numeric.amount input[type="text"]').attr('readonly',false);
 				$line.find('.vendor-paymentpo-so').find('input[type="text"]').attr('readonly',false);
 				$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false);
+				$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false);
 				$line.find('.vendor-paymentpo-add input[type="checkbox"]').attr('checked','checked');
 				checkboxUpdate($line.find('.vendor-paymentpo-add input[type="checkbox"]'));
 				checkboxUpdate($writeoffBalance);
@@ -4100,9 +4115,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								}
 
 								if( expense_data.data.expense.vendor.default_account ) {
-									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#'+expense_data.data.expense.vendor.default_account.id+'#'+expense_data.data.expense.vendor.default_account.terms, text: expense_data.data.expense.vendor.company_name});
+									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#'+expense_data.data.expense.vendor.default_account.id+'#'+expense_data.data.expense.vendor.default_account.terms, text: expense_data.data.expense.vendor.display_name});
 								} else {
-									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#', text: expense_data.data.expense.vendor.company_name});
+									$('#vendors-expenses-create input[name="vendor"]').select2("data", {id: expense_data.data.expense.vendor.id+'#'+expense_data.data.expense.vendor.default_remit_address_id+'#', text: expense_data.data.expense.vendor.display_name});
 								}
 
 								$('#vendors-expenses-create input[name="vendor"]').select2("disable");
@@ -4428,7 +4443,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 									$('#vendors-purchases-create input[name="shipping_address_id"]').select2('data',{});
 								}
 								
-								if( purchase_data.data.purchase.date_billed ) {
+								if( purchase_data.data.purchase.date_cancelled ) {
 									$('#vendors-purchases-create-form-edit').attr('disabled','disabled');
 									$('#vendors-purchases-create-form-delete').attr('disabled','disabled');
 								} else {
@@ -4436,7 +4451,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 									$('#vendors-purchases-create-form-delete').attr('disabled',false);
 								}
 
-								if( purchase_data.data.purchase.date_billed &&
+								if( ! purchase_data.data.purchase.date_cancelled &&
+									purchase_data.data.purchase.date_billed &&
 									purchase_data.data.purchase.balance == 0.00 ) {
 									$('#vendors-purchases-create-form-return').attr('disabled',false);
 								} else {
@@ -4488,9 +4504,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								}
 								
 								if( purchase_data.data.purchase.vendor.default_account ) {
-									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#'+purchase_data.data.purchase.vendor.default_account.id+'#'+purchase_data.data.purchase.vendor.default_account.terms, text: purchase_data.data.purchase.vendor.company_name});
+									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#'+purchase_data.data.purchase.vendor.default_account.id+'#'+purchase_data.data.purchase.vendor.default_account.terms, text: purchase_data.data.purchase.vendor.display_name});
 								} else {
-									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#', text: purchase_data.data.purchase.vendor.company_name});
+									$('#vendors-purchases-create input[name="vendor"]').select2("data", {id: purchase_data.data.purchase.vendor.id+'#'+purchase_data.data.purchase.vendor.default_remit_address_id+'#', text: purchase_data.data.purchase.vendor.display_name});
 								}
 
 								$('#vendors-purchases-create input[name="vendor"]').select2("disable");
@@ -4713,7 +4729,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					$('#vendors-payments-create').attr('rel',data.data.payment.id);
 					// Assign appropriate values to batch payment form and make everything readonly.
 					$('#vendors-payments-create input[name="date"]').val(data.data.payment.date);
-					$('#vendors-payments-create input[name="vendor_id"]').select2('data',{id:data.data.payment.vendor.id, text: data.data.payment.vendor.company_name});
+					$('#vendors-payments-create input[name="vendor_id"]').select2('data',{id:data.data.payment.vendor.id, text: data.data.payment.vendor.display_name});
 
 					createVendorPaymentFetchAddresses();
 
@@ -4762,8 +4778,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$balance = parseFloat($line.find('.vendor-paymentpo-numeric.balance').attr('rel')).toFixed(2);
 			$line.find('.vendor-paymentpo-numeric.amount').find('input[type="text"]').val($balance);
 			$line.find('.vendor-paymentpo-numeric.amount').find('input[type="text"]').attr('readonly',false);
-			$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false);
-			$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false);
+			$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').attr('readonly',false).attr('placeholder','Optional');
+			if( ! $line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').val().length ) {
+				$line.find('.vendor-paymentpo-date_billed').find('input[type="text"]').val(dateYYYYMMDD());
+			}
+			$line.find('.vendor-paymentpo-invoice').find('input[type="text"]').attr('readonly',false).attr('placeholder','Optional');;
 			$('#vendors-payments-create-purchases .vendor-paymentpo:first').after($line);
 			$line.addClass('selected');
 			$line.slideDown(function() {
@@ -4781,9 +4800,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$date_billed = $line.find('.vendor-paymentpo-date_billed').find('input[type="text"]');
 			$date_billed.attr('readonly',true);
 			$date_billed.val($date_billed.attr('rel'));
+			$date_billed.removeAttr('placeholder');
 			$invoice = $line.find('.vendor-paymentpo-invoice').find('input[type="text"]');
 			$invoice.attr('readonly',true);
 			$invoice.val($invoice.attr('rel'));
+			$invoice.removeAttr('placeholder');
 			$line.removeClass('selected');
 			// Where do we add this?
 			if( $('#vendors-payments-create-purchases .vendor-paymentpo.selected:last').length == 0 ) {
