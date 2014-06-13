@@ -364,34 +364,31 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 
 		foreach( $purchase_account_transfers as $account_id => $amount )
 		{
-			if( $amount != 0.00 )
+			$account_transaction = new stdClass;
+
+			$account_transaction->account_id = $account_id;
+			$account_transaction->amount = $amount;
+
+			if( $account_transaction->account_id == $payment_account->id )
+				$account_transaction->transfer = TRUE;
+
+			if( $writeoff_account AND 
+				$account_transaction->account_id == $writeoff_account->id )
+				$account_transaction->writeoff = TRUE;
+
+			if( isset($purchase_account_transfers_forms[$account_id]) )
 			{
-				$account_transaction = new stdClass;
+				$account_transaction->forms = array();
 
-				$account_transaction->account_id = $account_id;
-				$account_transaction->amount = $amount;
-
-				if( $account_transaction->account_id == $payment_account->id )
-					$account_transaction->transfer = TRUE;
-
-				if( $writeoff_account AND 
-					$account_transaction->account_id == $writeoff_account->id )
-					$account_transaction->writeoff = TRUE;
-
-				if( isset($purchase_account_transfers_forms[$account_id]) )
-				{
-					$account_transaction->forms = array();
-
-					foreach($purchase_account_transfers_forms[$account_id] as $form)
-						$account_transaction->forms[] = (object)array(
-							'form_id' => $form->form_id,
-							'amount' => $form->amount,
-							'writeoff_amount' => $form->writeoff_amount,
-						);
-				}
-
-				$update_transaction_data->account_transactions[] = $account_transaction;
+				foreach($purchase_account_transfers_forms[$account_id] as $form)
+					$account_transaction->forms[] = (object)array(
+						'form_id' => $form->form_id,
+						'amount' => $form->amount,
+						'writeoff_amount' => $form->writeoff_amount,
+					);
 			}
+
+			$update_transaction_data->account_transactions[] = $account_transaction;
 		}
 
 		$update_transaction_data->id = $this->_transaction->id;
