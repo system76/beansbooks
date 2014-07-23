@@ -194,7 +194,7 @@ class View_Dash_Index extends View_Template {
 		if( ! isset($this->sales_not_invoiced_result) )
 			return FALSE;
 
-		$return_array = $this->_generate_form_lines($this->sales_not_invoiced_result->data->sales);
+		$return_array = $this->_generate_form_lines($this->sales_not_invoiced_result->data->sales, 'date_created');
 
 		$j = 1;
 		foreach( $return_array as $index => $array )
@@ -227,7 +227,7 @@ class View_Dash_Index extends View_Template {
 		if( ! isset($this->purchases_not_invoiced_result) )
 			return FALSE;
 
-		$return_array = $this->_generate_form_lines($this->purchases_not_invoiced_result->data->purchases);
+		$return_array = $this->_generate_form_lines($this->purchases_not_invoiced_result->data->purchases, 'date_created');
 
 		$j = 1;
 		foreach( $return_array as $index => $array )
@@ -284,7 +284,7 @@ class View_Dash_Index extends View_Template {
 		return FALSE;
 	}
 
-	private function _generate_form_lines($forms)
+	private function _generate_form_lines($forms, $date_field = "date_due")
 	{
 		$settings = $this->beans_settings();
 
@@ -306,7 +306,7 @@ class View_Dash_Index extends View_Template {
 										$settings->company_currency.
 										number_format(abs($form->balance),2,'.',',').
 										( ( ( isset($form->customer) AND $form->balance > 0 ) OR ( ! isset($form->customer) AND $form->balance < 0 ) ) ? '</span>' : '' ),
-				'date' => $form->date_due
+				'date' => $form->{$date_field}
 			);
 
 		return $return_array;

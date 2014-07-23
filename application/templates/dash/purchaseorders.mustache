@@ -7,8 +7,13 @@
 			<span class="ehhh-sexy-lady">
 				<input type="hidden" id="report-purchaseorders-vendor" name="vendor_id" value="{{report_vendor_id}}">
 			</span>
-			<span class="yellow-suit-dance-off inline-label">&nbsp;</span>
-			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oop-oop inline-label text-right">Filter:</span>
+			<span class="oop-oop-oop"><div class="select"><select class="report-salesorders-select" name="balance_filter">
+				{{#balance_filter_options}}
+					<option value="{{value}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>
+				{{/balance_filter_options}}
+			</select></div></span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
 			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
 		</div>
 		<div class="clear"></div>

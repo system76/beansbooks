@@ -41,6 +41,31 @@ class View_Dash_Salesorders extends View_Template {
 			return $customer->customer_name;
 	}
 
+	public function balance_filter_options()
+	{
+		$return_array = array();
+
+		$return_array[] = array(
+			'name' => "All",
+			'value' => "",
+			'selected' => ( ! $this->report_salesorders_result->data->balance_filter ? TRUE : FALSE ),
+		);
+
+		$return_array[] = array(
+			'name' => "Unpaid",
+			'value' => "unpaid",
+			'selected' => ( $this->report_salesorders_result->data->balance_filter == "unpaid" ? TRUE : FALSE ),
+		);
+
+		$return_array[] = array(
+			'name' => "With Payment",
+			'value' => "paid",
+			'selected' => ( $this->report_salesorders_result->data->balance_filter == "paid" ? TRUE : FALSE ),
+		);
+
+		return $return_array;
+	}
+
 	public function days_old_minimum_options()
 	{
 		$return_array = array();
