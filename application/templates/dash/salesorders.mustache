@@ -7,15 +7,19 @@
 			<span class="ehhh-sexy-lady">
 				<input type="hidden" id="report-salesorders-customer" name="customer_id" value="{{report_customer_id}}">
 			</span>
-			<span class="oop-oop-oop inline-label text-right">Min. days past due:</span>
+			<span class="oop-oop-oop inline-label text-right">Days Outstanding:</span>
 			<span class="oop-oop"><div class="select"><select class="report-salesorders-select" name="days_old_minimum">
 				<option value="">&nbsp;</option>
 				{{#days_old_minimum_options}}
 					<option value="{{days}}" {{#selected}}selected="selected"{{/selected}}>{{days}}</option>
 				{{/days_old_minimum_options}}
 			</select></div></span>
-			<span class="oop-oop">&nbsp;</span>
-			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oop-oop inline-label text-right">Filter:</span>
+			<span class="oop-oop-oop"><div class="select"><select class="report-salesorders-select" name="balance_filter">
+				{{#balance_filter_options}}
+					<option value="{{value}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>
+				{{/balance_filter_options}}
+			</select></div></span>
 			<span class="oop-oop-oop"><a href="#" class="button report-print">Print Report</a></span>
 		</div>
 		<div class="clear"></div>
