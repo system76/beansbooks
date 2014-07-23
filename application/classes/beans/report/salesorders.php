@@ -21,7 +21,8 @@ class Beans_Report_Salesorders extends Beans_Report {
 
 	protected $_date;
 	protected $_customer_id;
-	protected $_days_late_minimum;
+	protected $_days_old_minimum;
+	protected $_balance_filter;
 
 	/**
 	 * Create a new account
@@ -38,6 +39,10 @@ class Beans_Report_Salesorders extends Beans_Report {
 		$this->_days_old_minimum = ( isset($data->days_old_minimum) )
 								  ? $data->days_old_minimum
 								  : NULL;
+
+		$this->_balance_filter = ( isset($data->balance_filter) )
+							   ? $data->balance_filter
+							   : NULL;
 	}
 
 	protected function _execute()
@@ -46,19 +51,35 @@ class Beans_Report_Salesorders extends Beans_Report {
 			! $this->_load_customer($this->_customer_id)->loaded() )
 			throw new Exception("Invalid report customer ID: customer not found.");
 
-		// Look up all sales that are unpaid - if specific customer, limit.
-
-		$sales = ORM::Factory('form')->
-			where('type','=','sale')->
-			where('balance','!=',0.00);
+		// Look up all sale IDs
+		
+		$sale_ids_query = 'SELECT id FROM forms WHERE type = "sale" AND date_due IS NULL ';
 
 		if( $this->_customer_id )
-			$sales = $sales->where('entity_id','=',$this->_customer_id);
+			$sale_ids_query .= ' AND entity_id = "'.$this->_customer_id.'" ';
 
 		if( $this->_days_old_minimum )
-			$sales = $sales->where('date_created','<=',date("Y-m-d",strtotime("-".$this->_days_old_minimum." Days")));
-		
-		$sales = $sales->where('date_due','IS',NULL)->order_by('date_created','ASC')->find_all();
+			$sale_ids_query .= ' AND date_created <= DATE("'.date("Y-m-d",strtotime("-".$this->_days_old_minimum." Days")).'") ';
+
+		if( $this->_balance_filter )
+		{
+			if( $this->_balance_filter == "unpaid" )
+			{
+				$sale_ids_query .= ' AND ( balance + total ) = 0 ';
+			}
+			else if( $this->_balance_filter == "paid" )
+			{
+				$sale_ids_query .= ' AND ( balance + total ) != 0 ';
+			}
+			else
+			{
+				throw new Exception("Invalid balance_filter: must be paid or unpaid.");
+			}
+		}
+
+		$sale_ids_query .= ' ORDER BY date_created ASC, id ASC ';
+
+		$sale_ids = DB::Query(Database::SELECT, $sale_ids_query)->execute()->as_array();
 
 		$customers = array();
 
@@ -73,8 +94,10 @@ class Beans_Report_Salesorders extends Beans_Report {
 			'current' => 0.00,
 		);
 
-		foreach( $sales as $sale )
+		foreach( $sale_ids as $sale_id )
 		{
+			$sale = ORM::Factory('form_sale', $sale_id);
+
 			if( ! isset($customers[$sale->entity_id]) )
 			{
 				$customers[$sale->entity_id] = new stdClass;
@@ -124,6 +147,7 @@ class Beans_Report_Salesorders extends Beans_Report {
 			'date' => date("Y-m-d"),
 			'customer_id' => $this->_customer_id,
 			'days_old_minimum' => $this->_days_old_minimum,
+			'balance_filter' => $this->_balance_filter,
 			'customers' => $customers,
 			'total_customers' => count($customers),
 			'balance_total'	=> $balance_total,

@@ -321,6 +321,7 @@ class Controller_Dash extends Controller_View {
 		$report_purchaseorders = new Beans_Report_Purchaseorders($this->_beans_data_auth((object)array(
 			'vendor_id' => $vendor_id,
 			'days_late_minimum' => $days_late_minimum,
+			'balance_filter' => ( $this->request->post('balance_filter') ? $this->request->post('balance_filter') : NULL ),
 		)));
 		$report_purchaseorders_result = $report_purchaseorders->execute();
 
@@ -349,11 +350,14 @@ class Controller_Dash extends Controller_View {
 		$report_salesorders = new Beans_Report_Salesorders($this->_beans_data_auth((object)array(
 			'customer_id' => $customer_id,
 			'days_old_minimum' => $days_old_minimum,
+			'balance_filter' => ( $this->request->post('balance_filter') ? $this->request->post('balance_filter') : NULL ),
 		)));
 		$report_salesorders_result = $report_salesorders->execute();
 
 		if( $this->_beans_result_check($report_salesorders_result) )
 			$this->_view->report_salesorders_result = $report_salesorders_result;
+		else 
+			die($report_salesorders_result->error);
 
 		$this->_view->customer_id = $customer_id;
 
