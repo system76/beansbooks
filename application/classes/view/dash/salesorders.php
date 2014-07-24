@@ -139,14 +139,6 @@ class View_Dash_Salesorders extends View_Template {
 			number_format(abs($this->report_salesorders_result->data->balance_total),2,'.',',').
 			( $this->report_salesorders_result->data->balance_total < 0 ? '</span>' : '' );
 
-		/*
-		foreach( $this->report_salesorders_result->data->balances as $days => $balance )
-			$return_array['balance_'.$days.'_formatted'] = 
-				( $balance < 0 ? '<span class="text-red">-' : '' ).
-				number_format(abs($balance),2,'.',',').
-				( $balance < 0 ? '</span>' : '' );
-		*/
-		
 		$return_array['customer_count'] = count($this->report_salesorders_result->data->customers);
 
 		return $return_array;
@@ -176,14 +168,7 @@ class View_Dash_Salesorders extends View_Template {
 		$return_array['company_name'] = $customer_report->customer_company_name;
 		$return_array['customer_name'] = $customer_report->customer_name;
 		$return_array['phone_number'] = $customer_report->customer_phone_number;
-		/*
-		$return_array['balance_total_formatted'] = 
-			( $customer_report->balance_total < 0 ? '<span class="text-red">-' : '' ).
-			$settings->company_currency.
-			number_format(abs($customer_report->balance_total),2,'.',',').
-			( $customer_report->balance_total < 0 ? '</span>' : '' );
-		*/
-
+		
 		$return_array['customer_total_total_formatted'] = 
 			( $customer_report->total_total < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($customer_report->total_total),2,'.',',').
@@ -198,14 +183,6 @@ class View_Dash_Salesorders extends View_Template {
 			( $customer_report->balance_total < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($customer_report->balance_total),2,'.',',').
 			( $customer_report->balance_total < 0 ? '</span>' : '' );
-
-		/*
-		foreach( $customer_report->balances as $days => $balance )
-			$return_array['customer_balance_'.$days.'_formatted'] = 
-				( $balance < 0 ? '<span class="text-red">-' : '' ).
-				number_format(abs($balance),2,'.',',').
-				( $balance < 0 ? '</span>' : '' );
-		*/
 
 		$return_array['sales'] = array();
 
@@ -229,31 +206,16 @@ class View_Dash_Salesorders extends View_Template {
 			( $sale->total < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($sale->total),2,'.',',').
 			( $sale->total < 0 ? '</span>' : '' );
+
 		$return_array['paid_formatted'] = 
 			( $sale->paid < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($sale->paid),2,'.',',').
 			( $sale->paid < 0 ? '</span>' : '' );
+			
 		$return_array['balance_formatted'] = 
 			( $sale->balance < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($sale->balance),2,'.',',').
 			( $sale->balance < 0 ? '</span>' : '' );
-
-		/*
-		$balance_range = 'current';
-		if( $sale->days_late >= 90 )
-			$balance_range = '90';
-		else if( $sale->days_late >= 60 )
-			$balance_range = '60';
-		else if( $sale->days_late >= 30 )
-			$balance_range = '30';
-		else if( $sale->days_late > 0 )
-			$balance_range = '0';
-
-		$return_array['balance_'.$balance_range.'_formatted'] = 
-			( $sale->balance < 0 ? '<span class="text-red">-' : '' ).
-			number_format(abs($sale->balance),2,'.',',').
-			( $sale->balance < 0 ? '</span>' : '' );
-		*/
 
 		return $return_array;		
 	}
