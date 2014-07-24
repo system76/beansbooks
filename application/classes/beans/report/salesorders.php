@@ -53,7 +53,7 @@ class Beans_Report_Salesorders extends Beans_Report {
 
 		// Look up all sale IDs
 		
-		$sale_ids_query = 'SELECT id FROM forms WHERE type = "sale" AND date_due IS NULL ';
+		$sale_ids_query = 'SELECT id FROM forms WHERE type = "sale" AND date_due IS NULL AND date_cancelled IS NULL ';
 
 		if( $this->_customer_id )
 			$sale_ids_query .= ' AND entity_id = "'.$this->_customer_id.'" ';
