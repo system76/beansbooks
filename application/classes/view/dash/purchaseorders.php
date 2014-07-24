@@ -83,16 +83,20 @@ class View_Dash_Purchaseorders extends View_Template {
 	{
 		$return_array = array();
 
+		$return_array['total_total_formatted'] = 
+			( $this->report_purchaseorders_result->data->total_total < 0 ? '<span class="text-red">-' : '' ).
+			number_format(abs($this->report_purchaseorders_result->data->total_total),2,'.',',').
+			( $this->report_purchaseorders_result->data->total_total < 0 ? '</span>' : '' );
+
+		$return_array['paid_total_formatted'] = 
+			( $this->report_purchaseorders_result->data->paid_total < 0 ? '<span class="text-red">-' : '' ).
+			number_format(abs($this->report_purchaseorders_result->data->paid_total),2,'.',',').
+			( $this->report_purchaseorders_result->data->paid_total < 0 ? '</span>' : '' );
+
 		$return_array['balance_total_formatted'] = 
 			( $this->report_purchaseorders_result->data->balance_total < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($this->report_purchaseorders_result->data->balance_total),2,'.',',').
 			( $this->report_purchaseorders_result->data->balance_total < 0 ? '</span>' : '' );
-
-		foreach( $this->report_purchaseorders_result->data->balances as $days => $balance )
-			$return_array['balance_'.$days.'_formatted'] = 
-				( $balance < 0 ? '<span class="text-red">-' : '' ).
-				number_format(abs($balance),2,'.',',').
-				( $balance < 0 ? '</span>' : '' );
 
 		$return_array['vendor_count'] = count($this->report_purchaseorders_result->data->vendors);
 
@@ -122,23 +126,21 @@ class View_Dash_Purchaseorders extends View_Template {
 
 		$return_array['company_name'] = $vendor_report->vendor_company_name;
 		$return_array['phone_number'] = $vendor_report->vendor_phone_number;
-		$return_array['balance_total_formatted'] = 
-			( $vendor_report->balance_total < 0 ? '<span class="text-red">-' : '' ).
-			$settings->company_currency.
-			number_format(abs($vendor_report->balance_total),2,'.',',').
-			( $vendor_report->balance_total < 0 ? '</span>' : '' );
+		
+		$return_array['vendor_total_total_formatted'] = 
+			( $vendor_report->total_total < 0 ? '<span class="text-red">-' : '' ).
+			number_format(abs($vendor_report->total_total),2,'.',',').
+			( $vendor_report->total_total < 0 ? '</span>' : '' );
 
+		$return_array['vendor_paid_total_formatted'] = 
+			( $vendor_report->paid_total < 0 ? '<span class="text-red">-' : '' ).
+			number_format(abs($vendor_report->paid_total),2,'.',',').
+			( $vendor_report->paid_total < 0 ? '</span>' : '' );
 
 		$return_array['vendor_balance_total_formatted'] = 
 			( $vendor_report->balance_total < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($vendor_report->balance_total),2,'.',',').
 			( $vendor_report->balance_total < 0 ? '</span>' : '' );
-
-		foreach( $vendor_report->balances as $days => $balance )
-			$return_array['vendor_balance_'.$days.'_formatted'] = 
-				( $balance < 0 ? '<span class="text-red">-' : '' ).
-				number_format(abs($balance),2,'.',',').
-				( $balance < 0 ? '</span>' : '' );
 
 		$return_array['purchases'] = array();
 
@@ -157,26 +159,21 @@ class View_Dash_Purchaseorders extends View_Template {
 		$return_array['purchase_number'] = $purchase->purchase_number;
 		$return_array['date_due'] = $purchase->date_due;
 		$return_array['days_late'] = ( $purchase->days_late > 0 ) ? $purchase->days_late : FALSE;
+		
+		$return_array['total_formatted'] = 
+			( $purchase->total < 0 ? '<span class="text-red">-' : '' ).
+			number_format(abs($purchase->total),2,'.',',').
+			( $purchase->total < 0 ? '</span>' : '' );
+
+		$return_array['paid_formatted'] = 
+			( $purchase->paid < 0 ? '<span class="text-red">-' : '' ).
+			number_format(abs($purchase->paid),2,'.',',').
+			( $purchase->paid < 0 ? '</span>' : '' );
+
 		$return_array['balance_formatted'] = 
 			( $purchase->balance < 0 ? '<span class="text-red">-' : '' ).
 			number_format(abs($purchase->balance),2,'.',',').
 			( $purchase->balance < 0 ? '</span>' : '' );
-
-		$balance_range = 'current';
-		if( $purchase->days_late >= 90 )
-			$balance_range = '90';
-		else if( $purchase->days_late >= 60 )
-			$balance_range = '60';
-		else if( $purchase->days_late >= 30 )
-			$balance_range = '30';
-		else if( $purchase->days_late > 0 )
-			$balance_range = '0';
-
-		$return_array['balance_'.$balance_range.'_formatted'] = 
-			( $purchase->balance < 0 ? '<span class="text-red">-' : '' ).
-			number_format(abs($purchase->balance),2,'.',',').
-			( $purchase->balance < 0 ? '</span>' : '' );
-
 
 		return $return_array;		
 	}
