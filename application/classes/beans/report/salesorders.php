@@ -88,16 +88,7 @@ class Beans_Report_Salesorders extends Beans_Report {
 		$total_total = 0.00;
 		$paid_total = 0.00;
 		$balance_total = 0.00;
-		/*
-		$balances = array(
-			'90' => 0.00,
-			'60' => 0.00,
-			'30' => 0.00,
-			'0' => 0.00,
-			'current' => 0.00,
-		);
-		*/
-
+		
 		foreach( $sale_ids as $sale_id )
 		{
 			$sale = ORM::Factory('form_sale', $sale_id);
@@ -112,14 +103,6 @@ class Beans_Report_Salesorders extends Beans_Report {
 				$customers[$sale->entity_id]->total_total = 0.00;
 				$customers[$sale->entity_id]->paid_total = 0.00;
 				$customers[$sale->entity_id]->balance_total = 0.00;
-
-				$customers[$sale->entity_id]->balances = array(
-					'90' => 0.00,
-					'60' => 0.00,
-					'30' => 0.00,
-					'0' => 0.00,
-					'current' => 0.00,
-				);
 			}
 
 			$report_sale = (object)array(
@@ -132,21 +115,6 @@ class Beans_Report_Salesorders extends Beans_Report {
 				'paid' => ( $sale->total - ( $sale->balance * -1 ) ),
 				'days_late' => round(($timestamp_today - strtotime($sale->date_created)) / 86400),
 			);
-			
-			/*
-			$days_range = 'current';
-			if( $report_sale->days_late >= 90 )
-				$days_range = '90';
-			else if( $report_sale->days_late >= 60 )
-				$days_range = '60';
-			else if( $report_sale->days_late >= 30 )
-				$days_range = '30';
-			else if( $report_sale->days_late > 0 )
-				$days_range = '0';
-
-			$customers[$sale->entity_id]->balances[$days_range] = $this->_beans_round( $customers[$sale->entity_id]->balances[$days_range] + $report_sale->balance );
-			$balances[$days_range] = $this->_beans_round( $balances[$days_range] + $report_sale->balance );
-			*/
 			
 			$customers[$sale->entity_id]->total_total = $this->_beans_round( $customers[$sale->entity_id]->total_total + $report_sale->total );
 			$customers[$sale->entity_id]->paid_total = $this->_beans_round( $customers[$sale->entity_id]->paid_total + $report_sale->paid );
