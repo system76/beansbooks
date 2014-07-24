@@ -53,7 +53,7 @@ class Beans_Report_Purchaseorders extends Beans_Report {
 
 		// Look up all purchase IDs
 		
-		$purchase_ids_query = 'SELECT id FROM forms WHERE type = "purchase" AND date_due IS NULL ';
+		$purchase_ids_query = 'SELECT id FROM forms WHERE type = "purchase" AND date_due IS NULL AND date_cancelled IS NULL ';
 
 		if( $this->_vendor_id )
 			$purchase_ids_query .= ' AND entity_id = "'.$this->_vendor_id.'" ';

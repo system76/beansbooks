@@ -53,7 +53,7 @@ class Beans_Report_Salesorders extends Beans_Report {
 
 		// Look up all sale IDs
 		
-		$sale_ids_query = 'SELECT id FROM forms WHERE type = "sale" AND date_due IS NULL ';
+		$sale_ids_query = 'SELECT id FROM forms WHERE type = "sale" AND date_due IS NULL AND date_cancelled IS NULL ';
 
 		if( $this->_customer_id )
 			$sale_ids_query .= ' AND entity_id = "'.$this->_customer_id.'" ';
@@ -85,7 +85,10 @@ class Beans_Report_Salesorders extends Beans_Report {
 
 		$timestamp_today = strtotime(date("Y-m-d"));
 
+		$total_total = 0.00;
+		$paid_total = 0.00;
 		$balance_total = 0.00;
+		/*
 		$balances = array(
 			'90' => 0.00,
 			'60' => 0.00,
@@ -93,6 +96,7 @@ class Beans_Report_Salesorders extends Beans_Report {
 			'0' => 0.00,
 			'current' => 0.00,
 		);
+		*/
 
 		foreach( $sale_ids as $sale_id )
 		{
@@ -105,7 +109,10 @@ class Beans_Report_Salesorders extends Beans_Report {
 				$customers[$sale->entity_id]->customer_company_name = $sale->entity->company_name;
 				$customers[$sale->entity_id]->customer_phone_number = $sale->entity->phone_number;
 				$customers[$sale->entity_id]->sales = array();
+				$customers[$sale->entity_id]->total_total = 0.00;
+				$customers[$sale->entity_id]->paid_total = 0.00;
 				$customers[$sale->entity_id]->balance_total = 0.00;
+
 				$customers[$sale->entity_id]->balances = array(
 					'90' => 0.00,
 					'60' => 0.00,
@@ -120,10 +127,13 @@ class Beans_Report_Salesorders extends Beans_Report {
 				'date_created' => $sale->date_created,
 				'date_due' => $sale->date_due,
 				'sale_number' => $sale->code,
-				'balance' => ( $sale->balance * -1),
+				'balance' => ( $sale->balance * -1 ),
+				'total' => ( $sale->total ),
+				'paid' => ( $sale->total - ( $sale->balance * -1 ) ),
 				'days_late' => round(($timestamp_today - strtotime($sale->date_created)) / 86400),
 			);
 			
+			/*
 			$days_range = 'current';
 			if( $report_sale->days_late >= 90 )
 				$days_range = '90';
@@ -136,8 +146,14 @@ class Beans_Report_Salesorders extends Beans_Report {
 
 			$customers[$sale->entity_id]->balances[$days_range] = $this->_beans_round( $customers[$sale->entity_id]->balances[$days_range] + $report_sale->balance );
 			$balances[$days_range] = $this->_beans_round( $balances[$days_range] + $report_sale->balance );
+			*/
 			
+			$customers[$sale->entity_id]->total_total = $this->_beans_round( $customers[$sale->entity_id]->total_total + $report_sale->total );
+			$customers[$sale->entity_id]->paid_total = $this->_beans_round( $customers[$sale->entity_id]->paid_total + $report_sale->paid );
 			$customers[$sale->entity_id]->balance_total = $this->_beans_round( $customers[$sale->entity_id]->balance_total + $report_sale->balance );
+			
+			$total_total = $this->_beans_round( $total_total + $report_sale->total );
+			$paid_total = $this->_beans_round( $paid_total + $report_sale->paid );
 			$balance_total = $this->_beans_round( $balance_total + $report_sale->balance );
 
 			$customers[$sale->entity_id]->sales[] = $report_sale;
@@ -150,8 +166,9 @@ class Beans_Report_Salesorders extends Beans_Report {
 			'balance_filter' => $this->_balance_filter,
 			'customers' => $customers,
 			'total_customers' => count($customers),
+			'total_total' => $total_total,
+			'paid_total' => $paid_total,
 			'balance_total'	=> $balance_total,
-			'balances' => $balances,
 		);
 	}
 
