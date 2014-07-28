@@ -25,6 +25,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_key
 @required auth_expiration
 @required id INTEGER The ID of the #Beans_Customer_Sale# to cancel.
+@optional date_cancelled STRING The cancel date in YYYY-MM-DD for the sale.  If not provided, will default to today.
 @returns sale OBJECT The updated #Beans_Customer_Sale#.
 ---BEANSENDSPEC---
 */
@@ -34,10 +35,13 @@ class Beans_Customer_Sale_Cancel extends Beans_Customer_Sale {
 
 	protected $_id;
 	protected $_sale;
+	protected $_data;
 
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
+		
+		$this->_data = $data;
 		
 		$this->_id = ( isset($data->id) ) 
 				   ? (int)$data->id
@@ -63,6 +67,19 @@ class Beans_Customer_Sale_Cancel extends Beans_Customer_Sale {
 			throw new Exception("Sale could not be cancelled - it has a refund attached to it.");
 
 		$date_cancelled = date("Y-m-d");
+
+		if( isset($this->_data->date_cancelled) )
+			$date_cancelled = $this->_data->date_cancelled;
+
+		if( $date_cancelled != date("Y-m-d",strtotime($date_cancelled)) )
+			throw new Exception("Invalid cancellation date: must be in YYYY-MM-DD format.");
+
+		if( strtotime($date_cancelled) < strtotime($this->_sale->date_created) )
+			throw new Exception("Invalid cancellation date: must be on or after the creation date of ".$this->_sale->date_created.".");
+
+		if( $this->_sale->date_billed AND 
+			strtotime($this->_sale->date_billed) > strtotime($date_cancelled) )
+			throw new Exception("Invalid cancellation date: must be after the invoice date of ".$this->_sale->date_billed.".");
 
 		$this->_sale->date_cancelled = $date_cancelled;
 		$this->_sale->save();
