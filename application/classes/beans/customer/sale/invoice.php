@@ -95,6 +95,9 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 			strtotime($this->_date_due) < strtotime($this->_date_billed) )
 			throw new Exception("Invalid due date: must be on or after the bill date.");
 
+		if( $this->_sale->total == 0.00 )
+			throw new Exception("Cannot invoice a sale for $0.00 - but it can be cancelled.");
+
 		$this->_sale->date_billed = $this->_date_billed;
 		$this->_sale->date_due = ( $this->_date_due )
 							   ? $this->_date_due
