@@ -54,6 +54,7 @@ class Beans_Customer_Sale_Search extends Beans_Customer_Sale {
 	private $_search_keywords;
 
 	private $_search_flag_invoiced;
+	private $_search_flag_cancelled;
 	private $_search_flag_sent;
 	private $_search_flag_past_due;
 	private $_search_flag_has_balance;
@@ -112,6 +113,10 @@ class Beans_Customer_Sale_Search extends Beans_Customer_Sale {
 									 ? ( $data->invoiced ? TRUE : FALSE )
 									 : NULL;
 
+		$this->_search_flag_cancelled = isset($data->cancelled)
+									  ? ( $data->cancelled ? TRUE : FALSE )
+									  : NULL;
+
 		$this->_search_flag_sent = isset($data->sent)
 								 ? ( $data->sent ? TRUE : FALSE )
 								 : NULL;
@@ -167,6 +172,14 @@ class Beans_Customer_Sale_Search extends Beans_Customer_Sale {
 		else if( $this->_search_flag_invoiced !== NULL )
 			$this->_sales = $this->_sales->
 				where('form_sale.date_billed','IS',NULL);
+
+		if( $this->_search_flag_cancelled !== NULL AND
+			$this->_search_flag_cancelled )
+			$this->_sales = $this->_sales->
+				where('form_sale.date_cancelled','IS NOT',NULL);
+		else if( $this->_search_flag_cancelled !== NULL )
+			$this->_sales = $this->_sales->
+				where('form_sale.date_cancelled','IS',NULL);
 		
 		if( $this->_search_date_created_before AND 
 			date("Y-m-d",strtotime($this->_search_date_created_before)) != $this->_search_date_created_before )

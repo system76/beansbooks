@@ -54,6 +54,7 @@ class Beans_Vendor_Purchase_Search extends Beans_Vendor_Purchase {
 	private $_search_keywords;
 
 	private $_search_flag_invoiced;
+	private $_search_flag_cancelled;
 	private $_search_flag_sent;
 	private $_search_flag_past_due;
 	private $_search_flag_has_balance;
@@ -111,6 +112,10 @@ class Beans_Vendor_Purchase_Search extends Beans_Vendor_Purchase {
 									 ? ( $data->invoiced ? TRUE : FALSE )
 									 : NULL;
 
+		$this->_search_flag_cancelled = isset($data->cancelled)
+									  ? ( $data->cancelled ? TRUE : FALSE )
+									  : NULL;
+
 		$this->_search_flag_sent = isset($data->sent)
 								 ? ( $data->sent ? TRUE : FALSE )
 								 : NULL;
@@ -167,6 +172,14 @@ class Beans_Vendor_Purchase_Search extends Beans_Vendor_Purchase {
 		else if( $this->_search_flag_invoiced !== NULL )
 			$this->_purchases = $this->_purchases->
 				where('form_purchase.date_billed','IS',NULL);
+
+		if( $this->_search_flag_cancelled !== NULL AND
+			$this->_search_flag_cancelled )
+			$this->_purchases = $this->_purchases->
+				where('form_purchase.date_cancelled','IS NOT',NULL);
+		else if( $this->_search_flag_cancelled !== NULL )
+			$this->_purchases = $this->_purchases->
+				where('form_purchase.date_cancelled','IS',NULL);
 
 		if( $this->_search_flag_sent !== NULL AND 
 			$this->_search_flag_sent )

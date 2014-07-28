@@ -114,6 +114,11 @@ class Beans_Vendor_Purchase_Calibrate_Invoice extends Beans_Vendor_Purchase {
 		if( ! $purchase->date_billed )
 			return;
 
+		// If the books have been closed for the active date, we have to assume that due-diligence has been done
+		// to prevent a bad transaction from being put into the journal and simply move on.
+		if( $this->_check_books_closed($purchase->date_billed) )
+			return;
+
 		$purchase_invoice_transaction_data = new stdClass;
 		$purchase_invoice_transaction_data->code = $purchase->code;
 		$purchase_invoice_transaction_data->description = "Invoice - Purchase ".$purchase->code;

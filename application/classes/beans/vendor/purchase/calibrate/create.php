@@ -114,6 +114,11 @@ class Beans_Vendor_Purchase_Calibrate_Create extends Beans_Vendor_Purchase {
 		if( ! $purchase->date_created )
 			return;
 
+		// If the books have been closed for the active date, we have to assume that due-diligence has been done
+		// to prevent a bad transaction from being put into the journal and simply move on.
+		if( $this->_check_books_closed($purchase->date_created) )
+			return;
+
 		$purchase_create_transaction_data = new stdClass;
 		$purchase_create_transaction_data->code = $purchase->code;
 		$purchase_create_transaction_data->description = "Purchase ".$purchase->code;

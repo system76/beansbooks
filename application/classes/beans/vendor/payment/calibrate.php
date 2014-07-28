@@ -184,7 +184,12 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 	protected function _calibrate_vendor_payment_transaction($payment)
 	{	
 		if( ! $payment->loaded() )
-			throw new Exception("Payment could not be found.");
+			throw new Exception("Vendor Payment could not be found.");
+
+		// If the books have been closed for the active date, we have to assume that due-diligence has been done
+		// to prevent a bad transaction from being put into the journal and simply move on.
+		if( $this->_check_books_closed($payment->date) )
+			return (object)array();
 
 		$payment_object = $this->_return_vendor_payment_element($payment);
 
