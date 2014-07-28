@@ -52,7 +52,7 @@ class Beans_Customer_Sale_Calibrate extends Beans_Customer_Sale {
 		$customer_sale_calibrate_create_result = $customer_sale_calibrate_create->execute();
 
 		if( ! $customer_sale_calibrate_create_result->success )
-			throw new Exception("Unexpected error - could not calibrate created sales: ".$customer_sale_calibrate_create_result->error);
+			throw new Exception("Unexpected error - could not calibrate sales: ".$customer_sale_calibrate_create_result->error);
 
 		$customer_sale_calibrate_invoice = new Beans_Customer_Sale_Calibrate_Invoice($this->_beans_data_auth((object)array(
 			'ids' => isset($this->_data->ids) ? $this->_data->ids : NULL,
