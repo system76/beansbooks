@@ -193,7 +193,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 
 	protected function _calibrate_customer_payment_transaction($payment)
 	{
-		if( ! $payment->loaded) )
+		if( ! $payment->loaded() )
 			throw new Exception("Customer Payment could not be found.");
 
 		// If the books have been closed for the active date, we have to assume that due-diligence has been done
