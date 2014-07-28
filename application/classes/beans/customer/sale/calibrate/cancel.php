@@ -123,6 +123,11 @@ class Beans_Customer_Sale_Calibrate_Cancel extends Beans_Customer_Sale {
 		if( ! $sale->date_cancelled )
 			return;
 
+		// If the books have been closed for the active date, we have to assume that due-diligence has been done
+		// to prevent a bad transaction from being put into the journal and simply move on.
+		if( $this->_check_books_closed($sale->date_cancelled) )
+			return;
+
 		$sale_cancel_transaction_data = new stdClass;
 		$sale_cancel_transaction_data->code = $sale->code;
 		$sale_cancel_transaction_data->description = "Sale Cancelled ".$sale->code;

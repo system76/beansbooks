@@ -123,6 +123,11 @@ class Beans_Customer_Sale_Calibrate_Create extends Beans_Customer_Sale {
 		if( ! $sale->date_created )
 			return;
 
+		// If the books have been closed for the active date, we have to assume that due-diligence has been done
+		// to prevent a bad transaction from being put into the journal and simply move on.
+		if( $this->_check_books_closed($sale->date_created) )
+			return;
+
 		$account_transactions = array(
 			$this->_transaction_sale_line_account_id => 0.00,
 			$this->_transaction_sale_tax_account_id => 0.00,
@@ -202,7 +207,7 @@ class Beans_Customer_Sale_Calibrate_Create extends Beans_Customer_Sale {
 		}
 
 		if( ! $sale_create_transaction_result->success )
-			throw new Exception("Error creating sale transaction in journal: ".$sale_create_transaction_result->error."<br><br><br>\n\n\n".print_r($sale_create_transaction_result->account_transactions,TRUE));
+			throw new Exception("Error creating sale transaction in journal: ".$sale_create_transaction_result->error."<br><br><br>\n\n\n".print_r($sale_create_transaction_data->account_transactions,TRUE));
 
 		if( ! $sale->create_transaction_id )
 		{
