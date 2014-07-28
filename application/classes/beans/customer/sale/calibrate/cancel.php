@@ -210,7 +210,10 @@ class Beans_Customer_Sale_Calibrate_Cancel extends Beans_Customer_Sale {
 
 		foreach( $account_transactions as $account_id => $amount ) 
 		{
-			if( $amount != 0.00 ) 
+			// Cancelled sales are the one case where we want to make sure a 0.00 transaction
+			// can go on the books to mark this as cancelled.
+			if( $sale->total == 0.00 ||
+				$amount != 0.00 ) 
 			{
 				$account_transaction = new stdClass;
 				$account_transaction->account_id = $account_id;
