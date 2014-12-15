@@ -104,11 +104,15 @@ li.setup-tax > span.text-left {
 }
 
 .setup-tax-rate {
-	width: 180px;
+	width: 140px;
+}
+
+.setup-tax-visible {
+	width: 140px;
 }
 
 .setup-tax-balance {
-	width: 180px;
+	width: 140px;
 }
 
 .setup-tax-balance.text-right {
@@ -116,11 +120,11 @@ li.setup-tax > span.text-left {
 }
 
 .setup-tax-nextduedate {
-	width: 180px;
+	width: 140px;
 }
 
 .setup-tax-actions {
-	width: 200px;
+	width: 140px;
 }
 
 .setup-tax-actions a {

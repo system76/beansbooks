@@ -45,6 +45,7 @@ class Beans_Tax_Search extends Beans_Tax {
 	private $_search_name;
 	private $_search_code;
 	private $_search_and;
+	private $_search_include_hidden;
 
 	/**
 	 * Search by ID.
@@ -76,6 +77,10 @@ class Beans_Tax_Search extends Beans_Tax {
 		$this->_search_name = ( isset($data->search_name) AND strlen($data->search_name) )
 							 ? $data->search_name
 							 : FALSE;
+
+		$this->_search_include_hidden = ( isset($data->search_include_hidden) AND $data->search_include_hidden )
+									  ? TRUE 
+									  : FALSE;
 	}
 
 	protected function _execute()
@@ -111,6 +116,11 @@ class Beans_Tax_Search extends Beans_Tax {
 			else
 				$this->_taxes = $this->_taxes->or_where_close();
 		}
+
+		if( ! $this->_search_include_hidden )
+			$this->_taxes = $this->_taxes->where('visible','=',TRUE);
+		else
+			$this->_taxes = $this->_taxes->where('visible','IS NOT',NULL);
 		
 		$result_object = $this->_find_taxes();
 

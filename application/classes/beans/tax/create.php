@@ -120,6 +120,10 @@ class Beans_Tax_Create extends Beans_Tax {
 		$this->_tax->country = ( isset($this->_data->country) )
 							 ? $this->_data->country
 							 : NULL;
+
+		$this->_tax->visible = ( isset($this->_data->visible) AND ! $this->_data->visible )
+							 ? FALSE
+							 : TRUE;
 		
 		$this->_validate_tax($this->_tax);
 

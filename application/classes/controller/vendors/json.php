@@ -1883,6 +1883,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$tax_search = new Beans_Tax_Search($this->_beans_data_auth((object)array(
 			'search_name' => $search_terms,
+			'search_include_hidden' => TRUE,
 		)));
 		$tax_search_result = $tax_search->execute();
 

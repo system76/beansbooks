@@ -35,6 +35,7 @@ class Controller_Setup_Json extends Controller_Json {
 			'country' => $this->request->post('country'),
 			'date_due' => $this->request->post('date_due'),
 			'date_due_months_increment' => $this->request->post('date_due_months_increment'),
+			'visible' => $this->request->post('visible') ? TRUE : FALSE,
 		)));
 		$tax_create_result = $tax_create->execute();
 
@@ -66,6 +67,7 @@ class Controller_Setup_Json extends Controller_Json {
 			'country' => $this->request->post('country'),
 			'date_due' => $this->request->post('date_due'),
 			'date_due_months_increment' => $this->request->post('date_due_months_increment'),
+			'visible' => $this->request->post('visible') ? TRUE : FALSE,
 		)));
 		$tax_update_result = $tax_update->execute();
 
@@ -88,6 +90,7 @@ class Controller_Setup_Json extends Controller_Json {
 			'search_and' => FALSE,
 			'search_code' => $term,
 			'search_name' => $term,
+			'search_include_hidden' => TRUE,
 		)));
 		$tax_search_result = $tax_search->execute();
 

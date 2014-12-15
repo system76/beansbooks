@@ -433,6 +433,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 					$('#setup-taxes-create input[name="state"]').val(data.data.tax.state);
 					$('#setup-taxes-create input[name="zip"]').val(data.data.tax.zip);
 					$('#setup-taxes-create select[name="country"]').val(data.data.tax.country);
+					$('#setup-taxes-create select[name="visible"]').val( data.data.tax.visible ? '1' : '0' );
 				}
 			},
 			'json'

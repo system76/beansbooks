@@ -62,10 +62,11 @@ class Beans_Tax extends Beans {
 	@attribute authority STRING
 	@attribute address1 STRING The address that payments are remitted to.
 	@attribute address2 STRING
-	@attribute city STRING
+	@attribute city STRING 
 	@attribute state STRING 
 	@attribute zip STRING 
-	@attribute country STRING
+	@attribute country STRING 
+	@attribute visible BOOLEAN 
 	---BEANSENDSPEC---
 	 */
 
@@ -102,7 +103,7 @@ class Beans_Tax extends Beans {
 		$return_object->state = $tax->state;
 		$return_object->zip = $tax->zip;
 		$return_object->country = $tax->country;
-
+		$return_object->visible = $tax->visible ? TRUE : FALSE;
 
 		return $return_object;
 	}

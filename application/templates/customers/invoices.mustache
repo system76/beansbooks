@@ -237,6 +237,9 @@
 					{{#taxes}}
 						<div class="option"><input type="checkbox" class="line-tax" value="{{id}}#{{fee}}{{^fee}}0{{/fee}}#{{percent}}{{^percent}}0{{/percent}}" title="{{name}}"><span class="label"> {{name}}</span></div>
 					{{/taxes}}
+					{{^taxes}}
+						<div class="option">No taxes configured - manage them in Setup.</div>
+					{{/taxes}}
 				</div>
 			</div>
 		</span>

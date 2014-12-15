@@ -245,7 +245,9 @@ class Controller_Setup extends Controller_View {
 
 	public function action_taxes()
 	{
-		$tax_search = new Beans_Tax_Search($this->_beans_data_auth());
+		$tax_search = new Beans_Tax_Search($this->_beans_data_auth((object)array(
+			'search_include_hidden' => TRUE,
+		)));
 		$tax_search_result = $tax_search->execute();
 
 		if( $this->_beans_result_check($tax_search_result) )

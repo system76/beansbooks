@@ -102,6 +102,14 @@ class Beans_Tax_Update extends Beans_Tax {
 		if( isset($this->_data->country) )
 			$this->_tax->country = $this->_data->country;
 
+		if( isset($this->_data->visible) )
+		{
+			if( $this->_data->visible )
+				$this->_tax->visible = TRUE;
+			else
+				$this->_tax->visible = FALSE;
+		}
+
 		$this->_validate_tax($this->_tax);
 
 		$this->_tax->save();

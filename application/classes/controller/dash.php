@@ -747,7 +747,9 @@ class Controller_Dash extends Controller_View {
 	
 	private function _dash_index_messages_taxes()
 	{
-		$taxes_search = new Beans_Tax_Search($this->_beans_data_auth());
+		$taxes_search = new Beans_Tax_Search($this->_beans_data_auth((object)array(
+			'search_include_hidden' => TRUE,
+		)));
 		$taxes_search_result = $taxes_search->execute();
 
 		// V2Item - Consider error'ing
