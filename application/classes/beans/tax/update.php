@@ -27,8 +27,6 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required id INTEGER The ID of the #Beans_Tax# being updated.
 @optional name STRING
 @optional code STRING Will be auto-generated if not provided.
-@optional percent DECIMAL In decimal form, so 1.5% is 0.0015
-@optional account_id INTEGER The #Beans_Account# that the taxes will be recorded to.
 @optional date_due STRING The next YYYY-MM-DD date that remittance is due.
 @optional date_due_months_increment INTEGER The number of months between each payment.
 @optional license STRING The license number for your registration in this jurisdiction.
