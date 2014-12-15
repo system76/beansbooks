@@ -74,18 +74,6 @@ class Beans_Tax_Update extends Beans_Tax {
 		if( isset($this->_data->code) )
 			$this->_tax->code = $this->_data->code;
 
-		if( isset($this->_data->percent) )
-			$this->_tax->percent = $this->_data->percent;
-
-		if( isset($this->_data->account_id) )
-			$this->_tax->account_id = $this->_data->account_id;
-
-		$this->_tax->fee = NULL;
-		/*
-		if( isset($this->_data->fee) )
-			$this->_tax->fee = $this->_data->fee;
-		*/
-		
 		if( isset($this->_data->date_due) )
 			$this->_tax->date_due = $this->_data->date_due;
 

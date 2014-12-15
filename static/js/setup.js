@@ -357,6 +357,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 	});
 
 	function createTaxClearForm() {
+		$('#setup-taxes-create').attr('rel','new');
 		$('#setup-taxes-create').slideUp(function() {
 			$('#setup-taxes-create input,#setup-taxes-create select').resetFieldValues();
 			$('#setup-taxes-create select[name="account_id"]').select2('data',{
@@ -456,6 +457,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 		$('#setup-taxes-create .select').each(function() {
 			$(this).removeClass('disabled');
 		});
+		if( $('#setup-taxes-create').attr('rel') &&
+			$('#setup-taxes-create').attr('rel').length &&
+			$('#setup-taxes-create').attr('rel') != "new" ) {
+			$('#setup-taxes-create input[name="percent"]').attr('disabled','disabled');
+			$('#setup-taxes-create select[name="account_id"]').select2('disable');
+		}
 	}
 
 	function setupUserCreateColorRows() {
