@@ -174,9 +174,12 @@ class Controller_View extends Controller {
 		if( $this->_beans_result_check($account_type_search_result) )
 			$this->_view->account_type_search_result = $account_type_search_result;
 
+		// We don't want to override something set elsewhere - like in Controller_View_Setup -> action_taxes()
 		if( ! isset($this->_view->tax_search_result) )
 		{
-			$tax_search = new Beans_Tax_Search($this->_beans_data_auth());
+			$tax_search = new Beans_Tax_Search($this->_beans_data_auth((object)array(
+				'search_include_hidden' => TRUE,
+			)));
 			$tax_search_result = $tax_search->execute();
 
 			if( $this->_beans_result_check($tax_search_result) )

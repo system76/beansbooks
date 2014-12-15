@@ -331,6 +331,7 @@ class View_Template extends Kostache_Layout {
 				'code' => $tax->code,
 				'fee' => $tax->fee,
 				'percent' => $tax->percent,
+				'visible' => $tax->visible ? TRUE : FALSE,
 			);
 
 		return $this->_taxes;

@@ -69,6 +69,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			});
 			*/
 			
+			createSaleUpdateTaxTemplateVisibility();
+
 			// Check for a default sale ID.
 			if( $('#customers-sales-create-requested_sale_id').length > 0 &&
 				$('#customers-sales-create-requested_sale_id').val().length > 0 ) {
@@ -2372,6 +2374,16 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 					$('#customers-sales-create-form-refund').attr('disabled','disabled');
 
+					var required_tax_ids = [];
+					for( i in sale_data.data.sale.lines ) {
+						for( j in sale_data.data.sale.lines[i].line_taxes ) {
+							if( required_tax_ids.indexOf(sale_data.data.sale.lines[i].line_taxes[j].tax.id) < 0 ) {
+								required_tax_ids.push(sale_data.data.sale.lines[i].line_taxes[j].tax.id);
+							}
+						}
+					}
+					createSaleUpdateTaxTemplateVisibility(required_tax_ids);
+
 					$newSaleLine = $($('#customers-sales-create-form-lines-line-template').html());
 					$newSaleLine.find('input,select').each(function() {
 						$(this).attr('disabled','disabled');
@@ -2623,9 +2635,37 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		);
 	}
 
+	function createSaleUpdateTaxTemplateVisibility(required_tax_ids) {
+		if( ! required_tax_ids ) {
+			required_tax_ids = [];
+		}
+
+		$lineTemplate = $('#customers-sales-create-form-lines-line-template');
+		
+		var no_tax = true;
+		if( $lineTemplate.find('.visible-tax').length ) {
+			no_tax = false;
+		}
+		
+		$lineTemplate.find('.hidden-tax').hide();
+		$lineTemplate.find('.no-tax').hide();
+		$lineTemplate.find('.hidden-tax').each(function () {
+			var tax_id = $(this).find('input[type="checkbox"]').val().split('#').shift();
+			if( required_tax_ids.indexOf(tax_id) >= 0 ) {
+				no_tax = false;
+				$(this).show();
+			}
+		});
+
+		if( no_tax ) {
+			$lineTemplate.find('.no-tax').show();
+		}
+	}
+
 	function createSaleClearForm() {
 		$('#customers-sales-create').slideUp(function() {
 			GLOBAL_EDIT_FORM_ACTIVE = false;
+			createSaleUpdateTaxTemplateVisibility();
 			$('#customers-sales-create-form-send').hide();
 			$('#customers-sales-create-title').text($('#customers-sales-create-title').attr('rel'));
 			$('#customers-sales-create-status').html('<span class="text-bold">'+$('#customers-sales-create-status').attr('rel')+'</span>');
