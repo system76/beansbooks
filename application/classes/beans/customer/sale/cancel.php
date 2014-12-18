@@ -100,11 +100,11 @@ class Beans_Customer_Sale_Cancel extends Beans_Customer_Sale {
 		// Reload Sale
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);
 
-		// If we're successful - reverse taxes.
+		// If we're successful AND this has been billed- update taxes.
 		if( $this->_sale->date_billed )
 		{
-			foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
-				$this->_tax_adjust_balance($sale_tax->tax_id,( -1 * $sale_tax->total) );
+			$tax_item_action = 'refund';
+			$this->_update_form_tax_items($this->_sale->id, $tax_item_action);
 		}
 
 		// Remove the refund form from the corresponding form.

@@ -89,7 +89,6 @@ class Beans_Tax extends Beans {
 		$return_object->name = $tax->name;
 		$return_object->percent = $tax->percent;
 		$return_object->percent_formatted = $tax->percent * 100 ;
-		$return_object->fee = $tax->fee;
 		$return_object->account = $this->_return_account_element($tax->account);
 		$return_object->total = $tax->total;
 		$return_object->balance = $tax->balance;
@@ -129,7 +128,6 @@ class Beans_Tax extends Beans {
 		$tax->code = NULL;
 		$tax->name = NULL;
 		$tax->percent = NULL;
-		$tax->fee = NULL;
 		$tax->account_id = NULL;
 		$tax->total = 0.00;
 		$tax->balance = 0.00;
@@ -172,17 +170,8 @@ class Beans_Tax extends Beans {
 		if( strlen($tax->name) > 64 )
 			throw new Exception("Invalid tax name: maximum length of 64 characters.");
 
-		if( ! $tax->percent AND 
-			! $tax->fee )
-			throw new Exception("Invalid tax percent and fee: must provide at least one.");
-
-		// Temporary until fully implemented.
-		if( $tax->fee ) 
-			throw new Exception("Invalid tax fee: FEE NOT YET FULLY UI SUPPORTED.");
-
-		if( $tax->fee AND
-			$tax->fee < 0 )
-			throw new Exception("Invalid tax fee: must be greater than 0.");
+		if( ! $tax->percent )
+			throw new Exception("Invalid tax percent: none provided.");
 
 		if( $tax->percent AND 
 			$tax->percent > 1 )

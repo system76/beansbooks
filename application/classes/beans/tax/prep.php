@@ -159,6 +159,8 @@ class Beans_Tax_Prep extends Beans_Tax {
 				'taxable_returns' => $taxable_returns,
 				'tax_payments' => $this->_return_tax_payments_array($tax_payments),
 				'tax_payments_total' => $tax_payments_total,
+				// TODO - ADD net_sales  ( total_sales + total_returns )
+				// 		- ADD net_taxable ( taxable_sales + taxable_returns )
 				'tax' => $this->_return_tax_element($this->_tax),
 			),
 		);

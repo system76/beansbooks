@@ -17,15 +17,13 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
-class Model_Tax_Payment extends ORM {
+class Model_Tax_Item extends ORM {
 
 	protected $_belongs_to = array(
 		'tax' => array(),
+		'form' => array(),
+		'tax_payment' => array(),
 		'transaction' => array(),
-	);
-
-	protected $_has_many = array(
-		'tax_items' => array(),
 	);
 	
 }

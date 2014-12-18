@@ -76,11 +76,6 @@ class Beans_Tax_Create extends Beans_Tax {
 								? $this->_data->account_id
 								: NULL;
 
-		// V2Item - Ensure full fee support and enable in interface.
-		$this->_tax->fee = ( isset($this->_data->fee) )
-						 ? $this->_data->fee
-						 : NULL;
-
 		$this->_tax->date_due = ( isset($this->_data->date_due) )
 							  ? $this->_data->date_due
 							  : NULL;

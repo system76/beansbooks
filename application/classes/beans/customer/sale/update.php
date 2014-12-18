@@ -202,20 +202,21 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 					if( ! $tax->loaded() )
 						throw new Exception("Invalid sale line tax ID: tax not found.");
 
-					$new_sale_line_tax->tax_id = $tax->id;
+					$new_sale_line_tax->tax_percent = $tax->percent;
 
 					$this->_validate_customer_sale_line_tax($new_sale_line_tax);
 
 					if( ! isset($this->_sale_taxes[$tax->id]) ) {
 						$this->_sale_taxes[$tax->id] = $this->_default_form_tax();
 						$this->_sale_taxes[$tax->id]->tax_id = $tax->id;
-						$this->_sale_taxes[$tax->id]->fee = $tax->fee;
-						$this->_sale_taxes[$tax->id]->percent = $tax->percent;
-						$this->_sale_taxes[$tax->id]->amount = 0.00;
+						$this->_sale_taxes[$tax->id]->tax_percent = $tax->percent;
+						$this->_sale_taxes[$tax->id]->form_line_taxable_amount = 0.00;
 					}
 
-					$this->_sale_taxes[$tax->id]->amount = $this->_beans_round( $this->_sale_taxes[$tax->id]->amount + $new_sale_line->total );
-					$this->_sale_taxes[$tax->id]->quantity += $new_sale_line->quantity;
+					$this->_sale_taxes[$tax->id]->form_line_taxable_amount = $this->_beans_round( 
+						$this->_sale_taxes[$tax->id]->form_line_taxable_amount + 
+						$new_sale_line->total 
+					);
 
 					$this->_sale_lines_taxes[$i][] = $new_sale_line_tax;
 				}
@@ -256,13 +257,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			$sale_line->delete();
 		}
 
-		// Reverse current taxes if billed.
-		if( $this->_sale->date_billed )
-		{
-			foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
-				$this->_tax_adjust_balance($sale_tax->tax_id,( -1 * $sale_tax->total) );
-		}
-
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
 			$sale_tax->delete();
 		
@@ -276,6 +270,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			
 			foreach( $this->_sale_lines_taxes[$j] as $sale_line_tax )
 			{
+				$sale_line_tax->form_id = $this->_sale->id;
 				$sale_line_tax->form_line_id = $sale_line->id;
 				$sale_line_tax->save();
 			}
@@ -290,11 +285,8 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			$this->_sale_taxes[$t]->form_id = $this->_sale->id;
 			$this->_sale_taxes[$t]->total = 0.00;
 
-			if( $sale_tax->fee )
-				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->fee * $sale_tax->quantity ) );
-			
-			if( $sale_tax->percent )
-				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->percent * $sale_tax->amount ) );
+			$this->_sale_taxes[$t]->total = $this->_beans_round( $sale_tax->tax_percent * $sale_tax->form_line_taxable_amount );
+			$this->_sale_taxes[$t]->form_line_amount = $this->_sale->amount;
 			
 			$this->_sale_taxes[$t]->save();
 			
@@ -327,9 +319,18 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		if( ! $customer_payment_calibrate_result->success )
 			throw new Exception("Error encountered when calibrating payments: ".$customer_payment_calibrate_result->error);
 		
-		// Update tax balances.
-		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
-			$this->_tax_adjust_balance($sale_tax->tax_id,$sale_tax->total);
+		// Update tax items only if we're successful 
+		// AND
+		// Only if we've billed this sales order.
+		if( $this->_sale->date_billed )
+		{
+			$tax_item_action = 'invoice';
+			if( $this->_sale->refund_form_id && 
+				$this->_sale->refund_form_id < $this->_sale->id )
+				$tax_item_action = 'refund';
+			
+			$this->_update_form_tax_items($this->_sale->id, $tax_item_action);
+		}
 
 		// We need to reload the sale so that we can get the correct balance, etc.
 		$this->_sale = $this->_load_customer_sale($this->_sale->id);

@@ -234,20 +234,21 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 					if( ! $tax->loaded() )
 						throw new Exception("Invalid sale line tax ID: tax not found.");
 
-					$new_sale_line_tax->tax_id = $tax->id;
+					$new_sale_line_tax->tax_percent = $tax->percent;
 
 					$this->_validate_customer_sale_line_tax($new_sale_line_tax);
 
 					if( ! isset($this->_sale_taxes[$tax->id]) ) {
 						$this->_sale_taxes[$tax->id] = $this->_default_form_tax();
 						$this->_sale_taxes[$tax->id]->tax_id = $tax->id;
-						$this->_sale_taxes[$tax->id]->fee = $tax->fee;
-						$this->_sale_taxes[$tax->id]->percent = $tax->percent;
-						$this->_sale_taxes[$tax->id]->amount = 0.00;
+						$this->_sale_taxes[$tax->id]->tax_percent = $tax->percent;
+						$this->_sale_taxes[$tax->id]->form_line_taxable_amount = 0.00;
 					}
 
-					$this->_sale_taxes[$tax->id]->amount = $this->_beans_round( $this->_sale_taxes[$tax->id]->amount + $new_sale_line->total );
-					$this->_sale_taxes[$tax->id]->quantity += $new_sale_line->quantity;
+					$this->_sale_taxes[$tax->id]->form_line_taxable_amount = $this->_beans_round( 
+						$this->_sale_taxes[$tax->id]->form_line_taxable_amount + 
+						$new_sale_line->total 
+					);
 
 					$this->_sale_lines_taxes[$i][] = $new_sale_line_tax;
 				}
@@ -273,6 +274,7 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 			
 			foreach( $this->_sale_lines_taxes[$j] as $sale_line_tax )
 			{
+				$sale_line_tax->form_id = $this->_sale->id;
 				$sale_line_tax->form_line_id = $sale_line->id;
 				$sale_line_tax->save();
 			}
@@ -287,11 +289,8 @@ class Beans_Customer_Sale_Create extends Beans_Customer_Sale {
 			$this->_sale_taxes[$t]->form_id = $this->_sale->id;
 			$this->_sale_taxes[$t]->total = 0.00;
 
-			if( $sale_tax->fee )
-				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->fee * $sale_tax->quantity ) );
-			
-			if( $sale_tax->percent )
-				$this->_sale_taxes[$t]->total = $this->_beans_round( $this->_sale_taxes[$t]->total + ( $sale_tax->percent * $sale_tax->amount ) );
+			$this->_sale_taxes[$t]->total = $this->_beans_round( $sale_tax->tax_percent * $sale_tax->form_line_taxable_amount );
+			$this->_sale_taxes[$t]->form_line_amount = $this->_sale->amount;
 			
 			$this->_sale_taxes[$t]->save();
 			

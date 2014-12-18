@@ -130,9 +130,13 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 		if( ! $customer_payment_calibrate_result->success )
 			throw new Exception("Error encountered when calibrating payments: ".$customer_payment_calibrate_result->error);
 		
-		// Update tax balances only if we're successful.
-		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
-			$this->_tax_adjust_balance($sale_tax->tax_id,$sale_tax->total);
+		// Update tax items only if we're successful.
+		$tax_item_action = 'invoice';
+		if( $this->_sale->refund_form_id && 
+			$this->_sale->refund_form_id < $this->_sale->id )
+			$tax_item_action = 'refund';
+		
+		$this->_update_form_tax_items($this->_sale->id, $tax_item_action);
 		
 		$this->_sale->save();
 
