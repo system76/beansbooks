@@ -61,6 +61,7 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 		ALTER TABLE `taxes` DROP `fee` ;
 
 		ALTER TABLE `form_line_taxes` ADD `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
+		ALTER TABLE `form_line_taxes` ADD `form_id` BIGINT UNSIGNED NULL DEFAULT NULL AFTER `id` ;
 
 		ALTER TABLE `form_taxes` CHANGE `amount` `form_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
 		ALTER TABLE `form_taxes` CHANGE `percent` `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
