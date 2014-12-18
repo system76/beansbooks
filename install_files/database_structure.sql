@@ -120,6 +120,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `form_line_id` bigint(20) unsigned DEFAULT NULL,
   `tax_id` bigint(20) unsigned DEFAULT NULL,
   `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL,
+  `amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `form_taxes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
