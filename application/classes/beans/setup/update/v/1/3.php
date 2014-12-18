@@ -55,6 +55,40 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 			throw new Exception("An error occurred when migrating your database tables: ".$e->getMessage());
 		}
 
+		/*
+		Required Database Updates:
+
+		ALTER TABLE `taxes` DROP `fee` ;
+
+		ALTER TABLE `form_line_taxes` ADD `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
+
+		ALTER TABLE `form_taxes` CHANGE `amount` `form_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
+		ALTER TABLE `form_taxes` CHANGE `percent` `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
+		ALTER TABLE `form_taxes` ADD `date` DATE NULL DEFAULT NULL AFTER  `tax_id`;
+		ALTER TABLE `form_taxes` ADD `type` ENUM( 'invoice', 'refund' ) NULL DEFAULT NULL AFTER `date`;
+		ALTER TABLE `form_taxes` ADD `form_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL AFTER `type` ;
+		ALTER TABLE `form_taxes` ADD `balance` DECIMAL( 15, 2 ) NULL DEFAULT NULL AFTER `total` ;
+		ALTER TABLE `form_taxes` DROP `quantity`;
+		ALTER TABLE `form_taxes` DROP `fee` ;
+
+		CREATE TABLE IF NOT EXISTS `form_tax_payments` (
+		    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		    `form_tax_id` bigint(20) unsigned DEFAULT NULL,
+		    `tax_payment_id` bigint(20) unsigned DEFAULT NULL,
+		    `amount` decimal(15,2) DEFAULT NULL,
+		    PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+		ALTER TABLE `tax_payments` ADD `invoice_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
+		ALTER TABLE `tax_payments` ADD `invoice_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
+		ALTER TABLE `tax_payments` ADD `invoice_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
+		ALTER TABLE `tax_payments` ADD `refund_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
+		ALTER TABLE `tax_payments` ADD `refund_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
+		ALTER TABLE `tax_payments` ADD `refund_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
+		ALTER TABLE `tax_payments` ADD `net_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
+		ALTER TABLE `tax_payments` ADD `net_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
+		 */
+
 		
 		return (object)array();
 	}

@@ -118,16 +118,25 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `form_line_id` bigint(20) unsigned DEFAULT NULL,
   `tax_id` bigint(20) unsigned DEFAULT NULL,
+  `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `form_taxes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `form_id` bigint(20) unsigned DEFAULT NULL,
   `tax_id` bigint(20) unsigned DEFAULT NULL,
-  `amount` decimal(15,2) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL,
-  `percent` decimal(6,6) DEFAULT NULL,
-  `fee` decimal(10,2) DEFAULT NULL,
+  `date` DATE NULL DEFAULT NULL,
+  `type` ENUM( 'invoice', 'refund' ) NULL DEFAULT NULL,
+  `form_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `form_line_taxable_amount` decimal(15,2) DEFAULT NULL,
+  `tax_percent` decimal(6,6) DEFAULT NULL,
   `total` decimal(15,2) DEFAULT NULL,
+  `balance` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `form_tax_payments` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `form_tax_id` bigint(20) unsigned DEFAULT NULL,
+  `tax_payment_id` bigint(20) unsigned DEFAULT NULL,
+  `amount` decimal(15,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `logs` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -179,7 +188,6 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `code` varchar(16) DEFAULT NULL,
   `name` varchar(64) DEFAULT NULL,
   `percent` decimal(6,6) DEFAULT NULL,
-  `fee` decimal(10,2) DEFAULT NULL,
   `total` decimal(15,2) DEFAULT NULL,
   `balance` decimal(15,2) DEFAULT NULL,
   `date_due` DATE DEFAULT NULL,
@@ -202,6 +210,14 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `date_end` date DEFAULT NULL,
   `amount` decimal(15,2) DEFAULT NULL,
   `transaction_id` bigint(20) unsigned DEFAULT NULL,
+  `invoice_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `invoice_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `invoice_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `refund_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `refund_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `refund_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `net_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `net_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `transactions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
