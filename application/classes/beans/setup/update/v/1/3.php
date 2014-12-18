@@ -61,23 +61,27 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 		ALTER TABLE `taxes` DROP `fee` ;
 
 		ALTER TABLE `form_line_taxes` ADD `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
-		ALTER TABLE `form_line_taxes` ADD `form_id` BIGINT UNSIGNED NULL DEFAULT NULL AFTER `id` ;
+		ALTER TABLE `form_line_taxes` ADD  `form_id` BIGINT UNSIGNED NULL DEFAULT NULL AFTER  `id` ;
 
-		ALTER TABLE `form_taxes` CHANGE `amount` `form_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
 		ALTER TABLE `form_taxes` CHANGE `percent` `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
-		ALTER TABLE `form_taxes` ADD `date` DATE NULL DEFAULT NULL AFTER  `tax_id`;
-		ALTER TABLE `form_taxes` ADD `type` ENUM( 'invoice', 'refund' ) NULL DEFAULT NULL AFTER `date`;
-		ALTER TABLE `form_taxes` ADD `form_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL AFTER `type` ;
-		ALTER TABLE `form_taxes` ADD `balance` DECIMAL( 15, 2 ) NULL DEFAULT NULL AFTER `total` ;
+		ALTER TABLE `form_taxes` CHANGE `amount` `form_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
+		ALTER TABLE `form_taxes` ADD `form_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL AFTER `tax_id` ;
 		ALTER TABLE `form_taxes` DROP `quantity`;
 		ALTER TABLE `form_taxes` DROP `fee` ;
 
-		CREATE TABLE IF NOT EXISTS `form_tax_payments` (
-		    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-		    `form_tax_id` bigint(20) unsigned DEFAULT NULL,
-		    `tax_payment_id` bigint(20) unsigned DEFAULT NULL,
-		    `amount` decimal(15,2) DEFAULT NULL,
-		    PRIMARY KEY (`id`)
+		CREATE TABLE IF NOT EXISTS `tax_items` (
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `tax_id` bigint(20) unsigned DEFAULT NULL,
+		  `form_id` bigint(20) unsigned DEFAULT NULL,
+		  `tax_payment_id` bigint(20) unsigned DEFAULT NULL,
+		  `date` date DEFAULT NULL,
+		  `type` enum('invoice','refund') DEFAULT NULL,
+		  `form_line_amount` decimal(15,2) DEFAULT NULL,
+		  `form_line_taxable_amount` decimal(15,2) DEFAULT NULL,
+		  `tax_percent` decimal(6,6) DEFAULT NULL,
+		  `total` decimal(15,2) DEFAULT NULL,
+		  `balance` decimal(15,2) DEFAULT NULL,
+		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 		ALTER TABLE `tax_payments` ADD `invoice_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
