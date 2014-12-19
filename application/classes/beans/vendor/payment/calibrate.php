@@ -337,7 +337,7 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 														 * -1 // FLIP THE SIGN
 														 * $payment_account->type->table_sign;
 
-		if( $payment_account->account_type->table_sign > 0 )
+		if( $payment_account->type->table_sign > 0 )
 		{
 			foreach( $purchase_account_transfers as $account_id => $transfer_amount )
 				$purchase_account_transfers[$account_id] = $transfer_amount * -1;
