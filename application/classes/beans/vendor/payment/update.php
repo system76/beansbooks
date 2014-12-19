@@ -106,7 +106,7 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 		if( ! $payment_account->loaded() )
 			throw new Exception("Invalid payment account ID: not found.");
 
-		if( ! $payment_account->deposit )
+		if( ! $payment_account->payment )
 			throw new Exception("Invalid payment account ID: account must be marked as payment.");
 
 		if( ! $this->_data->amount )
