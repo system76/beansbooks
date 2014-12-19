@@ -92,6 +92,7 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 		ALTER TABLE `tax_payments` ADD `refund_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
 		ALTER TABLE `tax_payments` ADD `net_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
 		ALTER TABLE `tax_payments` ADD `net_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
+		ALTER TABLE `tax_payments` ADD `net_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
 		 */
 
 		

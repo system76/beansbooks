@@ -223,6 +223,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `refund_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
   `net_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
   `net_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
+  `net_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `transactions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
