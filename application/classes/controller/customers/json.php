@@ -516,16 +516,16 @@ class Controller_Customers_Json extends Controller_Json {
 		$update_sale_data->order_number = $this->request->post('order_number');
 		$update_sale_data->quote_number = $this->request->post('quote_number');
 		$update_sale_data->po_number = $this->request->post('po_number');
-		$create_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
+		$update_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
 
-		$create_sale_data->taxes = array();
+		$update_sale_data->taxes = array();
 
 		if( $this->request->post('form-tax_ids') )
 		{
 			foreach( explode('#', $this->request->post('form-tax_ids')) as $tax_id )
 			{
 				if( trim($tax_id) )
-					$create_sale_data->taxes[] = (object)array(
+					$update_sale_data->taxes[] = (object)array(
 						'tax_id' => $tax_id,
 					);
 			}
