@@ -359,6 +359,19 @@ function rowElementsToggleMaster(master) {
  * Custom Checkbox Elements
  */
 function checkboxUpdate(checkbox) {
+	if( checkbox.is(':disabled') &&
+		checkbox.is(':checked') ) {
+		checkbox.closest('.checkbox').addClass('disabled').addClass('checked');
+	} else if( checkbox.is(':disabled') ) {
+		checkbox.closest('.checkbox').addClass('disabled').removeClass('checked');
+	} else if( checkbox.is(':checked') ) {
+		checkbox.closest('.checkbox').removeClass('disabled').addClass('checked');
+	} else {
+		checkbox.closest('.checkbox').removeClass('disabled').removeClass('checked');
+	}
+}
+
+function checkboxUpdateOLD(checkbox) {
 	if( checkbox.is(':disabled') ) {
 		checkbox.closest('.checkbox').addClass('disabled').removeClass('checked');
 	} else if( checkbox.is(':checked') ) {

@@ -160,8 +160,8 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			{
 				$new_sale_tax = $this->_default_form_tax();
 
-				$new_sale_tax->tax_id = ( isset($sale_line_tax->tax_id) )
-									  ? (int)$sale_line_tax->tax_id
+				$new_sale_tax->tax_id = ( isset($sale_tax->tax_id) )
+									  ? (int)$sale_tax->tax_id
 									  : NULL;
 
 				if( ! $new_sale_tax->tax_id )
