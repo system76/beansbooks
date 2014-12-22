@@ -2,7 +2,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `parent_account_id` int(10) unsigned DEFAULT NULL,
   `account_type_id` tinyint(3) unsigned DEFAULT NULL,
-  `reserved` BOOLEAN NOT NULL DEFAULT '0',
+  `reserved` boolean NOT NULL DEFAULT FALSE,
   `deposit` tinyint(1) NOT NULL DEFAULT '0',
   `payment` tinyint(1) NOT NULL DEFAULT '0',
   `receivable` tinyint(1) NOT NULL DEFAULT '0',
@@ -29,9 +29,9 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `amount` decimal(15,2) DEFAULT NULL,
   `balance` decimal(15,2) DEFAULT NULL,
   `account_reconcile_id` bigint(20) unsigned DEFAULT NULL,
-  `transfer` BOOLEAN NOT NULL DEFAULT '0',
-  `writeoff` BOOLEAN NOT NULL DEFAULT '0',
-  `close_books` BOOLEAN NOT NULL DEFAULT '0',
+  `transfer` boolean NOT NULL DEFAULT FALSE,
+  `writeoff` boolean NOT NULL DEFAULT FALSE,
+  `close_books` boolean NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `account_transaction_forms` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -91,6 +91,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `billing_address_id` bigint(20) unsigned DEFAULT NULL,
   `remit_address_id` bigint(20) unsigned DEFAULT NULL,
   `type` enum('sale','expense','purchase') DEFAULT NULL,
+  `tax_exempt` boolean NOT NULL DEFAULT FALSE,
   `sent` enum('print','email','both') DEFAULT NULL,
   `date_created` date DEFAULT NULL,
   `date_billed` date DEFAULT NULL,
@@ -108,18 +109,12 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `form_id` bigint(20) unsigned DEFAULT NULL,
   `account_id` bigint(20) unsigned DEFAULT NULL,
-  `adjustment` BOOLEAN NOT NULL DEFAULT '0',
+  `adjustment` boolean NOT NULL DEFAULT FALSE,
+  `tax_exempt` boolean NOT NULL DEFAULT FALSE,
   `description` varchar(128) DEFAULT NULL,
   `amount` decimal(15,2) DEFAULT NULL,
   `quantity` int(10) unsigned DEFAULT NULL,
   `total` decimal(15,2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `form_line_taxes` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `form_id` BIGINT UNSIGNED NULL DEFAULT NULL,
-  `form_line_id` bigint(20) unsigned DEFAULT NULL,
-  `tax_id` bigint(20) unsigned DEFAULT NULL,
-  `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `form_taxes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -172,7 +167,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(64) DEFAULT NULL,
   `value` text,
-  `reserved` BOOLEAN NOT NULL DEFAULT '0',
+  `reserved` boolean NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `taxes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -192,7 +187,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `state` VARCHAR( 255 ) DEFAULT NULL,
   `zip` VARCHAR( 255 ) DEFAULT NULL,
   `country` VARCHAR( 255 ) DEFAULT NULL,
-  `visible` BOOLEAN NOT NULL DEFAULT TRUE,
+  `visible` boolean NOT NULL DEFAULT TRUE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `tax_items` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,

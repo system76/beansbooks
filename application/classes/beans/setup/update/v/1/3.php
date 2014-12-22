@@ -60,8 +60,7 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 
 		ALTER TABLE `taxes` DROP `fee` ;
 
-		ALTER TABLE `form_line_taxes` ADD `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
-		ALTER TABLE `form_line_taxes` ADD  `form_id` BIGINT UNSIGNED NULL DEFAULT NULL AFTER  `id` ;
+		DROP TABLE `form_line_taxes`;
 
 		ALTER TABLE `form_taxes` CHANGE `percent` `tax_percent` DECIMAL( 6, 6 ) NULL DEFAULT NULL ;
 		ALTER TABLE `form_taxes` CHANGE `amount` `form_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
@@ -93,6 +92,12 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 		ALTER TABLE `tax_payments` ADD `net_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
 		ALTER TABLE `tax_payments` ADD `net_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
 		ALTER TABLE `tax_payments` ADD `net_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL ;
+
+		ALTER TABLE `forms` ADD `tax_exempt` BOOLEAN NOT NULL DEFAULT FALSE AFTER `type` ;
+
+		ALTER TABLE `form_lines` ADD `tax_exempt` BOOLEAN NOT NULL DEFAULT FALSE AFTER `adjustment` ;
+
+		
 		 */
 
 		
