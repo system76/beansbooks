@@ -384,6 +384,7 @@ class Beans_Customer extends Beans {
 	@attribute order_number STRING
 	@attribute po_number STRING
 	@attribute quote_number STRING
+	@attribute tax_exempt BOOLEAN If this is true, all lines of the sale will also be tax_exempt.
 	@attribute billing_address OBJECT The #Beans_Customer_Address# used to bill this sale.
 	@attribute shipping_address OBJECT The #Beans_Customer_Address# used to ship this sale.
 	@attribute lines ARRAY An array of #Beans_Customer_Sale_Line#.
@@ -438,6 +439,8 @@ class Beans_Customer extends Beans {
 		$return_object->order_number = $sale->reference;
 		$return_object->po_number = $sale->alt_reference;
 		$return_object->quote_number = $sale->aux_reference;
+
+		$return_object->tax_exempt = $sale->tax_exempt ? TRUE : FALSE;
 
 		$return_object->billing_address = ( $sale->billing_address_id ) 
 										? $this->_return_customer_address_element($sale->billing_address)
@@ -524,11 +527,11 @@ class Beans_Customer extends Beans {
 	@description A line item on a customer sale.
 	@attribute id INTEGER 
 	@attribute account OBJECT The #Beans_Account# tied to this line.
+	@attribute tax_exempt BOOLEAN Whether or not this particular line is tax exempt.
 	@attribute description STRING
 	@attribute amount DECIMAL
 	@attribute quantity INTEGER
 	@attribute total DECIMAL
-	@attribute line_taxes ARRAY An array of #Beans_Customer_Sale_Line_Tax# for this line.
 	---BEANSENDSPEC---
 	 */
 
@@ -547,6 +550,8 @@ class Beans_Customer extends Beans {
 
 		$return_object->account = $this->_return_account_element($line->account);
 
+		$return_object->tax_exempt = $line->tax_exempt ? TRUE : FALSE;
+
 		$return_object->description = $line->description;
 		$return_object->amount = $line->amount;
 		$return_object->quantity = $line->quantity;
@@ -556,43 +561,6 @@ class Beans_Customer extends Beans {
 		
 		$this->_return_form_line_element[$line->id] = $return_object;
 		return $this->_return_form_line_element[$line->id];
-	}
-
-	protected function _return_line_taxes_array($line_taxes)
-	{
-		$return_array = array();
-
-		foreach( $line_taxes as $line_tax )
-			$return_array[] = $this->_return_line_tax_element($line_tax);
-
-		return $return_array;
-	}
-
-	/*
-	---BEANSOBJSPEC---
-	@object Beans_Customer_Sale_Line_Tax
-	@description A tax applied to a single line item.
-	@attribute id INTEGER 
-	@attribute tax OBJECT The #Beans_Tax# tied to this line tax.
-	---BEANSENDSPEC---
-	 */
-
-	private $_return_line_tax_element_cache = array();
-	protected function _return_line_tax_element($line_tax)
-	{
-		$return_object = new stdClass;
-
-		if( get_class($line_tax) != "Model_Form_Line_Tax" )
-			throw new Exception("Invalid Line Tax.");
-
-		if( isset($this->_return_line_tax_element_cache[$line_tax->id]) )
-			return $this->_return_line_tax_element_cache[$line_tax->id];
-		
-		$return_object->id = $line_tax->id;
-		$return_object->tax = $this->_return_tax_element($line_tax->tax);
-		
-		$this->_return_line_tax_element_cache[$line_tax->id] = $return_object;
-		return $this->_return_line_tax_element_cache[$line_tax->id];
 	}
 
 	protected function _return_form_taxes_array($form_taxes)
@@ -610,10 +578,11 @@ class Beans_Customer extends Beans {
 	@object Beans_Customer_Sale_Tax
 	@description A summary of a tax applied to one or more lines on a sale.
 	@attribute id INTEGER 
-	@attribute tax OBJECT The #Beans_Tax# tied to this line tax.
-	@attribute amount DECIMAL The line total that the tax is applied to ( if percent is not NULL ).
-	@attribute taxable_amount DECIMAL The line total that the tax is applied to ( if percent is not NULL ).
+	@attribute tax OBJECT The #Beans_Tax# tied to this tax.
+	@attribute amount DECIMAL The line total of the form that the tax is applied to.
+	@attribute taxable_amount DECIMAL The taxable line total of the form that the tax is applied to.
 	@attribute percent DECIMAL The percent applied to the amount.
+	@attribute total DECIMAL The total calculated amount of taxes.
 	---BEANSENDSPEC---
 	 */
 
