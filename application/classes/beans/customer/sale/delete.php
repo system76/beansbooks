@@ -87,12 +87,7 @@ class Beans_Customer_Sale_Delete extends Beans_Customer_Sale {
 		}
 
 		foreach( $this->_sale->form_lines->find_all() as $sale_line )
-		{
-			foreach( $sale_line->form_line_taxes->find_all() as $sale_line_tax )
-				$sale_line_tax->delete();
-			
 			$sale_line->delete();
-		}
 
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
 			$sale_tax->delete();

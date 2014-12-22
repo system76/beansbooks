@@ -557,8 +557,6 @@ class Beans_Customer extends Beans {
 		$return_object->quantity = $line->quantity;
 		$return_object->total = $line->total;
 
-		$return_object->line_taxes = $this->_return_line_taxes_array($line->form_line_taxes->find_all());
-		
 		$this->_return_form_line_element[$line->id] = $return_object;
 		return $this->_return_form_line_element[$line->id];
 	}
@@ -1130,23 +1128,6 @@ class Beans_Customer extends Beans {
 
 	}
 
-	protected function _default_form_line_tax()
-	{
-		$form_line_tax = ORM::Factory('form_line_tax');
-
-		$form_line_tax->tax_id = NULL;
-		$form_line_tax->form_id = NULL;
-		$form_line_tax->form_line_id = NULL;
-		$form_line_tax->tax_percent = NULL;
-		
-		return $form_line_tax;
-	}
-
-	protected function _load_form_line_tax($id)
-	{
-		return ORM::Factory('form_line_tax',$id);
-	}
-
 	protected function _validate_customer_sale_line_tax($sale_line_tax)
 	{
 		if( get_class($sale_line_tax) != "Model_Form_Line_Tax" )
@@ -1249,6 +1230,7 @@ class Beans_Customer extends Beans {
 	private function _create_tax_item($form_id, $tax_id, $action)
 	{
 		$form = ORM::Factory('form', $form_id);
+		$tax = ORM::Factory('tax', $tax_id);
 
 		// If this form isn't cancelled, we want to update every tax_item
 		// associated to it to reflect the current date_billed as date
@@ -1263,88 +1245,75 @@ class Beans_Customer extends Beans {
 			)->execute();
 		}
 
-		// Get current amount
-		// This is the amount that is CURRENTLY taxable on the form
+		// Our general form for generating a tax_item value is to take the difference of
+		// the current value and the sum of values stored in tax_items currently.
+		// So first we get the current value for each field -
+		// Note - if the form is cancelled we force a value of 0.00
+
 		$current_form_line_taxable_amount = 0.00;
-		if( ! $form->date_cancelled )
-		{
-			$form_line_taxes = ORM::Factory('form_line_tax')
-				->where('form_id','=',$form_id)
-				->where('tax_id','=',$tax_id)
-				->find_all();
-
-			foreach( $form_line_taxes as $form_line_tax )
-			{
-				$current_form_line_taxable_amount = $this->_beans_round(
-					$current_form_line_taxable_amount +
-					$form_line_tax->form_line->total
-				);
-			}
-		}
-
-		// Get sum amount
-		// This is the sum total of amounts ever thought to be taxable on this form
-		$sum_form_line_taxable_amount_results = DB::Query(
-			Database::SELECT, 
-			'SELECT IFNULL(SUM(form_line_taxable_amount),0.00) as form_line_taxable_amount '.
-			'FROM tax_items WHERE '.
-			'form_id = '.$form_id.' '.
-			'AND tax_id = '.$tax_id.' '
-		)->execute()->as_array();
-		$sum_form_line_taxable_amount = $sum_form_line_taxable_amount_results[0]['form_line_taxable_amount'];
-
-		$form_line_taxable_amount = $this->_beans_round(
-			$current_form_line_taxable_amount - 
-			$sum_form_line_taxable_amount
-		);
-
-		if( $form_line_taxable_amount === 0.00 )
-			return NULL;
-		
 		$current_form_line_amount = 0.00;
+		$current_total = 0.00;
+
 		if( ! $form->date_cancelled )
 		{
-			$current_form_line_amount_results = DB::Query(
+			$current_values = DB::Query(
 				Database::SELECT,
-				'SELECT IFNULL(SUM(total),0.00) as form_line_amount '.
-				'FROM form_lines WHERE '.
-				'form_id = '.$form_id.' '
+				'SELECT '.
+				'IFNULL(SUM(form_line_taxable_amount),0.00) as form_line_taxable_amount, '.
+				'IFNULL(SUM(form_line_amount),0.00) as form_line_amount, '.
+				'IFNULL(SUM(total),0.00) as total '.
+				'FROM form_taxes '.
+				'WHERE '.
+				'form_id = '.$form_id.' AND '.
+				'tax_id = '.$tax_id.' '
 			)->execute()->as_array();
 
-			$current_form_line_amount = $current_form_line_amount_results[0]['form_line_amount'];
+			$current_form_line_taxable_amount = $current_values[0]['form_line_taxable_amount'];
+			$current_form_line_amount = $current_values[0]['form_line_amount'];
+			$current_total = $current_values[0]['total'];
 		}
 
-		$sum_form_line_amount_results = DB::Query(
+		$sum_values = DB::Query(
 			Database::SELECT,
-			'SELECT IFNULL(SUM(form_line_amount),0.00) as form_line_amount '.
-			'FROM tax_items WHERE '.
-			'form_id = '.$form_id.' '.
-			'AND tax_id = '.$tax_id.' '
+			'SELECT '.
+			'IFNULL(SUM(form_line_taxable_amount),0.00) as form_line_taxable_amount, '.
+			'IFNULL(SUM(form_line_amount),0.00) as form_line_amount, '.
+			'IFNULL(SUM(total),0.00) as total '.
+			'FROM tax_items '.
+			'WHERE '.
+			'form_id = '.$form_id.' AND '.
+			'tax_id = '.$tax_id.' '
 		)->execute()->as_array();
-		$sum_form_line_amount = $sum_form_line_amount_results[0]['form_line_amount'];
 
-		$form_line_amount = $this->_beans_round(
-			$current_form_line_amount -
-			$sum_form_line_amount
-		);
+		$sum_form_line_taxable_amount = $sum_values[0]['form_line_taxable_amount'];
+		$sum_form_line_amount = $sum_values[0]['form_line_amount'];
+		$sum_total = $sum_values[0]['total'];
 
 		$tax_item = ORM::Factory('tax_item');
-
-		// We'll need this for percent
-		$tax = ORM::Factory('tax', $tax_id);
 
 		$tax_item->tax_id = $tax_id;
 		$tax_item->form_id = $form_id;
 		$tax_item->tax_payment_id = NULL;
 		$tax_item->tax_percent = $tax->percent;
-		$tax_item->form_line_amount = $form_line_amount;
-		$tax_item->form_line_taxable_amount = $form_line_taxable_amount;
-		$tax_item->total = $this->_beans_round(
-			$tax_item->form_line_taxable_amount *
-			$tax_item->tax_percent
-		);
-		$tax_item->balance = ( -1 * $tax_item->total );
 
+		$tax_item->form_line_amount = $this->_beans_round(
+			$current_form_line_amount -
+			$sum_form_line_amount
+		);
+		$tax_item->form_line_taxable_amount = $this->_beans_round(
+			$current_form_line_taxable_amount -
+			$sum_form_line_taxable_amount
+		);
+		$tax_item->total = $this->_beans_round(
+			$current_total -
+			$sum_total
+		);
+
+		// If no taxable amount changes have been made - we can just exit.
+		if( $tax_item->form_line_taxable_amount === 0.00 )
+			return NULL;
+
+		$tax_item->balance = ( -1 * $tax_item->total );
 		$tax_item->type = $action;
 		
 		if( $form->date_cancelled )

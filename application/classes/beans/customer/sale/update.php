@@ -34,6 +34,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @optional order_number STRING An order number to help identify this sale.
 @optional po_number STRING A purchase order number to help identify this sale.
 @optional quote_number STRING A quote number to help identify this sale.
+@optional tax_exempt BOOLEAN If set to true, all lines will be marked as tax_exempt.
 @optional billing_address_id INTEGER The ID of the #Beans_Customer_Address# for billing this sale.
 @optional shipping_address_id INTEGER The ID of the #Beans_Customer_Address# for shipping this sale.
 @required lines ARRAY An array of objects representing line items for the sale.
@@ -41,7 +42,9 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required @attribute lines amount DECIMAL The amount per unit.
 @required @attribute lines quantity INTEGER The number of units.
 @optional @attribute lines account_id INTEGER The ID of the #Beans_Account# to count the sale towards ( in terms of revenue ).
-@optional @attribute lines sale_line_taxes ARRAY An array of objects denoting which taxes apply to this line item.  Each object has a tax_id property that is an integer representing the applicable #Beans_Tax#.
+@optional @attribute lines tax_exempt BOOLEAN
+@optional taxes ARRAY An array of objects representing taxes applicable to the sale.
+@required @attribute taxes tax_id The ID of the #Beans_Tax# that should be applied.
 @returns sale OBJECT The updated #Beans_Customer_Sale#.
 ---BEANSENDSPEC---
 */
@@ -53,7 +56,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 	protected $_id;
 	protected $_sale;
 	protected $_sale_lines;
-	protected $_sale_lines_taxes;
 	protected $_sale_taxes;
 
 	protected $_date_billed;
@@ -71,7 +73,6 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		$this->_sale = $this->_load_customer_sale($this->_id);
 
 		$this->_sale_lines = array();
-		$this->_sale_lines_taxes = array();
 		$this->_sale_taxes = array();
 
 		$this->_date_billed = ( isset($this->_data->date_billed) )
@@ -113,6 +114,9 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		if( isset($this->_data->po_number) )
 			$this->_sale->alt_reference = $this->_data->po_number;
 
+		if( isset($this->_data->tax_exempt) )
+			$this->_sale->tax_exempt = ( $this->_data->tax_exempt ) ? TRUE : FALSE;
+
 		if( isset($this->_data->billing_address_id) )
 			$this->_sale->billing_address_id = $this->_data->billing_address_id;
 
@@ -147,7 +151,36 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			! count($this->_data->lines) )
 			throw new Exception("Invalid sale lines: none provided.");
 
-		$i = 0;
+		if( $this->_data->taxes )
+		{
+			if( ! is_array($this->_data->taxes) )
+				throw new Exception("Invalid sale taxes: must be an array.");
+
+			foreach( $this->_data->taxes as $sale_tax )
+			{
+				$new_sale_tax = $this->_default_form_tax();
+
+				$new_sale_tax->tax_id = ( isset($sale_line_tax->tax_id) )
+									  ? (int)$sale_line_tax->tax_id
+									  : NULL;
+
+				if( ! $new_sale_tax->tax_id )
+					throw new Exception("Invalid sale tax ID: none provided.");
+
+				$tax = $this->_load_tax($new_sale_tax->tax_id);
+
+				if( ! $tax->loaded() )
+					throw new Exception("Invalid sale tax ID: tax not found.");
+
+				$new_sale_tax->tax_percent = $tax->percent;
+				$new_sale_tax->form_line_amount = 0.00;
+				$new_sale_tax->form_line_taxable_amount = 0.00;
+				$new_sale_tax->total = 0.00;
+
+				if( ! isset($this->_sale_taxes[$new_sale_tax->tax_id]) )
+					$this->_sale_taxes[$new_sale_tax->tax_id] = $new_sale_tax;
+			}
+		}
 
 		foreach( $this->_data->lines as $sale_line )
 		{
@@ -156,6 +189,14 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			$new_sale_line->account_id = ( isset($sale_line->account_id) )
 										  ? (int)$sale_line->account_id
 										  : NULL;
+
+			$new_sale_line->tax_exempt = ( $this->_sale->tax_exempt ||
+										   (
+										   		isset($sale_line->tax_exempt) AND 
+										    	$sale_line->tax_exempt 
+										   ) )
+									   ? TRUE
+									   : FALSE;
 
 			$new_sale_line->description = ( isset($sale_line->description) )
 										   ? $sale_line->description
@@ -176,55 +217,23 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 			$this->_validate_customer_sale_line($new_sale_line);
 
-			$new_sale_line->total = $this->_beans_round( $new_sale_line->amount * $new_sale_line->quantity );
+			$new_sale_line->total = $this->_beans_round( 
+				$new_sale_line->amount * 
+				$new_sale_line->quantity 
+			);
 
-			$this->_sale_lines_taxes[$i] = array();
-
-			if( isset($sale_line->sale_line_taxes) AND 
-				$new_sale_line->amount != 0 )
+			if( ! $new_sale_line->tax_exempt )
 			{
-				if( ! is_array($sale_line->sale_line_taxes) )
-					throw new Exception("Invalid sale line taxes: must be array.");
-
-				foreach( $sale_line->sale_line_taxes as $sale_line_tax )
+				foreach( $this->_sale_taxes as $tax_id => $sale_tax )
 				{
-					$new_sale_line_tax = $this->_default_form_line_tax();
-
-					$new_sale_line_tax->tax_id = ( isset($sale_line_tax->tax_id) )
-												  ? (int)$sale_line_tax->tax_id
-												  : NULL;
-
-					if( ! $new_sale_line_tax->tax_id )
-						throw new Exception("Invalid sale line tax ID: none provided.");
-
-					$tax = $this->_load_tax($new_sale_line_tax->tax_id);
-
-					if( ! $tax->loaded() )
-						throw new Exception("Invalid sale line tax ID: tax not found.");
-
-					$new_sale_line_tax->tax_percent = $tax->percent;
-
-					$this->_validate_customer_sale_line_tax($new_sale_line_tax);
-
-					if( ! isset($this->_sale_taxes[$tax->id]) ) {
-						$this->_sale_taxes[$tax->id] = $this->_default_form_tax();
-						$this->_sale_taxes[$tax->id]->tax_id = $tax->id;
-						$this->_sale_taxes[$tax->id]->tax_percent = $tax->percent;
-						$this->_sale_taxes[$tax->id]->form_line_taxable_amount = 0.00;
-					}
-
-					$this->_sale_taxes[$tax->id]->form_line_taxable_amount = $this->_beans_round( 
-						$this->_sale_taxes[$tax->id]->form_line_taxable_amount + 
+					$this->_sale_taxes[$tax_id]->form_line_taxable_amount = $this->_beans_round(
+						$this->_sale_taxes[$tax_id]->form_line_taxable_amount + 
 						$new_sale_line->total 
 					);
-
-					$this->_sale_lines_taxes[$i][] = $new_sale_line_tax;
 				}
 			}
 
-			$this->_sale_lines[$i] = $new_sale_line;
-
-			$i++;
+			$this->_sale_lines[] = $new_sale_line;
 		}
 
 		// If this is a refund we need to verify that the total is not greater than the original.
@@ -250,12 +259,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 		// Delete all current sale children.
 		foreach( $this->_sale->form_lines->find_all() as $sale_line )
-		{
-			foreach( $sale_line->form_line_taxes->find_all() as $sale_line_tax )
-				$sale_line_tax->delete();
-			
 			$sale_line->delete();
-		}
 
 		foreach( $this->_sale->form_taxes->find_all() as $sale_tax )
 			$sale_tax->delete();
@@ -268,29 +272,34 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			$sale_line->form_id = $this->_sale->id;
 			$sale_line->save();
 			
-			foreach( $this->_sale_lines_taxes[$j] as $sale_line_tax )
-			{
-				$sale_line_tax->form_id = $this->_sale->id;
-				$sale_line_tax->form_line_id = $sale_line->id;
-				$sale_line_tax->save();
-			}
-			
-			$this->_sale->amount = $this->_beans_round( $this->_sale->amount + $sale_line->total );
+			$this->_sale->amount = $this->_beans_round( 
+				$this->_sale->amount + 
+				$sale_line->total 
+			);
 		}
 
-		$this->_sale->total = $this->_beans_round( $this->_sale->total + $this->_sale->amount );
+		$this->_sale->total = $this->_beans_round( 
+			$this->_sale->total + 
+			$this->_sale->amount 
+		);
 
 		foreach( $this->_sale_taxes as $t => $sale_tax )
 		{
-			$this->_sale_taxes[$t]->form_id = $this->_sale->id;
-			$this->_sale_taxes[$t]->total = 0.00;
-
-			$this->_sale_taxes[$t]->total = $this->_beans_round( $sale_tax->tax_percent * $sale_tax->form_line_taxable_amount );
-			$this->_sale_taxes[$t]->form_line_amount = $this->_sale->amount;
+			$this->_sale_taxes[$tax_id]->form_id = $this->_sale->id;
 			
-			$this->_sale_taxes[$t]->save();
+			$this->_sale_taxes[$tax_id]->total = $this->_beans_round( 
+				$sale_tax->tax_percent * 
+				$sale_tax->form_line_taxable_amount 
+			);
 			
-			$this->_sale->total = $this->_beans_round( $this->_sale->total + $this->_sale_taxes[$t]->total );
+			$this->_sale_taxes[$tax_id]->form_line_amount = $this->_sale->amount;
+			
+			$this->_sale_taxes[$tax_id]->save();
+			
+			$this->_sale->total = $this->_beans_round( 
+				$this->_sale->total + 
+				$this->_sale_taxes[$tax_id]->total 
+			);
 		}
 
 		$this->_sale->save();

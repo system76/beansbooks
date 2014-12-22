@@ -34,6 +34,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @optional order_number STRING An order number to help identify this sale.
 @optional po_number STRING A purchase order number to help identify this sale.
 @optional quote_number STRING A quote number to help identify this sale.
+@optional tax_exempt BOOLEAN If set to true, all lines will be marked as tax_exempt.
 @optional billing_address_id INTEGER The ID of the #Beans_Customer_Address# for billing this sale.
 @optional shipping_address_id INTEGER The ID of the #Beans_Customer_Address# for shipping this sale.
 @required lines ARRAY An array of objects representing line items for the sale.
@@ -41,7 +42,9 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required @attribute lines amount DECIMAL The amount per unit.
 @required @attribute lines quantity INTEGER The number of units.
 @optional @attribute lines account_id INTEGER The ID of the #Beans_Account# to count the sale towards ( in terms of revenue ).
-@optional @attribute lines sale_line_taxes ARRAY An array of objects denoting which taxes apply to this line item.  Each object has a tax_id property that is an integer representing the applicable #Beans_Tax#.
+@optional @attribute lines tax_exempt BOOLEAN
+@optional taxes ARRAY An array of objects representing taxes applicable to the sale.
+@required @attribute taxes tax_id The ID of the #Beans_Tax# that should be applied.
 @returns sale OBJECT The resulting #Beans_Customer_Sale#.
 ---BEANSENDSPEC---
 */
