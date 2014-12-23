@@ -1310,8 +1310,8 @@ class Beans_Customer extends Beans {
 		);
 
 		// If no taxable amount changes have been made - we can just exit.
-		if( $tax_item->form_line_taxable_amount === 0.00 )
-			return NULL;
+		//if( $tax_item->form_line_taxable_amount === 0.00 )
+		//	return NULL;
 
 		$tax_item->balance = ( -1 * $tax_item->total );
 		$tax_item->type = $action;
