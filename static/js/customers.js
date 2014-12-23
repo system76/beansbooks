@@ -2423,7 +2423,10 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					});
 					$('#customers-sales-create input.form-tax, #customers-sales-create input.form-tax-exempt').each(function () {
 						$(this).attr('disabled','disabled');
+						$(this).attr('checked',false);
+						checkboxUpdate($(this));
 					});
+			
 					$('#customers-sales-create input.datepicker').each(function() {
 						$(this).attr('readonly','readonly').datepicker("destroy");
 					});
@@ -2448,8 +2451,10 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 					if( sale_data.data.sale.tax_exempt ) {
 						$('#customers-sales-create .form-taxes input.form-tax-exempt').attr('checked','checked');
-						createSaleToggleTaxExempt();
+					} else {
+						$('#customers-sales-create .form-taxes input.form-tax-exempt').attr('checked',false);
 					}
+					createSaleToggleTaxExempt();
 
 					$newSaleLine = $($('#customers-sales-create-form-lines-line-template').html());
 					$newSaleLine.find('input:not(.tax-exempt),select').each(function() {
