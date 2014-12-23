@@ -2676,6 +2676,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 										$(this).attr('readonly',false).attr('disabled',false).datepicker({dateFormat: "yy-mm-dd"});
 									});
 
+									$('#customers-sales-create input.tax-exempt').each(function() {
+										$(this).attr('disabled',false);
+										checkboxUpdate($(this));
+									});
+
 									$('#customers-sales-create-form-lines select.account_id').each(function () {
 										$(this).select2("enable");
 									});
@@ -2690,10 +2695,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 									$('#customers-sales-create select[name="shipping_address_id"]').attr('disabled','disabled');
 									$('#customers-sales-create select[name="account"]').attr('readonly','readonly');
 									$('#customers-sales-create input[name="sale_number"]').attr('disabled','disabled');
-									$('#customers-sales-create input.tax-exempt').each(function () {
-										$(this).attr('disabled',false);
-										checkboxUpdate($(this));
-									});
+									
 									/*
 									$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line:not(:last-child)').each(function() {
 										
