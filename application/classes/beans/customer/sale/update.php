@@ -283,7 +283,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			$this->_sale->amount 
 		);
 
-		foreach( $this->_sale_taxes as $t => $sale_tax )
+		foreach( $this->_sale_taxes as $tax_id => $sale_tax )
 		{
 			$this->_sale_taxes[$tax_id]->form_id = $this->_sale->id;
 			
