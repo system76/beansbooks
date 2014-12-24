@@ -2873,21 +2873,16 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					} else {
 						// Fill in our form.
 						$form = $('#vendors-taxpayments-create');
-						$form.find('input[name="total_sales"]').attr('rel',data.data.tax_prep.total_sales);
-						$form.find('input[name="taxable_sales"]').attr('rel',data.data.tax_prep.taxable_sales);
-						$form.find('input[name="tax_collected"]').attr('rel',data.data.tax_prep.tax_collected);
-						$form.find('input[name="total_returns"]').attr('rel',data.data.tax_prep.total_returns);
-						$form.find('input[name="taxable_returns"]').attr('rel',data.data.tax_prep.taxable_returns);
-						$form.find('input[name="tax_returned"]').attr('rel',data.data.tax_prep.tax_returned);
-						$form.find('input[name="tax_paid"]').attr('rel',data.data.tax_prep.tax_payments_total);
-						
-						$tax_expected = parseFloat( 
-							parseFloat(data.data.tax_prep.tax_collected) + 
-							parseFloat(data.data.tax_prep.tax_returned) - 
-							parseFloat(data.data.tax_prep.tax_payments_total)
-						).toFixed(2);
-
-						$form.find('input[name="tax_expected"]').attr('rel',$tax_expected);
+						$form.find('input[name="total_sales"]').attr('rel',data.data.taxes.due.invoiced.form_line_amount);
+						$form.find('input[name="taxable_sales"]').attr('rel',data.data.taxes.due.invoiced.form_line_taxable_amount);
+						$form.find('input[name="tax_collected"]').attr('rel',data.data.taxes.due.invoiced.amount);
+						$form.find('input[name="total_returns"]').attr('rel',data.data.taxes.due.refunded.form_line_amount);
+						$form.find('input[name="taxable_returns"]').attr('rel',data.data.taxes.due.refunded.form_line_taxable_amount);
+						$form.find('input[name="tax_returned"]').attr('rel',data.data.taxes.due.refunded.amount);
+						$form.find('input[name="net_sales"]').attr('rel',data.data.taxes.due.net.form_line_amount);
+						$form.find('input[name="net_taxable"]').attr('rel',data.data.taxes.due.net.form_line_taxable_amount);
+						$form.find('input[name="tax_expected"]').attr('rel',data.data.taxes.net.amount);
+						$form.find('input[name="tax_paid"]').attr('rel',data.data.taxes.paid.net.amount);
 
 						createTaxPaymentUpdateForm();
 					}
@@ -3758,14 +3753,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$form.find('input[name="tax_returned"]').val(monetaryPrint($form.find('input[name="tax_returned"]').attr('rel')));
 		$form.find('input[name="tax_paid"]').val(monetaryPrint($form.find('input[name="tax_paid"]').attr('rel')));
 		$form.find('input[name="tax_expected"]').val(monetaryPrint($form.find('input[name="tax_expected"]').attr('rel')));
-		
-		$net_sales = convertCurrencyToNumber($form.find('input[name="total_sales"]').attr('rel')) + convertCurrencyToNumber($form.find('input[name="total_returns"]').attr('rel'));
-		$net_taxable = convertCurrencyToNumber($form.find('input[name="taxable_sales"]').attr('rel')) + convertCurrencyToNumber($form.find('input[name="taxable_returns"]').attr('rel'));
-
-		$form.find('input[name="net_sales"]').attr('rel',$net_sales);
-		$form.find('input[name="net_sales"]').val(monetaryPrint(parseFloat($form.find('input[name="net_sales"]').attr('rel')).toFixed(2)));
-
-		$form.find('input[name="net_taxable"]').attr('rel',$net_taxable);
+		$form.find('input[name="net_sales"]').val(monetaryPrint($form.find('input[name="net_sales"]').attr('rel')));
 		$form.find('input[name="net_taxable"]').val(monetaryPrint($form.find('input[name="net_taxable"]').attr('rel')));
 
 		$form.find('input[name="amount"]').val(parseFloat($form.find('input[name="amount"]').attr('rel')).toFixed(2));

@@ -551,4 +551,23 @@ class Beans {
 		return $sale_balance;
 	}
 
+	private $_get_account_name_by_id_cache = array();
+	protected function _get_account_name_by_id($account_id)
+	{
+		if( ! $account_id )
+			return NULL;
+
+		if( isset($this->_get_account_name_by_id_cache[$account_id]) )
+			return $this->_get_account_name_by_id_cache[$account_id];
+
+		$account = ORM::Factory('account',$account_id);
+
+		if( ! $account->loaded() )
+			throw new Exception("Invalid account ID: account not found.");
+
+		$this->_get_account_name_by_id_cache[$account_id] = $account->name;
+
+		return $this->_get_account_name_by_id_cache[$account_id];
+	}
+
 }

@@ -1905,7 +1905,13 @@ class Controller_Vendors_Json extends Controller_Json {
 		)));
 		$tax_prep_result = $tax_prep->execute();
 
-		$this->_return_object->data->tax_prep = $tax_prep_result->data->tax_prep;
+		if( ! $tax_prep_result->success )
+				return $this->_return_error(
+					"An unexpected error has occurred:<br>".
+					$this->_beans_result_get_error($tax_prep_result)
+				);
+
+		$this->_return_object->data = $tax_prep_result->data;
 	}
 
 	public function action_taxpaymentcreate()
