@@ -407,7 +407,7 @@ class Beans_Tax extends Beans {
 		DB::query(NULL,'UPDATE taxes SET balance = ( SELECT SUM(balance) FROM tax_items WHERE id = "'.$tax_id.'" ) WHERE id = "'.$tax_id.'"')->execute();
 	}
 
-	protected function _tax_update_due_date($tax_id, $payment_date)
+	protected function _tax_update_due_date($tax_id)
 	{
 		$tax = $this->_load_tax($tax_id);
 
@@ -416,7 +416,7 @@ class Beans_Tax extends Beans {
 		if( ! $last_tax_payment->loaded() )
 			return;
 
-		if( strtotime($last_tax_payment->date) > strtotime($tax->date_due.' -'.$tax->date_due_months_increment.' Months') OR 
+		if( strtotime($last_tax_payment->date) > strtotime($tax->date_due.' -'.$tax->date_due_months_increment.' Months') AND 
 			strtotime($last_tax_payment->date) < strtotime($tax->date_due.' +'.$tax->date_due_months_increment.' Months') )
 		{
 			$tax->date_due = $this->_date_add_months($tax->date_due,$tax->date_due_months_increment);

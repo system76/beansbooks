@@ -119,9 +119,9 @@ class Beans_Tax_Payment_Replace extends Beans_Tax_Payment {
 		$this->_validate_tax_payment($this->_payment);
 
 		$tax_prep = new Beans_Tax_Prep($this->_beans_data_auth((object)array(
-			'date_start' => $tax_payment->date_start,
-			'date_end' => $tax_payment->date_end,
-			'id' => $tax_payment->tax_id,
+			'date_start' => $this->_payment->date_start,
+			'date_end' => $this->_payment->date_end,
+			'id' => $this->_payment->tax_id,
 		)));
 		$tax_prep_result = $tax_prep->execute();
 
@@ -283,7 +283,7 @@ class Beans_Tax_Payment_Replace extends Beans_Tax_Payment {
 		$this->_tax_payment_update_balance($this->_payment->tax_id);
 
 		// Update tax due date.
-		$this->_tax_update_due_date($this->_payment->tax_id,$this->_payment->date);
+		$this->_tax_update_due_date($this->_payment->tax_id);
 
 		return (object)array(
 			"payment" => $this->_return_tax_payment_element($this->_payment),

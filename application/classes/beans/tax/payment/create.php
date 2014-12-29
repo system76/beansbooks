@@ -167,7 +167,7 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 		if( $this->_payment->amount == 0 )
 		{
 			$this->_payment->save();
-			$this->_tax_update_due_date($this->_payment->tax_id,$this->_payment->date);
+			$this->_tax_update_due_date($this->_payment->tax_id);
 
 			return (object)array(
 				"payment" => $this->_return_tax_payment_element($this->_payment),
@@ -288,7 +288,7 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 		$this->_tax_payment_update_balance($this->_payment->tax_id);
 
 		// Update tax due date.
-		$this->_tax_update_due_date($this->_payment->tax_id,$this->_payment->date);
+		$this->_tax_update_due_date($this->_payment->tax_id);
 
 		return (object)array(
 			"payment" => $this->_return_tax_payment_element($this->_payment),
