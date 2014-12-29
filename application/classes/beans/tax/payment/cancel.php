@@ -60,7 +60,17 @@ class Beans_Tax_Payment_Cancel extends Beans_Tax_Payment {
 			throw new Exception("Error cancelling tax payment: ".$account_transaction_delete_result->error);
 		
 		// Update tax 
-		$this->_tax_payment_adjust_balance($this->_payment->tax_id,( $this->_payment->amount * -1));
+		$this->_tax_payment_update_balance($this->_payment->tax_id);
+
+		$paid_tax_items = ORM::Factory('tax_item')
+			->where('tax_payment_id','=',$this->_payment->id)
+			->find_all();
+
+		foreach( $paid_tax_items as $paid_tax_item )
+		{
+			$paid_tax_item->tax_payment_id = NULL;
+			$paid_tax_item->save();
+		}
 
 		$this->_payment->delete();
 

@@ -435,6 +435,9 @@ function monetaryPrint(value) {
 	if( currencySymbol == false ) {
 		currencySymbol = $('input#beans-company-currency-symbol').val();
 	}
+	if( typeof value == "undefined" ) {
+		value = 0;
+	}
 	var print = currencySymbol;
 	if( value < 0 ) {
 		value = value * -1;

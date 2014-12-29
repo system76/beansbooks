@@ -1923,6 +1923,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$date_start = $this->request->post('date_start');
 		$date_end = $this->request->post('date_end');
 		$amount = $this->request->post('amount');
+		$total = $this->request->post('total');
 		$writeoff_amount = $this->request->post('writeoff_amount');
 		$check_number = $this->request->post('check_number');
 
@@ -1938,6 +1939,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				'date' => $date,
 				'date_start' => $date_start,
 				'date_end' => $date_end,
+				'total' => $total,
 				'amount' => $amount,
 				'check_number' => $check_number,
 				'payment_account_id' => $payment_account_id,
@@ -2010,6 +2012,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				'check_number' => $check_number,
 				'date_start' => $date_start,
 				'date_end' => $date_end,
+				'total' => $total,
 				'amount' => $amount,
 				'payment_account_id' => $payment_account_id,
 				'writeoff_account_id' => $writeoff_account_id,

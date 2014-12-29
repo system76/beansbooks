@@ -53,7 +53,7 @@ class Beans_Tax_Prep extends Beans_Tax {
 				   : 0;
 
 		$this->_payment_id = ( isset($data->payment_id) AND
-								$data->payment_id )
+							   $data->payment_id )
 						   ? $data->payment_id
 						   : -1;	// a value that will never match a real record ( BIGINT UNSIGNED )
 
@@ -119,7 +119,7 @@ class Beans_Tax_Prep extends Beans_Tax {
 					'form_line_amount' => 0.00,
 					'form_line_taxable_amount' => 0.00,
 					'amount' => 0.00,
-					'exemptions' => array(),
+					'liabilities' => array(),
 				);
 
 				$tax_item_summaries_query = 
@@ -177,7 +177,7 @@ class Beans_Tax_Prep extends Beans_Tax {
 						$tax_item_summary['amount']
 					);
 					
-					$taxes->{$period}->{$category}->exemptions[] = $this->_return_tax_exemption_element(
+					$taxes->{$period}->{$category}->liabilities[] = $this->_return_tax_liability_element(
 						$tax_item_summary['form_id'],
 						$tax_item_summary['form_line_amount'], 
 						$tax_item_summary['form_line_taxable_amount'], 
@@ -192,6 +192,8 @@ class Beans_Tax_Prep extends Beans_Tax {
 			'taxes' => $taxes,
 		);
 
+
+		// TODO_V_1_3 - REMOVE ALL OF THIS WHEN READY
 
 		// // // // // // // 
 		// OLD BELOW HERE // 
@@ -362,24 +364,24 @@ class Beans_Tax_Prep extends Beans_Tax {
 	
 	/*
 	---BEANSOBJSPEC---
-	@object Beans_Tax_Exemption
+	@object Beans_Tax_Liability
 	@description A customer sale that has been exempted from paying sales tax.
 	@attribute form_id INTEGER 
 	@attribute form_line_amount DECIMAL The applicable amount of non-taxable revenue for this period.
 	@attribute form_line_amount_taxable DECIMAL The applicable amount of taxable revenue for this period.
 	@attribute total DECIMAL The applicable amount of taxes due for this sale.
-	@attribute customer OBJECT A #Beans_Tax_Exemption_Customer# object - which represents an abbreviated #Beans_Customer# object.
+	@attribute customer OBJECT A #Beans_Tax_Liability_Customer# object - which represents an abbreviated #Beans_Customer# object.
 	@attribute account_name STRING The name of the receivable #Beans_Account# tied to this sale.
 	@attribute sale_number STRING
 	@attribute order_number STRING
 	@attribute po_number STRING
 	@attribute quote_number STRING
 	@attribute tax_exempt BOOLEAN Whether or not this entire sale is tax exempt.
-	@attribute lines ARRAY An array of #Beans_Tax_Exemption_Line# - a simplified representation of #Beans_Customer_Sale_Line#.
+	@attribute lines ARRAY An array of #Beans_Tax_Liability_Line# - a simplified representation of #Beans_Customer_Sale_Line#.
 	@attribute title STRING A short description of the sale.
 	---BEANSENDSPEC---
 	 */
-	protected function _return_tax_exemption_element($form_id, $form_line_amount, $form_line_taxable_amount, $amount)
+	protected function _return_tax_liability_element($form_id, $form_line_amount, $form_line_taxable_amount, $amount)
 	{
 		$sale = ORM::Factory('form', $form_id);
 
@@ -398,19 +400,20 @@ class Beans_Tax_Prep extends Beans_Tax {
 		$return_object->po_number = $sale->alt_reference;
 		$return_object->quote_number = $sale->aux_reference;
 		$return_object->tax_exempt = $sale->tax_exempt ? TRUE : FALSE;
+		// TODO_V_1_3 - Add tax_exemption_reason
 		$return_object->title = ( $sale->date_billed )
 							  ? "Sales Invoice ".$sale->code
 							  : "Sales Order ".$sale->code;
 
-		$return_object->customer = $this->_return_tax_exemption_customer_element($sale->entity);
-		$return_object->lines = $this->_return_tax_exemption_lines_array($sale->form_lines->find_all());
+		$return_object->customer = $this->_return_tax_liability_customer_element($sale->entity);
+		$return_object->lines = $this->_return_tax_liability_lines_array($sale->form_lines->find_all());
 
 		return $return_object;
 	}
 
 	/*
 	---BEANSOBJSPEC---
-	@object Beans_Tax_Exemption_Customer
+	@object Beans_Tax_Liability_Customer
 	@description An abbreviated representation of a customer in the system - primarily contact information.
 	@attribute id INTEGER 
 	@attribute first_name STRING
@@ -422,11 +425,11 @@ class Beans_Tax_Prep extends Beans_Tax {
 	@attribute fax_number STRING
 	---BEANSENDSPEC---
 	 */
-	private $_return_tax_exemption_customer_element_cache = array();
-	protected function _return_tax_exemption_customer_element($customer)
+	private $_return_tax_liability_customer_element_cache = array();
+	protected function _return_tax_liability_customer_element($customer)
 	{
-		if( isset($this->_return_tax_exemption_customer_element_cache[$customer->id]) )
-			return $this->_return_tax_exemption_customer_element_cache[$customer->id];
+		if( isset($this->_return_tax_liability_customer_element_cache[$customer->id]) )
+			return $this->_return_tax_liability_customer_element_cache[$customer->id];
 
 		if( get_class($customer) != "Model_Entity" ||
 			$customer->type != "customer" )
@@ -445,23 +448,23 @@ class Beans_Tax_Prep extends Beans_Tax {
 		$return_object->phone_number = $customer->phone_number;
 		$return_object->fax_number = $customer->fax_number;
 
-		$this->_return_tax_exemption_customer_element_cache[$customer->id] = $return_object;
-		return $this->_return_tax_exemption_customer_element_cache[$customer->id];
+		$this->_return_tax_liability_customer_element_cache[$customer->id] = $return_object;
+		return $this->_return_tax_liability_customer_element_cache[$customer->id];
 	}
 
-	protected function _return_tax_exemption_lines_array($form_lines)
+	protected function _return_tax_liability_lines_array($form_lines)
 	{
 		$return_array = array();
 		
 		foreach( $form_lines as $form_line )
-			$return_array[] = $this->_return_tax_exemption_line_element($form_line);
+			$return_array[] = $this->_return_tax_liability_line_element($form_line);
 		
 		return $return_array;
 	}
 
 	/*
 	---BEANSOBJSPEC---
-	@object Beans_Tax_Exemption_Line
+	@object Beans_Tax_Liability_Line
 	@description A line on an exempted customer sale.
 	@attribute id INTEGER 
 	@attribute account_name STRING The name of the #Beans_Account# tied to this line.
@@ -472,11 +475,11 @@ class Beans_Tax_Prep extends Beans_Tax {
 	@attribute total DECIMAL
 	---BEANSENDSPEC---
 	 */
-	private $_return_tax_exemption_line_element_cache = array();
-	protected function _return_tax_exemption_line_element($form_line)
+	private $_return_tax_liability_line_element_cache = array();
+	protected function _return_tax_liability_line_element($form_line)
 	{
-		if( isset($this->_return_tax_exemption_line_element_cache[$form_line->id]) )
-			return $this->_return_tax_exemption_line_element_cache[$form_line->id];
+		if( isset($this->_return_tax_liability_line_element_cache[$form_line->id]) )
+			return $this->_return_tax_liability_line_element_cache[$form_line->id];
 
 		if( get_class($form_line) != "Model_Form_Line" )
 			throw new Exception("Invalid Form Line.");
@@ -491,7 +494,7 @@ class Beans_Tax_Prep extends Beans_Tax {
 		$return_object->quantity = $form_line->quantity;
 		$return_object->total = $form_line->total;
 
-		$this->_return_tax_exemption_line_element_cache[$form_line->id] = $return_object;
-		return $this->_return_tax_exemption_line_element_cache[$form_line->id];
+		$this->_return_tax_liability_line_element_cache[$form_line->id] = $return_object;
+		return $this->_return_tax_liability_line_element_cache[$form_line->id];
 	}
 }

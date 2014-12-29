@@ -267,6 +267,15 @@ class Beans_Tax extends Beans {
 	@attribute payment_transaction OBJECT The #Beans_Account_Transaction# representing the transfer from the payment account.
 	@attribute writeoff_transaction OBJECT The #Beans_Account_Transaction# represetnging the writeoff transfer.
 	@attribute transaction OBJECT The #Beans_Transaction# representing the transfer.
+	@attribute invoiced_line_amount DECIMAL The total invoiced sales.
+	@attribute invoiced_line_taxable_amount DECIMAL The total taxable invoiced sales.
+	@attribute invoiced_amount DECIMAL The total taxes for sales.
+	@attribute refunded_line_amount DECIMAL The total invoiced refunds.
+	@attribute refunded_line_taxable_amount DECIMAL The total taxable invoiced refunds.
+	@attribute refunded_amount DECIMAL The total taxes for sales.
+	@attribute net_line_amount DECIMAL The total sales.
+	@attribute net_line_taxable_amount DECIMAL The total taxable sales.
+	@attribute net_amount DECIMAL The total taxes.
 	---BEANSENDSPEC---
 	 */
 
@@ -280,10 +289,21 @@ class Beans_Tax extends Beans {
 		$return_object->id = $tax_payment->id;
 		$return_object->tax = $this->_return_tax_element($tax_payment->tax);
 		$return_object->amount = $tax_payment->amount;
+		$return_object->writeoff_amount = $tax_payment->writeoff_amount;
 		$return_object->date = $tax_payment->date;
 		$return_object->date_start = $tax_payment->date_start;
 		$return_object->date_end = $tax_payment->date_end;
 		$return_object->check_number = $tax_payment->transaction->reference;
+		
+		$return_object->invoiced_line_amount = $tax_payment->invoiced_line_amount;
+		$return_object->invoiced_line_taxable_amount = $tax_payment->invoiced_line_taxable_amount;
+		$return_object->invoiced_amount = $tax_payment->invoiced_amount;
+		$return_object->refunded_line_amount = $tax_payment->refunded_line_amount;
+		$return_object->refunded_line_taxable_amount = $tax_payment->refunded_line_taxable_amount;
+		$return_object->refunded_amount = $tax_payment->refunded_amount;
+		$return_object->net_line_amount = $tax_payment->net_line_amount;
+		$return_object->net_line_taxable_amount = $tax_payment->net_line_taxable_amount;
+		$return_object->net_amount = $tax_payment->net_amount;
 		
 		$return_object->payment_account = FALSE;
 		$return_object->payment_transaction = FALSE;
@@ -379,22 +399,12 @@ class Beans_Tax extends Beans {
 
 		if( ! $tax->loaded() )
 			throw new Exception("Invalid tax payment tax ID: not found.");
-
-		// Make sure that the date range is good.
-		$tax_payment_match = ORM::Factory('tax_payment')->
-			where('tax_id','=',$payment->tax_id)->
-			where('date_start','=',$payment->date_start)->
-			where('date_end','=',$payment->date_end)->
-			where('id','!=',$payment->id)->
-			find();
-
-		if( $tax_payment_match->loaded() )
-			throw new Exception("Invalid tax payment: that date range has already been paid.");
 	}
 	
-	protected function _tax_payment_adjust_balance($tax_id,$amount)
+	protected function _tax_payment_update_balance($tax_id)
 	{
-		DB::query(NULL,'UPDATE taxes SET balance = balance - '.$amount.' WHERE id = "'.$tax_id.'"')->execute();
+
+		DB::query(NULL,'UPDATE taxes SET balance = ( SELECT SUM(balance) FROM tax_items WHERE id = "'.$tax_id.'" ) WHERE id = "'.$tax_id.'"')->execute();
 	}
 
 	protected function _tax_update_due_date($tax_id, $payment_date)

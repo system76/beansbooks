@@ -27,8 +27,10 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required tax_id INTEGER The #Beans_Tax# this payment is being applied to.
 @required payment_account_id INTEGER The #Beans_Account# being used to pay the remittance.
 @optional writeoff_account_id INTEGER The #Beans_Account# that handles the write-off - only required if there is a writeoff_amount.
+@required total DECIMAL The total amount of taxes due for the time period.  If this doesn't match the Beans_Tax_Prep result you will receive an error.
 @required amount DECIMAL The total remitted.
 @optional writeoff_amount DECIMAL The total amount to write-off.
+@optional date STRING The YYYY-MM-DD date for this payment.
 @optional check_number STRING
 @optional description STRING A description for the transaction.
 @return payment OBJECT The resulting #Beans_Tax_Payment#.
@@ -78,8 +80,13 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 		if( ! $payment_account->payment )
 			throw new Exception("Invalid payment account ID: account must be marked as payment.");
 
-		if( ! $this->_data->amount )
+		if( ! isset($this->_data->amount) ||
+			! strlen($this->_data->amount) )
 			throw new Exception("Invalid payment amount: none provided.");
+
+		if( ! isset($this->_data->total) ||
+			! strlen($this->_data->total) )
+			throw new Exception("Invalid payment total: none provided.");
 
 		// Payment.
 
@@ -98,8 +105,64 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 							  ? $this->_data->date_end
 							  : NULL;
 
+		$this->_payment->writeoff_amount = ( isset($this->_data->writeoff_amount) )
+										 ? $this->_data->writeoff_amount
+										 : 0.00;
 
 		$this->_validate_tax_payment($this->_payment);
+
+		$tax_prep = new Beans_Tax_Prep($this->_beans_data_auth((object)array(
+			'date_start' => $this->_payment->date_start,
+			'date_end' => $this->_payment->date_end,
+			'id' => $this->_payment->tax_id,
+		)));
+		$tax_prep_result = $tax_prep->execute();
+
+		if( ! $tax_prep_result->success )
+			throw new Exception("Could not run tax prep: ".$tax_prep_result->error);
+
+		if( $tax_prep_result->data->taxes->due->net->amount != $this->_data->total )
+		{
+			throw new Exception("Invalid payment total: please make sure the payment and writeoff amounts add up to the expected total.");
+			// throw new Exception("Invalid payment total: expected ".number_format($tax_prep_result->data->taxes->due->net->amount,2,'.','')." but received ".number_format($this->_data->total,2,'.',''));
+		}
+
+		if( $this->_data->total != $this->_beans_round($this->_payment->amount + $this->_payment->writeoff_amount) )
+			throw new Exception("Payment amount and writeoff amount must total the payment total.");
+
+		// Kind of strange to the use case - but unless we can think of a good way to get 
+		// all affected tax_items returned in Beans_Tax_Prep - we have to do this here.
+		$due_tax_items = ORM::Factory('tax_item')
+			->where('tax_id','=',$this->_payment->tax_id)
+			->where('tax_payment_id','IS',NULL)
+			->where('date','<=',$this->_payment->date_end)
+			->find_all();
+
+		$due_tax_items_total = 0.00;
+
+		foreach( $due_tax_items as $due_tax_item )
+		{
+			$due_tax_items_total = $this->_beans_round(
+				$due_tax_items_total +
+				$due_tax_item->total
+			);
+		}
+
+		if( $due_tax_items_total != $this->_data->total )
+			throw new Exception("Unexpected error: tax item and payment totals do not match.  Try re-running Beans_Tax_Prep.");
+
+		// Copy over the appropriate Tax_Prep information so that we know the state at which
+		// this tax payment was created.  Updates from this point forward will allow only changing
+		// the payment amount and writeoff amount.
+		$this->_payment->invoiced_line_amount = $tax_prep_result->data->taxes->due->invoiced->form_line_amount;
+		$this->_payment->invoiced_line_taxable_amount = $tax_prep_result->data->taxes->due->invoiced->form_line_taxable_amount;
+		$this->_payment->invoiced_amount = $tax_prep_result->data->taxes->due->invoiced->amount;
+		$this->_payment->refunded_line_amount = $tax_prep_result->data->taxes->due->refunded->form_line_amount;
+		$this->_payment->refunded_line_taxable_amount = $tax_prep_result->data->taxes->due->refunded->form_line_taxable_amount;
+		$this->_payment->refunded_amount = $tax_prep_result->data->taxes->due->refunded->amount;
+		$this->_payment->net_line_amount = $tax_prep_result->data->taxes->due->net->form_line_amount;
+		$this->_payment->net_line_taxable_amount = $tax_prep_result->data->taxes->due->net->form_line_taxable_amount;
+		$this->_payment->net_amount = $tax_prep_result->data->taxes->due->net->amount;
 
 		if( $this->_payment->amount == 0 )
 		{
@@ -209,12 +272,20 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 		if( $this->_validate_only )
 			return (object)array();
 		
-		// Assign transction to payment and save
+		// Assign transaction to payment and save
 		$this->_payment->transaction_id = $create_transaction_result->data->transaction->id;
 		$this->_payment->save();
 
+		// Update tax_items
+		foreach( $due_tax_items as $due_tax_item )
+		{
+			$due_tax_item->tax_payment_id = $this->_payment->id;
+			$due_tax_item->balance = 0.00;
+			$due_tax_item->save();
+		}
+
 		// Update tax balance
-		$this->_tax_payment_adjust_balance($this->_payment->tax_id,$this->_payment->amount);
+		$this->_tax_payment_update_balance($this->_payment->tax_id);
 
 		// Update tax due date.
 		$this->_tax_update_due_date($this->_payment->tax_id,$this->_payment->date);
