@@ -83,6 +83,7 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+		ALTER TABLE `tax_payments` ADD `writeoff_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL AFTER `amount` ;
 		ALTER TABLE `tax_payments` ADD `invoice_line_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
 		ALTER TABLE `tax_payments` ADD `invoice_line_taxable_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
 		ALTER TABLE `tax_payments` ADD `invoice_amount` DECIMAL( 15, 2 ) NULL DEFAULT NULL;
