@@ -26,15 +26,15 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_expiration
 @required name STRING
 @optional code STRING Will be auto-generated if not provided.
-@optional percent DECIMAL In decimal form, so 1.5% is 0.0015
+@required percent DECIMAL In decimal form, so 1.5% is 0.0015
 @required account_id INTEGER The #Beans_Account# that the taxes will be recorded to.
 @required date_due STRING The next YYYY-MM-DD date that remittance is due.
 @required date_due_months_increment INTEGER The number of months between each payment.
-@required license STRING The license number for your registration in this jurisdiction.
 @required authority STRING The tax authority ( who you write checks to ).
-@required address1 STRING The address where you remit payment to.
-@required address2 STRING 
-@required city STRING
+@optional license STRING The license number for your registration in this jurisdiction.
+@optional address1 STRING The address where you remit payment to.
+@optional address2 STRING 
+@optional city STRING
 @optional state STRING
 @required zip STRING
 @required country STRING
