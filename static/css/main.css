@@ -550,6 +550,16 @@ hr {
 	z-index: 1337!important;
 	border: 1px solid #c6c6c6;
 	background-color: #f1f1f1;
+	padding-bottom: 3px;
+}
+
+.select-checkbox .option input[type="text"] {
+	height: 20px;
+	line-height: 20px;
+	padding: 1px 5px 0px 5px;
+	font-size: 12px;
+	margin-left: 4px;
+	width: 240px;
 }
 
 /*

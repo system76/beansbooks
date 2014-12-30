@@ -67,7 +67,11 @@
 				<div class="select-checkbox form-taxes">
 				<div class="value" title="Taxes"></div>
 					<div class="dropdown">
-						<div class="option" style="border-bottom: 1px solid #ccc; margin-bottom: 2px; padding-bottom: 2px;"><input type="checkbox" class="form-tax-exempt" name="form_tax_exempt" value="1" title="Tax Exempt"><span class="label"> This Sale is Tax Exempt</span></div>
+						<div class="option" style="margin-bottom: 2px; padding-bottom: 2px;"><input type="checkbox" class="form-tax-exempt" name="form_tax_exempt" value="1" title="Tax Exempt"><span class="label"> This Sale is Tax Exempt</span></div>
+						<div class="option tax-exempt-reason" style="display: none;">
+							<input type="text" name="form_tax_exempt_reason" value="" placeholder="Reason for Exemption" />
+						</div>
+						<div style="border-bottom: 1px solid #ccc; height: 1px; padding:0; margin: 2px 0px;">&nbsp;</div>
 						{{#taxes}}
 							<div class="option {{#visible}}visible-tax{{/visible}}{{^visible}}hidden-tax{{/visible}}" {{^visible}}style="display: none;"{{/visible}}><input type="checkbox" class="form-tax" value="{{id}}" data-tax-percent="{{percent}}" title="{{name}}"><span class="label"> {{name}}</span></div>
 						{{/taxes}}

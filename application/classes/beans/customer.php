@@ -1071,6 +1071,9 @@ class Beans_Customer extends Beans {
 		if( $sale->tax_exempt &&
 			! strlen($sale->tax_exempt_reason) )
 			throw new Exception("Please provide a reason for tax exemption.");
+
+		if( strlen($sale->tax_exempt_reason) > 255 ) 
+			throw new Exception("Invalid tax exemption reason: maximum of 255 characters.");
 	}
 
 	protected function _default_form_line()

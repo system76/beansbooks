@@ -400,6 +400,7 @@ class Controller_Customers_Json extends Controller_Json {
 		$create_sale_data->quote_number = $this->request->post('quote_number');
 		$create_sale_data->po_number = $this->request->post('po_number');
 		$create_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
+		$create_sale_data->tax_exempt_reason = $this->request->post('form_tax_exempt_reason');
 
 		// IF INVOICE
 		if( $this->request->post('date_billed') )
@@ -517,6 +518,7 @@ class Controller_Customers_Json extends Controller_Json {
 		$update_sale_data->quote_number = $this->request->post('quote_number');
 		$update_sale_data->po_number = $this->request->post('po_number');
 		$update_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
+		$update_sale_data->tax_exempt_reason = $this->request->post('form_tax_exempt_reason');
 
 		$update_sale_data->taxes = array();
 
@@ -611,6 +613,7 @@ class Controller_Customers_Json extends Controller_Json {
 		$refund_sale_data->order_number = $this->request->post('order_number');
 		$refund_sale_data->po_number = $this->request->post('po_number');
 		$refund_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
+		$refund_sale_data->tax_exempt_reason = $this->request->post('form_tax_exempt_reason');
 
 		$refund_sale_data->taxes = array();
 

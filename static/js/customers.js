@@ -2286,6 +2286,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 	function createSaleToggleTaxExempt() {
 		var formTaxExempt = $('#customers-sales-create input[name="form_tax_exempt"]').is(':checked') ? true : false;
 		if( formTaxExempt ) {
+			$('#customers-sales-create .form-taxes .tax-exempt-reason').show();
 			$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line').each(function() {
 				$line = $(this);
 				$line.find('input.tax-exempt').attr('checked','checked');
@@ -2295,6 +2296,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			$lineTemplate.find('input.tax-exempt').attr('checked','checked');
 			checkboxUpdate($lineTemplate.find('input.tax-exempt'));
 		} else {
+			$('#customers-sales-create .form-taxes .tax-exempt-reason').hide();
 			$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line').each(function() {
 				$line = $(this);
 				$line.find('input.tax-exempt').attr('checked',false);
@@ -2454,6 +2456,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					} else {
 						$('#customers-sales-create .form-taxes input.form-tax-exempt').attr('checked',false);
 					}
+
+					if( sale_data.data.sale.tax_exempt_reason ) {
+						$('#customers-sales-create .form-taxes input[name="form_tax_exempt_reason"]').val(sale_data.data.sale.tax_exempt_reason);
+					} else {
+						$('#customers-sales-create .form-taxes input[name="form_tax_exempt_reason"]').val('');
+					}
+
 					createSaleToggleTaxExempt();
 
 					$newSaleLine = $($('#customers-sales-create-form-lines-line-template').html());
