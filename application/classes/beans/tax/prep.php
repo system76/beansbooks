@@ -377,6 +377,7 @@ class Beans_Tax_Prep extends Beans_Tax {
 	@attribute po_number STRING
 	@attribute quote_number STRING
 	@attribute tax_exempt BOOLEAN Whether or not this entire sale is tax exempt.
+	@attribute tax_exempt_reason BOOLEAN Explanation for exemption.
 	@attribute lines ARRAY An array of #Beans_Tax_Liability_Line# - a simplified representation of #Beans_Customer_Sale_Line#.
 	@attribute title STRING A short description of the sale.
 	---BEANSENDSPEC---
@@ -400,7 +401,7 @@ class Beans_Tax_Prep extends Beans_Tax {
 		$return_object->po_number = $sale->alt_reference;
 		$return_object->quote_number = $sale->aux_reference;
 		$return_object->tax_exempt = $sale->tax_exempt ? TRUE : FALSE;
-		// TODO_V_1_3 - Add tax_exemption_reason
+		$return_object->tax_exempt_reason = $sale->tax_exempt_reason;
 		$return_object->title = ( $sale->date_billed )
 							  ? "Sales Invoice ".$sale->code
 							  : "Sales Order ".$sale->code;

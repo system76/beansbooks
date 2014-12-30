@@ -441,6 +441,7 @@ class Beans_Customer extends Beans {
 		$return_object->quote_number = $sale->aux_reference;
 
 		$return_object->tax_exempt = $sale->tax_exempt ? TRUE : FALSE;
+		$return_object->tax_exempt_reason = $sale->tax_exempt_reason;
 
 		$return_object->billing_address = ( $sale->billing_address_id ) 
 										? $this->_return_customer_address_element($sale->billing_address)
@@ -1065,8 +1066,11 @@ class Beans_Customer extends Beans {
 			throw new Exception("Invalid sale date: must be in YYYY-MM-DD format.");
 
 		if( $this->_check_books_closed($sale->date_created) )
-				throw new Exception("Sale could not be created.  The financial year has been closed already.");
+			throw new Exception("Sale could not be created.  The financial year has been closed already.");
 		
+		if( $sale->tax_exempt &&
+			! strlen($sale->tax_exempt_reason) )
+			throw new Exception("Please provide a reason for tax exemption.");
 	}
 
 	protected function _default_form_line()

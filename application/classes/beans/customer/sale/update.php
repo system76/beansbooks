@@ -35,6 +35,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @optional po_number STRING A purchase order number to help identify this sale.
 @optional quote_number STRING A quote number to help identify this sale.
 @optional tax_exempt BOOLEAN If set to true, all lines will be marked as tax_exempt.
+@optional tax_exempt_reason STRING An explanation for tax exemption.  Required if tax_exempt is true.  Will be set to NULL if tax_exempt is false.
 @optional billing_address_id INTEGER The ID of the #Beans_Customer_Address# for billing this sale.
 @optional shipping_address_id INTEGER The ID of the #Beans_Customer_Address# for shipping this sale.
 @required lines ARRAY An array of objects representing line items for the sale.
@@ -116,6 +117,14 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 
 		if( isset($this->_data->tax_exempt) )
 			$this->_sale->tax_exempt = ( $this->_data->tax_exempt ) ? TRUE : FALSE;
+
+		if( isset($this->_data->tax_exempt_reason) )
+		{
+			$this->_sale->tax_exempt_reason = ( $this->_sale->tax_exempt AND
+												strlen($this->_data->tax_exempt_reason) ) 
+											? $this->_data->tax_exempt_reason 
+											: NULL;
+		}
 
 		if( isset($this->_data->billing_address_id) )
 			$this->_sale->billing_address_id = $this->_data->billing_address_id;
