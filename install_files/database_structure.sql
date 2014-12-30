@@ -92,6 +92,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `remit_address_id` bigint(20) unsigned DEFAULT NULL,
   `type` enum('sale','expense','purchase') DEFAULT NULL,
   `tax_exempt` boolean NOT NULL DEFAULT FALSE,
+  `tax_exempt_reason` varchar( 255 ) NULL DEFAULT NULL,
   `sent` enum('print','email','both') DEFAULT NULL,
   `date_created` date DEFAULT NULL,
   `date_billed` date DEFAULT NULL,

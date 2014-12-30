@@ -77,4 +77,135 @@ class Beans_Setup_Update extends Beans_Setup {
 		return $return_array;
 	}
 
+	protected function _db_add_table_column($table_name, $column_name, $column_definition)
+	{
+		try
+		{
+			$table_column_exist_check = DB::Query(
+				Database::SELECT, 
+				'SELECT COUNT(COLUMN_NAME) as exist_check '.
+				'FROM INFORMATION_SCHEMA.COLUMNS WHERE '.
+				'TABLE_NAME = "'.$table_name.'" '.
+				'AND COLUMN_NAME = "'.$column_name.'"'
+			)->execute()->as_array();
+
+			if( $table_column_exist_check[0]['exist_check'] == '0' )
+			{
+				DB::Query(
+					NULL,
+					'ALTER TABLE `'.$table_name.'` ADD `'.$column_name.'` '.$column_definition
+				);
+			}
+		}
+		catch( Exception $e )
+		{
+			throw new Exception('An error occurred when adding a column ('.$column_name.') to your database table('.$table_name.'): '.$e->getMessage());
+		}
+	}
+
+	protected function _db_update_table_column($table_name, $column_name, $column_definition)
+	{
+		try
+		{
+			$table_column_exist_check = DB::Query(
+				Database::SELECT, 
+				'SELECT COUNT(COLUMN_NAME) as exist_check '.
+				'FROM INFORMATION_SCHEMA.COLUMNS WHERE '.
+				'TABLE_NAME = "'.$table_name.'" '.
+				'AND COLUMN_NAME = "'.$column_name.'"'
+			)->execute()->as_array();
+
+			if( $table_column_exist_check[0]['exist_check'] == '0' )
+				throw new Exception("Column ".$table_name.".".$column_name." does not exist.");
+
+			DB::Query(
+				NULL,
+				'ALTER TABLE `'.$table_name.'` CHANGE `'.$column_name.'` '.$column_definition.' '
+			);
+		}
+		catch( Exception $e )
+		{
+			throw new Exception('An error occurred when removing a column ('.$column_name.') from your database table('.$table_name.'): '.$e->getMessage());
+		}
+	}
+
+	protected function _db_remove_table_column($table_name, $column_name)
+	{
+		try
+		{
+			$table_column_exist_check = DB::Query(
+				Database::SELECT, 
+				'SELECT COUNT(COLUMN_NAME) as exist_check '.
+				'FROM INFORMATION_SCHEMA.COLUMNS WHERE '.
+				'TABLE_NAME = "'.$table_name.'" '.
+				'AND COLUMN_NAME = "'.$column_name.'"'
+			)->execute()->as_array();
+
+			if( $table_column_exist_check[0]['exist_check'] != '0' )
+			{
+				DB::Query(
+					NULL,
+					'ALTER TABLE `'.$table_name.'` DROP `'.$column_name.'`'
+				);
+			}
+		}
+		catch( Exception $e )
+		{
+			throw new Exception('An error occurred when removing a column ('.$column_name.') from your database table('.$table_name.'): '.$e->getMessage());
+		}
+	}
+
+	protected function _db_add_table($table_name)
+	{
+		try
+		{
+			$table_exist_check = DB::Query(
+				Database::SELECT, 
+				'SELECT COUNT(TABLE_NAME) as exist_check '.
+				'FROM INFORMATION_SCHEMA.TABLES WHERE '.
+				'TABLE_NAME = "'.$table_name.'" '
+			)->execute()->as_array();
+
+			if( $table_exist_check[0]['exist_check'] == '0' )
+			{
+				DB::Query(
+					NULL,
+					'CREATE TABLE IF NOT EXISTS `'.$table_name.'` ( '.
+					' `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, '.
+					'  PRIMARY KEY (`id`) '.
+					') ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 '
+				);
+			}
+		}
+		catch( Exception $e )
+		{
+			throw new Exception('An error occurred when removing a table ('.$table_name.') database: '.$e->getMessage());
+		}
+	}
+
+	protected function _db_remove_table($table_name)
+	{
+		try
+		{
+			$table_exist_check = DB::Query(
+				Database::SELECT, 
+				'SELECT COUNT(TABLE_NAME) as exist_check '.
+				'FROM INFORMATION_SCHEMA.TABLES WHERE '.
+				'TABLE_NAME = "'.$table_name.'" '
+			)->execute()->as_array();
+
+			if( $table_exist_check[0]['exist_check'] != '0' )
+			{
+				DB::Query(
+					NULL,
+					'DROP TABLE `'.$table_name.'`'
+				);
+			}
+		}
+		catch( Exception $e )
+		{
+			throw new Exception('An error occurred when removing a table ('.$table_name.') database: '.$e->getMessage());
+		}
+	}
+
 }
