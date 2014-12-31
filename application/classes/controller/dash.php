@@ -759,7 +759,11 @@ class Controller_Dash extends Controller_View {
 		$messages = array();
 		foreach( $taxes_search_result->data->taxes as $tax )
 		{
-			if( strtotime($tax->date_due.' -10 Days') <= strtotime(date("Y-m-d")) )
+			if( strtotime($tax->date_due.' -10 Days') <= strtotime(date("Y-m-d")) &&
+				(
+					$tax->balance != 0.00 ||
+					$tax->visible 
+				) )
 			{
 				$messages[] = (object)array(
 					'title' => $tax->name." Due on ".$tax->date_due,
