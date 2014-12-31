@@ -106,13 +106,13 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 					$form->date_billed = $form->date_created;
 					$date_cancelled = $form->date_cancelled;
 					$form->date_cancelled = NULL;
-					$this->_update_form_tax_items($form, 'invoice');
+					$this->_update_form_tax_items($form, ( $form->total >= 0 ? 'invoice' : 'refund'));
 
 					$form->date_cancelled = $date_cancelled;
 					if( ! $form->date_cancelled )
 					{
 						$form->date_cancelled = $form->date_billed;
-						$this->_update_form_tax_items($form, 'invoice');
+						$this->_update_form_tax_items($form, ( $form->total >= 0 ? 'invoice' : 'refund'));
 					}
 					else
 					{
@@ -125,7 +125,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 					$date_cancelled = $form->date_cancelled;
 					$form->date_cancelled = NULL;
 					$form->date_billed = $form->date_created;
-					$this->_update_form_tax_items($form, 'invoice');
+					$this->_update_form_tax_items($form, ( $form->total >= 0 ? 'invoice' : 'refund'));
 
 					if( $date_cancelled )
 					{
