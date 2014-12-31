@@ -2882,6 +2882,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 						$form.find('input[name="net_sales"]').attr('rel',data.data.taxes.due.net.form_line_amount);
 						$form.find('input[name="net_taxable"]').attr('rel',data.data.taxes.due.net.form_line_taxable_amount);
 						$form.find('input[name="tax_expected"]').attr('rel',data.data.taxes.due.net.amount);
+						if( data.data.taxes.due.net.amount < 0.00 ) {
+							$form.find('input[name="tax_expected"]').attr('rel','0.00');
+						}
 						// $form.find('input[name="tax_paid"]').attr('rel',data.data.taxes.paid.net.amount);
 
 						createTaxPaymentUpdateForm();

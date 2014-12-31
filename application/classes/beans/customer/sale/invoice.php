@@ -132,8 +132,11 @@ class Beans_Customer_Sale_Invoice extends Beans_Customer_Sale {
 		
 		// Update tax items only if we're successful.
 		$tax_item_action = 'invoice';
-		if( $this->_sale->refund_form_id && 
-			$this->_sale->refund_form_id < $this->_sale->id )
+		if( $this->_sale->total < 0 ||
+			(
+				$this->_sale->refund_form_id && 
+				$this->_sale->refund_form_id < $this->_sale->id 
+			) )
 			$tax_item_action = 'refund';
 		
 		$this->_update_form_tax_items($this->_sale->id, $tax_item_action);

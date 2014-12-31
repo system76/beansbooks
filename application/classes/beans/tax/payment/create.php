@@ -121,13 +121,15 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 		if( ! $tax_prep_result->success )
 			throw new Exception("Could not run tax prep: ".$tax_prep_result->error);
 
-		if( $tax_prep_result->data->taxes->due->net->amount != $this->_data->total )
+		if( $tax_prep_result->data->taxes->due->net->amount > 0 &&
+			$tax_prep_result->data->taxes->due->net->amount != $this->_data->total )
 		{
 			throw new Exception("Invalid payment total: please make sure the payment and writeoff amounts add up to the expected total.");
 			// throw new Exception("Invalid payment total: expected ".number_format($tax_prep_result->data->taxes->due->net->amount,2,'.','')." but received ".number_format($this->_data->total,2,'.',''));
 		}
 
-		if( $this->_data->total != $this->_beans_round($this->_payment->amount + $this->_payment->writeoff_amount) )
+		if( $this->_data->total > 0 &&
+			$this->_data->total != $this->_beans_round($this->_payment->amount + $this->_payment->writeoff_amount) )
 			throw new Exception("Payment amount and writeoff amount must total the payment total.");
 
 		// Kind of strange to the use case - but unless we can think of a good way to get 
@@ -148,7 +150,8 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 			);
 		}
 
-		if( $due_tax_items_total != $this->_data->total )
+		if( $due_tax_items_total > 0 &&
+			$due_tax_items_total != $this->_data->total )
 			throw new Exception("Unexpected error: tax item and payment totals do not match.  Try re-running Beans_Tax_Prep.");
 
 		// Copy over the appropriate Tax_Prep information so that we know the state at which
@@ -163,6 +166,10 @@ class Beans_Tax_Payment_Create extends Beans_Tax_Payment {
 		$this->_payment->net_line_amount = $tax_prep_result->data->taxes->due->net->form_line_amount;
 		$this->_payment->net_line_taxable_amount = $tax_prep_result->data->taxes->due->net->form_line_taxable_amount;
 		$this->_payment->net_amount = $tax_prep_result->data->taxes->due->net->amount;
+
+		if( $due_tax_items_total < 0.00 &&
+			$this->_payment->amount != 0.00 )
+			throw new Exception("Tax payments must be 0.00 when no positive balance is due.");
 
 		if( $this->_payment->amount == 0 )
 		{

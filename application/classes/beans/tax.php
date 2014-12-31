@@ -366,6 +366,9 @@ class Beans_Tax extends Beans {
 		if( get_class($payment) != "Model_Tax_Payment" )
 			throw new Exception("Invalid Tax Payment.");
 
+		if( $payment->amount < 0.00 )
+			throw new Exception("Invalid tax payment amount: cannot be negative.");
+
 		if( ! $payment->date )
 			throw new Exception("Invalid tax payment date: none provided.");
 
