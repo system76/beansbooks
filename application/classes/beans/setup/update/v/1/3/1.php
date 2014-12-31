@@ -65,12 +65,12 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 			{
 				$form_line_taxes_exist = DB::Query(
 					Database::SELECT, 
-					' SELECT COUNT(id) as exists '.
+					' SELECT COUNT(id) as exist_check '.
 					' FROM form_line_taxes '.
 					' WHERE form_line_id = '.$form_line->id.' '
 				)->execute()->as_array();
 
-				if( $form_line_taxes_exist[0]['exists'] == "0" )
+				if( $form_line_taxes_exist[0]['exist_check'] == "0" )
 				{
 					$form_line->tax_exempt = TRUE;
 					$form_line->save();
