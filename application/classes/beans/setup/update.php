@@ -94,7 +94,7 @@ class Beans_Setup_Update extends Beans_Setup {
 				DB::Query(
 					NULL,
 					'ALTER TABLE `'.$table_name.'` ADD `'.$column_name.'` '.$column_definition
-				);
+				)->execute();
 			}
 		}
 		catch( Exception $e )
@@ -121,7 +121,7 @@ class Beans_Setup_Update extends Beans_Setup {
 			DB::Query(
 				NULL,
 				'ALTER TABLE `'.$table_name.'` CHANGE `'.$column_name.'` '.$column_definition.' '
-			);
+			)->execute();
 		}
 		catch( Exception $e )
 		{
@@ -146,7 +146,7 @@ class Beans_Setup_Update extends Beans_Setup {
 				DB::Query(
 					NULL,
 					'ALTER TABLE `'.$table_name.'` DROP `'.$column_name.'`'
-				);
+				)->execute();
 			}
 		}
 		catch( Exception $e )
@@ -174,7 +174,7 @@ class Beans_Setup_Update extends Beans_Setup {
 					' `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, '.
 					'  PRIMARY KEY (`id`) '.
 					') ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 '
-				);
+				)->execute();
 			}
 		}
 		catch( Exception $e )
@@ -199,7 +199,7 @@ class Beans_Setup_Update extends Beans_Setup {
 				DB::Query(
 					NULL,
 					'DROP TABLE `'.$table_name.'`'
-				);
+				)->execute();
 			}
 		}
 		catch( Exception $e )
