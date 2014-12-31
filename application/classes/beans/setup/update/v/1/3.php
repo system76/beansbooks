@@ -31,7 +31,7 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 		$this->_db_remove_table_column(	'taxes', 'fee');
 		$this->_db_add_table_column(	'taxes', 'visible', 'BOOLEAN NOT NULL DEFAULT TRUE');
 		
-		$this->_db_remove_table(		'form_line_taxes');
+		// We will remove form_line_taxes after the form_lines have been updated to be exempt or not.
 
 		$this->_db_remove_table_column(	'form_taxes', 'quantity');
 		$this->_db_remove_table_column(	'form_taxes', 'fee');
@@ -52,7 +52,7 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 		$this->_db_add_table_column(	'tax_items', 'balance', 'decimal(15,2) DEFAULT NULL');
 
 		$this->_db_add_table_column(	'tax_payments', 'writeoff_amount', 'decimal( 15, 2 ) NULL DEFAULT NULL AFTER `amount`');
-		$this->_db_add_table_column(	'tax_payments', 'invoiced_line_amount', '`invoiced_line_amount` decimal( 15, 2 ) NULL DEFAULT NULL');
+		$this->_db_add_table_column(	'tax_payments', 'invoiced_line_amount', 'decimal( 15, 2 ) NULL DEFAULT NULL');
 		$this->_db_add_table_column(	'tax_payments', 'invoiced_line_taxable_amount', 'decimal( 15, 2 ) NULL DEFAULT NULL');
 		$this->_db_add_table_column(	'tax_payments', 'invoiced_amount', 'decimal( 15, 2 ) NULL DEFAULT NULL');
 		$this->_db_add_table_column(	'tax_payments', 'refunded_line_amount', 'decimal( 15, 2 ) NULL DEFAULT NULL');
