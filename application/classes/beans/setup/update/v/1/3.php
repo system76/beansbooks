@@ -26,8 +26,6 @@ class Beans_Setup_Update_V_1_3 extends Beans_Setup_Update_V {
 	
 	protected function _execute()
 	{
-		throw new Exception("PENDING: v1.3 Update Script");
-		
 		$this->_db_remove_table_column(	'taxes', 'fee');
 		$this->_db_add_table_column(	'taxes', 'visible', 'BOOLEAN NOT NULL DEFAULT TRUE');
 		
