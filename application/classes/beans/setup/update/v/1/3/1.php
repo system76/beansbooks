@@ -26,8 +26,6 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 	
 	protected function _execute()
 	{
-		throw new Exception("PENDING V_1_3_1 UPDATE SCRIPT");
-
 		$fye_transaction = ORM::Factory('transaction')
 			->where('close_books','IS NOT',NULL)
 			->order_by('close_books','desc')
