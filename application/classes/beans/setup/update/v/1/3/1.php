@@ -239,6 +239,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 					$included_tax_item->total
 				);
 				
+				$included_tax_item->balance = 0.00;
 				$included_tax_item->tax_payment_id = $tax_payment->id;
 				$included_tax_item->save();
 			}
