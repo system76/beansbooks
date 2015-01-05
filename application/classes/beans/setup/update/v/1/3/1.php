@@ -156,6 +156,9 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 			->order_by('date','asc')
 			->find_all();
 
+		// We want to save these AFTER all of our tax_payments have been migrated.
+		$reverse_tax_items = array();
+
 		// Not the most efficient loop, but it's easy to understand.
 		foreach( $tax_payments as $tax_payment )
 		{
@@ -320,7 +323,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 				$reverse_tax_item->form_line_amount = ( -1 ) * $adjust_tax_item->form_line_amount;
 				$reverse_tax_item->balance = ( -1 ) * $reverse_tax_item->total;
 
-				$reverse_tax_item->save();
+				$reverse_tax_items[] = $reverse_tax_item;
 			}
 
 			$writeoff_transaction = NULL;
@@ -339,6 +342,11 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 		}
 
 		unset($tax_payments);
+
+		foreach( $reverse_tax_items as $reverse_tax_item )
+		{
+			$reverse_tax_item->save();
+		}
 
 		// Update total and balance on all taxes.
 		
