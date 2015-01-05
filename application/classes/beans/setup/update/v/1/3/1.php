@@ -290,8 +290,8 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 		return (object)array();
 	}
 
-	// Copied from Beans_Customer 
-	protected function _update_form_tax_items($form_id, $action = NULL)
+	// Copied from Beans_Customer - slightly modified to take a $form instead of $form_id
+	protected function _update_form_tax_items($form, $action = NULL)
 	{
 		if( ! $action ||
 			! in_array($action, array('invoice','refund')) )
