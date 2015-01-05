@@ -116,7 +116,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 					}
 					else
 					{
-						$this->_update_form_tax_items($form, 'refund');
+						$this->_update_form_tax_items($form, 'invoice');
 					}
 				}
 				// b) Form was billed
@@ -173,15 +173,31 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 			foreach( $unpaid_tax_items as $unpaid_tax_item )
 			{
 				if( ! $locked &&
-					$this->_beans_round( $included_tax_total + $unpaid_tax_item->total ) <= $tax_payment->amount )
+					(
+						$unpaid_tax_item->type == "invoice" &&
+						$unpaid_tax_item->total >= 0 
+					) ||
+					(
+						$unpaid_tax_item->type == "refund" &&
+						$unpaid_tax_item->total <= 0 
+					) )
 				{
-					$included_tax_items[] = $unpaid_tax_item;
-					$included_tax_total = $this->_beans_round( $included_tax_total + $unpaid_tax_item->total );
+					if( $this->_beans_round( $included_tax_total + $unpaid_tax_item->total ) <= $tax_payment->amount )
+					{
+						$included_tax_items[] = $unpaid_tax_item;
+						$included_tax_total = $this->_beans_round( $included_tax_total + $unpaid_tax_item->total );
+					}
+					else
+					{
+						$locked = TRUE;
+					}
 				}
-				else
-				{
-					$locked = TRUE;
-				}
+			}
+
+			if( $included_tax_total != $tax_payment->amount )
+			{
+				// Create a modifier?
+				throw new Exception("TOTAL MISMATCH: ".$included_tax_total.' != '.$tax_payment->amount);
 			}
 
 			$tax_payment->invoiced_line_amount = 0.00;
