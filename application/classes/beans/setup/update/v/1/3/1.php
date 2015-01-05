@@ -305,7 +305,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 			Database::SELECT, 
 			'SELECT DISTINCT(tax_id) AS tax_id'.
 			' FROM form_taxes WHERE'.
-			' form_id = '.$form_id
+			' form_id = '.$form->id
 		)->execute()->as_array();
 
 		foreach( $form_taxes_tax_ids as $form_taxes_tax_id )
@@ -318,7 +318,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 			Database::SELECT,
 			'SELECT DISTINCT(tax_id) AS tax_id '.
 			'FROM tax_items WHERE '.
-			'form_id = '.$form_id.' '
+			'form_id = '.$form->id.' '
 		)->execute()->as_array();
 
 		foreach( $tax_items_tax_ids as $tax_items_tax_id )
@@ -329,7 +329,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 
 		foreach( $tax_ids as $tax_id )
 		{
-			$tax_item = $this->_create_tax_item($form_id, $tax_id, $action);
+			$tax_item = $this->_create_tax_item($form, $tax_id, $action);
 
 			if( $tax_item )
 			{
@@ -346,9 +346,9 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 		return;
 	}
 
-	private function _create_tax_item($form_id, $tax_id, $action)
+	// Copied from Beans_Customer - slightly modified to take a $form instead of $form_id
+	private function _create_tax_item($form, $tax_id, $action)
 	{
-		$form = ORM::Factory('form', $form_id);
 		$tax = ORM::Factory('tax', $tax_id);
 
 		// If this form isn't cancelled, we want to update every tax_item
@@ -383,7 +383,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 				'IFNULL(SUM(total),0.00) as total '.
 				'FROM form_taxes '.
 				'WHERE '.
-				'form_id = '.$form_id.' AND '.
+				'form_id = '.$form->id.' AND '.
 				'tax_id = '.$tax_id.' '
 			)->execute()->as_array();
 
@@ -400,7 +400,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 			'IFNULL(SUM(total),0.00) as total '.
 			'FROM tax_items '.
 			'WHERE '.
-			'form_id = '.$form_id.' AND '.
+			'form_id = '.$form->id.' AND '.
 			'tax_id = '.$tax_id.' '
 		)->execute()->as_array();
 
@@ -411,7 +411,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 		$tax_item = ORM::Factory('tax_item');
 
 		$tax_item->tax_id = $tax_id;
-		$tax_item->form_id = $form_id;
+		$tax_item->form_id = $form->id;
 		$tax_item->tax_payment_id = NULL;
 		$tax_item->tax_percent = $tax->percent;
 
