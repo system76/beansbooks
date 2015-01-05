@@ -26,6 +26,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_expiration
 @required id The id of the #Beans_Account# to update.
 @optional parent_account_id The #Beans_Account# that is a direct parent of this one in the Chart of Accounts.
+@optional account_type_id The #Beans_Account#_Type of this account.
 @optional name The plain-text name to assign to this account.
 @optional code A hash or word to represent the account by.
 @optional writeoff A boolean representing whether or not this account can record writeoffs.
