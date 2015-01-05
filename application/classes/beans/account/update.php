@@ -68,6 +68,25 @@ class Beans_Account_Update extends Beans_Account {
 
 		if( isset($this->_data->parent_account_id) )
 			$this->_account->parent_account_id = $this->_data->parent_account_id;
+
+		if( isset($this->_data->account_type_id) )
+		{
+			$this->_account->account_type_id = $this->_data->account_type_id 
+											 ? $this->_data->account_type_id 
+											 : NULL;
+
+			$account_type = ORM::Factory('account_type',$this->_account->account_type_id);
+
+			if( ! $account_type->loaded() )
+				throw new Exception("Invalid account type: not found.");
+
+			// Copy settings over from account type.
+			$this->_account->deposit = $account_type->deposit;
+			$this->_account->payment = $account_type->payment;
+			$this->_account->payable = $account_type->payable;
+			$this->_account->receivable = $account_type->receivable;
+			$this->_account->reconcilable = $account_type->reconcilable;
+		}
 			
 		if( isset($this->_data->name) )
 			$this->_account->name = $this->_data->name;
