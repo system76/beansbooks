@@ -152,6 +152,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 		
 
 		$tax_payments = ORM::Factory('tax_payment')
+			->where('date','>',$fye_date)
 			->order_by('tax_id','asc')
 			->order_by('date','asc')
 			->find_all();
@@ -256,7 +257,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 				$included_tax_item->tax_payment_id = $tax_payment->id;
 				$included_tax_item->save();
 			}
-			/*
+			
 			if( $tax_payment->net_amount != $tax_payment->amount )
 			{
 				// Create a pair of adjusting tax_item entries.
@@ -325,7 +326,6 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 
 				$reverse_tax_items[] = $reverse_tax_item;
 			}
-			*/
 
 			$writeoff_transaction = NULL;
 			foreach( $tax_payment->transaction->account_transactions->find_all() as $account_transaction )
