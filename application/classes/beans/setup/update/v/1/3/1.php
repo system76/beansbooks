@@ -175,7 +175,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 
 			foreach( $unpaid_tax_items as $unpaid_tax_item )
 			{
-				if( ! $locked /* &&
+				if( ! $locked &&
 					(
 						$unpaid_tax_item->type == "invoice" &&
 						$unpaid_tax_item->total >= 0 
@@ -183,7 +183,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 					(
 						$unpaid_tax_item->type == "refund" &&
 						$unpaid_tax_item->total <= 0 
-					) */ )
+					) )
 				{
 					if( $this->_beans_round( $included_tax_total + $unpaid_tax_item->total ) <= $tax_payment->amount )
 					{
@@ -256,7 +256,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 				$included_tax_item->tax_payment_id = $tax_payment->id;
 				$included_tax_item->save();
 			}
-
+			/*
 			if( $tax_payment->net_amount != $tax_payment->amount )
 			{
 				// Create a pair of adjusting tax_item entries.
@@ -325,6 +325,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 
 				$reverse_tax_items[] = $reverse_tax_item;
 			}
+			*/
 
 			$writeoff_transaction = NULL;
 			foreach( $tax_payment->transaction->account_transactions->find_all() as $account_transaction )
