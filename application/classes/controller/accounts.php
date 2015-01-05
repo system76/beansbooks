@@ -101,7 +101,7 @@ class Controller_Accounts extends Controller_View {
 
 		if( $account_transaction_search_result->data->total_results > 0 )
 		{
-			Session::instance()->set('account_error_message',"An opening balance has already been created and cannot be done again.<br>To make adjustments to your accuunts please add the appropriate transactions to your account journals.");
+			Session::instance()->set('account_error_message',"An opening balance has already been created and cannot be done again.<br>To make adjustments to your accounts please add the appropriate transactions to your account journals.");
 			$this->request->redirect('/accounts/');
 		}
 
