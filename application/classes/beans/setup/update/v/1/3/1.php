@@ -194,12 +194,6 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 				}
 			}
 
-			if( $included_tax_total != $tax_payment->amount )
-			{
-				// Create a modifier?
-				throw new Exception("TOTAL MISMATCH: ".$included_tax_total.' != '.$tax_payment->amount);
-			}
-
 			$tax_payment->invoiced_line_amount = 0.00;
 			$tax_payment->invoiced_line_taxable_amount = 0.00;
 			$tax_payment->invoiced_amount = 0.00;
@@ -258,6 +252,75 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 				$included_tax_item->balance = 0.00;
 				$included_tax_item->tax_payment_id = $tax_payment->id;
 				$included_tax_item->save();
+			}
+
+			if( $tax_payment->net_amount != $tax_payment->amount )
+			{
+				// Create a pair of adjusting tax_item entries.
+				// This is likely due to paying taxes on a sales order that was deleted rather than being invoiced.
+				// Note that Beans_Tax->_return_tax_liability_element recognizes a tax_item with a NULL form_id as an adjustment
+				$adjust_tax_item = ORM::Factory('tax_item');
+				$adjust_tax_item->tax_id = $tax_payment->tax_id;
+				$adjust_tax_item->form_id = NULL;
+				$adjust_tax_item->date = $tax_payment->date_end;
+				$adjust_tax_item->type = "invoice";
+				$adjust_tax_item->tax_percent = $tax_payment->tax->percent;
+				
+				$adjust_tax_item->total = $this->_beans_round(
+					$tax_payment->amount -
+					$tax_payment->net_amount
+				);
+				$adjust_tax_item->form_line_taxable_amount = $this->_beans_round(
+					$adjust_tax_item->total / 
+					$adjust_tax_item->tax_percent
+				);
+				$adjust_tax_item->form_line_amount = $adjust_tax_item->form_line_taxable_amount;
+				
+				// Mark this tax item as paid and apply it to the current tax_payment.
+				$adjust_tax_item->tax_payment_id = $tax_payment->id;
+				$adjust_tax_item->balance = 0.00;
+				$adjust_tax_item->save();
+
+				// Make sure this is added into the totals for the tax_payment
+				$tax_payment->invoiced_line_amount = $this->_beans_round(
+					$tax_payment->invoiced_line_amount +
+					$adjust_tax_item->form_line_amount
+				);
+				$tax_payment->invoiced_line_taxable_amount = $this->_beans_round(
+					$tax_payment->invoiced_line_taxable_amount +
+					$adjust_tax_item->form_line_taxable_amount
+				);
+				$tax_payment->invoiced_amount = $this->_beans_round(
+					$tax_payment->invoiced_amount +
+					$adjust_tax_item->total
+				);
+				$tax_payment->net_line_amount = $this->_beans_round(
+					$tax_payment->net_line_amount +
+					$adjust_tax_item->form_line_amount
+				);
+				$tax_payment->net_line_taxable_amount = $this->_beans_round(
+					$tax_payment->net_line_taxable_amount +
+					$adjust_tax_item->form_line_taxable_amount
+				);
+				$tax_payment->net_amount = $this->_beans_round(
+					$tax_payment->net_amount +
+					$adjust_tax_item->total
+				);
+
+				// And create a reversing entry on the same day as $adjust_tax_item 
+				$reverse_tax_item = ORM::Factory('tax_item');
+				$reverse_tax_item->tax_id = $adjust_tax_item->tax_id;
+				$reverse_tax_item->form_id = $adjust_tax_item->form_id;
+				$reverse_tax_item->tax_payment_id = NULL;
+				$reverse_tax_item->date = $adjust_tax_item->date;
+				$reverse_tax_item->type = "refund";
+				$reverse_tax_item->tax_percent = $adjust_tax_item->tax_percent;
+				$reverse_tax_item->total = ( -1 ) * $adjust_tax_item->total;
+				$reverse_tax_item->form_line_taxable_amount = ( -1 ) * $adjust_tax_item->form_line_taxable_amount;
+				$reverse_tax_item->form_line_amount = ( -1 ) * $adjust_tax_item->form_line_amount;
+				$reverse_tax_item->balance = ( -1 ) * $reverse_tax_item->total;
+
+				$reverse_tax_item->save();
 			}
 
 			$writeoff_transaction = NULL;
