@@ -152,8 +152,8 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 		
 
 		$tax_payments = ORM::Factory('tax_payment')
-			->order_by('date','asc')
 			->order_by('tax_id','asc')
+			->order_by('date','asc')
 			->find_all();
 
 		// Not the most efficient loop, but it's easy to understand.
