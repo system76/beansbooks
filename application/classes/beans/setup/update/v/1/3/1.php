@@ -167,6 +167,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 				->where('tax_id','=',$tax_payment->tax_id)
 				->where('tax_payment_id','IS',NULL)
 				->where('date','<=',$tax_payment->date_end)
+				->where('date','>=',$tax_payment->date_start)	// TODO_V_1_3 - REMOVE - TESTING
 				->order_by('date','asc')
 				->find_all();
 
