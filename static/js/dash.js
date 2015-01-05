@@ -68,36 +68,37 @@ if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) 
 
 		$('#dash-index-close-books-submit').click(function (e) {
 			e.preventDefault();
-			showPleaseWait();
-			$message = $(this).closest('.dash-index-message');
-			var include_account_ids = ',';
-			$('.dash-index-close-books-include_account_ids').each(function () {
-				if( $(this).val() && 
-					$(this).val().length ) {
-					include_account_ids += $(this).val()+',';
-				}
-			});
-
-			console.log(include_account_ids);
-			$message.find('input[name="include_account_ids"]').val(include_account_ids);
-			$.post(
-				'/dash/json/closebooks',
-				$message.find('input, select').serialize(),
-				function (data) {
-					hidePleaseWait();
-					if( ! data.success ) {
-						showError(data.error);
-					} else {
-						$newMessage = $(data.data.message);
-						$newMessage.addClass('hidden');
-						$message.after($newMessage);
-						$message.slideUp(function () {
-							$newMessage.slideDown();
-						});
+			if( confirm("Are you sure you want to close your books?  Click 'OK' to continue.") ) {
+				showPleaseWait();
+				$message = $(this).closest('.dash-index-message');
+				var include_account_ids = ',';
+				$('.dash-index-close-books-include_account_ids').each(function () {
+					if( $(this).val() && 
+						$(this).val().length ) {
+						include_account_ids += $(this).val()+',';
 					}
-				},
-				'json'
-			);
+				});
+
+				$message.find('input[name="include_account_ids"]').val(include_account_ids);
+				$.post(
+					'/dash/json/closebooks',
+					$message.find('input, select').serialize(),
+					function (data) {
+						hidePleaseWait();
+						if( ! data.success ) {
+							showError(data.error);
+						} else {
+							$newMessage = $(data.data.message);
+							$newMessage.addClass('hidden');
+							$message.after($newMessage);
+							$message.slideUp(function () {
+								$newMessage.slideDown();
+							});
+						}
+					},
+					'json'
+				);
+			}
 		});
 
 		// Print Report
