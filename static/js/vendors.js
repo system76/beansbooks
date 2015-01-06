@@ -2844,6 +2844,32 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			e.preventDefault();
 			loadTaxPayment($(this).closest('.vendor-taxpayment').attr('rel'));
 		});
+
+		$('#vendors-taxpayments-create-showdetails').click(function (e) {
+			e.preventDefault();
+			
+			if( $('#vendors-taxpayments-create').attr('rel').length ) {
+				popupWindow = popupWindowLoad('/print/taxpayment/'+$('#vendors-taxpayments-create').attr('rel'));
+				$(popupWindow.document).ready( function () {
+					setTimeout( function () { popupWindow.print(); } , 1000 );
+				});
+			} else {
+				if( $('#vendors-taxpayments-create input[name="tax_expected"]').val().length && 
+					parseFloat($('#vendors-taxpayments-create input[name="tax_expected"]').val()) != 0.00 ) {
+					var tax_id = $('#vendors-taxpayments-create input[name="tax_id"]').val();
+					var date_start = $('#vendors-taxpayments-create input[name="date_start"]').val();
+					var date_end = $('#vendors-taxpayments-create input[name="date_end"]').val();
+
+					popupWindow = popupWindowLoad('/print/taxprep/'+tax_id+'/'+date_start+'_'+date_end+'/');
+					$(popupWindow.document).ready( function () {
+						setTimeout( function () { popupWindow.print(); } , 1000 );
+					});
+				}
+			}
+			function printCustomerSale(id) {
+				
+			}
+		});
 		
 		$('#vendors-taxpayments-create input[name="tax_id"], #vendors-taxpayments-create input[name="date_start"], #vendors-taxpayments-create input[name="date_end"]').change(function() {
 			$tax_id = $('#vendors-taxpayments-create input[name="tax_id"]');

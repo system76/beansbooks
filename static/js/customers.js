@@ -1235,7 +1235,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			createSaleUpdateTotals();
 		});
 
-		// TODO_V_1_3 - Consider adding a click counter here to warn the user why exempt won't work.
+		// Consider adding a click counter here to warn the user why exempt won't work.
 		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line .line-tax-exempt').live('click',function(e) {
 			e.preventDefault();
 			if( $('#customers-sales-create input[name="form_tax_exempt"]').is(':checked') ) {
@@ -1268,17 +1268,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			}
 			createSaleUpdateTotals();
 		});
-
-		// TODO_V_1_3 - Remove lines when done testing.
-		/*
-		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line input[type="checkbox"].line-tax').live('click',function() {
-			createSaleUpdateTotals();
-		});
-
-		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line .line-taxes .option .label').live('click',function() {
-			createSaleUpdateTotals();
-		});
-		*/
 
 		$('#customers-sales-create input[name="customer"]').select2({
 			minimumInputLength: 1,

@@ -607,7 +607,8 @@ class Beans_Tax extends Beans {
 				$tax_item->form_id, 
 				$tax_item->form_line_amount, 
 				$tax_item->form_line_taxable_amount, 
-				$tax_item->total
+				$tax_item->total,
+				$tax_item->type
 			);
 		}
 
@@ -634,7 +635,7 @@ class Beans_Tax extends Beans {
 	@attribute title STRING A short description of the sale.
 	---BEANSENDSPEC---
 	 */
-	protected function _return_tax_liability_element($form_id, $form_line_amount, $form_line_taxable_amount, $amount)
+	protected function _return_tax_liability_element($form_id, $form_line_amount, $form_line_taxable_amount, $amount, $type)
 	{
 		$sale = ORM::Factory('form', $form_id);
 
@@ -644,6 +645,7 @@ class Beans_Tax extends Beans {
 		$return_object->form_line_amount = $form_line_amount;
 		$return_object->form_line_taxable_amount = $form_line_taxable_amount;
 		$return_object->amount = $amount;
+		$return_object->type = $type;
 		
 		if( ! $sale->loaded() )
 		{

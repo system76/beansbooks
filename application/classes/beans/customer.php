@@ -1171,14 +1171,6 @@ class Beans_Customer extends Beans {
 		return $form_tax;
 	}
 
-	protected function _tax_adjust_balance($tax_id,$amount)
-	{
-		// TODO - CLEAN THIS UP FOR RELEASE
-		// TODO_V_1_3
-		throw new Exception("DEPRECATED - GET RID OF WHATEVER CALLED THIS SUCKER.");
-		DB::query(NULL,'UPDATE taxes SET balance = balance + '.$amount.', total = total + '.$amount.' WHERE id = "'.$tax_id.'"')->execute();
-	}
-
 	protected function _update_form_tax_items($form_id, $action = NULL)
 	{
 		if( ! $action ||

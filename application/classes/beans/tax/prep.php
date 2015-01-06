@@ -31,6 +31,8 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required date_end STRING Inclusive YYYY-MM-DD date ( i.e. <= date_end )
 @optional payment_id INTEGER The ID of a #Beans_Tax_Payment# to ignore when tabulating totals.  Useful if updating a previous payment.
 @returns tax OBJECT The applicable #Beans_Tax#.
+@returns date_start STRING 
+@returns date_end STRING
 @returns taxes OBJECT The applicable taxes for the given period.
 @returns @attribute taxes paid OBJECT The taxes that have already been paid during this period.  Includes invoiced and refunded - objects - each with line_amount, line_taxable_amount, amount and exemptions.
 @returns @attribute taxes due OBJECT The taxes that have already been paid during this period.  Includes invoiced and refunded - objects - each with line_amount, line_taxable_amount, amount and exemptions.
@@ -127,7 +129,8 @@ class Beans_Tax_Prep extends Beans_Tax {
 					'form_id as form_id, '.
 					'IFNULL(SUM(form_line_amount),0.00) as form_line_amount, '.
 					'IFNULL(SUM(form_line_taxable_amount),0.00) as form_line_taxable_amount, '.
-					'IFNULL(SUM(total),0.00) as amount '.
+					'IFNULL(SUM(total),0.00) as amount, '.
+					'type as type '.
 					'FROM tax_items WHERE '.
 					'tax_id = '.$this->_tax->id.' AND '.
 					$period_query.' AND '.
@@ -181,7 +184,8 @@ class Beans_Tax_Prep extends Beans_Tax {
 						$tax_item_summary['form_id'],
 						$tax_item_summary['form_line_amount'], 
 						$tax_item_summary['form_line_taxable_amount'], 
-						$tax_item_summary['amount']
+						$tax_item_summary['amount'],
+						$tax_item_summary['type']
 					);
 				}
 			}
@@ -190,6 +194,8 @@ class Beans_Tax_Prep extends Beans_Tax {
 		return (object)array(
 			'tax' => $this->_return_tax_element($this->_tax),
 			'taxes' => $taxes,
+			'date_start' => $this->_date_start,
+			'date_end' => $this->_date_end,
 		);
 	}
 }
