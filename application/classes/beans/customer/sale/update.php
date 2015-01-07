@@ -86,7 +86,10 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		if( ! $this->_sale->loaded() )
 			throw new Exception("Sale could not be found.");
 
-		if( $this->_check_books_closed($this->_sale->date_created) )
+		// There's a unique use-case that's hard to replicate, but it produces a form that
+		// has no create_transaction - closing the FYE with this form can be frustrating to deal with otherwise.
+		if( $this->_check_books_closed($this->_sale->date_created) &&
+			$this->_sale->create_transaction_id )
 			throw new Exception("Sale could not be updated.  The financial year has been closed already.");
 
 		$sale_original_total = $this->_sale->total;

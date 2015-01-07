@@ -117,6 +117,8 @@ class Beans_Vendor_Purchase_Update extends Beans_Vendor_Purchase {
 			! $this->_date_billed )
 			throw new Exception("Both an invoice number and date are required.");
 		
+		// There's a unique use-case that's hard to replicate, but it produces a form that
+		// has no create_transaction - closing the FYE with this form can be frustrating to deal with otherwise.
 		if( $this->_check_books_closed($this->_purchase->date_created) &&
 			$this->_purchase->create_transaction_id )
 			throw new Exception("purchase could not be updated.  The financial year has been closed already.");
