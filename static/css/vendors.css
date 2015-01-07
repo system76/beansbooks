@@ -514,7 +514,7 @@ li.vendor-taxpayment > span.vendor-taxpayment-actions {
 }
 
 #vendors-taxpayments-payments {
-	height: 160px;
+	min-height: 160px;
 }
 
 #vendors-taxpayments-create > .form{
