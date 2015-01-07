@@ -1,3 +1,9 @@
+{{#last_reconcile}}
+	<form action="/accounts/reconciledelete" id="accounts-reconcile-delete-form" method="POST">
+		<input type="hidden" name="id" value="{{id}}" />
+	</form>
+{{/last_reconcile}}
+
 <div class="text-medium">This is your {{#account}}{{name}}{{/account}} account.</div>
 
 <div class="accounts-view-actions">
@@ -58,6 +64,43 @@
 		</span>
 	</div>
 </div>
+
+{{#last_reconcile}}
+	<div class="form pad-up-most" id="accounts-reconcile-previous">
+		<div class="row column-10">
+			<span class="oop" style="width: 290px; font-size: 20px; line-height: 20px; margin-left: 0;">
+				{{#account}}{{name}}{{/account}}
+			</span>
+			<span class="oop" style="width: 145px; line-height: 20px; text-align: right; margin-left: 0;">
+				Starting Balance:
+			</span>
+			<span class="oop" style="width: 145px; line-height: 20px; text-align: right; margin-left: 0;">
+				{{balance_start_formatted}}
+			</span>
+		</div>
+		<div class="row column-10">
+			<span class="oop" style="width: 290px;  margin-left: 0;">
+				Last Reconciled: {{date_formatted}}
+			</span>
+			<span class="oop" style="width: 145px;  text-align: right; margin-left: 0;">
+				Ending Balance:
+			</span>
+			<span class="oop" style="width: 145px;  text-align: right; margin-left: 0;">
+				{{balance_end_formatted}}
+			</span>
+		</div>
+		<div class="row bump-down pad-down-more column-10" style="border-top: 1px solid #ccc;">
+			<span class="oop" style="width: 470px; line-height: 25px; margin-left: 0;">
+				If you need to change this reconciliation, you can delete and re-enter it.
+			</span>
+			<span class="oop" style="width: 90px;  margin-left: 20px;">
+				<a href="#" class="button" id="accounts-reconcile-delete">Delete</a>
+			</span>
+		</div>
+
+	</div>
+
+{{/last_reconcile}}
 
 <form action="/accounts/reconcilecreate" method="POST">
 	

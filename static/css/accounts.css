@@ -508,6 +508,11 @@ li.split-transaction.list-container li.account-transaction.actions a.save {
  * Reconcile Process
  */
 
+#accounts-reconcile-previous {
+	width: 600px;
+	margin: 100px auto;
+}
+
 #accounts-reconcile-form {
 	width: 735px;
 	float: left;

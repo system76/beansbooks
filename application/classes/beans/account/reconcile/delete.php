@@ -19,8 +19,8 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 /*
 ---BEANSAPISPEC---
-@action Beans_Account_Reconcile_Lookup
-@description Look up an account reconciliation.
+@action Beans_Account_Reconcile_Delete
+@description Delete an account reconciliation.  This only allows deleting the most recent reconciliation for a specific account.
 @required auth_uid
 @required auth_key
 @required auth_expiration
@@ -28,7 +28,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @returns account_reconcile The resulting #Beans_Account_Reconcile#.
 ---BEANSENDSPEC---
 */
-class Beans_Account_Reconcile_Lookup extends Beans_Account_Reconcile {
+class Beans_Account_Reconcile_Delete extends Beans_Account_Reconcile {
 
 	protected $_id;
 	protected $_account_reconcile;
@@ -49,8 +49,26 @@ class Beans_Account_Reconcile_Lookup extends Beans_Account_Reconcile {
 		if( ! $this->_account_reconcile->loaded() )
 			throw new Exception("Account reconciliation could not be found.");
 
-		return (object)array(
-			"account_reconcile" => $this->_return_account_reconcile_element($this->_account_reconcile),
-		);
+		$latest_reconciliation = ORM::Factory('account_reconcile')
+			->where('account_id','=',$this->_account_reconcile->account_id)
+			->order_by('date','desc')
+			->find();
+
+		if( $latest_reconciliation->id != $this->_account_reconcile->id )
+			throw new Exception("Can only delete the most recent reconciliation for an account.");
+
+		DB::Query(
+			NULL,
+			' UPDATE '.
+			' account_transactions '.
+			' SET '.
+			' account_reconcile_id = NULL '.
+			' WHERE '.
+			' account_reconcile_id = '.$this->_account_reconcile->id.' '
+		)->execute();
+
+		$this->_account_reconcile->delete();
+
+		return (object)array();
 	}
 }

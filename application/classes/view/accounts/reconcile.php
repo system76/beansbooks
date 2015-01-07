@@ -50,8 +50,12 @@ class View_Accounts_Reconcile extends View_Template {
 				   : $next_year.'-'.$next_month_formatted.'-'.$reconcile_day;
 		
 		return array(
+			'id' => $this->account_reconcile_result->data->account_reconciles[0]->id,
+			'date_formatted' => date("m/d/Y", strtotime($last_reconcile_date)),
 			'date_next' => $date_next,
 			'balance_end' => $this->account_reconcile_result->data->account_reconciles[0]->balance_end,
+			'balance_start_formatted' => $this->_format_beans_number($this->account_reconcile_result->data->account_reconciles[0]->balance_start),
+			'balance_end_formatted' => $this->_format_beans_number($this->account_reconcile_result->data->account_reconciles[0]->balance_end),
 		);
 	}
 

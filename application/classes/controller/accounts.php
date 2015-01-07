@@ -487,6 +487,23 @@ class Controller_Accounts extends Controller_View {
 		}
 	}
 
+	public function action_reconciledelete()
+	{
+		$id = $this->request->post('id');
+
+		$account_reconcile_delete = new Beans_Account_Reconcile_Delete($this->_beans_data_auth((object)array(
+			'id' => $id,
+		)));
+		$account_reconcile_delete_result = $account_reconcile_delete->execute();
+
+		if( ! $account_reconcile_delete_result->success )
+			Session::instance()->set('account_error_message',"An error occurred when deleting that statement:<br>".$account_reconcile_delete_result->auth_error.$account_reconcile_delete_result->error);
+		else
+			Session::instance()->set('account_success_message',"Your statement was successfully removed.");
+
+		$this->request->redirect($this->request->referrer());
+	}
+
 	public function action_reconcilecreate()
 	{
 		$account_reconcile_create_data = new stdClass;

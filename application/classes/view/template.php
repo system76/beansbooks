@@ -920,7 +920,7 @@ class View_Template extends Kostache_Layout {
 
 	protected function _format_beans_number($number)
 	{
-		return ( $number > 0 ? '' : '-' ).$this->_company_currency().number_format(abs($number),2,'.',',');
+		return ( $number >= 0 ? '' : '-' ).$this->_company_currency().number_format(abs($number),2,'.',',');
 	}
 	
 	public function fontsizenormal()

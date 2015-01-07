@@ -1068,6 +1068,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 				showError("Please enter a statement date.");
 			} else {
 				$('#accounts-reconcile-prep').slideUp(function() {
+					$('#accounts-reconcile-previous').hide();
 					$('#accounts-reconcile-form').fadeIn();
 					$('#accounts-reconcile-status').fadeIn();
 				});
@@ -1130,6 +1131,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 				},
 				'json'
 			);
+		});
+
+		// Delete
+		$('#accounts-reconcile-delete').live('click', function(e) {
+			e.preventDefault();
+			showPleaseWait();
+			$('#accounts-reconcile-delete-form').submit();
 		});
 
 		/* 
