@@ -2848,7 +2848,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$('#vendors-taxpayments-create-showdetails').click(function (e) {
 			e.preventDefault();
 			
-			if( $('#vendors-taxpayments-create').attr('rel').length ) {
+			if( $('#vendors-taxpayments-create').attr('rel') &&
+				$('#vendors-taxpayments-create').attr('rel').length ) {
 				popupWindow = popupWindowLoad('/print/taxpayment/'+$('#vendors-taxpayments-create').attr('rel'));
 				$(popupWindow.document).ready( function () {
 					setTimeout( function () { popupWindow.print(); } , 1000 );
