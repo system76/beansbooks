@@ -70,7 +70,7 @@
 		{{#exempted_lines}}
 			<tr>
 				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">&nbsp;</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{account_name}} - {{description}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{account_name}} - {{description}}</td>
 				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
 				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{total_formatted}}</td>
 				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">0.00</td>
@@ -123,7 +123,8 @@
 		</tr>
 		{{#exempted_lines}}
 			<tr>
-				<td colspan="2" style="padding-top: 4px; padding-bottom: 4px; text-indent: 15px; width: 52%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{account_name}} - {{description}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">&nbsp;</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{account_name}} - {{description}}</td>
 				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
 				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{total_formatted}}</td>
 				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">0.00</td>
