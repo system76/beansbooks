@@ -60,21 +60,21 @@
 	</tr>
 	{{#invoiced_liabilities}}
 		<tr>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: left; min-height: 24px; padding-left: 5px;">{{sale_number}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; text-align: left; min-height: 24px; padding-left: 5px;">{{tax_exempt_reason}}{{^tax_exempt_reason}}{{#includes_exemptions}}Includes Exempted Line Items{{/includes_exemptions}}{{^includes_exemptions}}&nbsp;{{/includes_exemptions}}{{/tax_exempt_reason}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{form_line_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{form_line_taxable_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{sale_number}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{tax_exempt_reason}}{{^tax_exempt_reason}}{{#includes_exemptions}}Includes Exempted Line Items{{/includes_exemptions}}{{^includes_exemptions}}&nbsp;{{/includes_exemptions}}{{/tax_exempt_reason}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{form_line_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{form_line_taxable_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{amount_formatted}}</td>
 		</tr>
 		{{#exempted_lines}}
 			<tr>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: left; min-height: 24px; padding-left: 5px;">&nbsp;</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; text-align: left; min-height: 24px; padding-left: 5px;">{{account_name}} - {{description}}</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{total_formatted}}</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">0.00</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">0.00</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">&nbsp;</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{account_name}} - {{description}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{total_formatted}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">0.00</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">0.00</td>
 			</tr>
 		{{/exempted_lines}}
 		{{#has_exempted_lines}}
@@ -93,11 +93,11 @@
 	</tr>
 	{{#payment}}
 		<tr>
-			<td colspan="2" style="padding-top: 4px; padding-bottom: 4px; width: 52%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Invoiced Total</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">&nbsp;</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">{{invoiced_line_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">{{invoiced_line_taxable_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">{{invoiced_amount_formatted}}</td>
+			<td colspan="2" style="padding-top: 4px; padding-bottom: 4px; width: 52%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">Invoiced Total</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">&nbsp;</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">{{invoiced_line_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">{{invoiced_line_taxable_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">{{invoiced_amount_formatted}}</td>
 		</tr>
 	{{/payment}}
 	<tr>
@@ -105,29 +105,29 @@
 	</tr>
 
 	<tr>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Refunds</td>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Exemption Reason / Line Description</td>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Tax Exempt</td>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Total</td>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Taxable</td>
-		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">Taxes</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">Refunds</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">Exemption Reason / Line Description</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">Tax Exempt</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">Total</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">Taxable</td>
+		<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">Taxes</td>
 	</tr>
 	{{#refunded_liabilities}}
 		<tr>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: left; min-height: 24px; padding-left: 5px;">{{sale_number}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; text-align: left; min-height: 24px; padding-left: 5px;">{{tax_exempt_reason}}{{^tax_exempt_reason}}{{#includes_exemptions}}Includes Exempted Line Items{{/includes_exemptions}}{{^includes_exemptions}}&nbsp;{{/includes_exemptions}}{{/tax_exempt_reason}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{form_line_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{form_line_taxable_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{sale_number}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 40%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{tax_exempt_reason}}{{^tax_exempt_reason}}{{#includes_exemptions}}Includes Exempted Line Items{{/includes_exemptions}}{{^includes_exemptions}}&nbsp;{{/includes_exemptions}}{{/tax_exempt_reason}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{form_line_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{form_line_taxable_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{amount_formatted}}</td>
 		</tr>
 		{{#exempted_lines}}
 			<tr>
-				<td colspan="2" style="padding-top: 4px; padding-bottom: 4px; text-indent: 15px; width: 52%; {{fontsizenormal}} font-weight: normal; text-align: left; min-height: 24px; padding-left: 5px;">{{account_name}} - {{description}}</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">{{total_formatted}}</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">0.00</td>
-				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; text-align: center; min-height: 24px;">0.00</td>
+				<td colspan="2" style="padding-top: 4px; padding-bottom: 4px; text-indent: 15px; width: 52%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">{{account_name}} - {{description}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{#tax_exempt}}Yes{{/tax_exempt}}{{^tax_exempt}}&nbsp;{{/tax_exempt}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">{{total_formatted}}</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">0.00</td>
+				<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: normal; vertical-align: top; text-align: center; min-height: 24px;">0.00</td>
 			</tr>
 		{{/exempted_lines}}
 		{{#has_exempted_lines}}
@@ -146,11 +146,11 @@
 	</tr>
 	{{#payment}}
 		<tr>
-			<td colspan="2" style="padding-top: 4px; padding-bottom: 4px; width: 52%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Refunded Total</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">&nbsp;</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">{{refunded_line_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">{{refunded_line_taxable_amount_formatted}}</td>
-			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; text-align: center; min-height: 24px;">{{refunded_amount_formatted}}</td>
+			<td colspan="2" style="padding-top: 4px; padding-bottom: 4px; width: 52%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: left; min-height: 24px; padding-left: 5px;">Refunded Total</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">&nbsp;</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">{{refunded_line_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">{{refunded_line_taxable_amount_formatted}}</td>
+			<td style="padding-top: 4px; padding-bottom: 4px; width: 12%; {{fontsizenormal}} font-weight: bold; vertical-align: top; text-align: center; min-height: 24px;">{{refunded_amount_formatted}}</td>
 		</tr>
 	{{/payment}}
 	<tr>
