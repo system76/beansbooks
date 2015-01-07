@@ -50,10 +50,10 @@ class View_Vendors_Print_Taxpayment extends View_Print {
 
 		$return_array['address']['country'] = $this->_country_name($this->payment->tax->country);
 
-		if( ! $address['address1'] &&
-			! $address['address2'] &&
-			! $address['citystatezip'] &&
-			! $address['country'] )
+		if( ! $return_array['address1'] &&
+			! $return_array['address2'] &&
+			! $return_array['citystatezip'] &&
+			! $return_array['country'] )
 			return FALSE;
 
 		return $return_array;
