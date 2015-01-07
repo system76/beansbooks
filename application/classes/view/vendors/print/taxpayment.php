@@ -39,6 +39,7 @@ class View_Vendors_Print_Taxpayment extends View_Print {
 		$return_array['address']['address1'] = $this->payment->tax->address1;
 		$return_array['address']['address2'] = $this->payment->tax->address2;
 		
+		$return_array['address']['citystatezip'] = FALSE;
 		if( $this->payment->tax->city || 
 			$this->payment->tax->state || 
 			$this->payment->tax->zip )
