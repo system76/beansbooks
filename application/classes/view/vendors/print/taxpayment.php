@@ -68,6 +68,10 @@ class View_Vendors_Print_Taxpayment extends View_Print {
 
 		$return_array = array();
 
+		$return_array['has_date'] = ( $this->payment->date ) ? TRUE : FALSE;
+		$return_array['date_formatted'] = ( $this->payment->date )
+										? date("m/d/Y", strtotime($this->payment->date) )
+										: FALSE;
 		$return_array['invoiced_line_amount_formatted'] = $this->_format_beans_number($this->payment->invoiced_line_amount);
 		$return_array['invoiced_line_taxable_amount_formatted'] = $this->_format_beans_number($this->payment->invoiced_line_taxable_amount);
 		$return_array['invoiced_amount_formatted'] = $this->_format_beans_number($this->payment->invoiced_amount);

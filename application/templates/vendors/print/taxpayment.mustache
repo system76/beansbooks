@@ -1,7 +1,7 @@
 <br>
 {{{tableopen}}}
 	<tr>
-		<td style="vertical-align: top; padding-left: 5px; width: 40%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
+		<td style="vertical-align: top; padding-left: 5px; width: 50%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
 			{{#tax}}
 				<span style="font-size:15px; line-height:30px;  font-weight: bold;">{{name}}</span><br>
 				Remit To: {{authority}}<br>
@@ -12,25 +12,27 @@
 				{{/address}}
 			{{/tax}}
 		</td>
-		<td style="vertical-align: top; padding-left: 5px; width: 40%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
-			&nbsp;
-		</td>
-		<td style="vertical-align: top; padding-right: 5px; width: 30%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px;">
+		<td style="vertical-align: top; padding-right: 5px; width: 50%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px;">
 			{{#payment}}
-				<span style="{{fontsizelarge}} font-weight: bold;">Tax Details</span><br>
-				{{date_start_formatted}} - {{date_end_formatted}}<br>
+				{{#has_date}}
+					<span style="{{fontsizelarge}} font-weight: bold;">Tax Payment: {{date_formatted}}</span><br>
+				{{/has_date}}
+				{{^has_date}}
+					<span style="{{fontsizelarge}} font-weight: bold;">Tax Details</span><br>
+				{{/has_date}}
+				<span style="float: left; width: 220px; text-align: right;">Date Range </span>{{date_start_formatted}} - {{date_end_formatted}}<br>
 				{{#has_check_number}}
-					<span style="float: left; width: 125px; text-align: right;">Check Number</span> {{check_number}}<br>
+					<span style="float: left; width: 220px; text-align: right;">Check Number</span> {{check_number}}<br>
 				{{/has_check_number}}
-				<span style="float: left; width: 125px; text-align: right;">Total Due </span> {{net_amount_formatted}}<br>
+				<span style="float: left; width: 220px; text-align: right;">Total Due </span> {{net_amount_formatted}}<br>
 				{{#has_paid_amount}}
-					<span style="float: left; width: 125px; text-align: right;">Amount Paid </span> {{paid_amount_formatted}}<br>
+					<span style="float: left; width: 220px; text-align: right;">Amount Paid </span> {{paid_amount_formatted}}<br>
 				{{/has_paid_amount}}
 				{{^has_paid_amount}}
 					<br>
 				{{/has_paid_amount}}
 				{{#has_writeoff_amount}}
-					<span style="float: left; width: 125px; text-align: right;">Writeoff Amount </span> {{writeoff_amount_formatted}}<br>
+					<span style="float: left; width: 220px; text-align: right;">Writeoff Amount </span> {{writeoff_amount_formatted}}<br>
 				{{/has_writeoff_amount}}
 				{{^has_writeoff_amount}}
 					<br>
