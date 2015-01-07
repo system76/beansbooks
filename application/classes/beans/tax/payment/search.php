@@ -31,6 +31,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @optional search_date_before STRING Search payments before a specific YYYY-MM-DD date.
 @optional tax_id INTEGER The ID of the #Beans_Tax# to limit payments to.
 @optional tax_name STRING A generic query string to search tax names.
+@optional include_details BOOLEAN Whether or not to include liabilities on returned tax items.
 @returns payments ARRAY An array of #Beans_Tax_Payment#.
 @returns total_results INTEGER Total number of results.
 @returns sort_by STRING The sort method used in the returned results.
