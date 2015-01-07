@@ -13,14 +13,7 @@
 			{{/tax}}
 		</td>
 		<td style="vertical-align: top; padding-left: 5px; width: 40%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
-			{{#pzayment}}
-				Total Sales: {{invoiced_line_amount_formatted}}<br>
-				Taxable Sales: {{invoiced_line_taxable_amount_formatted}}<br>
-				Tax Collected: {{invoiced_amount_formatted}}<br>
-				Total Refunds: {{refunded_line_amount_formatted}}<br>
-				Taxable Refunds: {{refunded_line_taxable_amount_formatted}}<br>
-				Tax Refunded: {{refunded_amount_formatted}}
-			{{/pzayment}}
+			&nbsp;
 		</td>
 		<td style="vertical-align: top; padding-right: 5px; width: 30%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px;">
 			{{#payment}}
@@ -30,15 +23,18 @@
 					<span style="float: left; width: 85px; text-align: right;">Check Number</span> {{.}}<br>
 				{{/check_number}}
 				<span style="float: left; width: 125px; text-align: right;">Total Due </span> {{net_amount_formatted}}<br>
-				{{#paid_amount_formatted}}
+				{{#has_paid_amount}}
 					<span style="float: left; width: 125px; text-align: right;">Amount Paid </span> {{paid_amount_formatted}}<br>
-				{{/paid_amount_formatted}}
-				{{#writeoff_amount_formatted}}
-					<span style="float: left; width: 125px; text-align: right;">Writeoff Amount </span> {{writeoff_amount_formatted}}<br>
-				{{/writeoff_amount_formatted}}
-				{{^writeoff_amount_formatted}}
+				{{/has_paid_amount}}
+				{{^has_paid_amount}}
 					<br>
-				{{/writeoff_amount_formatted}}
+				{{/has_paid_amount}}
+				{{#has_writeoff_amount}}
+					<span style="float: left; width: 125px; text-align: right;">Writeoff Amount </span> {{writeoff_amount_formatted}}<br>
+				{{/has_writeoff_amount}}
+				{{^has_writeoff_amount}}
+					<br>
+				{{/has_writeoff_amount}}
 			{{/payment}}
 		</td>
 	</tr>
