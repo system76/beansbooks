@@ -2081,7 +2081,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				return $this->_return_error($this->_beans_result_get_error($tax_payment_validate_result));
 
 			// DELETE
-			$tax_payment_cancel = new Beans_Tax_Payment_Cancel($this->_beans_data_auth((object)array(
+			$tax_payment_cancel = new Beans_Tax_Payment_Delete($this->_beans_data_auth((object)array(
 				'id' => $payment_id,
 			)));
 			$tax_payment_cancel_result = $tax_payment_cancel->execute();
@@ -2208,7 +2208,7 @@ class Controller_Vendors_Json extends Controller_Json {
 	{
 		$payment_id = $this->request->post('payment_id');
 
-		$tax_payment_cancel = new Beans_Tax_Payment_Cancel($this->_beans_data_auth((object)array(
+		$tax_payment_cancel = new Beans_Tax_Payment_Delete($this->_beans_data_auth((object)array(
 			'id' => $payment_id,
 		)));
 		$tax_payment_cancel_result = $tax_payment_cancel->execute();

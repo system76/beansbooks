@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 /*
 ---BEANSAPISPEC---
-@action Beans_Tax_Payment_Cancel
+@action Beans_Tax_Payment_Delete
 @description Remove a tax payment.
 @required auth_uid 
 @required auth_key 
@@ -27,7 +27,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required id INTEGER The ID of the #Beans_Tax_Payment# being removed.
 ---BEANSENDSPEC---
 */
-class Beans_Tax_Payment_Cancel extends Beans_Tax_Payment {
+class Beans_Tax_Payment_Delete extends Beans_Tax_Payment {
 
 	protected $_auth_role_perm = "vendor_payment_write";
 
