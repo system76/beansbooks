@@ -280,7 +280,7 @@ class Beans_Tax extends Beans {
 	---BEANSENDSPEC---
 	 */
 
-	protected function _return_tax_payment_element($tax_payment)
+	protected function _return_tax_payment_element($tax_payment, $include_details = FALSE)
 	{
 		$return_object = new stdClass;
 
@@ -306,7 +306,10 @@ class Beans_Tax extends Beans {
 		$return_object->net_line_taxable_amount = $tax_payment->net_line_taxable_amount;
 		$return_object->net_amount = $tax_payment->net_amount;
 		
-		$return_object->liabilities = $this->_return_tax_liabilities_array($tax_payment->tax_items->find_all());
+		$return_object->liabilities = NULL;
+		
+		if( $include_details )
+			$return_object->liabilities = $this->_return_tax_liabilities_array($tax_payment->tax_items->find_all());
 
 		$return_object->payment_account = FALSE;
 		$return_object->payment_transaction = FALSE;

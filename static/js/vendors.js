@@ -3642,7 +3642,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			'/vendors/json/taxpaymentsearch',
 			{
 				search_terms: $('#vendors-taxpayments-payments-search').val(),
-				count: 5
+				count: 25
 			},
 			function(data) {
 				hidePleaseWait();

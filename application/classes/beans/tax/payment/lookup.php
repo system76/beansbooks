@@ -57,7 +57,7 @@ class Beans_Tax_Payment_Lookup extends Beans_Tax_Payment {
 			throw new Exception("Payment could not be found.");
 
 		return (object)array(
-			"payment" => $this->_return_tax_payment_element($this->_payment),
+			"payment" => $this->_return_tax_payment_element($this->_payment, TRUE),
 		);
 	}
 }

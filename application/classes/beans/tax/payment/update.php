@@ -250,7 +250,7 @@ class Beans_Tax_Payment_Update extends Beans_Tax_Payment {
 		$this->_tax_payment_update_balance($this->_payment->tax_id);
 
 		return (object)array(
-			"payment" => $this->_return_tax_payment_element($this->_payment),
+			"payment" => $this->_return_tax_payment_element($this->_payment, TRUE),
 		);
 	}
 }
