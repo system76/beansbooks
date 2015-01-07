@@ -59,7 +59,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 
 		foreach( $forms as $form )
 		{
-			$form_lines = $form->form_lines->find_all();
+			$form_lines = $form->form_lines->where('total','!=',0.00)->find_all();
 			
 			foreach( $form_lines as $form_line )
 			{
