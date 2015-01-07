@@ -225,8 +225,8 @@ class Controller_Print extends Controller {
 			'refunded_line_taxable_amount' => $tax_prep_result->data->taxes->due->refunded->form_line_taxable_amount,
 			'refunded_amount' => $tax_prep_result->data->taxes->due->refunded->amount,
 			'net_line_amount' => $tax_prep_result->data->taxes->due->net->form_line_amount,
-			'net_line_taxable_amount' => $tax_prep_result->data->taxes->due->net->form_line_amount,
-			'net_amount' => $tax_prep_result->data->taxes->due->net->form_line_amount,
+			'net_line_taxable_amount' => $tax_prep_result->data->taxes->due->net->form_line_taxable_amount,
+			'net_amount' => $tax_prep_result->data->taxes->due->net->amount,
 			'liabilities' => array_merge(
 				$tax_prep_result->data->taxes->due->invoiced->liabilities,
 				$tax_prep_result->data->taxes->due->refunded->liabilities
