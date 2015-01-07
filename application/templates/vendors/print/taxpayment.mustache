@@ -19,9 +19,9 @@
 			{{#payment}}
 				<span style="{{fontsizelarge}} font-weight: bold;">Tax Details</span><br>
 				{{date_start_formatted}} - {{date_end_formatted}}<br>
-				{{#check_number}}
-					<span style="float: left; width: 85px; text-align: right;">Check Number</span> {{.}}<br>
-				{{/check_number}}
+				{{#has_check_number}}
+					<span style="float: left; width: 85px; text-align: right;">Check Number</span> {{check_number}}<br>
+				{{/has_check_number}}
 				<span style="float: left; width: 125px; text-align: right;">Total Due </span> {{net_amount_formatted}}<br>
 				{{#has_paid_amount}}
 					<span style="float: left; width: 125px; text-align: right;">Amount Paid </span> {{paid_amount_formatted}}<br>

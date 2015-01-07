@@ -85,7 +85,7 @@ class View_Vendors_Print_Taxpayment extends View_Print {
 		if( $this->payment->writeoff_amount )
 			$return_array['writeoff_amount_formatted'] = $this->_format_beans_number($this->payment->writeoff_amount);
 
-
+		$return_array['has_check_number'] = ( strlen($return_array['check_number']) ) ? TRUE : FALSE;
 		$return_array['has_paid_amount'] = ( strlen($return_array['paid_amount_formatted']) ) ? TRUE : FALSE;
 		$return_array['has_writeoff_amount'] = ( strlen($return_array['writeoff_amount_formatted']) ) ? TRUE : FALSE;
 
