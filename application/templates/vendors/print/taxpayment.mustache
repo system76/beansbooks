@@ -3,7 +3,7 @@
 	<tr>
 		<td style="vertical-align: top; padding-left: 5px; width: 40%; {{fontsizenormal}} text-align: left; min-height: 80px; padding-bottom: 10px;">
 			{{#tax}}
-				<span style="font-size:15px; line-height:15px;  font-weight: bold;">{{name}}</span><br>
+				<span style="font-size:15px; line-height:30px;  font-weight: bold;">{{name}}</span><br>
 				Remit To: {{authority}}<br>
 				{{#address}}
 					{{address1}} {{address2}}<br>
@@ -20,7 +20,7 @@
 				<span style="{{fontsizelarge}} font-weight: bold;">Tax Details</span><br>
 				{{date_start_formatted}} - {{date_end_formatted}}<br>
 				{{#has_check_number}}
-					<span style="float: left; width: 85px; text-align: right;">Check Number</span> {{check_number}}<br>
+					<span style="float: left; width: 125px; text-align: right;">Check Number</span> {{check_number}}<br>
 				{{/has_check_number}}
 				<span style="float: left; width: 125px; text-align: right;">Total Due </span> {{net_amount_formatted}}<br>
 				{{#has_paid_amount}}
