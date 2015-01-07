@@ -3654,7 +3654,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 						$payment.addClass('hidden');
 						$('#vendors-taxpayments-payments .vendor-taxpayment:last').after($payment);
 					}
-					$('#vendors-taxpayments-payments .vendor-taxpayment').slideDown();
+					$('#vendors-taxpayments-payments .vendor-taxpayment').slideDown(function () {
+						rowElementsColorVisible($('#vendors-taxpayments-payments'));
+					});
 				}
 			},
 			'json'
