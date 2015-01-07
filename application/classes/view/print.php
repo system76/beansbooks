@@ -169,7 +169,7 @@ class View_Print extends Kostache_Layout {
 	{
 		$beans_settings = $this->beans_settings();
 
-		return ( $number > 0 ? '' : '-' ).$beans_settings->company_currency.number_format(abs($number),2,'.',',');
+		return ( $number >= 0 ? '' : '-' ).$beans_settings->company_currency.number_format(abs($number),2,'.',',');
 	}
 		
 }
