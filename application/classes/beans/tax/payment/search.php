@@ -49,6 +49,7 @@ class Beans_Tax_Payment_Search extends Beans_Tax_Payment {
 	protected $_search_date_before;
 	protected $_search_tax_id;
 	protected $_search_tax_name;
+	protected $_include_details;
 	
 	private $_sort_by;
 	private $_sort_by_patterns = array(
@@ -97,6 +98,10 @@ class Beans_Tax_Payment_Search extends Beans_Tax_Payment {
 							 ? $data->search_tax_name
 							 : FALSE;
 
+		$this->_include_details = ( isset($data->include_details) && $data->include_details )
+								? TRUE
+								: FALSE; 
+
 
 	}
 
@@ -140,7 +145,7 @@ class Beans_Tax_Payment_Search extends Beans_Tax_Payment {
 			"sort_by" => $this->_sort_by,
 			"pages" => $result_object->pages,
 			"page" => $result_object->page,
-			"payments" => $this->_return_tax_payments_array($result_object->payments),
+			"payments" => $this->_return_tax_payments_array($result_object->payments, $this->_include_details),
 		);
 	}
 
