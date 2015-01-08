@@ -613,6 +613,30 @@ class Controller_Dash extends Controller_View {
 
 		if( ! $require_calibration )
 		{
+			$customer_sale_calibrate_check = new Beans_Customer_Sale_Calibrate_Check($this->_beans_data_auth());
+			$customer_sale_calibrate_check_result = $customer_sale_calibrate_check->execute();
+
+			if( ! $customer_sale_calibrate_check_result->success )
+				return array();
+
+			if( count($customer_sale_calibrate_check_result->data->ids) )
+				$require_calibration = TRUE;
+		}
+
+		if( ! $require_calibration )
+		{
+			$vendor_purchase_calibrate_check = new Beans_Vendor_Purchase_Calibrate_Check($this->_beans_data_auth());
+			$vendor_purchase_calibrate_check_result = $vendor_purchase_calibrate_check->execute();
+
+			if( ! $vendor_purchase_calibrate_check_result->success )
+				return array();
+
+			if( count($vendor_purchase_calibrate_check_result->data->ids) )
+				$require_calibration = TRUE;
+		}
+
+		if( ! $require_calibration )
+		{
 			$account_calibrate_check = new Beans_Account_Calibrate_Check($this->_beans_data_auth());
 			$account_calibrate_check_result = $account_calibrate_check->execute();
 

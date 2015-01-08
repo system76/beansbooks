@@ -26,15 +26,7 @@ class Beans_Setup_Update_V_1_3_1 extends Beans_Setup_Update_V {
 	
 	protected function _execute()
 	{
-		$fye_transaction = ORM::Factory('transaction')
-			->where('close_books','IS NOT',NULL)
-			->order_by('close_books','desc')
-			->find();
-
-		$fye_date = date("Y-m-d",0);
-
-		if( $fye_transaction->loaded() )
-			$fye_date = date("Y-m-t",strtotime(substr($fye_transaction->close_books,0,7).'-01'));
+		$fye_date = $this->_get_books_closed_date();
 
 		// Update form_taxes
 		// 		- Add form_line_amount
