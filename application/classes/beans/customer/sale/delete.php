@@ -57,7 +57,9 @@ class Beans_Customer_Sale_Delete extends Beans_Customer_Sale {
 		// There's a unique use-case that's hard to replicate, but it produces a form that
 		// has no create_transaction - closing the FYE with this form can be frustrating to deal with otherwise.
 		if( $this->_check_books_closed($this->_sale->date_created) &&
-			$this->_sale->create_transaction_id )
+			$this->_sale->create_transaction_id &&
+			$this->_sale->invoice_transaction_id &&
+			$this->_sale->cancel_transaction_id )
 			throw new Exception("Sale could not be deleted.  The financial year has been closed already.");
 
 		if( $this->_sale->refund_form_id AND 

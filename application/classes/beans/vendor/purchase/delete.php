@@ -53,7 +53,9 @@ class Beans_Vendor_Purchase_Delete extends Beans_Vendor_Purchase {
 		// There's a unique use-case that's hard to replicate, but it produces a form that
 		// has no create_transaction - closing the FYE with this form can be frustrating to deal with otherwise.
 		if( $this->_check_books_closed($this->_purchase->date_created) &&
-			$this->_purchase->create_transaction_id )
+			$this->_purchase->create_transaction_id &&
+			$this->_purchase->invoice_transaction_id &&
+			$this->_purchase->cancel_transaction_id )
 			throw new Exception("Purchase purchase could not be deleted.  The financial year has been closed already.");
 
 		if( $this->_purchase->date_cancelled )

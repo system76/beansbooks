@@ -50,7 +50,10 @@ class Beans_Vendor_Expense_Delete extends Beans_Vendor_Expense {
 		if( ! $this->_expense->loaded() )
 			throw new Exception("Expense could not be found.");
 
-		if( $this->_check_books_closed($this->_expense->date_created) )
+		if( $this->_check_books_closed($this->_expense->date_created) &&
+			$this->_expense->create_transaction_id &&
+			$this->_expense->invoice_transaction_id &&
+			$this->_expense->cancel_transaction_id )
 			throw new Exception("Expense could not be deleted.  The financial year has been closed already.");
 
 		if( $this->_expense->refund_form_id AND 
