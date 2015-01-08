@@ -332,7 +332,7 @@ class Controller_Setup_Json extends Controller_Json {
 		ini_set('memory_limit', '256M');
 
 		// Recalibrate Customer Invoices / Cancellations
-		$customer_sale_calibrate = new Beans_customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+		$customer_sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
 			'date_after' => $date,
 			'date_before' => $date,
 		)));
