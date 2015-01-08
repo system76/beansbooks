@@ -29,7 +29,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 */
 class Beans_Vendor_Purchase_Calibrate_Check extends Beans_Vendor_Purchase {
 
-	protected $_auth_role_perm = "customer_purchase_write";
+	protected $_auth_role_perm = "vendor_purchase_write";
 
 	protected $_data;
 
