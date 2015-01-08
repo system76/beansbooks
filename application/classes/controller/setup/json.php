@@ -390,7 +390,7 @@ class Controller_Setup_Json extends Controller_Json {
 				$customer_sale_calibrate_result = $customer_sale_calibrate->execute();
 
 				if( ! $customer_sale_calibrate_result->success )
-					return $this->_return_error('Error calibrating customer sales: '.$customer_sale_calibrate_result->error)
+					return $this->_return_error('Error calibrating customer sales: '.$customer_sale_calibrate_result->error);
 			}
 
 			$vendor_purchase_calibrate_check = new Beans_Vendor_Purchase_Calibrate_Check($this->_beans_data_auth());
@@ -407,7 +407,7 @@ class Controller_Setup_Json extends Controller_Json {
 				$vendor_purchase_calibrate_result = $vendor_purchase_calibrate->execute();
 
 				if( ! $vendor_purchase_calibrate_result->success )
-					return $this->_return_error('Error calibrating vendor purchases: '.$vendor_purchase_calibrate_result->error)
+					return $this->_return_error('Error calibrating vendor purchases: '.$vendor_purchase_calibrate_result->error);
 			}
 		}
 
