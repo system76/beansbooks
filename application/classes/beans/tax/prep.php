@@ -17,8 +17,6 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
-// TODO_V_1_3 - Increase doc to handle nested attributes?
-
 /*
 ---BEANSAPISPEC---
 @action Beans_Tax_Prep
