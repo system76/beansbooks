@@ -23,5 +23,9 @@ class Model_Tax_Payment extends ORM {
 		'tax' => array(),
 		'transaction' => array(),
 	);
+
+	protected $_has_many = array(
+		'tax_items' => array(),
+	);
 	
 }

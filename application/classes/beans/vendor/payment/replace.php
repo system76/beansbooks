@@ -100,7 +100,7 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 		if( ! $payment_account->loaded() )
 			throw new Exception("Invalid payment account ID: not found.");
 
-		if( ! $payment_account->deposit )
+		if( ! $payment_account->payment )
 			throw new Exception("Invalid payment account ID: account must be marked as payment.");
 
 		if( ! $this->_data->amount )
@@ -359,6 +359,12 @@ class Beans_Vendor_Payment_Replace extends Beans_Vendor_Payment {
 		$purchase_account_transfers[$payment_account->id] = $this->_data->amount
 														 * -1 // FLIP THE SIGN
 														 * $payment_account->account_type->table_sign;
+
+		if( $payment_account->account_type->table_sign > 0 )
+		{
+			foreach( $purchase_account_transfers as $account_id => $transfer_amount )
+				$purchase_account_transfers[$account_id] = $transfer_amount * -1;
+		}
 
 		$update_transaction_data->account_transactions = array();
 

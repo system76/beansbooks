@@ -1,3 +1,21 @@
+/*
+BeansBooks
+Copyright (C) System76, Inc.
+
+This file is part of BeansBooks.
+
+BeansBooks is free software; you can redistribute it and/or modify
+it under the terms of the BeansBooks Public License.
+
+BeansBooks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the BeansBooks Public License for more details.
+
+You should have received a copy of the BeansBooks Public License
+along with BeansBooks; if not, email info@beansbooks.com.
+*/
+
 /**
  * Accounts CSS
  */
@@ -507,6 +525,11 @@ li.split-transaction.list-container li.account-transaction.actions a.save {
 /**
  * Reconcile Process
  */
+
+#accounts-reconcile-previous {
+	width: 600px;
+	margin: 100px auto;
+}
 
 #accounts-reconcile-form {
 	width: 735px;

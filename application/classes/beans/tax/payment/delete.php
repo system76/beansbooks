@@ -19,27 +19,21 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 /*
 ---BEANSAPISPEC---
-@action Beans_Tax_Payment_Lookup
+@action Beans_Tax_Payment_Delete
 @description Remove a tax payment.
 @required auth_uid 
 @required auth_key 
 @required auth_expiration
-@required id INTEGER The ID of the #Beans_Tax_Payment# being requested.
-@returns payment OBJECT The requested #Beans_Tax_Payment#.
+@required id INTEGER The ID of the #Beans_Tax_Payment# being removed.
 ---BEANSENDSPEC---
 */
-class Beans_Tax_Payment_Lookup extends Beans_Tax_Payment {
+class Beans_Tax_Payment_Delete extends Beans_Tax_Payment {
 
-	protected $_auth_role_perm = "vendor_payment_read";
+	protected $_auth_role_perm = "vendor_payment_write";
 
 	protected $_id;
 	protected $_payment;
 
-	/**
-	 * Look up a payment by ID.
-	 * @param stdClass $data key => value
-	 *                       'id' => ID to look up.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -56,8 +50,30 @@ class Beans_Tax_Payment_Lookup extends Beans_Tax_Payment {
 		if( ! $this->_payment->loaded() )
 			throw new Exception("Payment could not be found.");
 
-		return (object)array(
-			"payment" => $this->_return_tax_payment_element($this->_payment, TRUE),
-		);
+		$account_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
+			'id' => $this->_payment->transaction->id,
+			'payment_type_handled' => 'tax',
+		)));
+		$account_transaction_delete_result = $account_transaction_delete->execute();
+
+		if( ! $account_transaction_delete_result->success )
+			throw new Exception("Error cancelling tax payment: ".$account_transaction_delete_result->error);
+		
+		// Update tax 
+		$this->_tax_payment_update_balance($this->_payment->tax_id);
+
+		$paid_tax_items = ORM::Factory('tax_item')
+			->where('tax_payment_id','=',$this->_payment->id)
+			->find_all();
+
+		foreach( $paid_tax_items as $paid_tax_item )
+		{
+			$paid_tax_item->tax_payment_id = NULL;
+			$paid_tax_item->save();
+		}
+
+		$this->_payment->delete();
+
+		return (object)array();
 	}
 }

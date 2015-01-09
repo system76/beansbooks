@@ -1,3 +1,21 @@
+/*
+BeansBooks
+Copyright (C) System76, Inc.
+
+This file is part of BeansBooks.
+
+BeansBooks is free software; you can redistribute it and/or modify
+it under the terms of the BeansBooks Public License.
+
+BeansBooks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the BeansBooks Public License for more details.
+
+You should have received a copy of the BeansBooks Public License
+along with BeansBooks; if not, email info@beansbooks.com.
+*/
+
 if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== null ) {
 
 	/**
@@ -1068,6 +1086,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 				showError("Please enter a statement date.");
 			} else {
 				$('#accounts-reconcile-prep').slideUp(function() {
+					$('#accounts-reconcile-previous').hide();
 					$('#accounts-reconcile-form').fadeIn();
 					$('#accounts-reconcile-status').fadeIn();
 				});
@@ -1130,6 +1149,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 				},
 				'json'
 			);
+		});
+
+		// Delete
+		$('#accounts-reconcile-delete').live('click', function(e) {
+			e.preventDefault();
+			showPleaseWait();
+			$('#accounts-reconcile-delete-form').submit();
 		});
 
 		/* 

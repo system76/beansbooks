@@ -62,10 +62,11 @@ class Beans_Tax extends Beans {
 	@attribute authority STRING
 	@attribute address1 STRING The address that payments are remitted to.
 	@attribute address2 STRING
-	@attribute city STRING
+	@attribute city STRING 
 	@attribute state STRING 
 	@attribute zip STRING 
-	@attribute country STRING
+	@attribute country STRING 
+	@attribute visible BOOLEAN 
 	---BEANSENDSPEC---
 	 */
 
@@ -88,7 +89,6 @@ class Beans_Tax extends Beans {
 		$return_object->name = $tax->name;
 		$return_object->percent = $tax->percent;
 		$return_object->percent_formatted = $tax->percent * 100 ;
-		$return_object->fee = $tax->fee;
 		$return_object->account = $this->_return_account_element($tax->account);
 		$return_object->total = $tax->total;
 		$return_object->balance = $tax->balance;
@@ -102,7 +102,7 @@ class Beans_Tax extends Beans {
 		$return_object->state = $tax->state;
 		$return_object->zip = $tax->zip;
 		$return_object->country = $tax->country;
-
+		$return_object->visible = $tax->visible ? TRUE : FALSE;
 
 		return $return_object;
 	}
@@ -128,7 +128,6 @@ class Beans_Tax extends Beans {
 		$tax->code = NULL;
 		$tax->name = NULL;
 		$tax->percent = NULL;
-		$tax->fee = NULL;
 		$tax->account_id = NULL;
 		$tax->total = 0.00;
 		$tax->balance = 0.00;
@@ -171,17 +170,8 @@ class Beans_Tax extends Beans {
 		if( strlen($tax->name) > 64 )
 			throw new Exception("Invalid tax name: maximum length of 64 characters.");
 
-		if( ! $tax->percent AND 
-			! $tax->fee )
-			throw new Exception("Invalid tax percent and fee: must provide at least one.");
-
-		// Temporary until fully implemented.
-		if( $tax->fee ) 
-			throw new Exception("Invalid tax fee: FEE NOT YET FULLY UI SUPPORTED.");
-
-		if( $tax->fee AND
-			$tax->fee < 0 )
-			throw new Exception("Invalid tax fee: must be greater than 0.");
+		if( ! $tax->percent )
+			throw new Exception("Invalid tax percent: none provided.");
 
 		if( $tax->percent AND 
 			$tax->percent > 1 )
@@ -277,10 +267,20 @@ class Beans_Tax extends Beans {
 	@attribute payment_transaction OBJECT The #Beans_Account_Transaction# representing the transfer from the payment account.
 	@attribute writeoff_transaction OBJECT The #Beans_Account_Transaction# represetnging the writeoff transfer.
 	@attribute transaction OBJECT The #Beans_Transaction# representing the transfer.
+	@attribute invoiced_line_amount DECIMAL The total invoiced sales.
+	@attribute invoiced_line_taxable_amount DECIMAL The total taxable invoiced sales.
+	@attribute invoiced_amount DECIMAL The total taxes for sales.
+	@attribute refunded_line_amount DECIMAL The total invoiced refunds.
+	@attribute refunded_line_taxable_amount DECIMAL The total taxable invoiced refunds.
+	@attribute refunded_amount DECIMAL The total taxes for sales.
+	@attribute net_line_amount DECIMAL The total sales.
+	@attribute net_line_taxable_amount DECIMAL The total taxable sales.
+	@attribute net_amount DECIMAL The total taxes.
+	@attribute liabilities ARRAY An array of #Beans_Tax_Liability# objects that this payment was applied to.
 	---BEANSENDSPEC---
 	 */
 
-	protected function _return_tax_payment_element($tax_payment)
+	protected function _return_tax_payment_element($tax_payment, $include_details = FALSE)
 	{
 		$return_object = new stdClass;
 
@@ -290,11 +290,27 @@ class Beans_Tax extends Beans {
 		$return_object->id = $tax_payment->id;
 		$return_object->tax = $this->_return_tax_element($tax_payment->tax);
 		$return_object->amount = $tax_payment->amount;
+		$return_object->writeoff_amount = $tax_payment->writeoff_amount;
 		$return_object->date = $tax_payment->date;
 		$return_object->date_start = $tax_payment->date_start;
 		$return_object->date_end = $tax_payment->date_end;
 		$return_object->check_number = $tax_payment->transaction->reference;
 		
+		$return_object->invoiced_line_amount = $tax_payment->invoiced_line_amount;
+		$return_object->invoiced_line_taxable_amount = $tax_payment->invoiced_line_taxable_amount;
+		$return_object->invoiced_amount = $tax_payment->invoiced_amount;
+		$return_object->refunded_line_amount = $tax_payment->refunded_line_amount;
+		$return_object->refunded_line_taxable_amount = $tax_payment->refunded_line_taxable_amount;
+		$return_object->refunded_amount = $tax_payment->refunded_amount;
+		$return_object->net_line_amount = $tax_payment->net_line_amount;
+		$return_object->net_line_taxable_amount = $tax_payment->net_line_taxable_amount;
+		$return_object->net_amount = $tax_payment->net_amount;
+		
+		$return_object->liabilities = NULL;
+		
+		if( $include_details )
+			$return_object->liabilities = $this->_return_tax_liabilities_array($tax_payment->tax_items->find_all());
+
 		$return_object->payment_account = FALSE;
 		$return_object->payment_transaction = FALSE;
 		$return_object->writeoff_transaction = FALSE;
@@ -356,6 +372,9 @@ class Beans_Tax extends Beans {
 		if( get_class($payment) != "Model_Tax_Payment" )
 			throw new Exception("Invalid Tax Payment.");
 
+		if( $payment->amount < 0.00 )
+			throw new Exception("Invalid tax payment amount: cannot be negative.");
+
 		if( ! $payment->date )
 			throw new Exception("Invalid tax payment date: none provided.");
 
@@ -389,25 +408,15 @@ class Beans_Tax extends Beans {
 
 		if( ! $tax->loaded() )
 			throw new Exception("Invalid tax payment tax ID: not found.");
-
-		// Make sure that the date range is good.
-		$tax_payment_match = ORM::Factory('tax_payment')->
-			where('tax_id','=',$payment->tax_id)->
-			where('date_start','=',$payment->date_start)->
-			where('date_end','=',$payment->date_end)->
-			where('id','!=',$payment->id)->
-			find();
-
-		if( $tax_payment_match->loaded() )
-			throw new Exception("Invalid tax payment: that date range has already been paid.");
 	}
 	
-	protected function _tax_payment_adjust_balance($tax_id,$amount)
+	protected function _tax_payment_update_balance($tax_id)
 	{
-		DB::query(NULL,'UPDATE taxes SET balance = balance - '.$amount.' WHERE id = "'.$tax_id.'"')->execute();
+
+		DB::query(NULL,'UPDATE taxes SET balance = ( SELECT SUM(balance) FROM tax_items WHERE id = "'.$tax_id.'" ) WHERE id = "'.$tax_id.'"')->execute();
 	}
 
-	protected function _tax_update_due_date($tax_id, $payment_date)
+	protected function _tax_update_due_date($tax_id)
 	{
 		$tax = $this->_load_tax($tax_id);
 
@@ -416,7 +425,7 @@ class Beans_Tax extends Beans {
 		if( ! $last_tax_payment->loaded() )
 			return;
 
-		if( strtotime($last_tax_payment->date) > strtotime($tax->date_due.' -'.$tax->date_due_months_increment.' Months') OR 
+		if( strtotime($last_tax_payment->date) > strtotime($tax->date_due.' -'.$tax->date_due_months_increment.' Months') AND 
 			strtotime($last_tax_payment->date) < strtotime($tax->date_due.' +'.$tax->date_due_months_increment.' Months') )
 		{
 			$tax->date_due = $this->_date_add_months($tax->date_due,$tax->date_due_months_increment);
@@ -589,6 +598,177 @@ class Beans_Tax extends Beans {
 	protected function _load_transaction($id)
 	{
 		return ORM::Factory('transaction',$id);
+	}
+
+	protected function _return_tax_liabilities_array($tax_items)
+	{
+		$return_array = array();
+
+		foreach( $tax_items as $tax_item )
+		{
+			$return_array[] = $this->_return_tax_liability_element(
+				$tax_item->form_id, 
+				$tax_item->form_line_amount, 
+				$tax_item->form_line_taxable_amount, 
+				$tax_item->total,
+				$tax_item->type
+			);
+		}
+
+		return $return_array;
+	}
+
+	/*
+	---BEANSOBJSPEC---
+	@object Beans_Tax_Liability
+	@description A customer sale that has been exempted from paying sales tax.
+	@attribute form_id INTEGER Note - in cases where form_id is NULL, this represents an adjusting entry for tax balance purposes.
+	@attribute form_line_amount DECIMAL The applicable amount of non-taxable revenue for this period.
+	@attribute form_line_amount_taxable DECIMAL The applicable amount of taxable revenue for this period.
+	@attribute total DECIMAL The applicable amount of taxes due for this sale.
+	@attribute customer OBJECT A #Beans_Tax_Liability_Customer# object - which represents an abbreviated #Beans_Customer# object.
+	@attribute account_name STRING The name of the receivable #Beans_Account# tied to this sale.
+	@attribute sale_number STRING
+	@attribute order_number STRING
+	@attribute po_number STRING
+	@attribute quote_number STRING
+	@attribute tax_exempt BOOLEAN Whether or not this entire sale is tax exempt.
+	@attribute tax_exempt_reason BOOLEAN Explanation for exemption.
+	@attribute lines ARRAY An array of #Beans_Tax_Liability_Line# - a simplified representation of #Beans_Customer_Sale_Line#.
+	@attribute title STRING A short description of the sale.
+	---BEANSENDSPEC---
+	 */
+	protected function _return_tax_liability_element($form_id, $form_line_amount, $form_line_taxable_amount, $amount, $type)
+	{
+		$sale = ORM::Factory('form', $form_id);
+
+		$return_object = new stdClass;
+
+		$return_object->form_id = $sale->id;
+		$return_object->form_line_amount = $form_line_amount;
+		$return_object->form_line_taxable_amount = $form_line_taxable_amount;
+		$return_object->amount = $amount;
+		$return_object->type = $type;
+		
+		if( ! $sale->loaded() )
+		{
+			$return_object->account_name = "None";
+			$return_object->sale_number = "ADJUSTMENT";
+			$return_object->order_number = "ADJUSTMENT";
+			$return_object->po_number = "ADJUSTMENT";
+			$return_object->quote_number = "ADJUSTMENT";
+			$return_object->tax_exempt = FALSE;
+			$return_object->tax_exempt_reason = NULL;
+			$return_object->title = "Sales Tax Overpayment Adjustment";
+			$null_customer = ORM::Factory('entity');
+			$null_customer->type = "customer";
+			$return_object->customer = $this->_return_tax_liability_customer_element($null_customer);
+			$return_object->lines = array();
+			return $return_object;
+		}
+
+		$return_object->account_name = $this->_get_account_name_by_id($sale->account_id);
+		$return_object->sale_number = $sale->code;
+		$return_object->order_number = $sale->reference;
+		$return_object->po_number = $sale->alt_reference;
+		$return_object->quote_number = $sale->aux_reference;
+		$return_object->tax_exempt = $sale->tax_exempt ? TRUE : FALSE;
+		$return_object->tax_exempt_reason = $sale->tax_exempt_reason;
+		$return_object->title = ( $sale->date_billed )
+							  ? "Sales Invoice ".$sale->code
+							  : "Sales Order ".$sale->code;
+
+		$return_object->customer = $this->_return_tax_liability_customer_element($sale->entity);
+		$return_object->lines = $this->_return_tax_liability_lines_array($sale->form_lines->find_all());
+
+		return $return_object;
+	}
+
+	/*
+	---BEANSOBJSPEC---
+	@object Beans_Tax_Liability_Customer
+	@description An abbreviated representation of a customer in the system - primarily contact information.
+	@attribute id INTEGER 
+	@attribute first_name STRING
+	@attribute last_name STRING
+	@attribute company_name STRING
+	@attribute display_name STRING Company Name if it exists, or else First Last.
+	@attribute email STRING
+	@attribute phone_number STRING
+	@attribute fax_number STRING
+	---BEANSENDSPEC---
+	 */
+	private $_return_tax_liability_customer_element_cache = array();
+	protected function _return_tax_liability_customer_element($customer)
+	{
+		if( isset($this->_return_tax_liability_customer_element_cache[$customer->id]) )
+			return $this->_return_tax_liability_customer_element_cache[$customer->id];
+
+		if( get_class($customer) != "Model_Entity" ||
+			$customer->type != "customer" )
+			throw new Exception("Invalid Customer.");
+
+		$return_object = new stdClass;
+
+		$return_object->id = $customer->id;
+		$return_object->first_name = $customer->first_name;
+		$return_object->last_name = $customer->last_name;
+		$return_object->company_name = $customer->company_name;
+		$return_object->display_name = $return_object->company_name
+									 ? $return_object->company_name
+									 : $return_object->first_name.' '.$return_object->last_name;
+		$return_object->email = $customer->email;
+		$return_object->phone_number = $customer->phone_number;
+		$return_object->fax_number = $customer->fax_number;
+
+		$this->_return_tax_liability_customer_element_cache[$customer->id] = $return_object;
+		return $this->_return_tax_liability_customer_element_cache[$customer->id];
+	}
+
+	protected function _return_tax_liability_lines_array($form_lines)
+	{
+		$return_array = array();
+		
+		foreach( $form_lines as $form_line )
+			$return_array[] = $this->_return_tax_liability_line_element($form_line);
+		
+		return $return_array;
+	}
+
+	/*
+	---BEANSOBJSPEC---
+	@object Beans_Tax_Liability_Line
+	@description A line on an exempted customer sale.
+	@attribute id INTEGER 
+	@attribute account_name STRING The name of the #Beans_Account# tied to this line.
+	@attribute tax_exempt BOOLEAN Whether or not this particular line is tax exempt.
+	@attribute description STRING
+	@attribute amount DECIMAL
+	@attribute quantity INTEGER
+	@attribute total DECIMAL
+	---BEANSENDSPEC---
+	 */
+	private $_return_tax_liability_line_element_cache = array();
+	protected function _return_tax_liability_line_element($form_line)
+	{
+		if( isset($this->_return_tax_liability_line_element_cache[$form_line->id]) )
+			return $this->_return_tax_liability_line_element_cache[$form_line->id];
+
+		if( get_class($form_line) != "Model_Form_Line" )
+			throw new Exception("Invalid Form Line.");
+
+		$return_object = (object)array();
+
+		$return_object->id = $form_line->id;
+		$return_object->account_name = $this->_get_account_name_by_id($form_line->account_id);
+		$return_object->tax_exempt = $form_line->tax_exempt ? TRUE : FALSE;
+		$return_object->description = $form_line->description;
+		$return_object->amount = $form_line->amount;
+		$return_object->quantity = $form_line->quantity;
+		$return_object->total = $form_line->total;
+
+		$this->_return_tax_liability_line_element_cache[$form_line->id] = $return_object;
+		return $this->_return_tax_liability_line_element_cache[$form_line->id];
 	}
 	
 }

@@ -399,6 +399,8 @@ class Controller_Customers_Json extends Controller_Json {
 		$create_sale_data->order_number = $this->request->post('order_number');
 		$create_sale_data->quote_number = $this->request->post('quote_number');
 		$create_sale_data->po_number = $this->request->post('po_number');
+		$create_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
+		$create_sale_data->tax_exempt_reason = $this->request->post('form_tax_exempt_reason');
 
 		// IF INVOICE
 		if( $this->request->post('date_billed') )
@@ -416,6 +418,19 @@ class Controller_Customers_Json extends Controller_Json {
 
 			if( $this->request->post('date_due') )
 				$create_sale_data->date_due = $this->request->post('date_due');
+		}
+
+		$create_sale_data->taxes = array();
+
+		if( $this->request->post('form-tax_ids') )
+		{
+			foreach( explode('#', $this->request->post('form-tax_ids')) as $tax_id )
+			{
+				if( trim($tax_id) )
+					$create_sale_data->taxes[] = (object)array(
+						'tax_id' => $tax_id,
+					);
+			}
 		}
 		
 		$create_sale_data->lines = array();
@@ -446,15 +461,7 @@ class Controller_Customers_Json extends Controller_Json {
 				$sale_line->description = $this->request->post('line-description-'.$line_key);
 				$sale_line->amount = $this->request->post('line-price-'.$line_key);
 				$sale_line->quantity = $this->request->post('line-quantity-'.$line_key);
-
-				$sale_line->sale_line_taxes = array();
-
-				foreach( explode('#',$this->request->post('line-tax_ids-'.$line_key)) as $tax_id )
-					if( $tax_id AND 
-						trim($tax_id) )
-						$sale_line->sale_line_taxes[] = (object)array(
-							'tax_id' => trim($tax_id),
-						);
+				$sale_line->tax_exempt = $this->request->post('line-tax-exempt-'.$line_key) ? TRUE : FALSE;
 
 				$create_sale_data->lines[] = $sale_line;
 			}
@@ -510,6 +517,21 @@ class Controller_Customers_Json extends Controller_Json {
 		$update_sale_data->order_number = $this->request->post('order_number');
 		$update_sale_data->quote_number = $this->request->post('quote_number');
 		$update_sale_data->po_number = $this->request->post('po_number');
+		$update_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
+		$update_sale_data->tax_exempt_reason = $this->request->post('form_tax_exempt_reason');
+
+		$update_sale_data->taxes = array();
+
+		if( $this->request->post('form-tax_ids') )
+		{
+			foreach( explode('#', $this->request->post('form-tax_ids')) as $tax_id )
+			{
+				if( trim($tax_id) )
+					$update_sale_data->taxes[] = (object)array(
+						'tax_id' => $tax_id,
+					);
+			}
+		}
 
 		$update_sale_data->lines = array();
 
@@ -539,15 +561,7 @@ class Controller_Customers_Json extends Controller_Json {
 				$sale_line->description = $this->request->post('line-description-'.$line_key);
 				$sale_line->amount = $this->request->post('line-price-'.$line_key);
 				$sale_line->quantity = $this->request->post('line-quantity-'.$line_key);
-
-				$sale_line->sale_line_taxes = array();
-
-				foreach( explode('#',$this->request->post('line-tax_ids-'.$line_key)) as $tax_id )
-					if( $tax_id AND 
-						trim($tax_id) )
-						$sale_line->sale_line_taxes[] = (object)array(
-							'tax_id' => trim($tax_id),
-						);
+				$sale_line->tax_exempt = $this->request->post('line-tax-exempt-'.$line_key) ? TRUE : FALSE;
 
 				$update_sale_data->lines[] = $sale_line;
 			}
@@ -598,6 +612,21 @@ class Controller_Customers_Json extends Controller_Json {
 		$refund_sale_data->sale_number = $this->request->post('sale_number');
 		$refund_sale_data->order_number = $this->request->post('order_number');
 		$refund_sale_data->po_number = $this->request->post('po_number');
+		$refund_sale_data->tax_exempt = $this->request->post('form_tax_exempt') ? TRUE : FALSE;
+		$refund_sale_data->tax_exempt_reason = $this->request->post('form_tax_exempt_reason');
+
+		$refund_sale_data->taxes = array();
+
+		if( $this->request->post('form-tax_ids') )
+		{
+			foreach( explode('#', $this->request->post('form-tax_ids')) as $tax_id )
+			{
+				if( trim($tax_id) )
+					$refund_sale_data->taxes[] = (object)array(
+						'tax_id' => $tax_id,
+					);
+			}
+		}
 
 		if( $this->request->post('date_billed') )
 		{
@@ -641,15 +670,7 @@ class Controller_Customers_Json extends Controller_Json {
 				$sale_line->description = $this->request->post('line-description-'.$line_key);
 				$sale_line->amount = $this->request->post('line-price-'.$line_key);
 				$sale_line->quantity = $this->request->post('line-quantity-'.$line_key);
-
-				$sale_line->sale_line_taxes = array();
-
-				foreach( explode('#',$this->request->post('line-tax_ids-'.$line_key)) as $tax_id )
-					if( $tax_id AND 
-						trim($tax_id) )
-						$sale_line->sale_line_taxes[] = (object)array(
-							'tax_id' => trim($tax_id),
-						);
+				$sale_line->tax_exempt = $this->request->post('line-tax-exempt-'.$line_key) ? TRUE : FALSE;
 
 				$refund_sale_data->lines[] = $sale_line;
 			}

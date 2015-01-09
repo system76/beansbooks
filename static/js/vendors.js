@@ -1,3 +1,21 @@
+/*
+BeansBooks
+Copyright (C) System76, Inc.
+
+This file is part of BeansBooks.
+
+BeansBooks is free software; you can redistribute it and/or modify
+it under the terms of the BeansBooks Public License.
+
+BeansBooks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the BeansBooks Public License for more details.
+
+You should have received a copy of the BeansBooks Public License
+along with BeansBooks; if not, email info@beansbooks.com.
+*/
+
 if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null ) {
 
 	var expenseDescriptionCache = {};
@@ -2844,6 +2862,33 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			e.preventDefault();
 			loadTaxPayment($(this).closest('.vendor-taxpayment').attr('rel'));
 		});
+
+		$('#vendors-taxpayments-create-showdetails').click(function (e) {
+			e.preventDefault();
+			
+			if( $('#vendors-taxpayments-create').attr('rel') &&
+				$('#vendors-taxpayments-create').attr('rel').length ) {
+				popupWindow = popupWindowLoad('/print/taxpayment/'+$('#vendors-taxpayments-create').attr('rel'));
+				$(popupWindow.document).ready( function () {
+					setTimeout( function () { popupWindow.print(); } , 1000 );
+				});
+			} else {
+				if( $('#vendors-taxpayments-create input[name="tax_expected"]').val().length && 
+					parseFloat($('#vendors-taxpayments-create input[name="tax_expected"]').val()) != 0.00 ) {
+					var tax_id = $('#vendors-taxpayments-create input[name="tax_id"]').val();
+					var date_start = $('#vendors-taxpayments-create input[name="date_start"]').val();
+					var date_end = $('#vendors-taxpayments-create input[name="date_end"]').val();
+
+					popupWindow = popupWindowLoad('/print/taxprep/'+tax_id+'/'+date_start+'_'+date_end+'/');
+					$(popupWindow.document).ready( function () {
+						setTimeout( function () { popupWindow.print(); } , 1000 );
+					});
+				}
+			}
+			function printCustomerSale(id) {
+				
+			}
+		});
 		
 		$('#vendors-taxpayments-create input[name="tax_id"], #vendors-taxpayments-create input[name="date_start"], #vendors-taxpayments-create input[name="date_end"]').change(function() {
 			$tax_id = $('#vendors-taxpayments-create input[name="tax_id"]');
@@ -2873,21 +2918,19 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					} else {
 						// Fill in our form.
 						$form = $('#vendors-taxpayments-create');
-						$form.find('input[name="total_sales"]').attr('rel',data.data.tax_prep.total_sales);
-						$form.find('input[name="taxable_sales"]').attr('rel',data.data.tax_prep.taxable_sales);
-						$form.find('input[name="tax_collected"]').attr('rel',data.data.tax_prep.tax_collected);
-						$form.find('input[name="total_returns"]').attr('rel',data.data.tax_prep.total_returns);
-						$form.find('input[name="taxable_returns"]').attr('rel',data.data.tax_prep.taxable_returns);
-						$form.find('input[name="tax_returned"]').attr('rel',data.data.tax_prep.tax_returned);
-						$form.find('input[name="tax_paid"]').attr('rel',data.data.tax_prep.tax_payments_total);
-						
-						$tax_expected = parseFloat( 
-							parseFloat(data.data.tax_prep.tax_collected) + 
-							parseFloat(data.data.tax_prep.tax_returned) - 
-							parseFloat(data.data.tax_prep.tax_payments_total)
-						).toFixed(2);
-
-						$form.find('input[name="tax_expected"]').attr('rel',$tax_expected);
+						$form.find('input[name="total_sales"]').attr('rel',data.data.taxes.due.invoiced.form_line_amount);
+						$form.find('input[name="taxable_sales"]').attr('rel',data.data.taxes.due.invoiced.form_line_taxable_amount);
+						$form.find('input[name="tax_collected"]').attr('rel',data.data.taxes.due.invoiced.amount);
+						$form.find('input[name="total_returns"]').attr('rel',data.data.taxes.due.refunded.form_line_amount);
+						$form.find('input[name="taxable_returns"]').attr('rel',data.data.taxes.due.refunded.form_line_taxable_amount);
+						$form.find('input[name="tax_returned"]').attr('rel',data.data.taxes.due.refunded.amount);
+						$form.find('input[name="net_sales"]').attr('rel',data.data.taxes.due.net.form_line_amount);
+						$form.find('input[name="net_taxable"]').attr('rel',data.data.taxes.due.net.form_line_taxable_amount);
+						$form.find('input[name="tax_expected"]').attr('rel',data.data.taxes.due.net.amount);
+						if( data.data.taxes.due.net.amount < 0.00 ) {
+							$form.find('input[name="tax_expected"]').attr('rel','0.00');
+						}
+						// $form.find('input[name="tax_paid"]').attr('rel',data.data.taxes.paid.net.amount);
 
 						createTaxPaymentUpdateForm();
 					}
@@ -3580,51 +3623,32 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 						text: data.data.payment.payment_transaction.account.name
 					});
 
+					$form.find('input[name="amount"]').attr('rel',parseFloat(data.data.payment.amount).toFixed(2));
+					
+					$form.find('input[name="writeoff_amount"]').attr('rel','0.00');
 					if( data.data.payment.writeoff_transaction ) {
-						$form.find('input[name="writeoff_amount"]').val(parseFloat(data.data.payment.writeoff_transaction.amount * -1).toFixed(2));
+						$form.find('input[name="writeoff_amount"]').attr('rel',parseFloat(data.data.payment.writeoff_amount).toFixed(2));
 						$form.find('select[name="writeoff_account_id"]').select2('data',{
 							id: data.data.payment.writeoff_transaction.account.id,
 							text: data.data.payment.writeoff_transaction.account.name
 						});
 					}
 
-					$form.find('input[name="amount"]').val(parseFloat(data.data.payment.payment_transaction.amount).toFixed(2));
-					$.post(
-						'/vendors/json/taxpaymentprep',
-						{
-							tax_id: data.data.payment.tax.id,
-							payment_id: data.data.payment.id,
-							date_start: data.data.payment.date_start,
-							date_end: data.data.payment.date_end
-						},
-						function(data) {
-							hidePleaseWait();
-							if( ! data.success ) {
-								showError(data.error);
-							} else {
-								// Fill in our form.
-								$form = $('#vendors-taxpayments-create');
-								$form.find('input[name="total_sales"]').attr('rel',data.data.tax_prep.total_sales);
-								$form.find('input[name="taxable_sales"]').attr('rel',data.data.tax_prep.taxable_sales);
-								$form.find('input[name="tax_collected"]').attr('rel',data.data.tax_prep.tax_collected);
-								$form.find('input[name="total_returns"]').attr('rel',data.data.tax_prep.total_returns);
-								$form.find('input[name="taxable_returns"]').attr('rel',data.data.tax_prep.taxable_returns);
-								$form.find('input[name="tax_returned"]').attr('rel',data.data.tax_prep.tax_returned);
-								$form.find('input[name="tax_paid"]').attr('rel',data.data.tax_prep.tax_payments_total);
-								
-								$tax_expected = parseFloat( 
-									parseFloat(data.data.tax_prep.tax_collected) + 
-									parseFloat(data.data.tax_prep.tax_returned) - 
-									parseFloat(data.data.tax_prep.tax_payments_total)
-								).toFixed(2);
+					$form.find('input[name="amount"]').val(monetaryPrint($form.find('input[name="amount"]').attr('rel')));
+					$form.find('input[name="writeoff_amount"]').val(monetaryPrint($form.find('input[name="writeoff_amount"]').attr('rel')));
 
-								$form.find('input[name="tax_expected"]').attr('rel',$tax_expected);
+					$form.find('input[name="total_sales"]').attr('rel',data.data.payment.invoiced_line_amount);
+					$form.find('input[name="taxable_sales"]').attr('rel',data.data.payment.invoiced_line_taxable_amount);
+					$form.find('input[name="tax_collected"]').attr('rel',data.data.payment.invoiced_amount);
+					$form.find('input[name="total_returns"]').attr('rel',data.data.payment.refunded_line_amount);
+					$form.find('input[name="taxable_returns"]').attr('rel',data.data.payment.refunded_line_taxable_amount);
+					$form.find('input[name="tax_returned"]').attr('rel',data.data.payment.refunded_amount);
+					$form.find('input[name="net_sales"]').attr('rel',data.data.payment.net_line_amount);
+					$form.find('input[name="net_taxable"]').attr('rel',data.data.payment.net_line_taxable_amount);
+					$form.find('input[name="tax_expected"]').attr('rel',data.data.payment.net_amount);
 
-								createTaxPaymentUpdateForm();
-							}
-						},
-						'json'
-					);
+					hidePleaseWait();
+					createTaxPaymentUpdateForm();
 				}
 			},
 			'json'
@@ -3637,7 +3661,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			'/vendors/json/taxpaymentsearch',
 			{
 				search_terms: $('#vendors-taxpayments-payments-search').val(),
-				count: 5
+				count: 25
 			},
 			function(data) {
 				hidePleaseWait();
@@ -3649,7 +3673,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 						$payment.addClass('hidden');
 						$('#vendors-taxpayments-payments .vendor-taxpayment:last').after($payment);
 					}
-					$('#vendors-taxpayments-payments .vendor-taxpayment').slideDown();
+					$('#vendors-taxpayments-payments .vendor-taxpayment').slideDown(function () {
+						rowElementsColorVisible($('#vendors-taxpayments-payments'));
+					});
 				}
 			},
 			'json'
@@ -3675,10 +3701,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 	function createTaxPaymentEnableFields() {
 		$('#vendors-taxpayments-create input[name="tax_id"]').select2('enable');
 		$('#vendors-taxpayments-create input[name="date"]').attr('readonly',false);
-		$('#vendors-taxpayments-create input[name="date_start"]').attr('readonly',false);
-		$('#vendors-taxpayments-create input[name="date_start"]').datepicker({dateFormat: "yy-mm-dd"});
-		$('#vendors-taxpayments-create input[name="date_end"]').attr('readonly',false);
-		$('#vendors-taxpayments-create input[name="date_end"]').datepicker({dateFormat: "yy-mm-dd"});
+		/*
+		if( ! edit ) {
+			$('#vendors-taxpayments-create input[name="date_start"]').attr('readonly',false);
+			$('#vendors-taxpayments-create input[name="date_start"]').datepicker({dateFormat: "yy-mm-dd"});
+			$('#vendors-taxpayments-create input[name="date_end"]').attr('readonly',false);
+			$('#vendors-taxpayments-create input[name="date_end"]').datepicker({dateFormat: "yy-mm-dd"});
+		}
+		*/
 		$('#vendors-taxpayments-create input[name="check_number"]').attr('readonly',false);
 		$('#vendors-taxpayments-create input[name="writeoff_amount"]').attr('readonly',false);
 		$('#vendors-taxpayments-create input[name="amount"]').attr('readonly',false);
@@ -3695,6 +3725,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		
 		$form.find('select[name="payment_account_id"]').select2('data',{})
 		$form.find('select[name="writeoff_account_id"]').select2('data',{})
+
+		$('#vendors-taxpayments-create input[name="date_start"]').attr('readonly',false);
+		$('#vendors-taxpayments-create input[name="date_start"]').datepicker({dateFormat: "yy-mm-dd"});
+		$('#vendors-taxpayments-create input[name="date_end"]').attr('readonly',false);
+		$('#vendors-taxpayments-create input[name="date_end"]').datepicker({dateFormat: "yy-mm-dd"});
 		
 		if( $form.find('select[name="payment_account_id"]').attr('rel') &&
 			$form.find('select[name="payment_account_id"]').attr('rel').length > 0 ) {
@@ -3711,7 +3746,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$form.find('input[name="total_returns"]').val('').attr('rel','');
 		$form.find('input[name="taxable_returns"]').val('').attr('rel','');
 		$form.find('input[name="tax_returned"]').val('').attr('rel','');
-		$form.find('input[name="tax_paid"]').val('').attr('rel','');
+		// $form.find('input[name="tax_paid"]').val('').attr('rel','');
 		$form.find('input[name="tax_expected"]').val('').attr('rel','');
 		$form.find('input[name="total"]').val('').attr('rel','');
 		
@@ -3747,32 +3782,26 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$form.find('input[name="amount"]').attr('rel',$amount);
 		$total = parseFloat(parseFloat($amount) + parseFloat($writeoff_amount)).toFixed(2);
 		
-		// Uncomment to show total.
-		// $form.find('input[name="total"]').attr('rel',$total);
-		
 		$form.find('input[name="total_sales"]').val(monetaryPrint($form.find('input[name="total_sales"]').attr('rel')));
 		$form.find('input[name="taxable_sales"]').val(monetaryPrint($form.find('input[name="taxable_sales"]').attr('rel')));
 		$form.find('input[name="tax_collected"]').val(monetaryPrint($form.find('input[name="tax_collected"]').attr('rel')));
 		$form.find('input[name="total_returns"]').val(monetaryPrint($form.find('input[name="total_returns"]').attr('rel')));
 		$form.find('input[name="taxable_returns"]').val(monetaryPrint($form.find('input[name="taxable_returns"]').attr('rel')));
 		$form.find('input[name="tax_returned"]').val(monetaryPrint($form.find('input[name="tax_returned"]').attr('rel')));
-		$form.find('input[name="tax_paid"]').val(monetaryPrint($form.find('input[name="tax_paid"]').attr('rel')));
+		// $form.find('input[name="tax_paid"]').val(monetaryPrint($form.find('input[name="tax_paid"]').attr('rel')));
 		$form.find('input[name="tax_expected"]').val(monetaryPrint($form.find('input[name="tax_expected"]').attr('rel')));
-		
-		$net_sales = convertCurrencyToNumber($form.find('input[name="total_sales"]').attr('rel')) + convertCurrencyToNumber($form.find('input[name="total_returns"]').attr('rel'));
-		$net_taxable = convertCurrencyToNumber($form.find('input[name="taxable_sales"]').attr('rel')) + convertCurrencyToNumber($form.find('input[name="taxable_returns"]').attr('rel'));
-
-		$form.find('input[name="net_sales"]').attr('rel',$net_sales);
-		$form.find('input[name="net_sales"]').val(monetaryPrint(parseFloat($form.find('input[name="net_sales"]').attr('rel')).toFixed(2)));
-
-		$form.find('input[name="net_taxable"]').attr('rel',$net_taxable);
+		$form.find('input[name="net_sales"]').val(monetaryPrint($form.find('input[name="net_sales"]').attr('rel')));
 		$form.find('input[name="net_taxable"]').val(monetaryPrint($form.find('input[name="net_taxable"]').attr('rel')));
 
 		$form.find('input[name="amount"]').val(parseFloat($form.find('input[name="amount"]').attr('rel')).toFixed(2));
 		$form.find('input[name="writeoff_amount"]').val(parseFloat($form.find('input[name="writeoff_amount"]').attr('rel')).toFixed(2));
 		
-		// $form.find('input[name="total"]').val(parseFloat($form.find('input[name="total"]').attr('rel')).toFixed(2));
-
+		$form.find('input[name="total"').val(
+			parseFloat(
+				parseFloat($form.find('input[name="amount"]').attr('rel')) +
+				parseFloat($form.find('input[name="writeoff_amount"]').attr('rel'))
+			).toFixed(2)
+		);
 	}
 
 	function createVendorIndexAddresses(form) {

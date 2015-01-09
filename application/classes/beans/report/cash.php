@@ -21,6 +21,9 @@ class Beans_Report_Cash extends Beans_Report {
 
 	protected $_date;
 
+	protected $_transaction_sale_deferred_income_account_id;
+	protected $_transaction_sale_deferred_liability_account_id;
+
 	/**
 	 * Create a new account
 	 * @param array $data fields => values to create an account.
@@ -32,6 +35,9 @@ class Beans_Report_Cash extends Beans_Report {
 		$this->_date = ( isset($data->date) )
 					 ? $data->date
 					 : NULL;
+
+		$this->_transaction_sale_deferred_income_account_id = $this->_beans_setting_get('sale_deferred_income_account_id');
+		$this->_transaction_sale_deferred_liability_account_id = $this->_beans_setting_get('sale_deferred_liability_account_id');
 	}
 
 	protected function _execute()
@@ -41,6 +47,12 @@ class Beans_Report_Cash extends Beans_Report {
 
 		if( $this->_date != date("Y-m-d",strtotime($this->_date)) )
 			throw new Exception("Invalid report date: must be in format YYYY-MM-DD.");
+
+		// We'll exclude these two accounts from our generated chart.
+		$excluded_account_ids = array(
+			$this->_transaction_sale_deferred_income_account_id,
+			$this->_transaction_sale_deferred_liability_account_id,
+		);
 		
 		// T2 Accounts ( just below top level )
 		$t2_accounts = array();
@@ -70,7 +82,7 @@ class Beans_Report_Cash extends Beans_Report {
 		$account_types['accountsreceivable']->direction = 1;
 		$account_types['accountsreceivable']->codes = array(
 			'accountsreceivable',
-			'pending_ar',
+			'pending_ar'
 		);
 		$account_types['accountsreceivable']->accounts = array();
 
@@ -81,7 +93,7 @@ class Beans_Report_Cash extends Beans_Report {
 		$account_types['shorttermdebt']->codes = array(
 			'shorttermdebt',
 			'accountspayable',
-			'pending_ap',
+			'pending_ap'
 		);
 		$account_types['shorttermdebt']->accounts = array();
 		
@@ -90,15 +102,19 @@ class Beans_Report_Cash extends Beans_Report {
 		{
 			foreach( $t2_accounts as $t2_account )
 			{
-				$t2_result = $this->_build_code_chart($t2_account,$account_type->codes,TRUE);
+				$t2_result = $this->_build_code_chart($t2_account,$account_type->codes,TRUE,$excluded_account_ids);
 				if( $t2_result )
 					$account_types[$code]->accounts[] = $t2_result;
 			}
 		}
 
 		foreach( $account_types as $type => $account_type )
+		{
 			foreach( $account_type->accounts as $index => $account )
+			{
 				$account_types[$type]->accounts[$index] = $this->_generate_account_balance($account,$this->_date);
+			}
+		}
 		
 		$net = 0.00;
 

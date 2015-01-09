@@ -41,6 +41,7 @@ class View_Setup_Taxes extends View_Template {
 			'percent' => ( $tax->percent * 100 ).'%',
 			'balance' => ( $tax->balance < 0 ? '-' : '' ).$this->_company_currency().number_format(abs(($tax->balance)),2,'.',','),
 			'nextduedate' => ( $tax->date_due ? $tax->date_due : "Not Set." ),
+			'visible' => ( $tax->visible ? TRUE : FALSE ),
 		);
 	}
 

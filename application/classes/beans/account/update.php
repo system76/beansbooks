@@ -26,6 +26,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_expiration
 @required id The id of the #Beans_Account# to update.
 @optional parent_account_id The #Beans_Account# that is a direct parent of this one in the Chart of Accounts.
+@optional account_type_id The #Beans_Account#_Type of this account.
 @optional name The plain-text name to assign to this account.
 @optional code A hash or word to represent the account by.
 @optional writeoff A boolean representing whether or not this account can record writeoffs.
@@ -68,6 +69,25 @@ class Beans_Account_Update extends Beans_Account {
 
 		if( isset($this->_data->parent_account_id) )
 			$this->_account->parent_account_id = $this->_data->parent_account_id;
+
+		if( isset($this->_data->account_type_id) )
+		{
+			$this->_account->account_type_id = $this->_data->account_type_id 
+											 ? $this->_data->account_type_id 
+											 : NULL;
+
+			$account_type = ORM::Factory('account_type',$this->_account->account_type_id);
+
+			if( ! $account_type->loaded() )
+				throw new Exception("Invalid account type: not found.");
+
+			// Copy settings over from account type.
+			$this->_account->deposit = $account_type->deposit;
+			$this->_account->payment = $account_type->payment;
+			$this->_account->payable = $account_type->payable;
+			$this->_account->receivable = $account_type->receivable;
+			$this->_account->reconcilable = $account_type->reconcilable;
+		}
 			
 		if( isset($this->_data->name) )
 			$this->_account->name = $this->_data->name;

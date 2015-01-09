@@ -360,16 +360,20 @@ class Controller_Install extends Controller_View {
 		// Check for required parameters.
 		$auth_options = CLI::options('name','email','password','accounts','overwritedb','temppassword');
 		
-		if( ! $auth_options['name'] )
+		if( ! isset($auth_options['name']) ||
+			! $auth_options['name'] )
 			die("Error: missing required option 'name'\n");
 
-		if( ! $auth_options['email'] )
+		if( ! isset($auth_options['email']) ||
+			! $auth_options['email'] )
 			die("Error: missing required option 'email'\n");
 
-		if( ! $auth_options['password'] )
+		if( ! isset($auth_options['password']) ||
+			! $auth_options['password'] )
 			die("Error: missing required option 'password'\n");
 
-		if( ! $auth_options['accounts'] )
+		if( ! isset($auth_options['accounts']) ||
+			! $auth_options['accounts'] )
 		{
 			$auth_options['accounts'] = "full";
 			echo "No default account set option provided, assuming full.\n";

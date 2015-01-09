@@ -1,3 +1,21 @@
+/*
+BeansBooks
+Copyright (C) System76, Inc.
+
+This file is part of BeansBooks.
+
+BeansBooks is free software; you can redistribute it and/or modify
+it under the terms of the BeansBooks Public License.
+
+BeansBooks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the BeansBooks Public License for more details.
+
+You should have received a copy of the BeansBooks Public License
+along with BeansBooks; if not, email info@beansbooks.com.
+*/
+
 if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null ) {
 
 	/**
@@ -357,6 +375,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 	});
 
 	function createTaxClearForm() {
+		$('#setup-taxes-create').attr('rel','new');
 		$('#setup-taxes-create').slideUp(function() {
 			$('#setup-taxes-create input,#setup-taxes-create select').resetFieldValues();
 			$('#setup-taxes-create select[name="account_id"]').select2('data',{
@@ -432,6 +451,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 					$('#setup-taxes-create input[name="state"]').val(data.data.tax.state);
 					$('#setup-taxes-create input[name="zip"]').val(data.data.tax.zip);
 					$('#setup-taxes-create select[name="country"]').val(data.data.tax.country);
+					$('#setup-taxes-create select[name="visible"]').val( data.data.tax.visible ? '1' : '0' );
 				}
 			},
 			'json'
@@ -456,6 +476,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 		$('#setup-taxes-create .select').each(function() {
 			$(this).removeClass('disabled');
 		});
+		if( $('#setup-taxes-create').attr('rel') &&
+			$('#setup-taxes-create').attr('rel').length &&
+			$('#setup-taxes-create').attr('rel') != "new" ) {
+			$('#setup-taxes-create input[name="percent"]').attr('disabled','disabled');
+			$('#setup-taxes-create select[name="account_id"]').select2('disable');
+		}
 	}
 
 	function setupUserCreateColorRows() {

@@ -1,3 +1,21 @@
+/*
+BeansBooks
+Copyright (C) System76, Inc.
+
+This file is part of BeansBooks.
+
+BeansBooks is free software; you can redistribute it and/or modify
+it under the terms of the BeansBooks Public License.
+
+BeansBooks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the BeansBooks Public License for more details.
+
+You should have received a copy of the BeansBooks Public License
+along with BeansBooks; if not, email info@beansbooks.com.
+*/
+
 if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== null ) {
 
 	var saleDescriptionCache = {};
@@ -56,19 +74,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		 */
 		
 		if( $('#customers-sales-sales').length > 0 ) {
-			/*
-			$(window).scroll(function () { 
-				if( ( $(window).height() + $(window).scrollTop() ) >= $('#customers-sales-sales').height() ) {
-					if( $('#customers-sales-loadsales').is(':visible') ||
-						$('#customers-sales-endsales').is(':visible') ) {
-						// Do nothing - we're already loading...
-					} else {
-						loadMoreSales();
-					}
-				}
-			});
-			*/
 			
+			createSaleUpdateTaxTemplateVisibility();
+
 			// Check for a default sale ID.
 			if( $('#customers-sales-create-requested_sale_id').length > 0 &&
 				$('#customers-sales-create-requested_sale_id').val().length > 0 ) {
@@ -1089,6 +1097,10 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			$('#customers-sales-create input.datepicker').each(function() {
 				$(this).attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
 			});
+			$('#customers-sales-create input.tax-exempt').each(function() {
+				$(this).attr('disabled',false);
+				checkboxUpdate($(this));
+			});
 			$('#customers-sales-create div.select').removeClass('disabled');
 			$('#customers-sales-create .customer-sales-create-new-buttons').show();
 			$('#customers-sales-create .customer-sales-create-edit-buttons').hide();
@@ -1233,15 +1245,45 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		});
 
 		
-		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line input.line-quantity,#customers-sales-create-form-lines .customers-sales-create-form-lines-line input.line-price').live('change',function() {
+		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line input.line-quantity').live('change', function () {
 			createSaleUpdateTotals();
 		});
 
-		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line input[type="checkbox"].line-tax').live('click',function() {
+		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line input.line-price').live('change',function() {
 			createSaleUpdateTotals();
 		});
 
-		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line .line-taxes .option .label').live('click',function() {
+		// Consider adding a click counter here to warn the user why exempt won't work.
+		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line .line-tax-exempt').live('click',function(e) {
+			e.preventDefault();
+			if( $('#customers-sales-create input[name="form_tax_exempt"]').is(':checked') ) {
+				return;
+			}
+			if( $('#customers-sales-create input[name="form_tax_exempt"]').is(':disabled') ) {
+				return;
+			}
+			$checkbox = $(this).find('input[type="checkbox"]');
+			if( $checkbox.is(':checked') ) {
+				$checkbox.attr('checked',false);
+				checkboxUpdate($checkbox);
+			} else {
+				$checkbox.attr('checked','checked');
+				checkboxUpdate($checkbox);
+			}
+			createSaleUpdateTotals();
+		});
+
+		$('#customers-sales-create .form-taxes input[type="checkbox"]').live('click', function () {
+			if( $(this).attr('name') == "form_tax_exempt" ) {
+				createSaleToggleTaxExempt();
+			}
+			createSaleUpdateTotals();
+		});
+
+		$('#customers-sales-create .form-taxes .option .label').live('click', function () {
+			if( $(this).closest('.option').find('input[type="checkbox"]').attr('name') == "form_tax_exempt" ) {
+				createSaleToggleTaxExempt();
+			}
 			createSaleUpdateTotals();
 		});
 
@@ -2240,23 +2282,60 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			$(this).addClass('indexed');
 			lineIndex++;
 		});
+		$form_tax_ids = $('#customers-sales-create input[name="form-tax_ids"]');
+		$form_tax_ids.val('#');
+		$('#customers-sales-create .form-tax:checked').each(function() {
+			$form_tax_ids.val($form_tax_ids.val()+$(this).val()+'#');
+		});
 		return lineIndex;
 	}
 
-
+	function createSaleToggleTaxExempt() {
+		var formTaxExempt = $('#customers-sales-create input[name="form_tax_exempt"]').is(':checked') ? true : false;
+		if( formTaxExempt ) {
+			$('#customers-sales-create .form-taxes .tax-exempt-reason').show();
+			$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line').each(function() {
+				$line = $(this);
+				$line.find('input.tax-exempt').attr('checked','checked');
+				checkboxUpdate($line.find('input.tax-exempt'));
+			});
+			$lineTemplate = $('#customers-sales-create-form-lines-line-template .customers-sales-create-form-lines-line');
+			$lineTemplate.find('input.tax-exempt').attr('checked','checked');
+			checkboxUpdate($lineTemplate.find('input.tax-exempt'));
+		} else {
+			$('#customers-sales-create .form-taxes .tax-exempt-reason').hide();
+			$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line').each(function() {
+				$line = $(this);
+				$line.find('input.tax-exempt').attr('checked',false);
+				checkboxUpdate($line.find('input.tax-exempt'));
+			});
+			$lineTemplate = $('#customers-sales-create-form-lines-line-template .customers-sales-create-form-lines-line');
+			$lineTemplate.find('input.tax-exempt').attr('checked',false);
+			checkboxUpdate($lineTemplate.find('input.tax-exempt'));
+		}
+	}
 
 	function createSaleUpdateTotals() {
 		var total = 0.00;
-		var taxestotal = 0.00;
-		var linetaxpercent = 0.00;
-		var linetaxfee = 0.00;
+		var totalTaxes = 0.00;
+		var formTaxExempt = $('#customers-sales-create input[name="form_tax_exempt"]').is(':checked') ? true : false;
 		var taxes = {};
+
+		$('#customers-sales-create .form-taxes .form-tax:checked').each(function () {
+			$tax = $(this);
+			taxes[$tax.val()] = {
+				percent: parseFloat($tax.attr('data-tax-percent')),
+				amount: 0.00,
+				total: 0.00
+			};
+		});
 
 		$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line').each(function() {
 			$line = $(this);
 			$quantity = $line.find('input.line-quantity');
 			$price = $line.find('input.line-price');
 			$total = $line.find('input.line-total');
+			var lineTaxExempt = $line.find('input.tax-exempt').is(':checked') ? true : false;
 			
 			if( $price.val() &&
 				$price.val().length ) {
@@ -2281,24 +2360,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseInt($quantity.val()))).toFixed(2));
 
-				$tax_ids = $line.find('input.line-tax_ids');
-				$tax_ids.val('#');
-
-				$line.find('input[type="checkbox"].line-tax:checked').each(function() {
-					$tax = $(this).val().split('#');
-					$tax_ids.val($tax_ids.val()+$tax[0]+'#');
-					
-					if( typeof taxes[$tax[0]] == "undefined" ) {
-						taxes[$tax[0]] = {
-							fee: $tax[1],
-							percent: $tax[2],
-							quantity: 0,
-							amount: 0.00
-						};
+				if( ! formTaxExempt && 
+					! lineTaxExempt ) {
+					for( tax_id in taxes ) {
+						taxes[tax_id].amount += parseFloat($total.val());
 					}
-					taxes[$tax[0]].quantity += parseInt($quantity.val());
-					taxes[$tax[0]].amount += parseFloat($total.val());
-				});
+				}
 
 				total = parseFloat(parseFloat(total) + parseFloat($total.val())).toFixed(2);
 			} else {
@@ -2307,18 +2374,19 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			
 		});
 
-		for( index in taxes ) {
-			taxestotal = parseFloat(
-				parseFloat(taxestotal) +
-				monetaryRound(parseFloat(taxes[index].fee) * parseInt(taxes[index].quantity)) +
-				monetaryRound(parseFloat(taxes[index].percent) * parseFloat(taxes[index].amount))
+		for( tax_id in taxes ) {
+			taxes[tax_id].total = monetaryRound(parseFloat(taxes[tax_id].percent) * parseFloat(taxes[tax_id].amount));
+			
+			totalTaxes = parseFloat(
+				parseFloat(totalTaxes) +
+				parseFloat(taxes[tax_id].total)
 			);
 		}
 
 
 		$('#customers-sales-create-form-subtotal').text(monetaryPrint(parseFloat(total).toFixed(2)));
-		$('#customers-sales-create-form-taxes').text(monetaryPrint(parseFloat(taxestotal).toFixed(2)));
-		total = parseFloat(parseFloat(total) + parseFloat(taxestotal));
+		$('#customers-sales-create-form-taxes').text(monetaryPrint(parseFloat(totalTaxes).toFixed(2)));
+		total = parseFloat(parseFloat(total) + parseFloat(totalTaxes));
 		$('#customers-sales-create-form-total').text(monetaryPrint(parseFloat(total).toFixed(2)));
 		$('#customers-sales-create-form-balance').text(monetaryPrint(parseFloat(total).toFixed(2)));
 		if( $('#customers-sales-create-form-balance').attr('rel') && 
@@ -2359,9 +2427,15 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line').remove();
 					$('#customers-sales-create input[name="customer"]').select2('disable');
 					$('#customers-sales-create select[name="account"]').select2('disable');
-					$('#customers-sales-create input:not(.ezpz-hint,.send-form,.datepicker),#customers-sales-create select').each(function() {
+					$('#customers-sales-create input:not(.ezpz-hint,.send-form,.datepicker,.form-tax,.form-tax-exempt,.tax-exempt),#customers-sales-create select').each(function() {
 						$(this).focus().val('').blur().attr('readonly','readonly');
 					});
+					$('#customers-sales-create input.form-tax, #customers-sales-create input.form-tax-exempt').each(function () {
+						$(this).attr('disabled','disabled');
+						$(this).attr('checked',false);
+						checkboxUpdate($(this));
+					});
+			
 					$('#customers-sales-create input.datepicker').each(function() {
 						$(this).attr('readonly','readonly').datepicker("destroy");
 					});
@@ -2372,10 +2446,38 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 					$('#customers-sales-create-form-refund').attr('disabled','disabled');
 
+					var required_tax_ids = [];
+					for( i in sale_data.data.sale.taxes ) {
+						if( required_tax_ids.indexOf(sale_data.data.sale.taxes[i].tax.id) < 0 ) {
+							required_tax_ids.push(sale_data.data.sale.taxes[i].tax.id);
+						}
+					}
+					createSaleUpdateTaxTemplateVisibility(required_tax_ids);
+					
+					for( i in sale_data.data.sale.taxes ) {
+						$('#customers-sales-create .form-taxes input.form-tax[value="'+sale_data.data.sale.taxes[i].tax.id+'"]').attr('checked','checked');
+					}
+
+					if( sale_data.data.sale.tax_exempt ) {
+						$('#customers-sales-create .form-taxes input.form-tax-exempt').attr('checked','checked');
+					} else {
+						$('#customers-sales-create .form-taxes input.form-tax-exempt').attr('checked',false);
+					}
+
+					if( sale_data.data.sale.tax_exempt_reason ) {
+						$('#customers-sales-create .form-taxes input[name="form_tax_exempt_reason"]').val(sale_data.data.sale.tax_exempt_reason);
+					} else {
+						$('#customers-sales-create .form-taxes input[name="form_tax_exempt_reason"]').val('');
+					}
+
+					createSaleToggleTaxExempt();
+
 					$newSaleLine = $($('#customers-sales-create-form-lines-line-template').html());
-					$newSaleLine.find('input,select').each(function() {
+					$newSaleLine.find('input:not(.tax-exempt),select').each(function() {
 						$(this).attr('disabled','disabled');
 					});
+					$newSaleLine.find('input.tax-exempt').attr('disabled','disabled');
+					checkboxUpdate($newSaleLine.find('input.tax-exempt'));
 					$('#customers-sales-create-form-lines').append($newSaleLine);
 					$newSaleLine.find('input.line-description').autocomplete(saleDescriptionParams);
 					$newSaleLine.find('div.select').addClass('disabled');
@@ -2533,23 +2635,20 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 										$line.find('input[name="line-price"]').val(sale_data.data.sale.lines[line_index].amount);
 									}
 									
-									$line.find('input[type="checkbox"].line-tax').each(function() {
-										var checked = false;
-										for( line_tax_index in sale_data.data.sale.lines[line_index].line_taxes ) {
-											$tax = $(this).val().split('#');
-											if( sale_data.data.sale.lines[line_index].line_taxes[line_tax_index].tax.id == $tax[0] ) {
-												checked = true;
-											}
-										}
-										if( checked ) {
-											$(this).attr('checked','checked');
-										}
-									});
-									selectCheckboxUpdate($line.find('.lines-taxes'));
+									if( sale_data.data.sale.lines[line_index].tax_exempt ) {
+										$line.find('input.tax-exempt').attr('checked','checked');
+									} else {
+										$line.find('input.tax-exempt').attr('checked',false);
+									}
+
+									checkboxUpdate($line.find('input.tax-exempt'));
+
 									$newSaleLine = $($('#customers-sales-create-form-lines-line-template').html());
-									$newSaleLine.find('input,select').each(function() {
+									$newSaleLine.find('input:not(.tax-exempt),select').each(function() {
 										$(this).attr('disabled','disabled');
 									});
+									$newSaleLine.find('input.tax-exempt').attr('disabled','disabled');
+									checkboxUpdate($newSaleLine.find('input.tax-exempt'));
 									$newSaleLine.find('div.select').addClass('disabled');
 									if( refund &&
 										$('#customers-sales-refund-default_account_id').val().length > 0 ) {
@@ -2593,6 +2692,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 										$(this).attr('readonly',false).attr('disabled',false).datepicker({dateFormat: "yy-mm-dd"});
 									});
 
+									$('#customers-sales-create input.tax-exempt').each(function() {
+										$(this).attr('disabled',false);
+										checkboxUpdate($(this));
+									});
+
 									$('#customers-sales-create-form-lines select.account_id').each(function () {
 										$(this).select2("enable");
 									});
@@ -2607,10 +2711,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 									$('#customers-sales-create select[name="shipping_address_id"]').attr('disabled','disabled');
 									$('#customers-sales-create select[name="account"]').attr('readonly','readonly');
 									$('#customers-sales-create input[name="sale_number"]').attr('disabled','disabled');
+									
+									/*
 									$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line:not(:last-child)').each(function() {
-										$(this).find('input[type="checkbox"].line-tax').attr('disabled','disabled');
+										
+										// $(this).find('input[type="checkbox"].line-tax').attr('disabled','disabled');
 										// $(this).find('select[name="line-account_id"]').attr('disabled','disabled');
 									});
+									*/
 								}
 								
 							}
@@ -2623,21 +2731,54 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		);
 	}
 
+	function createSaleUpdateTaxTemplateVisibility(required_tax_ids) {
+		if( ! required_tax_ids ) {
+			required_tax_ids = [];
+		}
+
+		$formTaxes = $('.form-taxes');
+
+		var no_tax = true;
+		if( $formTaxes.find('.visible-tax').length ) {
+			no_tax = false;
+		}
+		
+		$formTaxes.find('.hidden-tax').hide();
+		$formTaxes.find('.no-tax').hide();
+		$formTaxes.find('.hidden-tax').each(function () {
+			var tax_id = $(this).find('input[type="checkbox"]').val();
+			if( required_tax_ids.indexOf(tax_id) >= 0 ) {
+				no_tax = false;
+				$(this).show();
+			}
+		});
+
+		if( no_tax ) {
+			$formTaxes.find('.no-tax').show();
+		}
+	}
+
 	function createSaleClearForm() {
 		$('#customers-sales-create').slideUp(function() {
 			GLOBAL_EDIT_FORM_ACTIVE = false;
+			createSaleUpdateTaxTemplateVisibility();
 			$('#customers-sales-create-form-send').hide();
 			$('#customers-sales-create-title').text($('#customers-sales-create-title').attr('rel'));
 			$('#customers-sales-create-status').html('<span class="text-bold">'+$('#customers-sales-create-status').attr('rel')+'</span>');
 			$('#customers-sales-create').attr('rel','');
 			$('#customers-sales-create input[name="refund_sale_id"]').val('');
 			$('#customers-sales-create-form-lines .customers-sales-create-form-lines-line').remove();
-			$('#customers-sales-create input:not(.ezpz-hint,.send-form,.datepicker),#customers-sales-create select').each(function() {
+			$('#customers-sales-create input:not(.ezpz-hint,.send-form,.datepicker,.form-tax,.form-tax-exempt),#customers-sales-create select').each(function() {
 				if( $(this).hasClass('select2-offscreen') ) {
 					$(this).val('');
 				} else {
 					$(this).attr('readonly',false).attr('disabled',false).focus().val('').blur();
 				}
+			});
+			$('#customers-sales-create input.form-tax, #customers-sales-create input.form-tax-exempt').each(function () {
+				$(this).attr('disabled',false);
+				$(this).attr('checked',false);
+				checkboxUpdate($(this));
 			});
 			$('#customers-sales-create input.datepicker').each(function() {
 				$(this).attr('readonly',false).val(dateYYYYMMDD()).datepicker({dateFormat: "yy-mm-dd"});

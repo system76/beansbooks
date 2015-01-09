@@ -1,3 +1,21 @@
+/*
+BeansBooks
+Copyright (C) System76, Inc.
+
+This file is part of BeansBooks.
+
+BeansBooks is free software; you can redistribute it and/or modify
+it under the terms of the BeansBooks Public License.
+
+BeansBooks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the BeansBooks Public License for more details.
+
+You should have received a copy of the BeansBooks Public License
+along with BeansBooks; if not, email info@beansbooks.com.
+*/
+
 /**
  * Beans - main.css
  * @author David Overcash <david@system76.com>,<funnylookinhat@gmail.com>
@@ -550,6 +568,16 @@ hr {
 	z-index: 1337!important;
 	border: 1px solid #c6c6c6;
 	background-color: #f1f1f1;
+	padding-bottom: 3px;
+}
+
+.select-checkbox .option input[type="text"] {
+	height: 20px;
+	line-height: 20px;
+	padding: 1px 5px 0px 5px;
+	font-size: 12px;
+	margin-left: 4px;
+	width: 240px;
 }
 
 /*

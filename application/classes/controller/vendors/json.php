@@ -1883,6 +1883,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$tax_search = new Beans_Tax_Search($this->_beans_data_auth((object)array(
 			'search_name' => $search_terms,
+			'search_include_hidden' => TRUE,
 		)));
 		$tax_search_result = $tax_search->execute();
 
@@ -1904,7 +1905,13 @@ class Controller_Vendors_Json extends Controller_Json {
 		)));
 		$tax_prep_result = $tax_prep->execute();
 
-		$this->_return_object->data->tax_prep = $tax_prep_result->data->tax_prep;
+		if( ! $tax_prep_result->success )
+				return $this->_return_error(
+					"An unexpected error has occurred:<br>".
+					$this->_beans_result_get_error($tax_prep_result)
+				);
+
+		$this->_return_object->data = $tax_prep_result->data;
 	}
 
 	public function action_taxpaymentcreate()
@@ -1916,6 +1923,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$date_start = $this->request->post('date_start');
 		$date_end = $this->request->post('date_end');
 		$amount = $this->request->post('amount');
+		$total = $this->request->post('total');
 		$writeoff_amount = $this->request->post('writeoff_amount');
 		$check_number = $this->request->post('check_number');
 
@@ -1931,6 +1939,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				'date' => $date,
 				'date_start' => $date_start,
 				'date_end' => $date_end,
+				'total' => $total,
 				'amount' => $amount,
 				'check_number' => $check_number,
 				'payment_account_id' => $payment_account_id,
@@ -2003,6 +2012,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				'check_number' => $check_number,
 				'date_start' => $date_start,
 				'date_end' => $date_end,
+				'total' => $total,
 				'amount' => $amount,
 				'payment_account_id' => $payment_account_id,
 				'writeoff_account_id' => $writeoff_account_id,
@@ -2071,7 +2081,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				return $this->_return_error($this->_beans_result_get_error($tax_payment_validate_result));
 
 			// DELETE
-			$tax_payment_cancel = new Beans_Tax_Payment_Cancel($this->_beans_data_auth((object)array(
+			$tax_payment_cancel = new Beans_Tax_Payment_Delete($this->_beans_data_auth((object)array(
 				'id' => $payment_id,
 			)));
 			$tax_payment_cancel_result = $tax_payment_cancel->execute();
@@ -2198,7 +2208,7 @@ class Controller_Vendors_Json extends Controller_Json {
 	{
 		$payment_id = $this->request->post('payment_id');
 
-		$tax_payment_cancel = new Beans_Tax_Payment_Cancel($this->_beans_data_auth((object)array(
+		$tax_payment_cancel = new Beans_Tax_Payment_Delete($this->_beans_data_auth((object)array(
 			'id' => $payment_id,
 		)));
 		$tax_payment_cancel_result = $tax_payment_cancel->execute();

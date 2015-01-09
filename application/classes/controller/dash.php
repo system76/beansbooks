@@ -613,6 +613,30 @@ class Controller_Dash extends Controller_View {
 
 		if( ! $require_calibration )
 		{
+			$customer_sale_calibrate_check = new Beans_Customer_Sale_Calibrate_Check($this->_beans_data_auth());
+			$customer_sale_calibrate_check_result = $customer_sale_calibrate_check->execute();
+
+			if( ! $customer_sale_calibrate_check_result->success )
+				return array();
+
+			if( count($customer_sale_calibrate_check_result->data->ids) )
+				$require_calibration = TRUE;
+		}
+
+		if( ! $require_calibration )
+		{
+			$vendor_purchase_calibrate_check = new Beans_Vendor_Purchase_Calibrate_Check($this->_beans_data_auth());
+			$vendor_purchase_calibrate_check_result = $vendor_purchase_calibrate_check->execute();
+
+			if( ! $vendor_purchase_calibrate_check_result->success )
+				return array();
+
+			if( count($vendor_purchase_calibrate_check_result->data->ids) )
+				$require_calibration = TRUE;
+		}
+
+		if( ! $require_calibration )
+		{
 			$account_calibrate_check = new Beans_Account_Calibrate_Check($this->_beans_data_auth());
 			$account_calibrate_check_result = $account_calibrate_check->execute();
 
@@ -747,7 +771,9 @@ class Controller_Dash extends Controller_View {
 	
 	private function _dash_index_messages_taxes()
 	{
-		$taxes_search = new Beans_Tax_Search($this->_beans_data_auth());
+		$taxes_search = new Beans_Tax_Search($this->_beans_data_auth((object)array(
+			'search_include_hidden' => TRUE,
+		)));
 		$taxes_search_result = $taxes_search->execute();
 
 		// V2Item - Consider error'ing
@@ -757,7 +783,11 @@ class Controller_Dash extends Controller_View {
 		$messages = array();
 		foreach( $taxes_search_result->data->taxes as $tax )
 		{
-			if( strtotime($tax->date_due.' -10 Days') <= strtotime(date("Y-m-d")) )
+			if( strtotime($tax->date_due.' -10 Days') <= strtotime(date("Y-m-d")) &&
+				(
+					$tax->balance != 0.00 ||
+					$tax->visible 
+				) )
 			{
 				$messages[] = (object)array(
 					'title' => $tax->name." Due on ".$tax->date_due,
