@@ -71,8 +71,12 @@ class Beans_Report extends Beans {
 		return FALSE;
 	}
 
-	protected function _build_code_chart($account,$code,$include_pending = FALSE)
+	protected function _build_code_chart($account,$code,$include_pending = FALSE,$excluded_account_ids = FALSE)
 	{
+		if( $excluded_account_ids &&
+			in_array($account->id, $excluded_account_ids) )
+			return FALSE;
+		
 		$return_object = new stdClass;
 
 		$return_object->name = $account->name;
@@ -84,7 +88,7 @@ class Beans_Report extends Beans {
 
 		foreach( $account->child_accounts->find_all() as $child_account )
 		{
-			$child_account_result = $this->_build_code_chart($child_account,$code,$include_pending);
+			$child_account_result = $this->_build_code_chart($child_account,$code,$include_pending,$excluded_account_ids);
 			if( $child_account_result )
 				$return_object->accounts[] = $child_account_result;
 		}

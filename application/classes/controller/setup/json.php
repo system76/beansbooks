@@ -378,7 +378,7 @@ class Controller_Setup_Json extends Controller_Json {
 
 			$customer_sale_calibrate_check = new Beans_Customer_Sale_Calibrate_Check($this->_beans_data_auth());
 			$customer_sale_calibrate_check_result = $customer_sale_calibrate_check->execute();
-
+			
 			if( ! $customer_sale_calibrate_check_result->success )
 				return $this->_return_error('Error calibrating customer sales: '.$customer_sale_calibrate_check_result->error);
 
