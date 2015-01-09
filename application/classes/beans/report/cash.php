@@ -82,8 +82,7 @@ class Beans_Report_Cash extends Beans_Report {
 		$account_types['accountsreceivable']->direction = 1;
 		$account_types['accountsreceivable']->codes = array(
 			'accountsreceivable',
-			'pending_ar',
-			// 'pending_income'
+			'pending_ar'
 		);
 		$account_types['accountsreceivable']->accounts = array();
 
@@ -94,8 +93,7 @@ class Beans_Report_Cash extends Beans_Report {
 		$account_types['shorttermdebt']->codes = array(
 			'shorttermdebt',
 			'accountspayable',
-			'pending_ap',
-			// 'pending_cost'
+			'pending_ap'
 		);
 		$account_types['shorttermdebt']->accounts = array();
 		
