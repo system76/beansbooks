@@ -167,7 +167,7 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 			! count($this->_data->lines) )
 			throw new Exception("Invalid sale lines: none provided.");
 
-		if( $this->_data->taxes )
+		if( isset($this->_data->taxes) )
 		{
 			if( ! is_array($this->_data->taxes) )
 				throw new Exception("Invalid sale taxes: must be an array.");
