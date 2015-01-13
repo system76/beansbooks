@@ -142,6 +142,12 @@ class View_Dash_Taxes extends View_Template {
 		$return_array['date_start_formatted'] = date("m/d/Y", strtotime($this->payment->date_start));
 		$return_array['date_end_formatted'] = date("m/d/Y", strtotime($this->payment->date_end));
 
+		if( $this->payment->date_start == $this->payment->date_end ) {
+			$return_array['date_range_formatted'] = "Through ".$return_array['date_end_formatted'];
+		} else {
+			$return_array['date_range_formatted'] = $return_array['date_start_formatted'].' - '.$return_array['date_end_formatted'];
+		}
+
 		$return_array['check_number'] = $this->payment->check_number;
 
 		$return_array['paid_amount_formatted'] = FALSE;
