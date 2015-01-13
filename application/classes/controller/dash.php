@@ -434,34 +434,86 @@ class Controller_Dash extends Controller_View {
 	public function action_taxes()
 	{
 		$tax_id = FALSE;
-		$date_start = date("Y-m")."-01";
-		$date_end = date("Y-m-d");
-
-		if( $this->request->post('date_start') )
-			$date_start = $this->request->post('date_start');
-
-		if( $this->request->post('date_end') )
-			$date_end = $this->request->post('date_end');
+		$tax_payment_id = FALSE;
 
 		if( $this->request->post('tax_id') )
 			$tax_id = $this->request->post('tax_id');
 
+		if( $this->request->post('tax_payment_id') )
+			$tax_payment_id = $this->request->post('tax_payment_id');
+
 		if( $tax_id )
 		{
-			$report_taxes = new Beans_Report_Taxes($this->_beans_data_auth((object)array(
-				'tax_id' => $tax_id,
-				'date_start' => $date_start,
-				'date_end' => $date_end,
-			)));
-			$report_taxes_result = $report_taxes->execute();
+			$tax_payment_search_data = new stdClass;
+			$tax_payment_search_data->sort_by = 'newest';
+			$tax_payment_search_data->page_size = 24;
+			$tax_payment_search_data->search_tax_id = $tax_id;
 
-			if( $this->_beans_result_check($report_taxes_result) )
-				$this->_view->report_taxes_result = $report_taxes_result;
+			$tax_payment_search = new Beans_Tax_Payment_Search($this->_beans_data_auth($tax_payment_search_data));
+
+			$tax_payment_search_result = $tax_payment_search->execute();
+
+			if( $this->_beans_result_check($tax_payment_search_result) )
+				$this->_view->tax_payments = $tax_payment_search_result->data->payments;
 		}
-		else
+
+		if( $tax_id &&
+			$tax_payment_id )
 		{
-			$this->_view->default_date_start = $date_start;
-			$this->_view->default_date_end = $date_end;
+			if( $tax_payment_id == "prep" )
+			{
+				$date_start = date("Y-m-d");
+				$date_end = date("Y-m-d");
+				
+				$tax_prep = new Beans_Tax_Prep($this->_beans_data_auth((object)array(
+					'id' => $tax_id,
+					'date_start' => $date_start,
+					'date_end' => $date_end,
+				)));
+				$tax_prep_result = $tax_prep->execute();
+
+				if( $this->_beans_result_check($tax_prep_result) )
+				{
+					$this->_view->payment = (object)array(
+						'id' => NULL,
+						'prep' => TRUE,
+						'tax' => $tax_prep_result->data->tax,
+						'amount' => NULL,
+						'writeoff_amount' => NULL,
+						'date' => NULL,
+						'date_start' => $tax_prep_result->data->date_start,
+						'date_end' => $tax_prep_result->data->date_end,
+						'check_number' => NULL,
+						'invoiced_line_amount' => $tax_prep_result->data->taxes->due->invoiced->form_line_amount,
+						'invoiced_line_taxable_amount' => $tax_prep_result->data->taxes->due->invoiced->form_line_taxable_amount,
+						'invoiced_amount' => $tax_prep_result->data->taxes->due->invoiced->amount,
+						'refunded_line_amount' => $tax_prep_result->data->taxes->due->refunded->form_line_amount,
+						'refunded_line_taxable_amount' => $tax_prep_result->data->taxes->due->refunded->form_line_taxable_amount,
+						'refunded_amount' => $tax_prep_result->data->taxes->due->refunded->amount,
+						'net_line_amount' => $tax_prep_result->data->taxes->due->net->form_line_amount,
+						'net_line_taxable_amount' => $tax_prep_result->data->taxes->due->net->form_line_taxable_amount,
+						'net_amount' => $tax_prep_result->data->taxes->due->net->amount,
+						'liabilities' => array_merge(
+							$tax_prep_result->data->taxes->due->invoiced->liabilities,
+							$tax_prep_result->data->taxes->due->refunded->liabilities
+						),
+						'amount' => NULL,
+						'writeoff_amount' => NULL,
+					);
+				}
+			}
+			else
+			{
+				$tax_payment_lookup = new Beans_Tax_Payment_Lookup($this->_beans_data_auth((object)array(
+					'id' => $tax_payment_id,
+				)));
+				$tax_payment_lookup_result = $tax_payment_lookup->execute();
+
+				if( $this->_beans_result_check($tax_payment_lookup_result) )
+				{
+					$this->_view->payment = $tax_payment_lookup_result->data->payment;
+				}
+			}
 		}
 
 		$this->_action_tab_name = "Sales Tax";

@@ -667,10 +667,58 @@ if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) 
 			dateFormat: "yy-mm-dd"
 		});
 
-		$('input.report-taxes-date, input#report-taxes-tax').live('change', function() {
-			showPleaseWait();
+		$('input#report-taxes-tax').live('change', function() {
+			console.log('CHANGED: '+$('input#report-taxes-tax').val());
+			reportTaxesLoadPayments();
+		});
+
+		$('select#report-taxes-payments').live('change', function () {
+			if( ! $(this).val() ||
+				! $(this).val().length ) {
+				return;
+			}
 			$(this).closest('form').submit();
 		});
+
+		function reportTaxesLoadPayments() {
+			if( ! $('input#report-taxes-tax').val() || 
+				! $('input#report-taxes-tax').val().length ) {
+				return;
+			}
+			showPleaseWait();
+
+			$.post(
+				'/dash/json/loadtaxpayments',
+				{
+					tax_id: $('input#report-taxes-tax').val()
+				},
+				function (response) {
+					if( ! response.success ) {
+						return showError(response.error+response.auth_error);
+					}
+					$('select#report-taxes-payments option').each(function () {
+						if( $(this).val() != "prep" &&
+							$(this).val().length > 0 ) {
+							$(this).remove();
+						}
+					});
+					for( i in response.data.payments ) {
+						$tax_payment = $(
+							'<option value="'+response.data.payments[i].id+'">' + 
+							response.data.payments[i].date_start + 
+							' - ' +
+							response.data.payments[i].date_end+ 
+							' ( Paid on '+
+							response.data.payments[i].date+
+							' )' +
+							'</option>');
+						$('select#report-taxes-payments').append($tax_payment);
+					}
+					hidePleaseWait();
+				},
+				'json'
+			);
+		}
 
 		$('input#report-taxes-tax').select2({
 			minimumInputLength: 1,
