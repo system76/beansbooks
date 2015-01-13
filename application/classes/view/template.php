@@ -47,6 +47,7 @@ class View_Template extends Kostache_Layout {
 		'vendors_payments_paymentpo' => 'partials/vendors/payments/paymentpo',
 		'vendors_checks_check' => 'partials/vendors/checks/check',
 		'vendors_checks_newcheck' => 'partials/vendors/checks/newcheck',
+		'vendors_print_taxpayment' => 'vendors/print/taxpayment',
 		'taxes_payments_payment' => 'partials/taxes/payments/payment',
 		'taxes_taxes_tax' => 'partials/taxes/taxes/tax',
 		'dash_print_balance' => 'dash/print/balance',
