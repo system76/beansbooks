@@ -163,7 +163,8 @@ class Beans_Customer_Sale_Calibrate_Create extends Beans_Customer_Sale {
 
 		foreach( $account_transactions as $account_id => $amount )
 		{
-			if( $amount != 0.00 )
+			if( $sale->total == 0.00 ||
+				$amount != 0.00 )
 			{
 				$account_transaction = new stdClass;
 

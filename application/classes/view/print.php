@@ -164,5 +164,12 @@ class View_Print extends Kostache_Layout {
 	protected function _country_name($code) {
 		return Helper_Address::CountryName($code);
 	}
+
+	protected function _format_beans_number($number)
+	{
+		$beans_settings = $this->beans_settings();
+
+		return ( $number >= 0 ? '' : '-' ).$beans_settings->company_currency.number_format(abs($number),2,'.',',');
+	}
 		
 }

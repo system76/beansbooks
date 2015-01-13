@@ -384,6 +384,7 @@ class Beans_Customer extends Beans {
 	@attribute order_number STRING
 	@attribute po_number STRING
 	@attribute quote_number STRING
+	@attribute tax_exempt BOOLEAN If this is true, all lines of the sale will also be tax_exempt.
 	@attribute billing_address OBJECT The #Beans_Customer_Address# used to bill this sale.
 	@attribute shipping_address OBJECT The #Beans_Customer_Address# used to ship this sale.
 	@attribute lines ARRAY An array of #Beans_Customer_Sale_Line#.
@@ -438,6 +439,9 @@ class Beans_Customer extends Beans {
 		$return_object->order_number = $sale->reference;
 		$return_object->po_number = $sale->alt_reference;
 		$return_object->quote_number = $sale->aux_reference;
+
+		$return_object->tax_exempt = $sale->tax_exempt ? TRUE : FALSE;
+		$return_object->tax_exempt_reason = $sale->tax_exempt_reason;
 
 		$return_object->billing_address = ( $sale->billing_address_id ) 
 										? $this->_return_customer_address_element($sale->billing_address)
@@ -524,11 +528,11 @@ class Beans_Customer extends Beans {
 	@description A line item on a customer sale.
 	@attribute id INTEGER 
 	@attribute account OBJECT The #Beans_Account# tied to this line.
+	@attribute tax_exempt BOOLEAN Whether or not this particular line is tax exempt.
 	@attribute description STRING
 	@attribute amount DECIMAL
 	@attribute quantity INTEGER
 	@attribute total DECIMAL
-	@attribute line_taxes ARRAY An array of #Beans_Customer_Sale_Line_Tax# for this line.
 	---BEANSENDSPEC---
 	 */
 
@@ -547,52 +551,15 @@ class Beans_Customer extends Beans {
 
 		$return_object->account = $this->_return_account_element($line->account);
 
+		$return_object->tax_exempt = $line->tax_exempt ? TRUE : FALSE;
+
 		$return_object->description = $line->description;
 		$return_object->amount = $line->amount;
 		$return_object->quantity = $line->quantity;
 		$return_object->total = $line->total;
 
-		$return_object->line_taxes = $this->_return_line_taxes_array($line->form_line_taxes->find_all());
-		
 		$this->_return_form_line_element[$line->id] = $return_object;
 		return $this->_return_form_line_element[$line->id];
-	}
-
-	protected function _return_line_taxes_array($line_taxes)
-	{
-		$return_array = array();
-
-		foreach( $line_taxes as $line_tax )
-			$return_array[] = $this->_return_line_tax_element($line_tax);
-
-		return $return_array;
-	}
-
-	/*
-	---BEANSOBJSPEC---
-	@object Beans_Customer_Sale_Line_Tax
-	@description A tax applied to a single line item.
-	@attribute id INTEGER 
-	@attribute tax OBJECT The #Beans_Tax# tied to this line tax.
-	---BEANSENDSPEC---
-	 */
-
-	private $_return_line_tax_element_cache = array();
-	protected function _return_line_tax_element($line_tax)
-	{
-		$return_object = new stdClass;
-
-		if( get_class($line_tax) != "Model_Form_Line_Tax" )
-			throw new Exception("Invalid Line Tax.");
-
-		if( isset($this->_return_line_tax_element_cache[$line_tax->id]) )
-			return $this->_return_line_tax_element_cache[$line_tax->id];
-		
-		$return_object->id = $line_tax->id;
-		$return_object->tax = $this->_return_tax_element($line_tax->tax);
-		
-		$this->_return_line_tax_element_cache[$line_tax->id] = $return_object;
-		return $this->_return_line_tax_element_cache[$line_tax->id];
 	}
 
 	protected function _return_form_taxes_array($form_taxes)
@@ -610,10 +577,11 @@ class Beans_Customer extends Beans {
 	@object Beans_Customer_Sale_Tax
 	@description A summary of a tax applied to one or more lines on a sale.
 	@attribute id INTEGER 
-	@attribute tax OBJECT The #Beans_Tax# tied to this line tax.
-	@attribute amount DECIMAL The line total that the tax is applied to ( if percent is not NULL ).
-	@attribute fee DECIMAL The flat fee for the tax.
+	@attribute tax OBJECT The #Beans_Tax# tied to this tax.
+	@attribute amount DECIMAL The line total of the form that the tax is applied to.
+	@attribute taxable_amount DECIMAL The taxable line total of the form that the tax is applied to.
 	@attribute percent DECIMAL The percent applied to the amount.
+	@attribute total DECIMAL The total calculated amount of taxes.
 	---BEANSENDSPEC---
 	 */
 
@@ -631,10 +599,10 @@ class Beans_Customer extends Beans {
 		$return_object->id = $form_tax->id;
 		// $return_object->sale_id = $form_tax->form_id; // *** TRIM ***
 		$return_object->tax = $this->_return_tax_element($form_tax->tax);
-		$return_object->amount = $form_tax->amount;
+		$return_object->amount = $form_tax->form_line_amount;
+		$return_object->taxable_amount = $form_tax->form_line_taxable_amount;
 		$return_object->total = $form_tax->total;
-		$return_object->fee = $form_tax->fee;
-		$return_object->percent = $form_tax->percent;
+		$return_object->percent = $form_tax->tax_percent;
 		
 		$this->_return_form_tax_element_cache[$form_tax->id] = $return_object;
 		return $this->_return_form_tax_element_cache[$form_tax->id];
@@ -656,7 +624,6 @@ class Beans_Customer extends Beans {
 		$return_object->code = $tax->code;
 		$return_object->name = $tax->name;
 		$return_object->percent = $tax->percent;
-		$return_object->fee = $tax->fee;
 		$return_object->account = $this->_return_account_element($tax->account);
 
 		$this->_return_tax_element_cache[$tax->id] = $return_object;
@@ -1099,8 +1066,14 @@ class Beans_Customer extends Beans {
 			throw new Exception("Invalid sale date: must be in YYYY-MM-DD format.");
 
 		if( $this->_check_books_closed($sale->date_created) )
-				throw new Exception("Sale could not be created.  The financial year has been closed already.");
+			throw new Exception("Sale could not be created.  The financial year has been closed already.");
 		
+		if( $sale->tax_exempt &&
+			! strlen($sale->tax_exempt_reason) )
+			throw new Exception("Please provide a reason for tax exemption.");
+
+		if( strlen($sale->tax_exempt_reason) > 255 ) 
+			throw new Exception("Invalid tax exemption reason: maximum of 255 characters.");
 	}
 
 	protected function _default_form_line()
@@ -1162,21 +1135,6 @@ class Beans_Customer extends Beans {
 
 	}
 
-	protected function _default_form_line_tax()
-	{
-		$form_line_tax = ORM::Factory('form_line_tax');
-
-		$form_line_tax->form_line_id = NULL;
-		$form_line_tax->tax_id = NULL;
-		
-		return $form_line_tax;
-	}
-
-	protected function _load_form_line_tax($id)
-	{
-		return ORM::Factory('form_line_tax',$id);
-	}
-
 	protected function _validate_customer_sale_line_tax($sale_line_tax)
 	{
 		if( get_class($sale_line_tax) != "Model_Form_Line_Tax" )
@@ -1189,6 +1147,9 @@ class Beans_Customer extends Beans {
 
 		if( ! $tax->loaded() )
 			throw new Exception("Invalid sale line tax tax ID: tax not found.");
+
+		if( ! $sale_line_tax->tax_percent )
+			throw new Exception("Invalid sale line tax percent: none provided.");
 	}
 
 	protected function _load_tax($id)
@@ -1202,17 +1163,165 @@ class Beans_Customer extends Beans {
 
 		$form_tax->tax_id = NULL;
 		$form_tax->form_id = NULL;
-		$form_tax->percent = NULL;
-		$form_tax->fee = NULL;
-		$form_tax->amount = 0.00;
-		$form_tax->quantity = 0;
+		$form_tax->tax_percent = NULL;
+		$form_tax->form_line_amount = 0.00;
+		$form_tax->form_line_taxable_amount = 0.00;
 		$form_tax->total = 0.00;
 
 		return $form_tax;
 	}
 
-	protected function _tax_adjust_balance($tax_id,$amount)
+	protected function _update_form_tax_items($form_id, $action = NULL)
 	{
-		DB::query(NULL,'UPDATE taxes SET balance = balance + '.$amount.', total = total + '.$amount.' WHERE id = "'.$tax_id.'"')->execute();
+		if( ! $action ||
+			! in_array($action, array('invoice','refund')) )
+			throw new Exception("Invalid or missing action provided: must be invoice or refund.");
+
+		// Get a list of all taxes that have ever affected this form
+		$tax_ids = array();
+
+		// Taxes currently on the form
+		$form_taxes_tax_ids = DB::query(
+			Database::SELECT, 
+			'SELECT DISTINCT(tax_id) AS tax_id'.
+			' FROM form_taxes WHERE'.
+			' form_id = '.$form_id
+		)->execute()->as_array();
+
+		foreach( $form_taxes_tax_ids as $form_taxes_tax_id )
+		{
+			if( ! in_array($form_taxes_tax_id['tax_id'], $tax_ids) )
+				$tax_ids[] = $form_taxes_tax_id['tax_id'];
+		}
+
+		$tax_items_tax_ids = DB::query(
+			Database::SELECT,
+			'SELECT DISTINCT(tax_id) AS tax_id '.
+			'FROM tax_items WHERE '.
+			'form_id = '.$form_id.' '
+		)->execute()->as_array();
+
+		foreach( $tax_items_tax_ids as $tax_items_tax_id )
+		{
+			if( ! in_array($tax_items_tax_id['tax_id'], $tax_ids) )
+				$tax_ids[] = $tax_items_tax_id['tax_id'];
+		}
+
+		foreach( $tax_ids as $tax_id )
+		{
+			$tax_item = $this->_create_tax_item($form_id, $tax_id, $action);
+
+			if( $tax_item )
+			{
+				DB::Query(
+					NULL,
+					'UPDATE taxes SET '.
+					'total = total + '.$tax_item->total.' '.
+					', balance = balance + '.$tax_item->balance.' '.
+					'WHERE id = '.$tax_item->tax_id.' '
+				)->execute();
+			}
+		}
+		
+		return;
+	}
+
+	private function _create_tax_item($form_id, $tax_id, $action)
+	{
+		$form = ORM::Factory('form', $form_id);
+		$tax = ORM::Factory('tax', $tax_id);
+
+		// If this form isn't cancelled, we want to update every tax_item
+		// associated to it to reflect the current date_billed as date
+		if( ! $form->date_cancelled )
+		{
+			DB::Query(
+				NULL,
+				'UPDATE tax_items SET '.
+				'date = DATE("'.$form->date_billed.'") '.
+				'WHERE '.
+				'form_id = '.$form->id.' '
+			)->execute();
+		}
+
+		// Our general form for generating a tax_item value is to take the difference of
+		// the current value and the sum of values stored in tax_items currently.
+		// So first we get the current value for each field -
+		// Note - if the form is cancelled we force a value of 0.00
+
+		$current_form_line_taxable_amount = 0.00;
+		$current_form_line_amount = 0.00;
+		$current_total = 0.00;
+
+		if( ! $form->date_cancelled )
+		{
+			$current_values = DB::Query(
+				Database::SELECT,
+				'SELECT '.
+				'IFNULL(SUM(form_line_taxable_amount),0.00) as form_line_taxable_amount, '.
+				'IFNULL(SUM(form_line_amount),0.00) as form_line_amount, '.
+				'IFNULL(SUM(total),0.00) as total '.
+				'FROM form_taxes '.
+				'WHERE '.
+				'form_id = '.$form_id.' AND '.
+				'tax_id = '.$tax_id.' '
+			)->execute()->as_array();
+
+			$current_form_line_taxable_amount = $current_values[0]['form_line_taxable_amount'];
+			$current_form_line_amount = $current_values[0]['form_line_amount'];
+			$current_total = $current_values[0]['total'];
+		}
+
+		$sum_values = DB::Query(
+			Database::SELECT,
+			'SELECT '.
+			'IFNULL(SUM(form_line_taxable_amount),0.00) as form_line_taxable_amount, '.
+			'IFNULL(SUM(form_line_amount),0.00) as form_line_amount, '.
+			'IFNULL(SUM(total),0.00) as total '.
+			'FROM tax_items '.
+			'WHERE '.
+			'form_id = '.$form_id.' AND '.
+			'tax_id = '.$tax_id.' '
+		)->execute()->as_array();
+
+		$sum_form_line_taxable_amount = $sum_values[0]['form_line_taxable_amount'];
+		$sum_form_line_amount = $sum_values[0]['form_line_amount'];
+		$sum_total = $sum_values[0]['total'];
+
+		$tax_item = ORM::Factory('tax_item');
+
+		$tax_item->tax_id = $tax_id;
+		$tax_item->form_id = $form_id;
+		$tax_item->tax_payment_id = NULL;
+		$tax_item->tax_percent = $tax->percent;
+
+		$tax_item->form_line_amount = $this->_beans_round(
+			$current_form_line_amount -
+			$sum_form_line_amount
+		);
+		$tax_item->form_line_taxable_amount = $this->_beans_round(
+			$current_form_line_taxable_amount -
+			$sum_form_line_taxable_amount
+		);
+		$tax_item->total = $this->_beans_round(
+			$current_total -
+			$sum_total
+		);
+
+		// If no taxable amount changes have been made - we can just exit.
+		//if( $tax_item->form_line_taxable_amount === 0.00 )
+		//	return NULL;
+
+		$tax_item->balance = ( -1 * $tax_item->total );
+		$tax_item->type = $action;
+		
+		if( $form->date_cancelled )
+			$tax_item->date = $form->date_cancelled;
+		else
+			$tax_item->date = $form->date_billed;
+		
+		$tax_item->save();
+		
+		return $tax_item;
 	}
 }

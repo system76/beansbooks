@@ -23,8 +23,5 @@ class Model_Form_Line extends ORM {
 		'form' => array(),
 		'account' => array(),
 	);
-	protected $_has_many = array(
-		'form_line_taxes' => array(),
-	);
 
 }

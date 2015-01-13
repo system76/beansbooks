@@ -135,8 +135,6 @@ class Controller_Print extends Controller {
 			die("An error occurred: ".$vendor_payment_lookup_result->auth_error.$vendor_payment_lookup_result->error);
 		}
 
-		
-
 		$default_address = FALSE;
 
 		if( $vendor_payment_lookup_result->data->payment->vendor->default_remit_address_id )
@@ -164,6 +162,80 @@ class Controller_Print extends Controller {
 		$vendors_print_payment->setup_company_list_result = $this->_setup_company_list_result;
 		
 		die($vendors_print_payment->render());
+	}
+
+	public function action_taxpayment()
+	{
+		$taxpayment_id = $this->request->param('id');
+
+		$tax_payment_lookup = new Beans_Tax_Payment_Lookup($this->_beans_data_auth((object)array(
+			'id' => $taxpayment_id,
+		)));
+		$tax_payment_lookup_result = $tax_payment_lookup->execute();
+
+		if( ! $tax_payment_lookup_result->success )
+		{
+			// V2Item - Clean up and output nicely.
+			die("An error occurred: ".$tax_payment_lookup_result->auth_error.$tax_payment_lookup_result->error);
+		}
+
+		$vendors_print_taxpayment = new View_Vendors_Print_Taxpayment();
+		$vendors_print_taxpayment->setup_company_list_result = $this->_setup_company_list_result;
+		$vendors_print_taxpayment->payment = $tax_payment_lookup_result->data->payment;
+
+		die($vendors_print_taxpayment->render());
+	}
+
+	public function action_taxprep()
+	{
+		$tax_id = $this->request->param('id');
+		// 2014-01-01_2014-01-30
+		$date_range = $this->request->param('code');
+		$date_start = substr($date_range,0,10);
+		$date_end = substr($date_range,11);
+
+		$tax_prep = new Beans_Tax_Prep($this->_beans_data_auth((object)array(
+			'id' => $tax_id,
+			'date_start' => $date_start,
+			'date_end' => $date_end,
+		)));
+		$tax_prep_result = $tax_prep->execute();
+
+		if( ! $tax_prep_result->success )
+		{
+			// V2Item - Clean up and output nicely.
+			die("An error occurred: ".$tax_prep_result->auth_error.$tax_prep_result->error);
+		}
+
+		$vendors_print_taxpayment = new View_Vendors_Print_Taxpayment();
+		$vendors_print_taxpayment->setup_company_list_result = $this->_setup_company_list_result;
+		$vendors_print_taxpayment->payment = (object)array(
+			'id' => NULL,
+			'tax' => $tax_prep_result->data->tax,
+			'amount' => NULL,
+			'writeoff_amount' => NULL,
+			'date' => NULL,
+			'date_start' => $tax_prep_result->data->date_start,
+			'date_end' => $tax_prep_result->data->date_end,
+			'check_number' => NULL,
+			'invoiced_line_amount' => $tax_prep_result->data->taxes->due->invoiced->form_line_amount,
+			'invoiced_line_taxable_amount' => $tax_prep_result->data->taxes->due->invoiced->form_line_taxable_amount,
+			'invoiced_amount' => $tax_prep_result->data->taxes->due->invoiced->amount,
+			'refunded_line_amount' => $tax_prep_result->data->taxes->due->refunded->form_line_amount,
+			'refunded_line_taxable_amount' => $tax_prep_result->data->taxes->due->refunded->form_line_taxable_amount,
+			'refunded_amount' => $tax_prep_result->data->taxes->due->refunded->amount,
+			'net_line_amount' => $tax_prep_result->data->taxes->due->net->form_line_amount,
+			'net_line_taxable_amount' => $tax_prep_result->data->taxes->due->net->form_line_taxable_amount,
+			'net_amount' => $tax_prep_result->data->taxes->due->net->amount,
+			'liabilities' => array_merge(
+				$tax_prep_result->data->taxes->due->invoiced->liabilities,
+				$tax_prep_result->data->taxes->due->refunded->liabilities
+			),
+			'amount' => NULL,
+			'writeoff_amount' => NULL,
+		);
+
+		die($vendors_print_taxpayment->render());
 	}
 
 	/**

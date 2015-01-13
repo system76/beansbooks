@@ -46,6 +46,8 @@
 			<span class="oop-oop">Sales Order Number</span>
 			<span class="oop-oop">Quote Number</span>
 			<span class="oop-oop">Customer PO #</span>
+			<span class="oop-oop">&nbsp;</span>
+			<span class="oop">Sales Tax</span>
 		</div>
 
 		<div class="row column-6">
@@ -60,6 +62,24 @@
 			<span class="oop-oop"><input type="text" name="sale_number" placeholder="Auto Generate"></span>
 			<span class="oop-oop"><input type="text" name="quote_number" placeholder="Optional"></span>
 			<span class="oop-oop"><input type="text" name="po_number" placeholder="Optional"></span>
+			<span class="oop-oop">&nbsp;</span>
+			<span class="oop">
+				<div class="select-checkbox form-taxes">
+				<div class="value" title="Taxes"></div>
+					<div class="dropdown">
+						<div class="option" style="margin-bottom: 2px; padding-bottom: 2px;"><input type="checkbox" class="form-tax-exempt" name="form_tax_exempt" value="1" title="Tax Exempt"><span class="label"> This Sale is Tax Exempt</span></div>
+						<div class="option tax-exempt-reason" style="display: none;">
+							<input type="text" name="form_tax_exempt_reason" value="" placeholder="Reason for Exemption" />
+						</div>
+						<div style="border-bottom: 1px solid #ccc; height: 1px; padding:0; margin: 2px 0px;">&nbsp;</div>
+						{{#taxes}}
+							<div class="option {{#visible}}visible-tax{{/visible}}{{^visible}}hidden-tax{{/visible}}" {{^visible}}style="display: none;"{{/visible}}><input type="checkbox" class="form-tax" value="{{id}}" data-tax-percent="{{percent}}" title="{{name}}"><span class="label"> {{name}}</span></div>
+						{{/taxes}}
+						<div class="option no-tax" style="display: none; text-indent: 5px;">No Configured Taxes - <a href="/setup/taxes" target="_blank">Click Here to Setup</a>.</div>
+					</div>
+				</div>
+			</span>
+			<input type="hidden" class="form-tax_ids" name="form-tax_ids" value="">
 		</div>
 
 		
@@ -67,8 +87,10 @@
 			<span class="ehhh-sexy-lady">Description</span>
 			<span class="oop-oop-oop">Income Account</span>
 			<span class="oop">Quantity</span>
-			<span class="oop">Price</span>
-			<span class="oop">Sales Tax</span>
+			<span class="oop-oop">
+				Price
+				<span style="float: right;">Tax Exempt</span>
+			</span>
 			<span class="oop">Total</span>
 		</div>
 		
@@ -222,18 +244,10 @@
 		</select></span>
 		<span class="oop"><input type="text" class="line-quantity" name="line-quantity" val="0.00"></span>
 		<span class="oop"><input type="text" class="line-price" name="line-price" val="0.00"></span>
-		<span class="oop">
-			<div class="select-checkbox line-taxes">
-				<div class="value" title="Taxes"></div>
-				<div class="dropdown">
-					{{#taxes}}
-						<div class="option"><input type="checkbox" class="line-tax" value="{{id}}#{{fee}}{{^fee}}0{{/fee}}#{{percent}}{{^percent}}0{{/percent}}" title="{{name}}"><span class="label"> {{name}}</span></div>
-					{{/taxes}}
-				</div>
-			</div>
+		<span class="oop" style="font-size: 12px; padding-top: 5px;">
+			<div class="checkbox manual line-tax-exempt" style="margin-right: 3px;"><input type="checkbox" class="tax-exempt" name="line-tax-exempt" val="1"></div> Exempt
 		</span>
 		<span class="oop"><input type="text" class="line-total" name="line-total" readonly="readonly" value="0.00"></span>
-		<input type="hidden" class="line-tax_ids" name="line-tax_ids" value="">
 		<input type="hidden" name="sale-line-key" value="SALELINEKEY">
 	</div>
 </div>

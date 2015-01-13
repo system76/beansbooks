@@ -216,4 +216,24 @@ class Controller_Dash_Json extends Controller_Json {
 		$this->_return_object->data->message = $message->render();
 	}
 
+	public function action_loadtaxpayments()
+	{
+		$tax_payment_search_data = new stdClass;
+		$tax_payment_search_data->sort_by = 'newest';
+		$tax_payment_search_data->page_size = 24;
+		$tax_payment_search_data->search_tax_id = $this->request->post('tax_id');
+
+		if( ! $tax_payment_search_data->search_tax_id )
+			return $this->_return_error("Please select a tax.");
+		
+		$tax_payment_search = new Beans_Tax_Payment_Search($this->_beans_data_auth($tax_payment_search_data));
+
+		$tax_payment_search_result = $tax_payment_search->execute();
+
+		if( ! $tax_payment_search_result->success )
+			return $this->_return_error($tax_payment_search_result->error);
+
+		$this->_return_object = $tax_payment_search_result;
+	}
+
 }

@@ -245,7 +245,9 @@ class Controller_Setup extends Controller_View {
 
 	public function action_taxes()
 	{
-		$tax_search = new Beans_Tax_Search($this->_beans_data_auth());
+		$tax_search = new Beans_Tax_Search($this->_beans_data_auth((object)array(
+			'search_include_hidden' => TRUE,
+		)));
 		$tax_search_result = $tax_search->execute();
 
 		if( $this->_beans_result_check($tax_search_result) )
@@ -291,6 +293,18 @@ class Controller_Setup extends Controller_View {
 
 		if( $this->_beans_result_check($report_balancecheck_result) )
 			$this->_view->report_balancecheck_result = $report_balancecheck_result;
+
+		$customer_sale_calibrate_check = new Beans_Customer_Sale_Calibrate_Check($this->_beans_data_auth());
+		$customer_sale_calibrate_check_result = $customer_sale_calibrate_check->execute();
+
+		if( $this->_beans_result_check($customer_sale_calibrate_check_result) )
+			$this->_view->customer_sale_calibrate_check_result = $customer_sale_calibrate_check_result;
+
+		$vendor_purchase_calibrate_check = new Beans_Vendor_Purchase_Calibrate_Check($this->_beans_data_auth());
+		$vendor_purchase_calibrate_check_result = $vendor_purchase_calibrate_check->execute();
+
+		if( $this->_beans_result_check($vendor_purchase_calibrate_check_result) )
+			$this->_view->vendor_purchase_calibrate_check_result = $vendor_purchase_calibrate_check_result;
 
 		$setup_company_list = new Beans_Setup_Company_List($this->_beans_data_auth());
 		$setup_company_list_result = $setup_company_list->execute();

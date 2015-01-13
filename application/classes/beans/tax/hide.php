@@ -19,27 +19,22 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 /*
 ---BEANSAPISPEC---
-@action Beans_Tax_Payment_Lookup
-@description Remove a tax payment.
+@action Beans_Tax_Hide
+@description Set a tax to be hidden.
 @required auth_uid 
 @required auth_key 
 @required auth_expiration
-@required id INTEGER The ID of the #Beans_Tax_Payment# being requested.
-@returns payment OBJECT The requested #Beans_Tax_Payment#.
+@required id INTEGER The ID of the #Beans_Tax# being requested.
+@returns tax OBJECT The resulting #Beans_Tax#.
 ---BEANSENDSPEC---
 */
-class Beans_Tax_Payment_Lookup extends Beans_Tax_Payment {
-
-	protected $_auth_role_perm = "vendor_payment_read";
+class Beans_Tax_Hide extends Beans_Tax {
+	
+	protected $_auth_role_perm = "setup";
 
 	protected $_id;
-	protected $_payment;
+	protected $_tax;
 
-	/**
-	 * Look up a payment by ID.
-	 * @param stdClass $data key => value
-	 *                       'id' => ID to look up.
-	 */
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -48,16 +43,19 @@ class Beans_Tax_Payment_Lookup extends Beans_Tax_Payment {
 				   ? (int)$data->id
 				   : 0;
 
-		$this->_payment = $this->_load_tax_payment($this->_id);
+		$this->_tax = $this->_load_tax($this->_id);
 	}
 
 	protected function _execute()
 	{
-		if( ! $this->_payment->loaded() )
-			throw new Exception("Payment could not be found.");
+		if( ! $this->_tax->loaded() )
+			throw new Exception("Tax could not be found.");
+
+		$this->_tax->visible = FALSE;
+		$this->_tax->save();
 
 		return (object)array(
-			"payment" => $this->_return_tax_payment_element($this->_payment, TRUE),
+			"tax" => $this->_return_tax_element($this->_tax),
 		);
 	}
 }

@@ -27,8 +27,6 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required id INTEGER The ID of the #Beans_Tax# being updated.
 @optional name STRING
 @optional code STRING Will be auto-generated if not provided.
-@optional percent DECIMAL In decimal form, so 1.5% is 0.0015
-@optional account_id INTEGER The #Beans_Account# that the taxes will be recorded to.
 @optional date_due STRING The next YYYY-MM-DD date that remittance is due.
 @optional date_due_months_increment INTEGER The number of months between each payment.
 @optional license STRING The license number for your registration in this jurisdiction.
@@ -74,18 +72,6 @@ class Beans_Tax_Update extends Beans_Tax {
 		if( isset($this->_data->code) )
 			$this->_tax->code = $this->_data->code;
 
-		if( isset($this->_data->percent) )
-			$this->_tax->percent = $this->_data->percent;
-
-		if( isset($this->_data->account_id) )
-			$this->_tax->account_id = $this->_data->account_id;
-
-		$this->_tax->fee = NULL;
-		/*
-		if( isset($this->_data->fee) )
-			$this->_tax->fee = $this->_data->fee;
-		*/
-		
 		if( isset($this->_data->date_due) )
 			$this->_tax->date_due = $this->_data->date_due;
 
@@ -115,6 +101,14 @@ class Beans_Tax_Update extends Beans_Tax {
 
 		if( isset($this->_data->country) )
 			$this->_tax->country = $this->_data->country;
+
+		if( isset($this->_data->visible) )
+		{
+			if( $this->_data->visible )
+				$this->_tax->visible = TRUE;
+			else
+				$this->_tax->visible = FALSE;
+		}
 
 		$this->_validate_tax($this->_tax);
 

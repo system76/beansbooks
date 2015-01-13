@@ -146,7 +146,8 @@ class Beans_Vendor_Purchase_Calibrate_Create extends Beans_Vendor_Purchase {
 
 		foreach( $account_transactions as $account_id => $amount )
 		{
-			if( $amount != 0.00 )
+			if( $purchase->total == 0.00 ||
+				$amount != 0.00 )
 			{
 				$account_transaction = new stdClass;
 

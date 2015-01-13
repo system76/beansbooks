@@ -17,64 +17,7 @@ You should have received a copy of the BeansBooks Public License
 along with BeansBooks; if not, email info@beansbooks.com.
 */
 
-
-class View_Dash_Taxes extends View_Template {
-
-	public function report_tax_id()
-	{
-		if( ! isset($this->payment) )
-			return FALSE;
-
-		return $this->payment->tax->id;
-	}
-
-	public function report_tax_name()
-	{
-		if( ! isset($this->payment) )
-			return FALSE;
-
-		return $this->payment->tax->name;
-	}
-
-	public function report_run()
-	{
-		return ( isset($this->payment) );
-	}
-
-	public function tax_payment_options() {
-		$return_array = array();
-
-		$return_array[] = array(
-			'value' => "prep",
-			'name' => "Current Outstanding Taxes",
-		);
-
-		if( ! isset($this->tax_payments) ||
-			! isset($this->payment) )
-			return $return_array;
-
-		foreach( $this->tax_payments as $tax_payment )
-		{
-			$return_array[] = array(
-				'value' => $tax_payment->id,
-				'name' => $tax_payment->date_start.' - '.$tax_payment->date_end.' ( Paid on '.$tax_payment->date.' )',
-			);
-		}
-
-		foreach( $return_array as $index => $option )
-		{
-			if( $return_array[$index]['value'] == $this->payment->id ||
-				(
-					isset($this->payment->prep) && 
-					$this->payment->prep &&
-					$return_array[$index]['value'] == "prep"
-				) )
-				$return_array[$index]['selected'] = TRUE;
-		}
-
-		return $return_array;
-	}
-
+class View_Vendors_Print_Taxpayment extends View_Print {
 
 	public function noheader()
 	{
@@ -228,4 +171,5 @@ class View_Dash_Taxes extends View_Template {
 
 		return $return_array;
 	}
+
 }

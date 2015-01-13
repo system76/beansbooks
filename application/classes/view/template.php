@@ -47,6 +47,7 @@ class View_Template extends Kostache_Layout {
 		'vendors_payments_paymentpo' => 'partials/vendors/payments/paymentpo',
 		'vendors_checks_check' => 'partials/vendors/checks/check',
 		'vendors_checks_newcheck' => 'partials/vendors/checks/newcheck',
+		'vendors_print_taxpayment' => 'vendors/print/taxpayment',
 		'taxes_payments_payment' => 'partials/taxes/payments/payment',
 		'taxes_taxes_tax' => 'partials/taxes/taxes/tax',
 		'dash_print_balance' => 'dash/print/balance',
@@ -329,8 +330,8 @@ class View_Template extends Kostache_Layout {
 				'id' => $tax->id,
 				'name' => $tax->name,
 				'code' => $tax->code,
-				'fee' => $tax->fee,
 				'percent' => $tax->percent,
+				'visible' => $tax->visible ? TRUE : FALSE,
 			);
 
 		return $this->_taxes;
@@ -916,6 +917,11 @@ class View_Template extends Kostache_Layout {
 		);
 
 		return $this->_companyinfo;
+	}
+
+	protected function _format_beans_number($number)
+	{
+		return ( $number >= 0 ? '' : '-' ).$this->_company_currency().number_format(abs($number),2,'.',',');
 	}
 	
 	public function fontsizenormal()

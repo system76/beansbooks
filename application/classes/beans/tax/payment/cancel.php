@@ -20,6 +20,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 /*
 ---BEANSAPISPEC---
 @action Beans_Tax_Payment_Cancel
+@deprecated This function has been replaced with the more accurately named Beans_Tax_Payment_Delete
 @description Remove a tax payment.
 @required auth_uid 
 @required auth_key 
@@ -31,39 +32,13 @@ class Beans_Tax_Payment_Cancel extends Beans_Tax_Payment {
 
 	protected $_auth_role_perm = "vendor_payment_write";
 
-	protected $_id;
-	protected $_payment;
-
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
-		
-		$this->_id = ( isset($data->id) ) 
-				   ? (int)$data->id
-				   : 0;
-
-		$this->_payment = $this->_load_tax_payment($this->_id);
 	}
 
 	protected function _execute()
 	{
-		if( ! $this->_payment->loaded() )
-			throw new Exception("Payment could not be found.");
-
-		$account_transaction_delete = new Beans_Account_Transaction_Delete($this->_beans_data_auth((object)array(
-			'id' => $this->_payment->transaction->id,
-			'payment_type_handled' => 'tax',
-		)));
-		$account_transaction_delete_result = $account_transaction_delete->execute();
-
-		if( ! $account_transaction_delete_result->success )
-			throw new Exception("Error cancelling tax payment: ".$account_transaction_delete_result->error);
-		
-		// Update tax 
-		$this->_tax_payment_adjust_balance($this->_payment->tax_id,( $this->_payment->amount * -1));
-
-		$this->_payment->delete();
-
-		return (object)array();
+		throw new Exception("Beans_Tax_Payment_Cancel has been replaced with Beans_Tax_Payment_Delete");
 	}
 }

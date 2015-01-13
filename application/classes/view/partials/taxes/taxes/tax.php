@@ -46,4 +46,9 @@ class View_Partials_Taxes_Taxes_Tax extends KOstache {
 		return ( $this->tax->date_due ? $this->tax->date_due : "Not Set." );
 	}
 
+	public function visible()
+	{
+		return ( $this->tax->visible ? TRUE : FALSE );
+	}
+
 }

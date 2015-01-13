@@ -35,6 +35,7 @@ class Controller_Setup_Json extends Controller_Json {
 			'country' => $this->request->post('country'),
 			'date_due' => $this->request->post('date_due'),
 			'date_due_months_increment' => $this->request->post('date_due_months_increment'),
+			'visible' => $this->request->post('visible') ? TRUE : FALSE,
 		)));
 		$tax_create_result = $tax_create->execute();
 
@@ -66,6 +67,7 @@ class Controller_Setup_Json extends Controller_Json {
 			'country' => $this->request->post('country'),
 			'date_due' => $this->request->post('date_due'),
 			'date_due_months_increment' => $this->request->post('date_due_months_increment'),
+			'visible' => $this->request->post('visible') ? TRUE : FALSE,
 		)));
 		$tax_update_result = $tax_update->execute();
 
@@ -88,6 +90,7 @@ class Controller_Setup_Json extends Controller_Json {
 			'search_and' => FALSE,
 			'search_code' => $term,
 			'search_name' => $term,
+			'search_include_hidden' => TRUE,
 		)));
 		$tax_search_result = $tax_search->execute();
 
@@ -329,7 +332,7 @@ class Controller_Setup_Json extends Controller_Json {
 		ini_set('memory_limit', '256M');
 
 		// Recalibrate Customer Invoices / Cancellations
-		$customer_sale_calibrate = new Beans_customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+		$customer_sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
 			'date_after' => $date,
 			'date_before' => $date,
 		)));
@@ -362,6 +365,7 @@ class Controller_Setup_Json extends Controller_Json {
 
 		$date_end = $account_transaction_search_result->data->transactions[0]->date;
 
+		// This gets run on the very last iteration of calibration.
 		if( strtotime($date_end) < strtotime($this->_return_object->data->date_next) )
 		{
 			$this->_return_object->data->date_next = FALSE;
@@ -371,6 +375,40 @@ class Controller_Setup_Json extends Controller_Json {
 
 			if( ! $account_calibrate_result->success )
 				return $this->_return_error('Error calibrating individual account balances: '.$account_calibrate_result->error);
+
+			$customer_sale_calibrate_check = new Beans_Customer_Sale_Calibrate_Check($this->_beans_data_auth());
+			$customer_sale_calibrate_check_result = $customer_sale_calibrate_check->execute();
+			
+			if( ! $customer_sale_calibrate_check_result->success )
+				return $this->_return_error('Error calibrating customer sales: '.$customer_sale_calibrate_check_result->error);
+
+			if( count($customer_sale_calibrate_check_result->data->ids) )
+			{
+				$customer_sale_calibrate = new Beans_Customer_Sale_Calibrate($this->_beans_data_auth((object)array(
+					'ids' => $customer_sale_calibrate_check_result->data->ids,
+				)));
+				$customer_sale_calibrate_result = $customer_sale_calibrate->execute();
+
+				if( ! $customer_sale_calibrate_result->success )
+					return $this->_return_error('Error calibrating customer sales: '.$customer_sale_calibrate_result->error);
+			}
+
+			$vendor_purchase_calibrate_check = new Beans_Vendor_Purchase_Calibrate_Check($this->_beans_data_auth());
+			$vendor_purchase_calibrate_check_result = $vendor_purchase_calibrate_check->execute();
+
+			if( ! $vendor_purchase_calibrate_check_result->success )
+				return $this->_return_error('Error calibrating vendor purchases: '.$vendor_purchase_calibrate_check_result->error);
+
+			if( count($vendor_purchase_calibrate_check_result->data->ids) )
+			{
+				$vendor_purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
+					'ids' => $vendor_purchase_calibrate_check_result->data->ids,
+				)));
+				$vendor_purchase_calibrate_result = $vendor_purchase_calibrate->execute();
+
+				if( ! $vendor_purchase_calibrate_result->success )
+					return $this->_return_error('Error calibrating vendor purchases: '.$vendor_purchase_calibrate_result->error);
+			}
 		}
 
 		// Update our latest date in case user pauses and comes back later.

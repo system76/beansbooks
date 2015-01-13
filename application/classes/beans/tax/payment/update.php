@@ -30,6 +30,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @optional writeoff_account_id INTEGER The #Beans_Account# that handles the write-off - only required if there is a writeoff_amount.
 @required amount DECIMAL The total remitted.
 @optional writeoff_amount DECIMAL The total amount to write-off.
+@optional date STRING The YYYY-MM-DD date for this payment.
 @optional check_number STRING
 @optional description STRING A description for the transaction.
 @return payment OBJECT The resulting #Beans_Tax_Payment#.
@@ -105,17 +106,30 @@ class Beans_Tax_Payment_Update extends Beans_Tax_Payment {
 									   ? $this->_data->date
 									   : $this->_old_payment->date;
 
-		$this->_payment->date_start = ( isset($this->_data->date_start) )
-							  ? $this->_data->date_start
-							  : $this->_old_payment->date_start;
+		$this->_payment->date_start = $this->_old_payment->date_start;
 							  
-		$this->_payment->date_end = ( isset($this->_data->date_end) )
-							  ? $this->_data->date_end
-							  : $this->_old_payment->date_end;
+		$this->_payment->date_end =  $this->_old_payment->date_end;
+
+		$this->_payment->writeoff_amount = ( isset($this->_data->writeoff_amount) )
+										 ? $this->_data->writeoff_amount
+										 : 0.00;
 
 		$this->_payment->id = $this->_old_payment->id;
 
 		$this->_validate_tax_payment($this->_payment);
+
+		$this->_payment->invoiced_line_amount = $this->_old_payment->invoiced_line_amount;
+		$this->_payment->invoiced_line_taxable_amount = $this->_old_payment->invoiced_line_taxable_amount;
+		$this->_payment->invoiced_amount = $this->_old_payment->invoiced_amount;
+		$this->_payment->refunded_line_amount = $this->_old_payment->refunded_line_amount;
+		$this->_payment->refunded_line_taxable_amount = $this->_old_payment->refunded_line_taxable_amount;
+		$this->_payment->refunded_amount = $this->_old_payment->refunded_amount;
+		$this->_payment->net_line_amount = $this->_old_payment->net_line_amount;
+		$this->_payment->net_line_taxable_amount = $this->_old_payment->net_line_taxable_amount;
+		$this->_payment->net_amount = $this->_old_payment->net_amount;
+
+		if( $this->_payment->net_amount != $this->_beans_round($this->_payment->amount + $this->_payment->writeoff_amount) )
+			throw new Exception("Payment amount and writeoff amount must total the payment total.");
 
 		// Formulate data request object for Beans_Account_Transaction_Create
 		$create_transaction_data = new stdClass;
@@ -219,9 +233,6 @@ class Beans_Tax_Payment_Update extends Beans_Tax_Payment {
 		)));
 		$account_transaction_delete_result = $account_transaction_delete->execute();
 		
-		// Reverse Tax Balance
-		$this->_tax_payment_adjust_balance($this->_old_payment->tax_id,$this->_old_payment->amount);
-		
 		// Delete Payment
 		$this->_old_payment->delete();
 		
@@ -236,13 +247,10 @@ class Beans_Tax_Payment_Update extends Beans_Tax_Payment {
 		$this->_payment->save();
 
 		// Update tax balance
-		$this->_tax_payment_adjust_balance($this->_payment->tax_id,$this->_payment->amount);
-
-		// Update tax due date.
-		$this->_tax_update_due_date($this->_payment->tax_id,$this->_payment->date);
+		$this->_tax_payment_update_balance($this->_payment->tax_id);
 
 		return (object)array(
-			"payment" => $this->_return_tax_payment_element($this->_payment),
+			"payment" => $this->_return_tax_payment_element($this->_payment, TRUE),
 		);
 	}
 }

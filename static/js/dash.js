@@ -1,3 +1,21 @@
+/*
+BeansBooks
+Copyright (C) System76, Inc.
+
+This file is part of BeansBooks.
+
+BeansBooks is free software; you can redistribute it and/or modify
+it under the terms of the BeansBooks Public License.
+
+BeansBooks is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the BeansBooks Public License for more details.
+
+You should have received a copy of the BeansBooks Public License
+along with BeansBooks; if not, email info@beansbooks.com.
+*/
+
 if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) {
 
 	/**
@@ -68,36 +86,37 @@ if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) 
 
 		$('#dash-index-close-books-submit').click(function (e) {
 			e.preventDefault();
-			showPleaseWait();
-			$message = $(this).closest('.dash-index-message');
-			var include_account_ids = ',';
-			$('.dash-index-close-books-include_account_ids').each(function () {
-				if( $(this).val() && 
-					$(this).val().length ) {
-					include_account_ids += $(this).val()+',';
-				}
-			});
-
-			console.log(include_account_ids);
-			$message.find('input[name="include_account_ids"]').val(include_account_ids);
-			$.post(
-				'/dash/json/closebooks',
-				$message.find('input, select').serialize(),
-				function (data) {
-					hidePleaseWait();
-					if( ! data.success ) {
-						showError(data.error);
-					} else {
-						$newMessage = $(data.data.message);
-						$newMessage.addClass('hidden');
-						$message.after($newMessage);
-						$message.slideUp(function () {
-							$newMessage.slideDown();
-						});
+			if( confirm("Are you sure you want to close your books?  Click 'OK' to continue.") ) {
+				showPleaseWait();
+				$message = $(this).closest('.dash-index-message');
+				var include_account_ids = ',';
+				$('.dash-index-close-books-include_account_ids').each(function () {
+					if( $(this).val() && 
+						$(this).val().length ) {
+						include_account_ids += $(this).val()+',';
 					}
-				},
-				'json'
-			);
+				});
+
+				$message.find('input[name="include_account_ids"]').val(include_account_ids);
+				$.post(
+					'/dash/json/closebooks',
+					$message.find('input, select').serialize(),
+					function (data) {
+						hidePleaseWait();
+						if( ! data.success ) {
+							showError(data.error);
+						} else {
+							$newMessage = $(data.data.message);
+							$newMessage.addClass('hidden');
+							$message.after($newMessage);
+							$message.slideUp(function () {
+								$newMessage.slideDown();
+							});
+						}
+					},
+					'json'
+				);
+			}
 		});
 
 		// Print Report
@@ -648,10 +667,58 @@ if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) 
 			dateFormat: "yy-mm-dd"
 		});
 
-		$('input.report-taxes-date, input#report-taxes-tax').live('change', function() {
+		$('input#report-taxes-tax').live('change', function() {
+			reportTaxesLoadPayments();
+		});
+
+		$('select#report-taxes-payments').live('change', function () {
+			if( ! $(this).val() ||
+				! $(this).val().length ) {
+				return;
+			}
 			showPleaseWait();
 			$(this).closest('form').submit();
 		});
+
+		function reportTaxesLoadPayments() {
+			if( ! $('input#report-taxes-tax').val() || 
+				! $('input#report-taxes-tax').val().length ) {
+				return;
+			}
+			showPleaseWait();
+
+			$.post(
+				'/dash/json/loadtaxpayments',
+				{
+					tax_id: $('input#report-taxes-tax').val()
+				},
+				function (response) {
+					if( ! response.success ) {
+						return showError(response.error+response.auth_error);
+					}
+					$('select#report-taxes-payments option').each(function () {
+						if( $(this).val() != "prep" &&
+							$(this).val().length > 0 ) {
+							$(this).remove();
+						}
+					});
+					for( i in response.data.payments ) {
+						$tax_payment = $(
+							'<option value="'+response.data.payments[i].id+'">' + 
+							response.data.payments[i].date_start + 
+							' - ' +
+							response.data.payments[i].date_end+ 
+							' ( Paid on '+
+							response.data.payments[i].date+
+							' )' +
+							'</option>');
+						$('select#report-taxes-payments').append($tax_payment);
+					}
+					hidePleaseWait();
+				},
+				'json'
+			);
+		}
 
 		$('input#report-taxes-tax').select2({
 			minimumInputLength: 1,

@@ -101,7 +101,7 @@ class Controller_Accounts extends Controller_View {
 
 		if( $account_transaction_search_result->data->total_results > 0 )
 		{
-			Session::instance()->set('account_error_message',"An opening balance has already been created and cannot be done again.<br>To make adjustments to your accuunts please add the appropriate transactions to your account journals.");
+			Session::instance()->set('account_error_message',"An opening balance has already been created and cannot be done again.<br>To make adjustments to your accounts please add the appropriate transactions to your account journals.");
 			$this->request->redirect('/accounts/');
 		}
 
@@ -485,6 +485,23 @@ class Controller_Accounts extends Controller_View {
 			$this->_action_tab_name = $account_lookup_result->data->account->name;
 			$this->_action_tab_uri = '/accounts/view/'.$account_lookup_result->data->account->id;
 		}
+	}
+
+	public function action_reconciledelete()
+	{
+		$id = $this->request->post('id');
+
+		$account_reconcile_delete = new Beans_Account_Reconcile_Delete($this->_beans_data_auth((object)array(
+			'id' => $id,
+		)));
+		$account_reconcile_delete_result = $account_reconcile_delete->execute();
+
+		if( ! $account_reconcile_delete_result->success )
+			Session::instance()->set('account_error_message',"An error occurred when deleting that statement:<br>".$account_reconcile_delete_result->auth_error.$account_reconcile_delete_result->error);
+		else
+			Session::instance()->set('account_success_message',"Your statement was successfully removed.");
+
+		$this->request->redirect($this->request->referrer());
 	}
 
 	public function action_reconcilecreate()

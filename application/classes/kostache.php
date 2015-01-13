@@ -78,4 +78,38 @@ class Kostache extends Kohana_Kostache {
 		return $data;
 	}
 
+	protected function _convert_object_to_array($object)
+	{
+		if( ! is_object($object) &&
+			! is_array($object) )
+			return $object;
+
+		$return_array = array();
+
+		foreach( (array)$object as $key => $value )
+		{
+			if( is_array($value) ||
+				is_object($value) )
+			{
+				$return_array[$key] = $this->_convert_object_to_array($value);
+				/*
+				$return_array[$key] = array();
+
+				foreach( $value as $value_object )
+					$return_array[$key][] = $this->_convert_object_to_array($value_object, $debug);
+				*/
+			}
+			else if( is_object($value) )
+			{
+				$return_array[$key] = $this->_convert_object_to_array($value);
+			}
+			else
+			{
+				$return_array[$key] = $value;
+			}
+		}
+
+		return $return_array;
+	}
+
 }

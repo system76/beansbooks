@@ -28,16 +28,12 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required date_start STRING Inclusive YYYY-MM-DD date ( i.e. >= date_start )
 @required date_end STRING Inclusive YYYY-MM-DD date ( i.e. <= date_end )
 @optional payment_id INTEGER The ID of a #Beans_Tax_Payment# to ignore when tabulating totals.  Useful if updating a previous payment.
-@returns tax_prep OBJECT An object with information regarding the tax payment for that time period.
-@returns @attribute tax_prep tax_collected DECIMAL Total amount of tax collected.
-@returns @attribute tax_prep total_sales DECIMAL Total sales for that time period on applied taxes.
-@returns @attribute tax_prep taxable_sales DECIMAL The amount of taxable sales for that time period on that tax.
-@returns @attribute tax_prep tax_returned DECIMAL Amount of taxes returned for refunds.
-@returns @attribute tax_prep total_returns DECIMAL Total returned.
-@returns @attribute tax_prep taxable_returns DECIMAL The taxable total returned.
-@returns @attribute tax_prep tax_payments ARRAY An array of #Beans_Tax_Payment# that occurred for periods within that time period.
-@returns @attribute tax_prep tax_payments_total DECIMAL Total tax remitted for periods within that time period.
-@returns @attribute tax_prep tax OBJECT The applicable #Beans_Tax#.
+@returns tax OBJECT The applicable #Beans_Tax#.
+@returns date_start STRING 
+@returns date_end STRING
+@returns taxes OBJECT The applicable taxes for the given period.
+@returns @attribute taxes paid OBJECT The taxes that have already been paid during this period.  Includes invoiced and refunded - objects - each with line_amount, line_taxable_amount, amount and exemptions.
+@returns @attribute taxes due OBJECT The taxes that have already been paid during this period.  Includes invoiced and refunded - objects - each with line_amount, line_taxable_amount, amount and exemptions.
 ---BEANSENDSPEC---
 */
 class Beans_Tax_Prep extends Beans_Tax {
@@ -57,7 +53,7 @@ class Beans_Tax_Prep extends Beans_Tax {
 				   : 0;
 
 		$this->_payment_id = ( isset($data->payment_id) AND
-								$data->payment_id )
+							   $data->payment_id )
 						   ? $data->payment_id
 						   : -1;	// a value that will never match a real record ( BIGINT UNSIGNED )
 
@@ -89,78 +85,115 @@ class Beans_Tax_Prep extends Beans_Tax {
 		if( $this->_date_end != date("Y-m-d",strtotime($this->_date_end)) )
 			throw new Exception("Invalid date start: must be in YYYY-MM-DD format.");
 
-		// Query all sales with that tax in between the dates.
-		$sale_taxes = ORM::Factory('form_tax')->distinct(TRUE)->
-			join('forms','RIGHT')->on('form_tax.form_id','=','forms.id')->
-			where('forms.date_created','>=',$this->_date_start)->
-			where('forms.date_created','<=',$this->_date_end)->
-			where('forms.type','=','sale')->
-			where('form_tax.tax_id','=',$this->_tax->id)->
-			find_all();
+		$periods = array(
+			'paid' => 'tax_payment_id IS NOT NULL AND date <= DATE("'.$this->_date_end.'") AND date >= DATE("'.$this->_date_start.'")', 
+			'due' => 'tax_payment_id IS NULL AND date <= DATE("'.$this->_date_end.'")',
+		);
 
-		$tax_collected = 0.00;
-		$total_sales = 0.00;
-		$taxable_sales = 0.00;
-		$tax_returned = 0.00;
-		$total_returns = 0.00;
-		$taxable_returns = 0.00;
-		
-		// V2Item
-		// Consider adding form.amount to speed this ( and other ) processes up.
-		$test_total_sales = 0.00;
-		$test_total_returns = 0.00;
-		foreach( $sale_taxes as $sale_tax )
+		$categories = array(
+			'invoiced' => 'type = "invoice"',
+			'refunded' => 'type = "refund"',
+		);
+
+		$taxes = (object)array();
+
+		$taxes->net = (object)array(
+			'form_line_amount' => 0.00,
+			'form_line_taxable_amount' => 0.00,
+			'amount' => 0.00,
+		);
+
+		foreach( $periods as $period => $period_query )
 		{
-			if( $sale_tax->total > 0 )
+			$taxes->{$period} = (object)array();
+
+			$taxes->{$period}->net = (object)array(
+				'form_line_amount' => 0.00,
+				'form_line_taxable_amount' => 0.00,
+				'amount' => 0.00,
+			);
+
+			foreach( $categories as $category => $category_query )
 			{
-				$tax_collected = $this->_beans_round( $tax_collected + $sale_tax->total );
-				$taxable_sales = $this->_beans_round( $taxable_sales + $sale_tax->amount );
-				$test_total_sales = $this->_beans_round( $test_total_sales + $sale_tax->form->amount );
-				foreach( $sale_tax->form->form_lines->find_all() as $sale_line )
-					$total_sales = $this->_beans_round( $total_sales + $sale_line->total );
-			}
-			else
-			{
-				$tax_returned = $this->_beans_round( $tax_returned + $sale_tax->total );
-				$taxable_returns = $this->_beans_round( $taxable_returns + $sale_tax->amount );
-				$test_total_returns = $this->_beans_round( $test_total_returns + $sale_tax->form->amount );
-				foreach( $sale_tax->form->form_lines->find_all() as $sale_line )
-					$total_returns = $this->_beans_round( $total_returns + $sale_line->total );
+				$taxes->{$period}->{$category} = (object)array(
+					'form_line_amount' => 0.00,
+					'form_line_taxable_amount' => 0.00,
+					'amount' => 0.00,
+					'liabilities' => array(),
+				);
+
+				$tax_item_summaries_query = 
+					'SELECT '.
+					'form_id as form_id, '.
+					'IFNULL(SUM(form_line_amount),0.00) as form_line_amount, '.
+					'IFNULL(SUM(form_line_taxable_amount),0.00) as form_line_taxable_amount, '.
+					'IFNULL(SUM(total),0.00) as amount, '.
+					'type as type '.
+					'FROM tax_items WHERE '.
+					'tax_id = '.$this->_tax->id.' AND '.
+					$period_query.' AND '.
+					$category_query.' '.
+					'GROUP BY form_id ';
+
+				$tax_item_summaries = DB::Query(Database::SELECT, $tax_item_summaries_query)->execute()->as_array();
+
+				foreach( $tax_item_summaries as $tax_item_summary )
+				{
+					$taxes->net->form_line_amount = $this->_beans_round(
+						$taxes->net->form_line_amount +
+						$tax_item_summary['form_line_amount']
+					);
+					$taxes->net->form_line_taxable_amount = $this->_beans_round(
+						$taxes->net->form_line_taxable_amount +
+						$tax_item_summary['form_line_taxable_amount']
+					);
+					$taxes->net->amount = $this->_beans_round(
+						$taxes->net->amount +
+						$tax_item_summary['amount']
+					);
+					
+					$taxes->{$period}->net->form_line_amount = $this->_beans_round(
+						$taxes->{$period}->net->form_line_amount +
+						$tax_item_summary['form_line_amount']
+					);
+					$taxes->{$period}->net->form_line_taxable_amount = $this->_beans_round(
+						$taxes->{$period}->net->form_line_taxable_amount +
+						$tax_item_summary['form_line_taxable_amount']
+					);
+					$taxes->{$period}->net->amount = $this->_beans_round(
+						$taxes->{$period}->net->amount +
+						$tax_item_summary['amount']
+					);
+					
+					$taxes->{$period}->{$category}->form_line_amount = $this->_beans_round(
+						$taxes->{$period}->{$category}->form_line_amount +
+						$tax_item_summary['form_line_amount']
+					);
+					$taxes->{$period}->{$category}->form_line_taxable_amount = $this->_beans_round(
+						$taxes->{$period}->{$category}->form_line_taxable_amount +
+						$tax_item_summary['form_line_taxable_amount']
+					);
+					$taxes->{$period}->{$category}->amount = $this->_beans_round(
+						$taxes->{$period}->{$category}->amount +
+						$tax_item_summary['amount']
+					);
+					
+					$taxes->{$period}->{$category}->liabilities[] = $this->_return_tax_liability_element(
+						$tax_item_summary['form_id'],
+						$tax_item_summary['form_line_amount'], 
+						$tax_item_summary['form_line_taxable_amount'], 
+						$tax_item_summary['amount'],
+						$tax_item_summary['type']
+					);
+				}
 			}
 		}
 
-		if( $test_total_sales != $total_sales )
-			throw new Exception("MISMATCH TOTAL SALES: ".$test_total_sales." ? ".$total_sales);
-
-		if( $test_total_returns != $total_returns )
-			throw new Exception("MISMATCH TOTAL RETURNS: ".$test_total_returns." ? ".$total_returns);
-
-		// Find tax payments in same date range.
-		$tax_payments = ORM::Factory('tax_payment')->
-			where('date_start','>=',$this->_date_start)->
-			where('date_end','<=',$this->_date_end)->
-			where('tax_id','=',$this->_tax->id)->
-			where('id','!=',$this->_payment_id)->
-			find_all();
-
-		$tax_payments_total = 0.00;
-
-		if( count($tax_payments) )
-			foreach( $tax_payments as $tax_payment )
-				$tax_payments_total = $this->_beans_round( $tax_payments_total + $tax_payment->amount );
-
 		return (object)array(
-			"tax_prep" => (object)array(
-				'tax_collected' => $tax_collected,
-				'total_sales' => $total_sales,
-				'taxable_sales' => $taxable_sales,
-				'tax_returned' => $tax_returned,
-				'total_returns' => $total_returns,
-				'taxable_returns' => $taxable_returns,
-				'tax_payments' => $this->_return_tax_payments_array($tax_payments),
-				'tax_payments_total' => $tax_payments_total,
-				'tax' => $this->_return_tax_element($this->_tax),
-			),
+			'tax' => $this->_return_tax_element($this->_tax),
+			'taxes' => $taxes,
+			'date_start' => $this->_date_start,
+			'date_end' => $this->_date_end,
 		);
 	}
 }

@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans {
 
-	protected $_BEANS_VERSION = '1.2.1';
+	protected $_BEANS_VERSION = '1.3.1';
 
 	private $_beans_settings;
 	private $_beans_config;
@@ -466,6 +466,21 @@ class Beans {
 		return FALSE;
 	}
 
+	protected function _get_books_closed_date()
+	{
+		$fye_transaction = ORM::Factory('transaction')
+			->where('close_books','IS NOT',NULL)
+			->order_by('close_books','desc')
+			->find();
+
+		$fye_date = date("Y-m-d",0);
+
+		if( $fye_transaction->loaded() )
+			$fye_date = date("Y-m-t",strtotime(substr($fye_transaction->close_books,0,7).'-01'));
+
+		return $fye_date;
+	}
+
 	// Sort mechanism for usort() to properly order journal entries.
 	// Priority is date, close_books, id
 	protected function _journal_usort($a,$b)
@@ -549,6 +564,25 @@ class Beans {
 		}
 
 		return $sale_balance;
+	}
+
+	private $_get_account_name_by_id_cache = array();
+	protected function _get_account_name_by_id($account_id)
+	{
+		if( ! $account_id )
+			return NULL;
+
+		if( isset($this->_get_account_name_by_id_cache[$account_id]) )
+			return $this->_get_account_name_by_id_cache[$account_id];
+
+		$account = ORM::Factory('account',$account_id);
+
+		if( ! $account->loaded() )
+			throw new Exception("Invalid account ID: account not found.");
+
+		$this->_get_account_name_by_id_cache[$account_id] = $account->name;
+
+		return $this->_get_account_name_by_id_cache[$account_id];
 	}
 
 }
