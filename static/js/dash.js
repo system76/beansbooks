@@ -668,7 +668,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) 
 		});
 
 		$('input#report-taxes-tax').live('change', function() {
-			console.log('CHANGED: '+$('input#report-taxes-tax').val());
 			reportTaxesLoadPayments();
 		});
 
@@ -677,6 +676,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)dash(\\s|$)')) !== null ) 
 				! $(this).val().length ) {
 				return;
 			}
+			showPleaseWait();
 			$(this).closest('form').submit();
 		});
 
