@@ -103,6 +103,7 @@ class Beans_Report_Sales extends Beans_Report {
 			
 			$date_range_orders_query = 	'SELECT SUM(forms.total) as total, SUM(forms.amount) as subtotal, COUNT(forms.id) as orders FROM forms WHERE ';
 			$date_range_orders_query .= 'forms.type = "sale" AND ';
+			$date_range_orders_query .= 'forms.date_billed IS NOT NULL AND ';
 			$date_range_orders_query .= 'forms.date_billed >= DATE("'.$date_range->date_start.'") AND ';
 			$date_range_orders_query .= 'forms.date_billed <= DATE("'.$date_range->date_end.'") ';
 
