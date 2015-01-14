@@ -57,6 +57,7 @@ class Beans_Report_Receivables extends Beans_Report {
 			
 			$invoices = ORM::Factory('form')->
 				where('type','=','sale')->
+				where('date_billed','IS NOT',NULL)->
 				and_where_open()->
 					or_where('date_billed','<=',$this->_date)->
 					or_where('date_cancelled','<=',$this->_date)->
@@ -144,6 +145,7 @@ class Beans_Report_Receivables extends Beans_Report {
 			$report_sale = (object)array(
 				'id' => $sale->id,
 				'date_created' => $sale->date_created,
+				'date_billed' => $sale->date_billed,
 				'date_due' => $sale->date_due,
 				'sale_number' => $sale->code,
 				'balance' => ( $sale->balance * -1),
