@@ -77,8 +77,9 @@ class Beans_Report_Customer extends Beans_Report {
 
 			$customer_ids_query = 	'SELECT forms.entity_id as customer_id, SUM(forms.total) as customer_total FROM forms WHERE ';
 			$customer_ids_query .=	'forms.type = "sale" AND ';
-			$customer_ids_query .= 	'forms.date_created >= "'.$this->_date_start.'" AND ';
-			$customer_ids_query .=	'forms.date_created <= "'.$this->_date_end.'" ';
+			$customer_ids_query .= 	'forms.date_billed IS NOT NULL AND ';
+			$customer_ids_query .= 	'forms.date_billed >= "'.$this->_date_start.'" AND ';
+			$customer_ids_query .=	'forms.date_billed <= "'.$this->_date_end.'" ';
 			$customer_ids_query .= 	'GROUP BY forms.entity_id ';
 			$customer_ids_query .= 	'ORDER BY customer_total DESC ';
 			$customer_ids_query .=	'LIMIT '.$top_count;
@@ -149,8 +150,9 @@ class Beans_Report_Customer extends Beans_Report {
 			$date_range_query .= 	'form_lines.amount >= 0 AND ';
 			$date_range_query .= 	'forms.type = "sale" AND ';
 			$date_range_query .=	'forms.entity_id = "'.$report->customer_id.'" AND '; 
-			$date_range_query .= 	'forms.date_created >= DATE("'.$report->date_start.'") AND ';
-			$date_range_query .= 	'forms.date_created <= DATE("'.$report->date_end.'") ';
+			$date_range_query .= 	'forms.date_billed IS NOT NULL AND ';
+			$date_range_query .= 	'forms.date_billed >= DATE("'.$report->date_start.'") AND ';
+			$date_range_query .= 	'forms.date_billed <= DATE("'.$report->date_end.'") ';
 			$date_range_query .= 	'GROUP BY sign';
 			
 			$date_range_result = DB::Query(Database::SELECT,$date_range_query)->execute()->as_array();
@@ -160,8 +162,9 @@ class Beans_Report_Customer extends Beans_Report {
 			$date_range_query .= 	'form_lines.amount < 0 AND ';
 			$date_range_query .= 	'forms.type = "sale" AND ';
 			$date_range_query .=	'forms.entity_id = "'.$report->customer_id.'" AND '; 
-			$date_range_query .= 	'forms.date_created >= DATE("'.$report->date_start.'") AND ';
-			$date_range_query .= 	'forms.date_created <= DATE("'.$report->date_end.'") ';
+			$date_range_query .= 	'forms.date_billed IS NOT NULL AND ';
+			$date_range_query .= 	'forms.date_billed >= DATE("'.$report->date_start.'") AND ';
+			$date_range_query .= 	'forms.date_billed <= DATE("'.$report->date_end.'") ';
 			$date_range_query .= 	'GROUP BY sign';
 
 			$date_range_result = array_merge($date_range_result, DB::Query(Database::SELECT,$date_range_query)->execute()->as_array());
@@ -172,8 +175,9 @@ class Beans_Report_Customer extends Beans_Report {
 			$date_range_orders_query = 	'SELECT SUM(forms.total) as total, SUM(forms.amount) as subtotal, COUNT(forms.id) as orders FROM forms WHERE ';
 			$date_range_orders_query .= 'forms.type = "sale" AND ';
 			$date_range_orders_query .=	'forms.entity_id = "'.$report->customer_id.'" AND '; 
-			$date_range_orders_query .= 'forms.date_created >= DATE("'.$report->date_start.'") AND ';
-			$date_range_orders_query .= 'forms.date_created <= DATE("'.$report->date_end.'") ';
+			$date_range_orders_query .= 'forms.date_billed IS NOT NULL AND ';
+			$date_range_orders_query .= 'forms.date_billed >= DATE("'.$report->date_start.'") AND ';
+			$date_range_orders_query .= 'forms.date_billed <= DATE("'.$report->date_end.'") ';
 
 			$date_range_orders_result = DB::Query(Database::SELECT,$date_range_orders_query)->execute()->as_array();
 
