@@ -154,7 +154,7 @@ class View_Dash_Taxes extends View_Template {
 		$return_array['writeoff_amount_formatted'] = FALSE;
 
 		if( $this->payment->amount )
-			$return_array['paid_amount_formatted'] = $this->_format_beans_number($this->payment->amount - $this->payment->writeoff_amount);
+			$return_array['paid_amount_formatted'] = $this->_format_beans_number($this->payment->amount);
 
 		if( $this->payment->writeoff_amount )
 			$return_array['writeoff_amount_formatted'] = $this->_format_beans_number($this->payment->writeoff_amount);

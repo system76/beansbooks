@@ -78,8 +78,9 @@ class Beans_Report_Sales extends Beans_Report {
 			$date_range_query .= 	'form_lines RIGHT JOIN forms ON form_lines.form_id = forms.id WHERE ';
 			$date_range_query .= 	'form_lines.amount >= 0 AND ';
 			$date_range_query .= 	'forms.type = "sale" AND ';
-			$date_range_query .= 	'forms.date_created >= DATE("'.$date_range->date_start.'") AND ';
-			$date_range_query .= 	'forms.date_created <= DATE("'.$date_range->date_end.'") ';
+			$date_range_query .= 	'forms.date_billed IS NOT NULL AND ';
+			$date_range_query .= 	'forms.date_billed >= DATE("'.$date_range->date_start.'") AND ';
+			$date_range_query .= 	'forms.date_billed <= DATE("'.$date_range->date_end.'") ';
 			$date_range_query .= 	'GROUP BY sign';
 			
 			$date_range_result = DB::Query(Database::SELECT,$date_range_query)->execute()->as_array();
@@ -88,8 +89,9 @@ class Beans_Report_Sales extends Beans_Report {
 			$date_range_query .= 	'form_lines RIGHT JOIN forms ON form_lines.form_id = forms.id WHERE ';
 			$date_range_query .= 	'form_lines.amount < 0 AND ';
 			$date_range_query .= 	'forms.type = "sale" AND ';
-			$date_range_query .= 	'forms.date_created >= DATE("'.$date_range->date_start.'") AND ';
-			$date_range_query .= 	'forms.date_created <= DATE("'.$date_range->date_end.'") ';
+			$date_range_query .= 	'forms.date_billed IS NOT NULL AND ';
+			$date_range_query .= 	'forms.date_billed >= DATE("'.$date_range->date_start.'") AND ';
+			$date_range_query .= 	'forms.date_billed <= DATE("'.$date_range->date_end.'") ';
 			$date_range_query .= 	'GROUP BY sign';
 
 			$date_range_result = array_merge($date_range_result, DB::Query(Database::SELECT,$date_range_query)->execute()->as_array());
@@ -101,8 +103,9 @@ class Beans_Report_Sales extends Beans_Report {
 			
 			$date_range_orders_query = 	'SELECT SUM(forms.total) as total, SUM(forms.amount) as subtotal, COUNT(forms.id) as orders FROM forms WHERE ';
 			$date_range_orders_query .= 'forms.type = "sale" AND ';
-			$date_range_orders_query .= 'forms.date_created >= DATE("'.$date_range->date_start.'") AND ';
-			$date_range_orders_query .= 'forms.date_created <= DATE("'.$date_range->date_end.'") ';
+			$date_range_orders_query .= 'forms.date_billed IS NOT NULL AND ';
+			$date_range_orders_query .= 'forms.date_billed >= DATE("'.$date_range->date_start.'") AND ';
+			$date_range_orders_query .= 'forms.date_billed <= DATE("'.$date_range->date_end.'") ';
 
 			$date_range_orders_result = DB::Query(Database::SELECT,$date_range_orders_query)->execute()->as_array();
 

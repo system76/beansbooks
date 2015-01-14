@@ -172,6 +172,7 @@ class View_Dash_Receivables extends View_Template {
 	{
 		$return_array = array();
 
+		$return_array['date_billed'] = $sale->date_billed;
 		$return_array['date_created'] = $sale->date_created;
 		$return_array['sale_id'] = $sale->id;
 		$return_array['sale_number'] = $sale->sale_number;
