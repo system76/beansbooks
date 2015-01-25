@@ -52,7 +52,7 @@ class Beans_Customer_Lookup extends Beans_Customer {
 
 		// Grab customer sales.
 		$customer_sale_search = new Beans_Customer_Sale_Search($this->_beans_data_auth((object)array(
-			'customer_id' => $this->_customer->id,
+			'search_customer_id' => $this->_customer->id,
 		)));
 		$customer_sale_search_result = $customer_sale_search->execute();
 
