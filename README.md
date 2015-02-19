@@ -243,3 +243,15 @@ Then go ahead and edit your virtual host to support SSL connections:
 **Note - if you adjusted your VirtualHost above for Apache 2.4, you should do so here as well.**
 
 When you're done making changes, make sure to restart Apache.
+
+## Troubleshooting
+
+### MCrypt
+
+If PHP / Apache complain that you're missing mcrypt support, or that an algorithm isn't available - you likely need to manually enable the mcrypt module:
+
+```
+sudo php5enmod mcrypt
+```
+
+Make sure to restart Apache afterwards and it should be resolved.
