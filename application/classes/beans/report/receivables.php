@@ -57,7 +57,10 @@ class Beans_Report_Receivables extends Beans_Report {
 			
 			$invoices = ORM::Factory('form')->
 				where('type','=','sale')->
-				where('date_billed','IS NOT',NULL)->
+				and_where_open()->
+					or_where('date_billed','IS NOT',NULL)->
+					or_where('date_cancelled','IS NOT',NULL)->
+				and_where_close()->
 				and_where_open()->
 					or_where('date_billed','<=',$this->_date)->
 					or_where('date_cancelled','<=',$this->_date)->
@@ -106,8 +109,11 @@ class Beans_Report_Receivables extends Beans_Report {
 			if( $this->_days_late_minimum )
 				$sales = $sales->where('date_due','<=',date("Y-m-d",strtotime("-".$this->_days_late_minimum." Days")));
 			
-			$sales = $sales->where('date_due','IS NOT',NULL)->order_by('date_due','ASC')->find_all();
-
+			$sales = $sales
+				->and_where_open()
+					->or_where('date_due','IS NOT',NULL)
+					->or_where('date_cancelled','IS NOT',NULL)
+				->and_where_close()->order_by('date_due','ASC')->find_all();
 		}
 
 		$customers = array();
