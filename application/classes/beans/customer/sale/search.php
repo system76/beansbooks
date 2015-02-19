@@ -231,7 +231,10 @@ class Beans_Customer_Sale_Search extends Beans_Customer_Sale {
 			$this->_search_flag_past_due )
 			$this->_sales = $this->_sales->
 				where('form_sale.balance','!=',0)->
-				where('form_sale.date_due','<',date("Y-m-d"));
+				and_where_open()->
+					or_where('form_sale.date_due','<',date("Y-m-d"))->
+					or_where('form_sale.date_cancelled','<',date("Y-m-d"))->
+				and_where_close();
 		else if( $this->_search_flag_past_due !== NULL )
 			$this->_sales = $this->_sales->
 				and_where_open()->
