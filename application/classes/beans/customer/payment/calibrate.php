@@ -383,8 +383,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 												  ? ( $transfer_amount * $deposit_account->type->table_sign )
 												  : ( $transfer_amount * -1 * $deposit_account->type->table_sign );
 		
-		$sale_account_transfers[$deposit_account->id] = $payment_object->amount
-														* $deposit_account->type->table_sign;
+		$sale_account_transfers[$deposit_account->id] = $payment_object->deposit_transaction->amount;
 
 		$update_transaction_data->account_transactions = array();
 
