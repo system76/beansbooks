@@ -55,42 +55,27 @@ class Beans_Account_Calibrate_Check extends Beans_Account {
 			);
 		}
 
-		// TODO - Improve this query to see mid-journal balance issues that may have accidentally corrected.
-		$calibrate_account_ids_query = 
-			'SELECT * FROM '.
-			'( '.
-			'    SELECT '.
-			'    accounts.id as account_id, '.
-			'    accounts.balance as account_balance, '.
-			'    sorted_account_transactions.transaction_balance as last_transaction_balance '.
-			'    FROM  '.
-			'    accounts INNER JOIN  '.
-			'    ( '.
-			'        SELECT  '.
-			'        account_transactions.account_id as transaction_account_id, '.
-			'        account_transactions.balance as transaction_balance '.
-			'        FROM  '.
-			'        account_transactions '.
-			'        ORDER BY  '.
-			'        date DESC, close_books ASC, transaction_id DESC '.
-			'    ) sorted_account_transactions '.
-			'    ON '.
-			'    accounts.id = sorted_account_transactions.transaction_account_id '.
-			'    GROUP BY (accounts.id) '.
-			') account_balances '.
-			'WHERE  '.
-			'account_balances.account_balance != account_balances.last_transaction_balance ';
-
-		$calibrate_account_ids = DB::Query(Database::SELECT,$calibrate_account_ids_query)->execute()->as_array();
-
-		if( $calibrate_account_ids &&
-			count($calibrate_account_ids) )
+		foreach( ORM::Factory('account')->find_all() as $account )
 		{
-			foreach( $calibrate_account_ids as $calibrate_account_id )
-			{
-				if( ! in_array($calibrate_account_id['account_id'], $account_ids) )
-					$account_ids[] = $calibrate_account_id['account_id'];
-			}
+			$last_account_transaction_balance_query = 
+				' SELECT '.
+				' balance '.
+				' FROM '.
+				' account_transactions '.
+				' WHERE '.
+				' account_id = '.$account->id.' '.
+				' ORDER BY '.
+				' date DESC, close_books ASC, transaction_id DESC '.
+				' LIMIT 1 ';
+
+			$last_account_transaction_balance = DB::Query(
+				Database::SELECT,
+				$last_account_transaction_balance_query
+			)->execute()->as_array();
+
+			if( count($last_account_transaction_balance) &&
+				$last_account_transaction_balance[0]['balance'] != $account->balance )
+				$account_ids[] = $account->id;
 		}
 
 		return (object)array(
