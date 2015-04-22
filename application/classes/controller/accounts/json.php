@@ -114,6 +114,7 @@ class Controller_Accounts_Json extends Controller_Json {
 		foreach( $account_transactions_search_result->data->transactions as $transaction )
 		{
 			$html = new View_Partials_Accounts_View_Transaction;
+			$html->setup_company_list_result = $this->_setup_company_list_result;
 			$html->account_lookup_result = $account_lookup_result;
 			$html->transaction = $transaction;
 			$html->account_id = $account_id;
@@ -167,6 +168,7 @@ class Controller_Accounts_Json extends Controller_Json {
 			foreach( $account_transactions_search_result->data->transactions as $transaction )
 			{
 				$html = new View_Partials_Accounts_View_Transaction;
+				$html->setup_company_list_result = $this->_setup_company_list_result;
 				$html->account_lookup_result = $account_lookup_result;
 				$html->transaction = $transaction;
 				$html->account_id = $account_id;
@@ -220,6 +222,7 @@ class Controller_Accounts_Json extends Controller_Json {
 		foreach( $account_transactions_search_result->data->transactions as $transaction )
 		{
 			$html = new View_Partials_Accounts_View_Transaction;
+			$html->setup_company_list_result = $this->_setup_company_list_result;
 			$html->account_lookup_result = $account_lookup_result;
 			$html->transaction = $transaction;
 			$html->account_id = $account_id;
@@ -382,6 +385,7 @@ class Controller_Accounts_Json extends Controller_Json {
 		$account_lookup_result = $account_lookup->execute();
 
 		$html = new View_Partials_Accounts_View_Transaction;
+		$html->setup_company_list_result = $this->_setup_company_list_result;
 		$html->account_lookup_result = $account_lookup_result;
 		$html->transaction = $account_transaction_create_result->data->transaction;
 		$html->account_id = $this->request->post('transaction-account-id');
@@ -460,6 +464,7 @@ class Controller_Accounts_Json extends Controller_Json {
 		$account_lookup_result = $account_lookup->execute();
 
 		$html = new View_Partials_Accounts_View_Transaction;
+		$html->setup_company_list_result = $this->_setup_company_list_result;
 		$html->account_lookup_result = $account_lookup_result;
 		$html->transaction = $account_transaction_update_result->data->transaction;
 		$html->account_id = $this->request->post('transaction-account-id');
