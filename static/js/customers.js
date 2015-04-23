@@ -3017,7 +3017,10 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 			$total += parseFloat($lineAmount.val());
 			
-			$lineBalance = parseFloat(parseFloat(parseFloat($line.find('.customer-batchpayment-numeric.balance').attr('rel')).toFixed(2))-parseFloat($lineAmount.val()).toFixed(2));
+			$lineBalance = parseFloat(
+				parseFloat(parseFloat($line.find('.customer-batchpayment-numeric.balance').attr('rel')).toFixed(2)) - 
+				parseFloat($lineAmount.val()).toFixed(2)
+			);
 
 			$lineWriteoff = $line.find('.customer-batchpayment-balancewriteoff input[type="checkbox"]');
 			if( parseFloat($lineBalance).toFixed(2) != "0.00" ) {
