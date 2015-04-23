@@ -378,14 +378,20 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		// All of the accounts on sales are Accounts Receivable and should be assets.
 		// But to be on the safe side we're going to do table sign adjustments.
 		foreach( $sale_account_transfers as $account_id => $transfer_amount )
+		{
 			$sale_account_transfers[$account_id] = ( $writeoff_account AND 
 													  $writeoff_account->id == $account_id )
 												  ? ( $transfer_amount * $deposit_account->type->table_sign )
 												  : ( $transfer_amount * -1 * $deposit_account->type->table_sign );
+		}
 
+		$adjustment_account = FALSE;
 		if( $payment_object->adjustment_transaction AND 
 			$payment_object->adjustment_transaction->amount )
+		{
+			$adjustment_account = $payment_object->adjustment_transaction->account;
 			$sale_account_transfers[$payment_object->adjustment_transaction->account->id] = $payment_object->adjustment_transaction->amount;
+		}
 		
 		$sale_account_transfers[$deposit_account->id] = $payment_object->deposit_transaction->amount;
 
@@ -404,6 +410,10 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			if( $writeoff_account AND 
 				$account_transaction->account_id == $writeoff_account->id )
 				$account_transaction->writeoff = TRUE;
+
+			if( $adjustment_account AND 
+				$account_transaction->account_id == $adjustment_account->id )
+				$account_transaction->adjustment = TRUE;
 
 			if( isset($sale_account_transfers_forms[$account_id]) )
 			{
@@ -427,7 +437,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		$update_transaction_result = $update_transaction->execute();
 
 		if( ! $update_transaction_result->success )
-			throw new Exception("Update failure - could not update payment: ".$update_transaction_result->error);
+			throw new Exception("Update failure - could not update payment: ".$update_transaction_result->error."\n\n".print_r($sale_account_transfers,TRUE));
 
 		return (object)array();
 	}

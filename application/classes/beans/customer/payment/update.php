@@ -346,7 +346,7 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 		{
 			if( ! isset($this->_data->adjustment_account_id) OR 
 				! $this->_data->adjustment_account_id )
-				throw new Exception("Invalid adjustment account ID: none provided.")
+				throw new Exception("Invalid adjustment account ID: none provided.");
 
 			$adjustment_account = $this->_load_account($this->_data->adjustment_account_id);
 
