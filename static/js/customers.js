@@ -1944,6 +1944,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			createPaymentBatchUpdateTotals();
 		});
 
+		$('#customers-payments-create select[name="adjustment_account_id"]').change(function() {
+			createPaymentBatchUpdateTotals();
+		});
+
+		$('#customers-payments-create input[name="adjustment_amount"]').change(function() {
+			createPaymentBatchUpdateTotals();
+		});
+
 		$('#customers-payments-create-save').click(function(e) {
 			e.preventDefault();
 			showPleaseWait();
@@ -2991,6 +2999,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		$total = 0.00;
 		$balance = 0.00;
 		$writeoff = 0.00;
+		$adjustment = parseFloat($('#customers-payments-create input[name="adjustment_amount"]').val());
+		$adjustment = $adjustment ? $adjustment : 0.00;
 		$('#customers-payments-create-sales .customer-batchpayment.selected').each(function() {
 			$line = $(this);
 			
@@ -3033,10 +3043,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			);
 
 		});
+		
+		$lineTotal = $total;
+		$total -= $adjustment;
 
-		$('#customers-payments-create input[name="sale_total"]').val(parseFloat(parseFloat($total) + parseFloat($writeoff)).toFixed(2));
+		$('#customers-payments-create input[name="sale_total"]').val(parseFloat(parseFloat($lineTotal) + parseFloat($writeoff)).toFixed(2));
 		$('#customers-payments-create input[name="amount"]').val(parseFloat($total).toFixed(2));
 		$('#customers-payments-create input[name="writeoff_amount"]').val(parseFloat($writeoff).toFixed(2));
+		$('#customers-payments-create input[name="adjustment_amount"]').val(parseFloat($adjustment).toFixed(2));
 
 		if( $writeoff != 0.00 &&
 			( 
@@ -3084,6 +3098,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		$('#customers-payments-create input[name="date"]').val(dateYYYYMMDD());
 		$('#customers-payments-create input[name="sale_total"]').val('0.00');
 		$('#customers-payments-create input[name="writeoff_amount"]').val('0.00');
+		$('#customers-payments-create input[name="adjustment_amount"]').val('0.00');
 		$('#customers-payments-create input[name="amount"]').val('0.00');
 		
 		// Reset buttons
@@ -3186,6 +3201,15 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 						});
 					}
 
+					if( data.data.payment.adjustment_transaction ) {
+						$('#customers-payments-create input[name="sale_total"]').val((parseFloat(data.data.payment.amount) + parseFloat(data.data.payment.adjustment_transaction.amount * -1)).toFixed(2));
+						$('#customers-payments-create input[name="adjustment_amount"]').val(parseFloat(data.data.payment.adjustment_transaction.amount * -1).toFixed(2));
+						$('#customers-payments-create select[name="adjustment_account_id"]').select2('data',{
+							id: data.data.payment.adjustment_transaction.account.id,
+							text: data.data.payment.adjustment_transaction.account.name
+						});
+					}
+
 					for( index in data.data.payment.sale_payments ) {
 						$line = $(data.data.payment.sale_payments[index].html)
 						$line.addClass('selected');
@@ -3215,6 +3239,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		$('#customers-payments-create input[name="amount"]').attr('readonly',true);
 		$('#customers-payments-create select[name="deposit_account_id"]').select2('disable');
 		$('#customers-payments-create select[name="writeoff_account_id"]').select2('disable');
+		$('#customers-payments-create select[name="adjustment_account_id"]').select2('disable');
+		$('#customers-payments-create input[name="adjustment_amount"]').attr('readonly',true);
 	}
 
 	function createPaymentBatchEnableFields() {
@@ -3223,6 +3249,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		$('#customers-payments-create input[name="amount"]').attr('readonly',true);
 		$('#customers-payments-create select[name="deposit_account_id"]').select2('enable');
 		$('#customers-payments-create select[name="writeoff_account_id"]').select2('enable');
+		$('#customers-payments-create select[name="adjustment_account_id"]').select2('enable');
+		$('#customers-payments-create input[name="adjustment_amount"]').attr('readonly',false);
 	}
 
 	function paymentsSearch() {
