@@ -334,7 +334,8 @@ class Beans_Customer_Payment_Create extends Beans_Customer_Payment {
 			if( isset($sale_account_transfers[$adjustment_account->id]) )
 				throw new Exception("Invalid adjustment account ID: account cannot be tied to any other transaction in the payment.");
 
-			$sale_account_transfers[$adjustment_account->id] = $this->_data->adjustment_amount;
+			$sale_account_transfers[$adjustment_account->id] = 
+				$this->_data->adjustment_amount * -1;
 		}
 
 		// All of the accounts on sales are Accounts receivable and should be assets.
