@@ -4780,7 +4780,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					});
 
 					if( data.data.payment.writeoff_transaction ) {
-						$('#vendors-payments-create input[name="writeoff_amount"]').val(parseFloat(data.data.payment.writeoff_transaction.amount * -1).toFixed(2));
+						$('#vendors-payments-create input[name="writeoff_amount"]').val(parseFloat(
+							data.data.payment.writeoff_transaction.amount * -1
+						).toFixed(2));
 						$('#vendors-payments-create select[name="writeoff_account_id"]').select2('data',{
 							id: data.data.payment.writeoff_transaction.account.id,
 							text: data.data.payment.writeoff_transaction.account.name
@@ -4788,8 +4790,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					}
 
 					if( data.data.payment.adjustment_transaction ) {
-						$('#vendors-payments-create input[name="purchase_total"]').val((parseFloat(data.data.payment.amount) + parseFloat(data.data.payment.adjustment_transaction.amount)).toFixed(2));
-						$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat(data.data.payment.adjustment_transaction.amount * -1).toFixed(2));
+						$('#vendors-payments-create input[name="purchase_total"]').val((
+							parseFloat(data.data.payment.amount) + 
+							parseFloat(data.data.payment.adjustment_transaction.amount )
+						).toFixed(2));
+						$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat(
+							data.data.payment.adjustment_transaction.amount * -1
+						).toFixed(2));
 						$('#vendors-payments-create select[name="adjustment_account_id"]').select2('data',{
 							id: data.data.payment.adjustment_transaction.account.id,
 							text: data.data.payment.adjustment_transaction.account.name
@@ -4909,7 +4916,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 			if( $lineWriteoff.is(':checked') ) {
 				$lineWriteoff.val(parseFloat($lineBalance).toFixed(2));
-				$writeoff += parseFloat(parseFloat($lineBalance).toFixed(2));
+				$writeoff -= parseFloat(parseFloat($lineBalance).toFixed(2));
 				$lineBalance = 0.00;
 			}
 
@@ -4925,7 +4932,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$lineTotal = $total;
 		$total += $adjustment;
 
-		$('#vendors-payments-create input[name="purchase_total"]').val(parseFloat(parseFloat($lineTotal) + parseFloat($writeoff)).toFixed(2));
+		$('#vendors-payments-create input[name="purchase_total"]').val(parseFloat(parseFloat($lineTotal) - parseFloat($writeoff)).toFixed(2));
 		$('#vendors-payments-create input[name="amount"]').val(parseFloat($total).toFixed(2));
 		$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat($adjustment).toFixed(2));
 		$('#vendors-payments-create input[name="writeoff_amount"]').val(parseFloat($writeoff).toFixed(2));
