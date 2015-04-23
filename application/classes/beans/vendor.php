@@ -956,7 +956,7 @@ class Beans_Vendor extends Beans {
 			if( isset($account_transaction->adjustment) AND 
 				$account_transaction->adjustment ) 
 			{
-				$return_object->writeoff_transaction = $account_transaction;
+				$return_object->adjustment_transaction = $account_transaction;
 			}
 		}
 		

@@ -2256,6 +2256,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			createVendorPaymentUpdateTotals();
 		});
 
+		$('#vendors-payments-create select[name="adjustment_account_id"]').change(function() {
+			createVendorPaymentUpdateTotals();
+		});
+
+		$('#vendors-payments-create input[name="adjustment_amount"]').change(function() {
+			createVendorPaymentUpdateTotals();
+		});
+
 		$('#vendors-payments-create input[name="vendor_id"]').select2({
 			minimumInputLength: 1,
 			ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
@@ -4778,7 +4786,16 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 							text: data.data.payment.writeoff_transaction.account.name
 						});
 					}
-					
+
+					if( data.data.payment.adjustment_transaction ) {
+						$('#vendors-payments-create input[name="purchase_total"]').val((parseFloat(data.data.payment.amount) + parseFloat(data.data.payment.adjustment_transaction.amount)).toFixed(2));
+						$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat(data.data.payment.adjustment_transaction.amount * -1).toFixed(2));
+						$('#vendors-payments-create select[name="adjustment_account_id"]').select2('data',{
+							id: data.data.payment.adjustment_transaction.account.id,
+							text: data.data.payment.adjustment_transaction.account.name
+						});
+					}
+
 					for( index in data.data.payment.purchase_payments ) {
 						$line = $(data.data.payment.purchase_payments[index].html)
 						$line.addClass('selected');
@@ -4859,6 +4876,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$amount.val('0.00');
 		}
 		$amount.val(parseFloat($amount.val()).toFixed(2));
+		$adjustment = parseFloat($('#vendors-payments-create input[name="adjustment_amount"]').val());
+		$adjustment = $adjustment ? $adjustment : 0.00;
 		$total = 0.00;
 		// $balance = 0.00;
 		$writeoff = 0.00;
@@ -4902,8 +4921,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 				)
 			);
 		});
-		$('#vendors-payments-create input[name="purchase_total"]').val(parseFloat(parseFloat($total) + parseFloat($writeoff)).toFixed(2));
+		
+		$lineTotal = $total;
+		$total += $adjustment;
+
+		$('#vendors-payments-create input[name="purchase_total"]').val(parseFloat(parseFloat($lineTotal) + parseFloat($writeoff)).toFixed(2));
 		$('#vendors-payments-create input[name="amount"]').val(parseFloat($total).toFixed(2));
+		$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat($adjustment).toFixed(2));
 		$('#vendors-payments-create input[name="writeoff_amount"]').val(parseFloat($writeoff).toFixed(2));
 
 		if( $writeoff != 0.00 &&
@@ -4916,6 +4940,18 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		} else {
 			$('#vendors-payments-create-save').attr('disabled',false);
 			$('#vendors-payments-create select[name="writeoff_account_id"]').closest('span').find('div.select2-container').removeClass('unclassified');
+		}
+
+		if( $adjustment != 0.00 &&
+			( 
+				$('#vendors-payments-create select[name="adjustment_account_id"]').val() == undefined || 
+				$('#vendors-payments-create select[name="adjustment_account_id"]').val().length == 0 
+			) ) {
+			$('#vendors-payments-create-save').attr('disabled',true);
+			$('#vendors-payments-create select[name="adjustment_account_id"]').closest('span').find('div.select2-container').addClass('unclassified');
+		} else {
+			$('#vendors-payments-create-save').attr('disabled',false);
+			$('#vendors-payments-create select[name="adjustment_account_id"]').closest('span').find('div.select2-container').removeClass('unclassified');
 		}
 	}
 
@@ -4941,10 +4977,15 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			id: '',
 			text: $('#vendors-payments-create select[name="writeoff_account_id"] option[value=""]').text()
 		});
+		$('#vendors-payments-create select[name="adjustment_account_id"]').select2('data',{
+			id: '',
+			text: $('#vendors-payments-create select[name="adjustment_account_id"] option[value=""]').text()
+		});
 		$('#customers-payments-create input[name="date"]').val(dateYYYYMMDD());
 
 		$('#vendors-payments-create input[name="purchase_total"]').val('0.00');
 		$('#vendors-payments-create input[name="writeoff_amount"]').val('0.00');
+		$('#vendors-payments-create input[name="adjustment_amount"]').val('0.00');
 		$('#vendors-payments-create input[name="amount"]').val('0.00');
 		
 		$('#vendors-payments-create input[name="print_check"]').val('1').attr('checked',false);
@@ -5073,6 +5114,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$('#vendors-payments-create div.select').removeClass('disabled');
 		$('#vendors-payments-create select[name="payment_account_id"]').select2('enable');
 		$('#vendors-payments-create select[name="writeoff_account_id"]').select2('enable');
+		$('#vendors-payments-create select[name="adjustment_account_id"]').select2('enable');
+		$('#vendors-payments-create input[name="adjustment_amount"]').attr('readonly',false);
 		$('#vendors-payments-create input[name="print_check"]').attr('disabled',false);
 		$('#vendors-payments-create input[name="print_check"]').closest('.checkbox').removeClass('disabled');
 	}
@@ -5086,6 +5129,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$('#vendors-payments-create div.select').addClass('disabled');
 		$('#vendors-payments-create select[name="payment_account_id"]').select2('disable');
 		$('#vendors-payments-create select[name="writeoff_account_id"]').select2('disable');
+		$('#vendors-payments-create select[name="adjustment_account_id"]').select2('disable');
+		$('#vendors-payments-create input[name="adjustment_amount"]').attr('readonly',true);
 		$('#vendors-payments-create input[name="print_check"]').attr('disabled','disabled');
 		$('#vendors-payments-create input[name="print_check"]').closest('.checkbox').addClass('disabled');
 	}

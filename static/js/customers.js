@@ -3064,6 +3064,18 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			$('#customers-payments-create select[name="writeoff_account_id"]').closest('span').find('div.select2-container').removeClass('unclassified');
 		}
 
+		if( $adjustment != 0.00 &&
+			( 
+				$('#customers-payments-create select[name="adjustment_account_id"]').val() == undefined || 
+				$('#customers-payments-create select[name="adjustment_account_id"]').val().length == 0 
+			) ) {
+			$('#customers-payments-create-save').attr('disabled',true);
+			$('#customers-payments-create select[name="adjustment_account_id"]').closest('span').find('div.select2-container').addClass('unclassified');
+		} else {
+			$('#customers-payments-create-save').attr('disabled',false);
+			$('#customers-payments-create select[name="adjustment_account_id"]').closest('span').find('div.select2-container').removeClass('unclassified');
+		}
+
 		if( $total != 0.00 ||
 			$writeoff != 0.00 ) {
 			GLOBAL_EDIT_FORM_ACTIVE = true;
@@ -3093,6 +3105,10 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 		$('#customers-payments-create select[name="writeoff_account_id"]').select2('data',{
 			id: '',
 			text: $('#customers-payments-create select[name="writeoff_account_id"] option[value=""]').text()
+		});
+		$('#customers-payments-create select[name="adjustment_account_id"]').select2('data',{
+			id: '',
+			text: $('#customers-payments-create select[name="adjustment_account_id"] option[value=""]').text()
 		});
 
 		$('#customers-payments-create input[name="date"]').val(dateYYYYMMDD());

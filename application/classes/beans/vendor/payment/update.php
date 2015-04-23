@@ -378,7 +378,8 @@ class Beans_Vendor_Payment_Update extends Beans_Vendor_Payment {
 			if( isset($purchase_account_transfers[$adjustment_account->id]) )
 				throw new Exception("Invalid adjustment account ID: account cannot be tied to any other transaction in the payment.");
 
-			$purchase_account_transfers[$adjustment_account->id] = $this->_data->adjustment_amount;
+			// Flip the sign. ( Just like $purchase_account_transfers[$payment_account->id] = $this->_data->amount etc. below )
+			$purchase_account_transfers[$adjustment_account->id] = $this->_data->adjustment_amount * -1;
 		}
 
 		// All of the accounts on purchases are Accounts Payable and should be assets.
