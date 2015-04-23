@@ -87,7 +87,7 @@
 				<option value="">No Adjustment</option>
 				{{#all_accounts_chart_flat}}
 					{{^reserved}}
-						<option value="{{id}}" {{^writeoff}}disabled="disabled"{{/writeoff}}>{{{name_print}}}</option>
+						<option value="{{id}}" {{#deposit}}disabled="disabled"{{/deposit}}>{{{name_print}}}</option>
 					{{/reserved}}
 				{{/all_accounts_chart_flat}}
 			</select></span>
