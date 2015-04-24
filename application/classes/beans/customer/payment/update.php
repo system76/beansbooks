@@ -335,14 +335,8 @@ class Beans_Customer_Payment_Update extends Beans_Customer_Payment {
 		}
 
 		$adjustment_account = FALSE;
-		if( (
-				isset($this->_data->adjustment_account_id) AND 
-				strlen($this->_data->adjustment_account_id) 
-			) OR 
-			(
-				isset($this->_data->adjustment_amount) AND 
-				$this->_data->adjustment_amount
-			) )
+		if( isset($this->_data->adjustment_amount) AND 
+			$this->_data->adjustment_amount != 0.00 )
 		{
 			if( ! isset($this->_data->adjustment_account_id) OR 
 				! $this->_data->adjustment_account_id )
