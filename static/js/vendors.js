@@ -4386,11 +4386,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$('#vendors-purchases-create-form-balance').text(monetaryPrint(parseFloat(total).toFixed(2)));
 		if( $('#vendors-purchases-create-form-balance').attr('rel') && 
 			$('#vendors-purchases-create-form-balance').attr('rel').length ) {
-			$('#vendors-purchases-create-form-balance').val(
+			$('#vendors-purchases-create-form-balance').text(monetaryPrint(
 				parseFloat(
-					convertCurrencyToNumber($('#vendors-purchases-create-form-balance').text()) - parseFloat($('#vendors-purchases-create-form-balance').attr('rel'))
+					convertCurrencyToNumber($('#vendors-purchases-create-form-balance').text()) - 
+					parseFloat($('#vendors-purchases-create-form-balance').attr('rel'))
 				).toFixed(2)
-			); 
+			)); 
 		}
 	}
 
@@ -4595,7 +4596,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								if( refund ) {
 									$('#vendors-purchases-create-form-balance').attr('rel','');
 								} else {
-									$('#vendors-purchases-create-form-balance').attr('rel',parseFloat(purchase_data.data.purchase.total - purchase_data.data.purchase.balance));
+									$('#vendors-purchases-create-form-balance').attr('rel',parseFloat(parseFloat(purchase_data.data.purchase.total) - parseFloat(purchase_data.data.purchase.balance)).toFixed(2));
 								}
 
 								createPurchaseUpdateTotals();

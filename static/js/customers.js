@@ -2670,7 +2670,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 								if( refund ) {
 									$('#customers-sales-create-form-balance').attr('rel','');
 								} else {															// 			POSITIVE VALUE 			  + 		NEGATIVE VALUE
-									$('#customers-sales-create-form-balance').attr('rel',parseFloat(parseFloat(sale_data.data.sale.total) + parseFloat(sale_data.data.sale.balance)));
+									$('#customers-sales-create-form-balance').attr('rel',parseFloat(parseFloat(sale_data.data.sale.total) + parseFloat(sale_data.data.sale.balance)).toFixed(2));
 								}
 								
 								createSaleUpdateTotals();
