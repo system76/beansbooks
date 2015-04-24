@@ -4207,6 +4207,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 										$(this).select2("disable");
 										$(this).closest('span').find('.select2-container').removeClass('select2-container-active');
 									});
+
+									if( refund ) {
+										$('#vendors-expenses-create-form-lines select.account_id').each(function () {
+											$(this).select2("enable");
+										});
+									}
 								});
 
 								if( refund ) {
@@ -4220,11 +4226,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 										$(this).attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
 									});	
 
-									$('#vendors-expenses-create-form-lines select.account_id').each(function () {
-										$(this).select2("enable");
-										$(this).closest('span').find('.select2-container').removeClass('select2-container-active');
-									});
-									
 									// Disable fields that aren't edit-able.
 									$('#vendors-expenses-create input[name="vendor"]').select2('disable');
 									$('#vendors-expenses-create select[name="remit_address_id"]').attr('disabled','disabled');
@@ -4608,6 +4609,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 										$(this).accountDropdown();
 										$(this).select2("disable");
 									});
+
+									if( refund ) {
+										$('#vendors-purchases-create-form-lines select.account_id').each(function () {
+											$(this).select2("enable");
+										});
+									}
 								});
 
 								if( refund ) {
@@ -4618,10 +4625,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 									$('#vendors-purchases-create .vendor-purchases-create-edit-buttons').hide();
 									$('#vendors-purchases-create .vendor-purchases-create-new-buttons').show();
 
-									$('#customers-sales-create-form-lines select.account_id').each(function () {
-										$(this).select2("enable");
-									});
-									
 									$('#vendors-purchases-create input.datepicker').each(function() {
 										$(this).attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
 									});	

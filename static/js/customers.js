@@ -2684,6 +2684,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 										$(this).accountDropdown();
 										$(this).select2("disable");
 									});
+
+									if( refund ) {
+										$('#customers-sales-create-form-lines select.account_id').each(function () {
+											$(this).select2("enable");
+										});
+									}
 								});
 
 								if( refund ) {
@@ -2703,10 +2709,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 									$('#customers-sales-create input.tax-exempt').each(function() {
 										$(this).attr('disabled',false);
 										checkboxUpdate($(this));
-									});
-
-									$('#customers-sales-create-form-lines select.account_id').each(function () {
-										$(this).select2("enable");
 									});
 
 									$('#customers-sales-create .customer-sales-create-edit-buttons').hide();
