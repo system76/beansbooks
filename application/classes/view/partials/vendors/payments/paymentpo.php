@@ -47,7 +47,14 @@ class View_Partials_Vendors_Payments_Paymentpo extends KOstache {
 	
 	public function balance_flipped()
 	{
-		return ( -1 * ( ( isset($this->purchase_payment->writeoff_amount) ? $this->purchase_payment->writeoff_amount : 0 ) + ( $this->purchase_payment->amount * -1 ) + ($this->purchase_payment->purchase->balance * -1) ) );
+		return ( 
+			-1 * 
+			( 
+				( isset($this->purchase_payment->writeoff_amount) ? ( $this->purchase_payment->writeoff_amount * -1 ) : 0 ) + 
+				( $this->purchase_payment->amount * -1 ) + 
+				($this->purchase_payment->purchase->balance * -1) 
+			) 
+		);
 	}
 
 	public function balance_flipped_formatted()
