@@ -4887,15 +4887,19 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 	function createVendorPaymentUpdateTotals() {
 		$amount = $('#vendors-payments-create input[name="amount"]');
-		if( $amount.val().length == 0 ) {
+		if( ! $amount.val() ||
+			$amount.val().length == 0 ) {
 			$amount.val('0.00');
 		}
 		$amount.val(parseFloat($amount.val()).toFixed(2));
-		$adjustment = parseFloat($('#vendors-payments-create input[name="adjustment_amount"]').val());
-		$adjustment = $adjustment ? $adjustment : 0.00;
+		
 		$total = 0.00;
 		// $balance = 0.00;
 		$writeoff = 0.00;
+		
+		$adjustment = parseFloat($('#vendors-payments-create input[name="adjustment_amount"]').val());
+		$adjustment = $adjustment ? $adjustment : 0.00;
+		
 		$('#vendors-payments-create-purchases .vendor-paymentpo.selected').each(function() {
 			$line = $(this);
 			
@@ -4945,8 +4949,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 		$('#vendors-payments-create input[name="purchase_total"]').val(parseFloat(parseFloat($lineTotal) - parseFloat($writeoff)).toFixed(2));
 		$('#vendors-payments-create input[name="amount"]').val(parseFloat($total).toFixed(2));
-		$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat($adjustment).toFixed(2));
 		$('#vendors-payments-create input[name="writeoff_amount"]').val(parseFloat($writeoff).toFixed(2));
+		$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat($adjustment).toFixed(2));
 
 		if( $writeoff != 0.00 &&
 			( 
@@ -4970,6 +4974,11 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		} else {
 			$('#vendors-payments-create-save').attr('disabled',false);
 			$('#vendors-payments-create select[name="adjustment_account_id"]').closest('span').find('div.select2-container').removeClass('unclassified');
+		}
+
+		if( $total != 0.00 ||
+			$writeoff != 0.00 ) {
+			GLOBAL_EDIT_FORM_ACTIVE = true;
 		}
 	}
 

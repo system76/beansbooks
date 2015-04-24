@@ -2996,15 +2996,17 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			$amount.val('0.00');
 		}
 		$amount.val(parseFloat($amount.val()).toFixed(2));
+
 		$total = 0.00;
-		$balance = 0.00;
+		// $balance = 0.00;
 		$writeoff = 0.00;
+		
 		$adjustment = parseFloat($('#customers-payments-create input[name="adjustment_amount"]').val());
 		$adjustment = $adjustment ? $adjustment : 0.00;
+		
 		$('#customers-payments-create-sales .customer-batchpayment.selected').each(function() {
 			$line = $(this);
 			
-			// Make line amount good.
 			$lineAmount = $line.find('.customer-batchpayment-numeric.amount').find('input[type="text"]');
 			if( $lineAmount.val().length == 0 ) {
 				$lineAmount.val('0.00');
@@ -3013,13 +3015,13 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			
 			$lineSaleBalance = parseFloat(parseFloat($line.find('.customer-batchpayment-numeric.balance').attr('rel')).toFixed(2));
 
-			$balance += parseFloat($lineSaleBalance).toFixed(2);
+			// $balance += parseFloat($lineSaleBalance).toFixed(2);
 
 			$total += parseFloat($lineAmount.val());
 			
 			$lineBalance = parseFloat(
 				parseFloat(parseFloat($line.find('.customer-batchpayment-numeric.balance').attr('rel')).toFixed(2)) - 
-				parseFloat($lineAmount.val()).toFixed(2)
+				parseFloat(parseFloat($lineAmount.val()).toFixed(2))
 			);
 
 			$lineWriteoff = $line.find('.customer-batchpayment-balancewriteoff input[type="checkbox"]');
@@ -3044,7 +3046,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					)
 				)
 			);
-
 		});
 		
 		$lineTotal = $total;
