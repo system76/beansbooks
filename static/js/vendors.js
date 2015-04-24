@@ -4780,9 +4780,15 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					});
 
 					if( data.data.payment.writeoff_transaction ) {
+						$('#vendors-payments-create input[name="purchase_total"]').val(parseFloat(
+							parseFloat($('#vendors-payments-create input[name="purchase_total"]').val()) +
+							data.data.payment.writeoff_transaction.amount
+						).toFixed(2));
+
 						$('#vendors-payments-create input[name="writeoff_amount"]').val(parseFloat(
 							data.data.payment.writeoff_transaction.amount * -1
 						).toFixed(2));
+
 						$('#vendors-payments-create select[name="writeoff_account_id"]').select2('data',{
 							id: data.data.payment.writeoff_transaction.account.id,
 							text: data.data.payment.writeoff_transaction.account.name
@@ -4790,13 +4796,15 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					}
 
 					if( data.data.payment.adjustment_transaction ) {
-						$('#vendors-payments-create input[name="purchase_total"]').val((
-							parseFloat(data.data.payment.amount) + 
-							parseFloat(data.data.payment.adjustment_transaction.amount )
+						$('#vendors-payments-create input[name="purchase_total"]').val(parseFloat(
+							parseFloat($('#vendors-payments-create input[name="purchase_total"]').val()) +
+							data.data.payment.adjustment_transaction.amount
 						).toFixed(2));
+
 						$('#vendors-payments-create input[name="adjustment_amount"]').val(parseFloat(
 							data.data.payment.adjustment_transaction.amount * -1
 						).toFixed(2));
+						
 						$('#vendors-payments-create select[name="adjustment_account_id"]').select2('data',{
 							id: data.data.payment.adjustment_transaction.account.id,
 							text: data.data.payment.adjustment_transaction.account.name
@@ -4903,7 +4911,10 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 			$total += parseFloat($lineAmount.val());
 			
-			$lineBalance = parseFloat(parseFloat(parseFloat($line.find('.vendor-paymentpo-numeric.balance').attr('rel')).toFixed(2))-parseFloat($lineAmount.val()).toFixed(2));
+			$lineBalance = parseFloat(
+				parseFloat(parseFloat($line.find('.vendor-paymentpo-numeric.balance').attr('rel')).toFixed(2)) - 
+				parseFloat(parseFloat($lineAmount.val()).toFixed(2))
+			);
 
 			$lineWriteoff = $line.find('.vendor-paymentpo-balancewriteoff input[type="checkbox"]');
 			if( parseFloat($lineBalance).toFixed(2) != "0.00" ) {
