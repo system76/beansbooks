@@ -62,4 +62,10 @@ class View_Partials_Customers_Payments_Batchpaymentline extends KOstache {
 		);
 	}
 
+	public function date_billed() {
+		return $this->sale_payment->sale->date_billed
+			? $this->sale_payment->sale->date_billed
+			: FALSE;
+	}
+
 }
