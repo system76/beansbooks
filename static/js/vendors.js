@@ -4207,6 +4207,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 										$(this).select2("disable");
 										$(this).closest('span').find('.select2-container').removeClass('select2-container-active');
 									});
+
+									if( refund ) {
+										$('#vendors-expenses-create-form-lines select.account_id').each(function () {
+											$(this).select2("enable");
+										});
+									}
 								});
 
 								if( refund ) {
@@ -4220,11 +4226,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 										$(this).attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
 									});	
 
-									$('#vendors-expenses-create-form-lines select.account_id').each(function () {
-										$(this).select2("enable");
-										$(this).closest('span').find('.select2-container').removeClass('select2-container-active');
-									});
-									
 									// Disable fields that aren't edit-able.
 									$('#vendors-expenses-create input[name="vendor"]').select2('disable');
 									$('#vendors-expenses-create select[name="remit_address_id"]').attr('disabled','disabled');
@@ -4385,11 +4386,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 		$('#vendors-purchases-create-form-balance').text(monetaryPrint(parseFloat(total).toFixed(2)));
 		if( $('#vendors-purchases-create-form-balance').attr('rel') && 
 			$('#vendors-purchases-create-form-balance').attr('rel').length ) {
-			$('#vendors-purchases-create-form-balance').val(
+			$('#vendors-purchases-create-form-balance').text(monetaryPrint(
 				parseFloat(
-					convertCurrencyToNumber($('#vendors-purchases-create-form-balance').text()) - parseFloat($('#vendors-purchases-create-form-balance').attr('rel'))
+					convertCurrencyToNumber($('#vendors-purchases-create-form-balance').text()) - 
+					parseFloat($('#vendors-purchases-create-form-balance').attr('rel'))
 				).toFixed(2)
-			); 
+			)); 
 		}
 	}
 
@@ -4594,7 +4596,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 								if( refund ) {
 									$('#vendors-purchases-create-form-balance').attr('rel','');
 								} else {
-									$('#vendors-purchases-create-form-balance').attr('rel',parseFloat(purchase_data.data.purchase.total - purchase_data.data.purchase.balance));
+									$('#vendors-purchases-create-form-balance').attr('rel',parseFloat(parseFloat(purchase_data.data.purchase.total) - parseFloat(purchase_data.data.purchase.balance)).toFixed(2));
 								}
 
 								createPurchaseUpdateTotals();
@@ -4608,6 +4610,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 										$(this).accountDropdown();
 										$(this).select2("disable");
 									});
+
+									if( refund ) {
+										$('#vendors-purchases-create-form-lines select.account_id').each(function () {
+											$(this).select2("enable");
+										});
+									}
 								});
 
 								if( refund ) {
@@ -4618,10 +4626,6 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 									$('#vendors-purchases-create .vendor-purchases-create-edit-buttons').hide();
 									$('#vendors-purchases-create .vendor-purchases-create-new-buttons').show();
 
-									$('#customers-sales-create-form-lines select.account_id').each(function () {
-										$(this).select2("enable");
-									});
-									
 									$('#vendors-purchases-create input.datepicker').each(function() {
 										$(this).attr('readonly',false).datepicker({dateFormat: "yy-mm-dd"});
 									});	
