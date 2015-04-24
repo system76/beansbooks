@@ -27,7 +27,9 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required transaction_id INTEGER The ID of the #Beans_Transaction# you are replacing.
 @required deposit_account_id INTEGER The ID of the #Beans_Account# you are depositing into.
 @optional writeoff_account_id INTEGER The ID of the #Beans_Account# to write off balances to.
+@optional adjustment_account_id INTEGER The ID of the #Beans_Account# for an adjusting entry.
 @required amount DECIMAL The total payment amount being received.
+@optional adjustment_amount DECIMAL The amount for an adjusting entry.
 @optional description STRING
 @required sales ARRAY An array of objects representing the amount received for each sale.
 @required @attribute sales id INTEGER The ID for the #Beans_Customer_Sale# being paid.
@@ -328,6 +330,32 @@ class Beans_Customer_Payment_Replace extends Beans_Customer_Payment {
 			$sale_account_transfers_forms[$writeoff_account->id] = $writeoff_account_transfers_forms;
 		}
 
+		$adjustment_account = FALSE;
+		if( (
+				isset($this->_data->adjustment_account_id) AND 
+				strlen($this->_data->adjustment_account_id) 
+			) OR 
+			(
+				isset($this->_data->adjustment_amount) AND 
+				$this->_data->adjustment_amount
+			) )
+		{
+			if( ! isset($this->_data->adjustment_account_id) OR 
+				! $this->_data->adjustment_account_id )
+				throw new Exception("Invalid adjustment account ID: none provided.");
+
+			$adjustment_account = $this->_load_account($this->_data->adjustment_account_id);
+
+			if( ! $adjustment_account->loaded() )
+				throw new Exception("Invalid adjustment account ID: account not found.");
+
+			if( isset($sale_account_transfers[$adjustment_account->id]) )
+				throw new Exception("Invalid adjustment account ID: account cannot be tied to any other transaction in the payment.");
+
+			$sale_account_transfers[$adjustment_account->id] = 
+				$this->_data->adjustment_amount * -1;
+		}
+
 		// All of the accounts on sales are Accounts Receivable and should be assets.
 		// But to be on the safe side we're going to do table sign adjustments.
 		foreach( $sale_account_transfers as $account_id => $transfer_amount )
@@ -337,8 +365,10 @@ class Beans_Customer_Payment_Replace extends Beans_Customer_Payment {
 			if( ! $account->loaded() )
 				throw new Exception("System error: could not load account with ID ".$account_id);
 
-			$sale_account_transfers[$account_id] = ( $writeoff_account AND 
-													  $writeoff_account->id == $account_id )
+			$sale_account_transfers[$account_id] = ( 
+														( $writeoff_account AND $writeoff_account->id == $account_id ) OR 
+														( $adjustment_account AND $adjustment_account->id == $account_id ) 
+													)
 												  ? ( $transfer_amount * $deposit_account->account_type->table_sign )
 												  : ( $transfer_amount * -1 * $deposit_account->account_type->table_sign );
 		}
@@ -362,6 +392,10 @@ class Beans_Customer_Payment_Replace extends Beans_Customer_Payment {
 			if( $writeoff_account AND 
 				$account_transaction->account_id == $writeoff_account->id )
 				$account_transaction->writeoff = TRUE;
+
+			if( $adjustment_account AND 
+				$account_transaction->account_id == $adjustment_account->id )
+				$account_transaction->adjustment = TRUE;
 
 			if( isset($sale_account_transfers_forms[$account_id]) )
 			{

@@ -33,31 +33,19 @@
 	<div class="form bump-down">
 		<div class="row labels column-10">
 			<span class="oop-oop-oop">Date</span>
+			<span class="oppa-gangnam-style">Deposit Account</span>
+
 			<span class="oop-oop-oop">Invoice Total</span>
-			<span class="oop-oop-oop">Payment Amount</span>
 			<span class="oop-oop-oop">Write-Off Total</span>
-			<span class="oop-oop-oop">&nbsp;</span>
-			<span class="ehhh-sexy-lady">&nbsp;</span>
+			<span class="oop-oop-oop">Adjustment</span>
+			<span class="oop">&nbsp;</span>
+			<span class="oop-oop-oop">Payment Amount</span>
+			<!-- <span class="ehhh-sexy-lady">&nbsp;</span> -->
 		</div>
 		
 		<div class="row column-10">
 			<span class="oop-oop-oop"><input type="text" name="date" class="datepicker" value="{{dateYYYYMMDD}}"></span>
-			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="sale_total"></span>
-			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="amount"></span>
-			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="writeoff_amount"></span>
-			<span class="oop-oop-oop">&nbsp;</span>
-			<span class="ehhh-sexy-lady">&nbsp;</span>
-		</div>
-		
-		<div class="row column-10 labels">
-			<span class="ehhh-sexy-lady">Deposit Account</span>
-			<span class="ehhh-sexy-lady">Write Off Account</span>
-			<span class="ehhh-sexy-lady">&nbsp;</span>
-			<span class="ehhh-sexy-lady">&nbsp;</span>
-		</div>
-
-		<div class="row column-10">
-			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="deposit_account_id" {{#payment_deposit_account_default}}rel="{{id}}"{{/payment_deposit_account_default}}>
+			<span class="oppa-gangnam-style"><select class="account-dropdown" name="deposit_account_id" {{#payment_deposit_account_default}}rel="{{id}}"{{/payment_deposit_account_default}}>
 				<option value="">&nbsp;</option>
 				{{#payment_deposit_accounts}}
 					{{^reserved}}
@@ -65,11 +53,38 @@
 					{{/reserved}}
 				{{/payment_deposit_accounts}}
 			</select></span>
+
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="sale_total"></span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="writeoff_amount"></span>
+			<span class="oop-oop-oop"><input type="text" name="adjustment_amount"></span>
+			<span class="oop">&nbsp;</span>
+			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="amount"></span>
+			<!-- <span class="ehhh-sexy-lady">&nbsp;</span> -->
+		</div>
+		
+		<div class="row column-10 labels">
+			
+			<span class="ehhh-sexy-lady">Write Off Account</span>
+			<span class="ehhh-sexy-lady">Adjustment Account</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+			<span class="ehhh-sexy-lady">&nbsp;</span>
+		</div>
+
+		<div class="row column-10">
+			
 			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="writeoff_account_id">
 				<option value="">No Write Off</option>
 				{{#all_accounts_chart_flat}}
 					{{^reserved}}
 						<option value="{{id}}" {{^writeoff}}disabled="disabled"{{/writeoff}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></span>
+			<span class="ehhh-sexy-lady"><select class="account-dropdown" name="adjustment_account_id">
+				<option value="">No Adjustment</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}" {{#deposit}}disabled="disabled"{{/deposit}}>{{{name_print}}}</option>
 					{{/reserved}}
 				{{/all_accounts_chart_flat}}
 			</select></span>

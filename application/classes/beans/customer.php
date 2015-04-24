@@ -723,6 +723,7 @@ class Beans_Customer extends Beans {
 	@attribute sale_payments ARRAY An array of #Beans_Customer_Payment_Sale# representing the amounts paid on each sale.
 	@attribute deposit_transaction OBJECT The #Beans_Transaction# representing the split going into a cash account.
 	@attribute writeoff_transaction OBJECT The #Beans_Transaction# representing the writeoff transaction if it exists.
+	@attribute adjustment_transaction OBJECT The #Beans_Transaction# representing the adjustment transaction if it exists.
 	@attribute reconciled BOOLEAN Whether one or more of the account transactions was reconciled.
 	---BEANSENDSPEC---
 	 */
@@ -756,6 +757,7 @@ class Beans_Customer extends Beans {
 
 		$return_object->deposit_transaction = FALSE;
 		$return_object->writeoff_transaction = FALSE;
+		$return_object->adjustment_transaction = FALSE;
 		
 		foreach( $return_object->account_transactions as $account_transaction )
 		{
@@ -763,23 +765,24 @@ class Beans_Customer extends Beans {
 				$account_transaction->transfer ) 
 			{
 				$return_object->deposit_transaction = $account_transaction;
+
 				$return_object->amount = $this->_beans_round(
 					$return_object->amount +
 					$account_transaction->amount *
 					$account_transaction->account->type->table_sign
 				);
 			}
+
 			if( isset($account_transaction->writeoff) AND 
 				$account_transaction->writeoff ) 
 			{
 				$return_object->writeoff_transaction = $account_transaction;
-				/*
-				$return_object->amount = $this->_beans_round(
-					$return_object->amount +
-					$account_transaction->amount *
-					$account_transaction->account->type->table_sign
-				);
-				*/
+			}
+
+			if( isset($account_transaction->adjustment) AND 
+				$account_transaction->adjustment ) 
+			{
+				$return_object->adjustment_transaction = $account_transaction;
 			}
 		}
 
@@ -869,6 +872,7 @@ class Beans_Customer extends Beans {
 
 		$return_object->transfer = ( $account_transaction->transfer ) ? TRUE : FALSE;
 		$return_object->writeoff = ( $account_transaction->writeoff ) ? TRUE : FALSE;
+		$return_object->adjustment = ( $account_transaction->adjustment ) ? TRUE : FALSE;
 
 		// *** FAT ***
 		$return_object->account = $this->_return_account_element($account_transaction->account);
@@ -884,7 +888,8 @@ class Beans_Customer extends Beans {
 		foreach( $account_transactions as $account_transaction )
 		{
 			if( ! $account_transaction->transfer AND
-				! $account_transaction->writeoff )
+				! $account_transaction->writeoff AND 
+				! $account_transaction->adjustment )
 			{
 				foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form ) 
 				{
