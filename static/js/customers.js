@@ -3224,8 +3224,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 					if( data.data.payment.adjustment_transaction ) {
 						$('#customers-payments-create input[name="sale_total"]').val((
-							parseFloat(data.data.payment.amount) + 
-							( parseFloat(data.data.payment.adjustment_transaction.amount) * -1 ) 
+							parseFloat(data.data.payment.amount)
 						).toFixed(2));
 						$('#customers-payments-create input[name="adjustment_amount"]').val(parseFloat(
 							data.data.payment.adjustment_transaction.amount
