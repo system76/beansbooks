@@ -139,6 +139,10 @@ class Beans_Account_Transaction_Create extends Beans_Account_Transaction {
 				$account_transaction->writeoff )
 				$new_account_transaction->writeoff = TRUE;
 
+			if( isset($account_transaction->adjustment) AND 
+				$account_transaction->adjustment )
+				$new_account_transaction->adjustment = TRUE;
+
 			$new_account_transaction->close_books = ( $this->_transaction->close_books ) ? TRUE : FALSE;
 							
 			$this->_validate_account_transaction($new_account_transaction);

@@ -322,17 +322,20 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 		// But to be on the safe side we're going to do table sign adjustments to be on the safe side.
 		foreach( $purchase_account_transfers as $account_id => $transfer_amount )
 		{
-			$account = $this->_load_account($account_id);
-
-			if( ! $account->loaded() )
-				throw new Exception("System error: could not load account with ID ".$account_id);
-			
 			$purchase_account_transfers[$account_id] = ( $writeoff_account AND 
 													  $writeoff_account->id == $account_id )
 												  ? ( $transfer_amount * -1 * $payment_account->type->table_sign )
 												  : ( $transfer_amount * $payment_account->type->table_sign );
 		}
 
+		$adjustment_account = FALSE;
+		if( $payment_object->adjustment_transaction AND 
+			$payment_object->adjustment_transaction->amount )
+		{
+			$adjustment_account = $payment_object->adjustment_transaction->account;
+			$purchase_account_transfers[$payment_object->adjustment_transaction->account->id] = $payment_object->adjustment_transaction->amount;
+		}
+		
 		$purchase_account_transfers[$payment_account->id] = $payment_object->payment_transaction->amount;
 
 		if( $payment_account->type->table_sign > 0 )
@@ -356,6 +359,10 @@ class Beans_Vendor_Payment_Calibrate extends Beans_Vendor_Payment {
 			if( $writeoff_account AND 
 				$account_transaction->account_id == $writeoff_account->id )
 				$account_transaction->writeoff = TRUE;
+
+			if( $adjustment_account AND 
+				$account_transaction->account_id == $adjustment_account->id )
+				$account_transaction->adjustment = TRUE;
 
 			if( isset($purchase_account_transfers_forms[$account_id]) )
 			{

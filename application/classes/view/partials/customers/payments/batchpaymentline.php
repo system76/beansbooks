@@ -19,11 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 
 class View_Partials_Customers_Payments_Batchpaymentline extends KOstache {
-	// Receives $this->sale_payment
-	// 					->id
-	// 					->amount ( paid )
-	// 					->sale ( object )
-
+	
 	public function id()
 	{
 		return $this->sale_payment->sale->id;
@@ -64,6 +60,12 @@ class View_Partials_Customers_Payments_Batchpaymentline extends KOstache {
 		return array(
 			'amount' => $this->sale_payment->writeoff_amount,
 		);
+	}
+
+	public function date_billed() {
+		return $this->sale_payment->sale->date_billed
+			? $this->sale_payment->sale->date_billed
+			: FALSE;
 	}
 
 }

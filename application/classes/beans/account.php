@@ -676,7 +676,7 @@ class Beans_Account extends Beans {
 		$balance_result = DB::Query(Database::SELECT,$balance_sql)->execute();
 
 		$insert_sql = 'INSERT INTO account_transactions '.
-					  '(transaction_id, account_id, date, amount, transfer, writeoff, close_books, account_reconcile_id, balance) '.
+					  '(transaction_id, account_id, date, amount, transfer, writeoff, adjustment, close_books, account_reconcile_id, balance) '.
 					  'VALUES ( '.
 					  $account_transaction->transaction_id.', '.
 					  $account_transaction->account_id.', '.
@@ -684,6 +684,7 @@ class Beans_Account extends Beans {
 					  $account_transaction->amount.', '.
 					  ( $account_transaction->transfer ? '1' : '0' ).', '.
 					  ( $account_transaction->writeoff ? '1' : '0' ).', '.
+					  ( $account_transaction->adjustment ? '1' : '0' ).', '.
 					  ( $account_transaction->close_books ? '1' : '0' ).', '.
 					  ( $account_transaction->account_reconcile_id ? $account_transaction->account_reconcile_id : 'NULL' ).', '.
 					  $balance_result[0]['new_balance'].' '.

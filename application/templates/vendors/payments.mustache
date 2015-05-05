@@ -37,29 +37,33 @@
 
 	<div class="form bump-down">
 		<div class="row labels column-10">
-			<span class="oop-oop-oop">Date</span>
+			<span class="oop-oop">Date</span>
 			<span class="ehhh-sexy-lady">Vendor</span>
-			<span class="oop-oop-oop">PO Totals</span>
-			<span class="oop-oop-oop">Payment Amount</span>
-			<span class="oop-oop-oop">Write-Off Total</span>
-			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oop-oop">PO Totals</span>
+			<span class="oop-oop">Write-Off</span>
+			<span class="oop-oop">Adjustment</span>
+			<span class="oop-oop">Payment</span>
+			<span class="oop-oop-oop">Check Number</span>
+
 		</div>
 		
 		<div class="row column-10">
-			<span class="oop-oop-oop"><input type="text" name="date" class="datepicker" value="{{dateYYYYMMDD}}"></span>
+			<span class="oop-oop"><input type="text" name="date" class="datepicker" value="{{dateYYYYMMDD}}"></span>
 			<span class="ehhh-sexy-lady"><input type="hidden" name="vendor_id"></span>
-			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="purchase_total"></span>
-			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="amount"></span>
-			<span class="oop-oop-oop"><input type="text" readonly="readonly" name="writeoff_amount"></span>
-			<span class="oop-oop-oop">&nbsp;</span>
+			<span class="oop-oop"><input type="text" readonly="readonly" name="purchase_total"></span>
+			<span class="oop-oop"><input type="text" readonly="readonly" name="writeoff_amount"></span>
+			<span class="oop-oop"><input type="text" name="adjustment_amount"></span>
+			<span class="oop-oop"><input type="text" readonly="readonly" name="amount"></span>
+
+			<span class="oop-oop"><input type="text" name="check_number"></span>
+			<span class="oop-oop-oop inline-label"><div class="checkbox"><input type="checkbox" name="print_check" value="1"></div>&nbsp;&nbsp;Print Check?</span>
+
 		</div>
 		
 		<div class="row column-10 labels">
 			<span class="oppa-gangnam-style">Payment Account</span>
 			<span class="oppa-gangnam-style">Write Off Account</span>
-			<span class="oop-oop-oop">Check Number</span>
-			<span class="oop-oop">&nbsp;</span>
-			<span class="ehhh-sexy-lady">&nbsp;</span>
+			<span class="oppa-gangnam-style">Adjustment Account</span>
 		</div>
 
 		<div class="row column-10">
@@ -79,8 +83,17 @@
 					{{/reserved}}
 				{{/all_accounts_chart_flat}}
 			</select></span>
-			<span class="oop-oop-oop"><input type="text" name="check_number"></span>
-			<span class="oop-oop-oop inline-label"><div class="checkbox"><input type="checkbox" name="print_check" value="1"></div>&nbsp;&nbsp;Print Check?</span>
+			<span class="oppa-gangnam-style"><select class="account-dropdown" name="adjustment_account_id">
+				<option value="">No Adjustment</option>
+				{{#all_accounts_chart_flat}}
+					{{^reserved}}
+						<option value="{{id}}" {{#deposit}}disabled="disabled"{{/deposit}}>{{{name_print}}}</option>
+					{{/reserved}}
+				{{/all_accounts_chart_flat}}
+			</select></span>
+
+			<span class="oop-oop">&nbsp;</span>
+			
 			<span class="oop-oop vendors-payments-create-actions-deleteplaceholder">&nbsp;</span>
 			<span class="oop-oop vendors-payments-create-actions-delete" style="display:none;"><a href="#" class="button" id="vendors-payments-create-delete">Delete</a></span>
 			<span class="oop-oop"><a href="#" class="button" id="vendors-payments-create-cancel">Cancel</a></span>
