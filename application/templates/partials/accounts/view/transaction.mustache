@@ -16,7 +16,7 @@
 	<span class="account-transaction-reconcile text-center text-darkgray">{{#reconciled}}R{{/reconciled}}{{^reconciled}}&nbsp;{{/reconciled}}</span>
 	<span class="account-transaction-credit text-left">{{amount_credit}}{{^amount_credit}}&nbsp;{{/amount_credit}}</span>
 	<span class="account-transaction-debit text-left">{{amount_debit}}{{^amount_debit}}&nbsp;{{/amount_debit}}</span>
-	<span class="account-transaction-balance text-left">${{balance}}</span>
+	<span class="account-transaction-balance text-left">{{currency_symbol}}{{balance}}</span>
 </li>
 {{^transfer_account}}
 	<li class="list-container split-transaction hidden" rel="{{id}}">

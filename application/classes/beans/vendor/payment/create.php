@@ -26,7 +26,9 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_expiration
 @required payment_account_id INTEGER The ID of the #Beans_Account# you are making this payment from.
 @optional writeoff_account_id INTEGER The ID of the #Beans_Account# to write off balances on.  This is required only if you have writeoff_balance as tru for any pruchases.
+@optional adjustment_account_id INTEGER The ID of the #Beans_Account# for an adjusting entry.
 @required amount DECIMAL The total payment amount being received.
+@optional adjustment_amount DECIMAL The amount for an adjusting entry.
 @required date STRING The date of the payment.
 @optional number STRING A reference number.
 @optional description STRING
@@ -322,6 +324,26 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 			$purchase_account_transfers_forms[$writeoff_account->id] = $writeoff_account_transfers_forms;
 		}
 
+		$adjustment_account = FALSE;
+		if( isset($this->_data->adjustment_amount) AND 
+			$this->_data->adjustment_amount != 0.00 )
+		{
+			if( ! isset($this->_data->adjustment_account_id) OR 
+				! $this->_data->adjustment_account_id )
+				throw new Exception("Invalid adjustment account ID: none provided.");
+
+			$adjustment_account = $this->_load_account($this->_data->adjustment_account_id);
+
+			if( ! $adjustment_account->loaded() )
+				throw new Exception("Invalid adjustment account ID: account not found.");
+
+			if( isset($purchase_account_transfers[$adjustment_account->id]) )
+				throw new Exception("Invalid adjustment account ID: account cannot be tied to any other transaction in the payment.");
+
+			// Flip the sign. ( Just like $purchase_account_transfers[$payment_account->id] = $this->_data->amount etc. below )
+			$purchase_account_transfers[$adjustment_account->id] = $this->_data->adjustment_amount * -1;
+		}
+
 		// All of the accounts on purchases are Accounts Payable and should be assets.
 		// But to be on the safe side we're going to do table sign adjustments to be on the safe side.
 		foreach( $purchase_account_transfers as $account_id => $transfer_amount )
@@ -331,8 +353,10 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 			if( ! $account->loaded() )
 				throw new Exception("System error: could not load account with ID ".$account_id);
 			
-			$purchase_account_transfers[$account_id] = ( $writeoff_account AND 
-													  $writeoff_account->id == $account_id )
+			$purchase_account_transfers[$account_id] = (
+															( $writeoff_account AND $writeoff_account->id == $account_id ) OR
+															( $adjustment_account AND $adjustment_account->id == $account_id ) 
+														)
 												  ? ( $transfer_amount * -1 * $payment_account->account_type->table_sign )
 												  : ( $transfer_amount * $payment_account->account_type->table_sign );
 		}
@@ -362,6 +386,10 @@ class Beans_Vendor_Payment_Create extends Beans_Vendor_Payment {
 			if( $writeoff_account AND 
 				$account_transaction->account_id == $writeoff_account->id )
 				$account_transaction->writeoff = TRUE;
+
+			if( $adjustment_account AND 
+				$account_transaction->account_id == $adjustment_account->id )
+				$account_transaction->adjustment = TRUE;
 			
 			if( isset($purchase_account_transfers_forms[$account_id]) )
 			{

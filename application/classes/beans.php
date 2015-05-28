@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 class Beans {
 
-	protected $_BEANS_VERSION = '1.3.2';
+	protected $_BEANS_VERSION = '1.4';
 
 	private $_beans_settings;
 	private $_beans_config;

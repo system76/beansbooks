@@ -36,7 +36,7 @@
 		</span>
 	{{/reserved}}
 	<span class="account-balance {{#negative}}text-red{{/negative}} {{#top_level}}text-bold{{/top_level}}">
-		${{balance}}
+		{{currency_symbol}}{{balance}}
 	</span>
 </li>
 {{#has_accounts}}

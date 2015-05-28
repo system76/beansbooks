@@ -21,6 +21,7 @@ class Controller_Json extends Controller {
 
 	// Will be returned as an encoded JSON object.
 	protected $_return_object;
+	protected $_setup_company_list_result;
 	
 	public function before()
 	{
@@ -30,6 +31,18 @@ class Controller_Json extends Controller {
 		$this->_return_object->success = TRUE;
 		$this->_return_object->error = "";
 		$this->_return_object->data = new stdClass;
+
+		// Only if logged in.
+		if( ! strlen(Session::instance()->get('auth_uid')) OR 
+			! strlen(Session::instance()->get('auth_key')) OR 
+			! strlen(Session::instance()->get('auth_expiration')) )
+			return;
+		
+		$setup_company_list = new Beans_Setup_Company_List($this->_beans_data_auth());
+		$setup_company_list_result = $setup_company_list->execute();
+
+		if( $this->_beans_result_check($setup_company_list_result) )
+			$this->_setup_company_list_result = $setup_company_list_result;
 	}
 
 	public function after()

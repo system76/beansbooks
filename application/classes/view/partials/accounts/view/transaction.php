@@ -42,6 +42,44 @@ class View_Partials_Accounts_View_Transaction extends Kostache {
 	public $transaction_splits;
 	public $edit;
 
+	// Copied from View_Template
+	// This could be more efficient, but fixes a display issue for now.
+	// V3Item - Return standard necessary values in all API calls ( i.e. currency )
+	protected function _company_currency()
+	{
+		$beans_settings = $this->beans_settings();
+
+		if( ! $beans_settings ) 
+			return '$';
+
+		return $beans_settings->company_currency;
+	}
+
+	public function currency_symbol()
+	{
+		return $this->_company_currency();
+	}
+	
+	// Cache Settings
+	protected $_beans_settings = FALSE;
+	protected function beans_settings()
+	{
+		if( ! isset($this->setup_company_list_result) )
+			return FALSE;
+
+		if( $this->_beans_settings )
+			return $this->_beans_settings;
+
+		$this->_beans_settings = $this->setup_company_list_result->data->settings;
+
+		// Default
+		if( ! isset($this->_beans_settings->company_currency) OR 
+			! strlen($this->_beans_settings->company_currency) )
+			$this->_beans_settings->company_currency = "$";
+		
+		return $this->_beans_settings;
+	}
+
 	public function render()
 	{
 		$this->_parse_data();

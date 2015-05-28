@@ -226,6 +226,10 @@ class Beans_Account_Transaction_Update extends Beans_Account_Transaction {
 				$account_transaction->writeoff )
 				$new_account_transaction->writeoff = TRUE;
 
+			if( isset($account_transaction->adjustment) AND 
+				$account_transaction->adjustment )
+				$new_account_transaction->adjustment = TRUE;
+
 			// We do not allow updating close books transactions - no matter what.
 			$new_account_transaction->close_books = FALSE;
 
