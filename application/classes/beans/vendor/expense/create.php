@@ -34,7 +34,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required lines ARRAY An array of objects representing line items for the expense.
 @required @attribute lines description STRING The text for the line item.
 @required @attribute lines amount DECIMAL The amount per unit.
-@required @attribute lines quantity INTEGER The number of units.
+@required @attribute lines quantity DECIMAL The number of units.
 @optional @attribute lines account_id INTEGER The ID of the #Beans_Account# to count the cost of the expense towards.
 @returns expense OBJECT The resulting #Beans_Vendor_Expense#.
 ---BEANSENDSPEC---
@@ -134,7 +134,7 @@ class Beans_Vendor_Expense_Create extends Beans_Vendor_Expense {
 									  : NULL;
 
 			$new_expense_line->quantity = ( isset($expense_line->quantity) )
-										? (int)$expense_line->quantity
+										? (float)$expense_line->quantity
 										: NULL;
 
 			$this->_validate_form_line($new_expense_line);

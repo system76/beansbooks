@@ -210,6 +210,10 @@ along with BeansBooks; if not, email info@beansbooks.com.
 	width: 312px;
 }
 
+.form .row.column-10 > span.subway-dance {
+	width: 400px;	
+}
+
 .form .row.column-10 > span.elevator-dance {
 	width: 450px;	
 }

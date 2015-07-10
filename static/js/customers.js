@@ -2352,7 +2352,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 			if( $quantity.val() &&
 				$quantity.val().length ) {
-				$quantity.val(parseInt($quantity.val()));
+				$quantity.val(Math.round($quantity.val()*1000) / 1000);
 			}
 			
 			if( $quantity.val() &&
@@ -2366,7 +2366,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					$quantity.val( $quantity.val() * -1 );
 				}
 
-				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseInt($quantity.val()))).toFixed(2));
+				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseFloat($quantity.val()))).toFixed(2));
 
 				if( ! formTaxExempt && 
 					! lineTaxExempt ) {

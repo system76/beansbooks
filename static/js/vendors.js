@@ -4028,7 +4028,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 			if( $quantity.val() &&
 				$quantity.val().length ) {
-				$quantity.val(parseInt($quantity.val()));
+				$quantity.val(Math.round($quantity.val()*1000) / 1000);
 			}
 			
 			if( $quantity.val() &&
@@ -4042,7 +4042,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					$quantity.val( $quantity.val() * -1 );
 				}
 
-				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseInt($quantity.val()))).toFixed(2));
+				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseFloat($quantity.val()))).toFixed(2));
 				
 				total = parseFloat(parseFloat(total) + parseFloat($total.val())).toFixed(2);
 			} else {
@@ -4360,7 +4360,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 			if( $quantity.val() &&
 				$quantity.val().length ) {
-				$quantity.val(parseInt($quantity.val()));
+				$quantity.val(Math.round($quantity.val()*1000) / 1000);
 			}
 			
 			if( $quantity.val() &&
@@ -4374,7 +4374,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 					$quantity.val( $quantity.val() * -1 );
 				}
 
-				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseInt($quantity.val()))).toFixed(2));
+				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseFloat($quantity.val()))).toFixed(2));
 				
 				total = parseFloat(parseFloat(total) + parseFloat($total.val())).toFixed(2);
 			} else {

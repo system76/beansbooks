@@ -531,7 +531,7 @@ class Beans_Customer extends Beans {
 	@attribute tax_exempt BOOLEAN Whether or not this particular line is tax exempt.
 	@attribute description STRING
 	@attribute amount DECIMAL
-	@attribute quantity INTEGER
+	@attribute quantity DECIMAL
 	@attribute total DECIMAL
 	---BEANSENDSPEC---
 	 */
