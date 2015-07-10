@@ -26,7 +26,7 @@ class Beans_Setup_Update_V_1_4_1 extends Beans_Setup_Update_V {
 	
 	protected function _execute()
 	{
-		$this->_db_update_table_column(	'form_lines', 'quantity', 'decimal( 6, 2 ) DEFAULT NULL');
+		$this->_db_update_table_column(	'form_lines', 'quantity', 'decimal( 13, 3 ) DEFAULT NULL');
 		
 		return (object)array();
 	}
