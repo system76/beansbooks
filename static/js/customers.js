@@ -1085,7 +1085,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 				showError("An unexpected error has occurred.<br>You should reload the page before going any further.");
 				return;
 			}
-			$('#customers-sales-create input:not(.ezpz-hint,.datepicker),#customers-sales-create select').each(function() {
+			$('#customers-sales-create input:not(.ezpz-hint,.datepicker,.line-total),#customers-sales-create select').each(function() {
 				$(this).attr('readonly',false).attr('disabled',false).focus().blur();
 			});
 			$('#customers-sales-create select[name="account"]').select2('enable');
