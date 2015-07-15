@@ -37,7 +37,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required lines ARRAY An array of objects representing line items for the purchase.
 @required @attribute lines description STRING The text for the line item.
 @required @attribute lines amount DECIMAL The amount per unit.
-@required @attribute lines quantity DECIMAL The number of units.
+@required @attribute lines quantity DECIMAL The number of units (up to three decimal places).
 @optional @attribute lines account_id INTEGER The ID of the #Beans_Account# to count the cost of the purchase towards.
 @returns purchase OBJECT The resulting #Beans_Vendor_Purchase#.
 ---BEANSENDSPEC---

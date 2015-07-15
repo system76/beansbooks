@@ -2352,7 +2352,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 			if( $quantity.val() &&
 				$quantity.val().length ) {
-				$quantity.val(Math.round($quantity.val()*1000) / 1000);
+				$quantity.val(Math.round(parseFloat($quantity.val())*1000) / 1000);
 			}
 			
 			if( $quantity.val() &&

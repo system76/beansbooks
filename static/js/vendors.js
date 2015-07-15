@@ -4028,7 +4028,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 			if( $quantity.val() &&
 				$quantity.val().length ) {
-				$quantity.val(Math.round($quantity.val()*1000) / 1000);
+				$quantity.val(Math.round(parseFloat($quantity.val())*1000) / 1000);
 			}
 			
 			if( $quantity.val() &&
@@ -4360,7 +4360,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 
 			if( $quantity.val() &&
 				$quantity.val().length ) {
-				$quantity.val(Math.round($quantity.val()*1000) / 1000);
+				$quantity.val(Math.round(parseFloat($quantity.val())*1000) / 1000);
 			}
 			
 			if( $quantity.val() &&

@@ -41,7 +41,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required lines ARRAY An array of objects representing line items for the sale.
 @required @attribute lines description STRING The text for the line item.
 @required @attribute lines amount DECIMAL The amount per unit.
-@required @attribute lines quantity DECIMAL The number of units.
+@required @attribute lines quantity DECIMAL The number of units (up to three decimal places).
 @optional @attribute lines account_id INTEGER The ID of the #Beans_Account# to count the sale towards ( in terms of revenue ).
 @optional @attribute lines tax_exempt BOOLEAN
 @optional taxes ARRAY An array of objects representing taxes applicable to the sale.
