@@ -1041,7 +1041,7 @@ class Beans_Vendor extends Beans {
 	@attribute account OBJECT The #Beans_Account# to categorize the cost.
 	@attribute description STRING 
 	@attribute amount DECIMAL
-	@attribute quantity INTEGER Must be >= 0
+	@attribute quantity DECIMAL (up to three decimal places).
 	@attribute total DECIMAL The total from the amount and quantity.
 	---BEANSENDSPEC---
 	 */
@@ -1054,7 +1054,7 @@ class Beans_Vendor extends Beans {
 	@attribute account OBJECT The #Beans_Account# to categorize the cost.
 	@attribute description STRING 
 	@attribute amount DECIMAL
-	@attribute quantity INTEGER Must be >= 0
+	@attribute quantity DECIMAL (up to three decimal places).
 	@attribute total DECIMAL The total from the amount and quantity.
 	---BEANSENDSPEC---
 	 */
