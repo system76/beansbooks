@@ -81,6 +81,8 @@ class Controller_Docs extends Controller {
 		}
 
 		$api->actions_tree = $this->_build_tree_names($api->actions_tree);
+
+		$api->actions_tree = $this->_remove_array_keys($api->actions_tree);
 		
 		// Assign actions to end points.
 		/*
@@ -127,6 +129,9 @@ class Controller_Docs extends Controller {
 
 			$ref[array_shift($keys)]['name'] = $object['name'];
 		}
+
+		$api->objects_tree = $this->_remove_array_keys($api->objects_tree);
+
 
 		$this->response->body(json_encode($api));
 		$this->response->headers('Content-Type', 'application/json');
@@ -410,6 +415,8 @@ class Controller_Docs extends Controller {
 			}
 		}
 
+		$api_spec['parameters'] = $this->_remove_array_keys($api_spec['parameters']);
+
 		return $api_spec;
 	}
 
@@ -448,6 +455,8 @@ class Controller_Docs extends Controller {
 				$obj_spec['attributes'][$attribute_name]['description'] = $attribute_description;
 			}
 		}
+
+		$obj_spec['attributes'] = $this->_remove_array_keys($obj_spec['attributes']);
 
 		return $obj_spec;
 	}
@@ -518,6 +527,31 @@ class Controller_Docs extends Controller {
 		}
 
 		return $children;
+	}
+
+	private function _remove_array_keys($items)
+	{
+		$return_array = array();
+
+		foreach( $items as $item )
+		{
+			if( isset($item['children']) )
+			{
+				$item['children'] = $this->_remove_array_keys($item['children']);
+			}
+
+			foreach( $item as $key => $value ) 
+			{
+				if( is_array($value) )
+				{
+					$item[$key] = $this->_remove_array_keys($value);
+				}
+			}
+
+			$return_array[] = $item;
+		}
+
+		return $return_array;
 	}
 
 }
