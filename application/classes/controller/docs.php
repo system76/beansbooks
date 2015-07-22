@@ -50,7 +50,7 @@ class Controller_Docs extends Controller {
 		// V2Item - Return navigable tree based on JSON responses.
 	}
 
-	public function action_nestedjson()
+	public function action_json()
 	{
 		$this->_build();
 
@@ -81,22 +81,8 @@ class Controller_Docs extends Controller {
 		}
 
 		$api->actions_tree = $this->_build_tree_names($api->actions_tree);
+		$api->actions_tree = $this->_remove_array_keys($api->actions_tree);
 		
-		// Assign actions to end points.
-		/*
-		foreach( $this->_actions as $action )
-		{
-			$ref = &$api->actions_tree;
-
-			$keys = explode('_',$action['name']);
-			while( count($keys) > 1 ) {
-				$ref = &$ref[array_shift($keys)]['children'];
-			}
-
-			$ref[array_shift($keys)]['name'] = $action['name'];
-		}
-		*/
-
 		// Create keys / end-points for objects
 		foreach( $this->_objects as $object )
 		{
@@ -115,32 +101,9 @@ class Controller_Docs extends Controller {
 			}
 		}
 
-		// Assign actions to end points.
-		foreach( $this->_objects as $object )
-		{
-			$ref = &$api->objects_tree;
+		$api->objects_tree = $this->_build_tree_names($api->objects_tree);
+		$api->objects_tree = $this->_remove_array_keys($api->objects_tree);
 
-			$keys = explode('_',$object['name']);
-			while( count($keys) > 1 ) {
-				$ref = &$ref[array_shift($keys)]['children'];
-			}
-
-			$ref[array_shift($keys)]['name'] = $object['name'];
-		}
-
-		$this->response->body(json_encode($api));
-		$this->response->headers('Content-Type', 'application/json');
-		return $this->after();
-	}
-
-	public function action_json()
-	{
-		// Somehow display docs - but require building them?
-		$this->_build();
-
-		$api = new stdClass;
-		$api->actions = $this->_actions;
-		$api->objects = $this->_objects;
 
 		$this->response->body(json_encode($api));
 		$this->response->headers('Content-Type', 'application/json');
@@ -410,6 +373,8 @@ class Controller_Docs extends Controller {
 			}
 		}
 
+		$api_spec['parameters'] = $this->_remove_array_keys($api_spec['parameters']);
+
 		return $api_spec;
 	}
 
@@ -448,6 +413,8 @@ class Controller_Docs extends Controller {
 				$obj_spec['attributes'][$attribute_name]['description'] = $attribute_description;
 			}
 		}
+
+		$obj_spec['attributes'] = $this->_remove_array_keys($obj_spec['attributes']);
 
 		return $obj_spec;
 	}
@@ -518,6 +485,31 @@ class Controller_Docs extends Controller {
 		}
 
 		return $children;
+	}
+
+	private function _remove_array_keys($items)
+	{
+		$return_array = array();
+
+		foreach( $items as $item )
+		{
+			if( isset($item['children']) )
+			{
+				$item['children'] = $this->_remove_array_keys($item['children']);
+			}
+
+			foreach( $item as $key => $value ) 
+			{
+				if( is_array($value) )
+				{
+					$item[$key] = $this->_remove_array_keys($value);
+				}
+			}
+
+			$return_array[] = $item;
+		}
+
+		return $return_array;
 	}
 
 }
