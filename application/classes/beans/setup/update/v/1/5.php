@@ -111,14 +111,14 @@ class Beans_Setup_Update_V_1_5 extends Beans_Setup_Update_V {
 				try
 				{
 					$key_exist_check = DB::Query(
-						NULL, 
+						Database::SELECT, 
 						'SELECT COUNT(TABLE_NAME) as exist_check '.
 						'FROM INFORMATION_SCHEMA.STATISTICS WHERE '.
 						'TABLE_NAME = "'.$table_name.'" '.
 						'AND COLUMN_NAME = "'.$column_name.'"'
 					)->execute()->as_array();
 
-					if( $table_exist_check[0]['exist_check'] != '0' )
+					if( $key_exist_check[0]['exist_check'] == '0' )
 					{
 						DB::Query(
 							NULL,
