@@ -1,6 +1,6 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF NOT EXISTS `accounts` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_account_id` int(10) unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_account_id` bigint(20) unsigned DEFAULT NULL,
   `account_type_id` tinyint(3) unsigned DEFAULT NULL,
   `reserved` boolean NOT NULL DEFAULT FALSE,
   `deposit` tinyint(1) NOT NULL DEFAULT '0',
@@ -16,7 +16,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `account_reconciles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `account_id` int(10) unsigned DEFAULT NULL,
+  `account_id` bigint(20) unsigned NULL DEFAULT NULL,
   `date` date DEFAULT NULL,
   `balance_start` decimal(15,2) DEFAULT NULL,
   `balance_end` decimal(15,2) DEFAULT NULL,
@@ -58,7 +58,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `default_shipping_address_id` bigint(20) unsigned DEFAULT NULL,
   `default_billing_address_id` bigint(20) unsigned DEFAULT NULL,
   `default_remit_address_id` bigint(20) unsigned DEFAULT NULL,
-  `default_account_id` int(10) unsigned DEFAULT NULL,
+  `default_account_id` bigint(20) unsigned DEFAULT NULL,
   `type` enum('customer','vendor') DEFAULT NULL,
   `first_name` varchar(64) DEFAULT NULL,
   `last_name` varchar(64) DEFAULT NULL,
@@ -166,13 +166,13 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `setup` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `settings` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(64) DEFAULT NULL,
   `value` text,
   `reserved` boolean NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `taxes` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `account_id` bigint(20) unsigned DEFAULT NULL,
   `code` varchar(16) DEFAULT NULL,
   `name` varchar(64) DEFAULT NULL,
@@ -244,7 +244,42 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `reset_expiration` bigint(20) unsigned DEFAULT NULL,
   `password_change`tinyint(1) NOT NULL DEFAULT '0',
   `password` varchar(128) DEFAULT NULL,
-  `role_id` int(10) unsigned DEFAULT NULL,
+  `role_id` bigint(20) unsigned DEFAULT NULL,
   `auth_expiration` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; ALTER TABLE `accounts` 
+ADD INDEX (`parent_account_id`); ALTER TABLE `accounts` 
+ADD INDEX (`account_type_id`); ALTER TABLE `account_reconciles` 
+ADD INDEX (`account_id`); ALTER TABLE `account_transactions` 
+ADD INDEX (`transaction_id`); ALTER TABLE `account_transactions` 
+ADD INDEX (`account_id`); ALTER TABLE `account_transactions` 
+ADD INDEX (`account_reconcile_id`); ALTER TABLE `account_transaction_forms` 
+ADD INDEX (`account_transaction_id`); ALTER TABLE `account_transaction_forms` 
+ADD INDEX (`form_id`); ALTER TABLE `entities` 
+ADD INDEX (`default_shipping_address_id`); ALTER TABLE `entities` 
+ADD INDEX (`default_billing_address_id`); ALTER TABLE `entities` 
+ADD INDEX (`default_remit_address_id`); ALTER TABLE `entities` 
+ADD INDEX (`default_account_id`); ALTER TABLE `entity_addresses` 
+ADD INDEX (`entity_id`); ALTER TABLE `forms` 
+ADD INDEX (`entity_id`); ALTER TABLE `forms` 
+ADD INDEX (`account_id`); ALTER TABLE `forms` 
+ADD INDEX (`create_transaction_id`); ALTER TABLE `forms` 
+ADD INDEX (`invoice_transaction_id`); ALTER TABLE `forms` 
+ADD INDEX (`cancel_transaction_id`); ALTER TABLE `forms` 
+ADD INDEX (`refund_form_id`); ALTER TABLE `forms` 
+ADD INDEX (`shipping_address_id`); ALTER TABLE `forms` 
+ADD INDEX (`billing_address_id`); ALTER TABLE `forms` 
+ADD INDEX (`remit_address_id`); ALTER TABLE `form_lines` 
+ADD INDEX (`form_id`); ALTER TABLE `form_lines` 
+ADD INDEX (`account_id`); ALTER TABLE `form_taxes` 
+ADD INDEX (`form_id`); ALTER TABLE `form_taxes` 
+ADD INDEX (`tax_id`); ALTER TABLE `taxes` 
+ADD INDEX (`account_id`); ALTER TABLE `tax_items` 
+ADD INDEX (`tax_id`); ALTER TABLE `tax_items` 
+ADD INDEX (`form_id`); ALTER TABLE `tax_items` 
+ADD INDEX (`tax_payment_id`); ALTER TABLE `tax_payments` 
+ADD INDEX (`tax_id`); ALTER TABLE `tax_payments` 
+ADD INDEX (`transaction_id`); ALTER TABLE `transactions` 
+ADD INDEX (`entity_id`); ALTER TABLE `transactions` 
+ADD INDEX (`form_id`); ALTER TABLE `users` 
+ADD INDEX (`role_id`)
