@@ -115,7 +115,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   `tax_exempt` boolean NOT NULL DEFAULT FALSE,
   `description` varchar(128) DEFAULT NULL,
   `amount` decimal(15,2) DEFAULT NULL,
-  `quantity` int(10) unsigned DEFAULT NULL,
+  `quantity` decimal(13,3) DEFAULT NULL,
   `total` decimal(15,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `form_taxes` (
