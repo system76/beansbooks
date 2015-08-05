@@ -16,7 +16,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO"; SET time_zone = "+00:00"; CREATE TABLE IF 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ; CREATE TABLE IF NOT EXISTS `account_reconciles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `account_id` bigint(20) unsigned NULL DEFAULT NULL,
+  `account_id` bigint(20) unsigned DEFAULT NULL,
   `date` date DEFAULT NULL,
   `balance_start` decimal(15,2) DEFAULT NULL,
   `balance_end` decimal(15,2) DEFAULT NULL,
