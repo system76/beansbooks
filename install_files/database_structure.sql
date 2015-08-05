@@ -282,4 +282,4 @@ ADD INDEX (`tax_id`); ALTER TABLE `tax_payments`
 ADD INDEX (`transaction_id`); ALTER TABLE `transactions` 
 ADD INDEX (`entity_id`); ALTER TABLE `transactions` 
 ADD INDEX (`form_id`); ALTER TABLE `users` 
-ADD INDEX (`role_id`)
+ADD INDEX (`role_id`);
