@@ -1085,7 +1085,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 				showError("An unexpected error has occurred.<br>You should reload the page before going any further.");
 				return;
 			}
-			$('#customers-sales-create input:not(.ezpz-hint,.datepicker),#customers-sales-create select').each(function() {
+			$('#customers-sales-create input:not(.ezpz-hint,.datepicker,.line-total),#customers-sales-create select').each(function() {
 				$(this).attr('readonly',false).attr('disabled',false).focus().blur();
 			});
 			$('#customers-sales-create select[name="account"]').select2('enable');
@@ -2352,7 +2352,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 
 			if( $quantity.val() &&
 				$quantity.val().length ) {
-				$quantity.val(parseInt($quantity.val()));
+				$quantity.val(Math.round(parseFloat($quantity.val())*1000) / 1000);
 			}
 			
 			if( $quantity.val() &&
@@ -2366,7 +2366,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 					$quantity.val( $quantity.val() * -1 );
 				}
 
-				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseInt($quantity.val()))).toFixed(2));
+				$total.val(parseFloat(monetaryRound(parseFloat($price.val()) * parseFloat($quantity.val()))).toFixed(2));
 
 				if( ! formTaxExempt && 
 					! lineTaxExempt ) {
