@@ -177,6 +177,11 @@ class Beans {
 
 	}
 
+	public function get_version()
+	{
+		return $this->_BEANS_VERSION;
+	}
+
 	// Override in each action.
 	protected function _execute()
 	{

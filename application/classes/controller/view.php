@@ -150,6 +150,10 @@ class Controller_View extends Controller {
 	 */
 	protected function _beans_default_calls()
 	{
+		// Get Version
+		$b = new Beans();
+		$this->_view->beansbooks_version = $b->get_version();
+
 		// Only if logged in.
 		if( ! strlen(Session::instance()->get('auth_uid')) OR 
 			! strlen(Session::instance()->get('auth_key')) OR 

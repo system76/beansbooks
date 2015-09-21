@@ -1145,6 +1145,16 @@ a.button.short:focus {
 	color: #ffffff;
 }
 
+.footer {
+	color: #467f49;
+}
+
+.footer p {
+	text-align: center;
+	margin: 0;
+	padding: 0;
+}
+
 /*
 
 Helpful color scheme for errors/success:
