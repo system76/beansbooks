@@ -374,6 +374,7 @@ class Controller_Docs extends Controller {
 		}
 
 		$api_spec['parameters'] = $this->_remove_array_keys($api_spec['parameters']);
+		$api_spec['returns'] = $this->_remove_array_keys($api_spec['returns']);
 
 		return $api_spec;
 	}
