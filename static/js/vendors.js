@@ -2805,6 +2805,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)vendors(\\s|$)')) !== null
 			$line.find('.vendor-paymentpo-add input[type="checkbox"]').attr('checked','checked');
 			checkboxUpdate($line.find('.vendor-paymentpo-add input[type="checkbox"]'));
 			createVendorPaymentAddPurchase($line);
+			GLOBAL_EDIT_FORM_ACTIVE = true;
 		});
 
 		$('#vendors-payments-payments-search').live('keyup',function(e) {
