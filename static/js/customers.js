@@ -2216,6 +2216,7 @@ if ( document.body.className.match(new RegExp('(\\s|^)customers(\\s|$)')) !== nu
 			$line.find('.customer-batchpayment-add input[type="checkbox"]').attr('checked','checked');
 			checkboxUpdate($line.find('.customer-batchpayment-add input[type="checkbox"]'));
 			createPaymentBatchAddSale($line);
+			GLOBAL_EDIT_FORM_ACTIVE = true;
 		});
 
 		/**
