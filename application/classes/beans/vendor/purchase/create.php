@@ -175,8 +175,6 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 			! count($this->_data->lines) )
 			throw new Exception("Invalid purchase lines: none provided.");
 
-		$i = 0;
-		
 		foreach( $this->_data->lines as $purchase_line )
 		{
 			$new_purchase_line = $this->_default_form_line();
@@ -210,18 +208,29 @@ class Beans_Vendor_Purchase_Create extends Beans_Vendor_Purchase {
 
 			$this->_purchase->amount = $this->_beans_round( $this->_purchase->amount + $new_purchase_line->total );
 			
-			$this->_purchase_lines[$i] = $new_purchase_line;
-
-			$i++;
-
+			$this->_purchase_lines[] = $new_purchase_line;
 		}
 
 		$this->_purchase->total = $this->_beans_round( $this->_purchase->total + $this->_purchase->amount );
-	
-		// If this is a refund we need to verify that the total is not greater than the original.
-		if( $this->_purchase->refund_form_id AND 
-			$this->_purchase->total > $this->_load_vendor_purchase($this->_purchase->refund_form_id)->total )
-			throw new Exception("That refund total was greater than the original purchase total.");
+		
+		// Validate Totals
+		if( $this->_purchase->refund_form_id )
+		{
+			$refund_form = $this->_load_vendor_purchase($this->_purchase->refund_form_id);
+
+			if( ! $refund_form->loaded() )
+				throw new Exception("That refund_purchase_id was not found.");
+
+			$original_purchase = $refund_form;
+			$refund_purchase = $this->_purchase;
+
+			if( ( $original_purchase->total > 0.00 AND $refund_purchase->total > 0.00 ) OR 
+				( $original_purchase->total < 0.00 AND $refund_purchase->total < 0.00 ) )
+				throw new Exception("Refund and original purchase totals must offset each other ( they cannot both be positive or negative ).");
+
+			if( abs($refund_purchase->total) > abs($original_purchase->total) )
+				throw new Exception("The refund total cannot be greater than the original purchase total.");
+		}
 		
 		// Save Purchase + Children
 		$this->_purchase->save();

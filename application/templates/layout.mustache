@@ -27,13 +27,13 @@
 
 		<!-- Good resets -->
 		<link href="/static/css/h5bp.css" type="text/css" rel="stylesheet" charset="utf-8">
-		<link href="/static/css/main.css" type="text/css" rel="stylesheet" charset="utf-8">
-		<link href="/static/css/form.css" type="text/css" rel="stylesheet" charset="utf-8">
-		<link href="/static/css/dash.css" type="text/css" rel="stylesheet" charset="utf-8">
-		<link href="/static/css/accounts.css" type="text/css" rel="stylesheet" charset="utf-8">
-		<link href="/static/css/customers.css" type="text/css" rel="stylesheet" charset="utf-8">
-		<link href="/static/css/vendors.css" type="text/css" rel="stylesheet" charset="utf-8">
-		<link href="/static/css/setup.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/main.css?v={{beansbooks_version}}" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/form.css?v={{beansbooks_version}}" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/dash.css?v={{beansbooks_version}}" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/accounts.css?v={{beansbooks_version}}" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/customers.css?v={{beansbooks_version}}" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/vendors.css?v={{beansbooks_version}}" type="text/css" rel="stylesheet" charset="utf-8">
+		<link href="/static/css/setup.css?v={{beansbooks_version}}" type="text/css" rel="stylesheet" charset="utf-8">
 		
 		<!-- use the html5shiv for older IE versions -->
 		<!--[if lt IE 9]>
@@ -56,6 +56,10 @@
 				{{>content}}
 
 			</div>
+			<div class="clear"></div>
+
+			{{>layout_footer}}
+			
 			<div class="clear"></div>
 
 		</div>
@@ -88,15 +92,15 @@
 		<script type="text/javascript" src="/static/js/libs/select2.3.2.2.min.js"></script>
 
 		<!-- Specific Beans JS -->
-		<script src="/static/js/script.js" type="text/javascript"></script>
-		<script src="/static/js/interface.js" type="text/javascript"></script>
-		<script src="/static/js/dash.js" type="text/javascript"></script>
-		<script src="/static/js/accounts.js" type="text/javascript"></script>
-		<script src="/static/js/customers.js" type="text/javascript"></script>
-		<script src="/static/js/vendors.js" type="text/javascript"></script>
-		<script src="/static/js/setup.js" type="text/javascript"></script>
-		<script src="/static/js/auth.js" type="text/javascript"></script>
-		<script src="/static/js/myaccount.js" type="text/javascript"></script>
+		<script src="/static/js/script.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/interface.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/dash.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/accounts.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/customers.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/vendors.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/setup.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/auth.js?v={{beansbooks_version}}" type="text/javascript"></script>
+		<script src="/static/js/myaccount.js?v={{beansbooks_version}}" type="text/javascript"></script>
 		
 	</body>
 </html>

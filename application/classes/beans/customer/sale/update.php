@@ -249,14 +249,50 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 				}
 			}
 
+			$this->_sale->amount = $this->_beans_round( $this->_sale->amount + $new_sale_line->total);
+			
 			$this->_sale_lines[] = $new_sale_line;
 		}
 
-		// If this is a refund we need to verify that the total is not greater than the original.
-		if( $this->_sale->refund_form_id AND 
-			$this->_sale->refund_form_id < $this->_sale->id AND
-			$this->_sale->total > $this->_load_customer_sale($this->_sale->refund_form_id)->total )
-			throw new Exception("That refund total was greater than the original sale total.");
+		$this->_sale->total = $this->_beans_round( $this->_sale->total + $this->_sale->amount );
+
+		foreach( $this->_sale_taxes as $tax_id => $sale_tax )
+		{
+			$this->_sale_taxes[$tax_id]->total = $this->_beans_round( 
+				$sale_tax->tax_percent * 
+				$sale_tax->form_line_taxable_amount 
+			);
+			
+			$this->_sale_taxes[$tax_id]->form_line_amount = $this->_sale->amount;
+
+			$this->_sale->total = $this->_beans_round( 
+				$this->_sale->total + 
+				$this->_sale_taxes[$tax_id]->total 
+			);
+		}
+
+		// Validate Totals
+		
+		if( $this->_sale->refund_form_id )
+		{
+			$refund_form = $this->_load_customer_sale($this->_sale->refund_form_id);
+
+			$original_sale = $this->_sale;
+			$refund_sale = $refund_form;
+
+			if( $this->_sale->refund_form_id < $this->_sale->id )
+			{
+				$refund_sale = $this->_sale;
+				$original_sale = $refund_form;
+			}
+
+			if( ( $original_sale->total > 0.00 AND $refund_sale->total > 0.00 ) OR 
+				( $original_sale->total < 0.00 AND $refund_sale->total < 0.00 ) )
+				throw new Exception("Refund and original sale totals must offset each other ( they cannot both be positive or negative ).");
+
+			if( abs($refund_sale->total) > abs($original_sale->total) )
+				throw new Exception("The refund total cannot be greater than the original sale total.");
+		}
 		
 		// Delete Account Transaction
 		if( $this->_sale->create_transaction->loaded() )
@@ -287,35 +323,12 @@ class Beans_Customer_Sale_Update extends Beans_Customer_Sale {
 		{
 			$sale_line->form_id = $this->_sale->id;
 			$sale_line->save();
-			
-			$this->_sale->amount = $this->_beans_round( 
-				$this->_sale->amount + 
-				$sale_line->total 
-			);
 		}
-
-		$this->_sale->total = $this->_beans_round( 
-			$this->_sale->total + 
-			$this->_sale->amount 
-		);
 
 		foreach( $this->_sale_taxes as $tax_id => $sale_tax )
 		{
 			$this->_sale_taxes[$tax_id]->form_id = $this->_sale->id;
-			
-			$this->_sale_taxes[$tax_id]->total = $this->_beans_round( 
-				$sale_tax->tax_percent * 
-				$sale_tax->form_line_taxable_amount 
-			);
-			
-			$this->_sale_taxes[$tax_id]->form_line_amount = $this->_sale->amount;
-			
 			$this->_sale_taxes[$tax_id]->save();
-			
-			$this->_sale->total = $this->_beans_round( 
-				$this->_sale->total + 
-				$this->_sale_taxes[$tax_id]->total 
-			);
 		}
 
 		$this->_sale->save();

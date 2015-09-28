@@ -29,6 +29,7 @@ class View_Template extends Kostache_Layout {
 	// 		'path_to_template' => 'partials/path/to/template'
 	protected $_partials = array(
 		'layout_header' => 'partials/layout/header',
+		'layout_footer' => 'partials/layout/footer',
 		'accounts_chart_account' => 'partials/accounts/chart/account',
 		'accounts_view_transaction' => 'partials/accounts/view/transaction',
 		'accounts_view_transactionsplit' => 'partials/accounts/view/transactionsplit',
@@ -84,6 +85,16 @@ class View_Template extends Kostache_Layout {
 	public function currency_symbol()
 	{
 		return $this->_company_currency();
+	}
+
+	public function beansbooks_version()
+	{
+		if( ! isset($this->beansbooks_version) )
+		{
+			return '';
+		}
+
+		return $this->beansbooks_version;
 	}
 	
 	// Cache Settings
