@@ -120,22 +120,24 @@ class Controller_Accounts extends Controller_View {
 
 			foreach( $this->request->post() as $key => $value ) 
 			{
+				$value_numeric = preg_replace('/[^0-9.]*/','', $value);
+
 				if( strpos($key, 'account_debit_') !== FALSE AND
-					strlen($value) AND 
-					floatval($value) != 0 ) 
+					strlen($value_numeric) AND
+					floatval($value_numeric) != 0 )
 				{
 					$create_transaction_data->account_transactions[] = (object)array(
 						'account_id' => str_replace('account_debit_', '', $key),
-						'amount' => ( -1 * $value ),
+						'amount' => ( -1 * $value_numeric ),
 					);
 				}
 				else if( 	strpos($key, 'account_credit_') !== FALSE AND
-							strlen($value) AND 
-							floatval($value) != 0 )
+							strlen($value_numeric) AND
+							floatval($value_numeric) != 0 )
 				{
 					$create_transaction_data->account_transactions[] = (object)array(
 						'account_id' => str_replace('account_credit_', '', $key),
-						'amount' => ( $value ),
+						'amount' => ( $value_numeric ),
 					);
 				}
 			}
