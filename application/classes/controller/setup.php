@@ -55,6 +55,13 @@ class Controller_Setup extends Controller_View {
 				'text_short' => "Users",
 			);
 
+			$tab_links[] = array(
+				'url' => '/setup/calibrate',
+				'text' => 'Calibrate Books',
+				'removable' => FALSE,
+				'text_short' => "Calibrate",
+			);
+
 			Session::instance()->set('tab_links',$tab_links);
 		}
 
