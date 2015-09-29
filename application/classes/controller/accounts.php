@@ -120,7 +120,7 @@ class Controller_Accounts extends Controller_View {
 
 			foreach( $this->request->post() as $key => $value ) 
 			{
-				$value_numeric = preg_replace('/[^0-9.]*/','', $value);
+				$value_numeric = $this->_get_numeric_value($value);
 
 				if( strpos($key, 'account_debit_') !== FALSE AND
 					strlen($value_numeric) AND
@@ -269,7 +269,7 @@ class Controller_Accounts extends Controller_View {
 							$account_transactions[] = (object)array(
 								'account_id' => $account_id,
 								'hash' => $i++,
-								'amount' => ( floatval($transaction->TRNAMT) * $account_table_sign ),
+								'amount' => ( $this->_get_numeric_value($transaction->TRNAMT) * $account_table_sign ),
 								'description' => $transaction->NAME,
 								'date' => substr($transaction->DTPOSTED,0,4).'-'.substr($transaction->DTPOSTED,4,2).'-'.substr($transaction->DTPOSTED,6,2),
 								'number' =>  isset($transaction->CHECKNUM) ? $transaction->CHECKNUM : $transaction->TRNTYPE ,
