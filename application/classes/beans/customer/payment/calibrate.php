@@ -100,6 +100,14 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 				date("Y-m-d",strtotime($this->_data->date_before)) != $this->_data->date_before )
 				throw new Exception("Missing or invalid date_before: must be in YYYY-MM-DD format.");
 
+			if( $this->_check_books_closed($this->_data->date_after) ) {
+				throw new Exception("Cannot calibrate books on or before ".$this->_data->date_after." - that fiscal year has been closed.");
+			}
+			
+			if( $this->_check_books_closed($this->_data->date_before) ) {
+				throw new Exception("Cannot calibrate books on or before ".$this->_data->date_before." - that fiscal year has been closed.");
+			}
+			
 			$valid_field = TRUE;
 
 			$payment_ids_query .= ' ( '.
