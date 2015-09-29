@@ -351,6 +351,26 @@ class Controller_Setup_Json extends Controller_Json {
 		if( ! $customer_payment_calibrate_result->success )
 			return $this->_return_error('Error updating customer payments: '.$customer_payment_calibrate_result->error);
 
+		// Recalibrate Vendor Invoices / Cancellations
+		$vendor_purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
+		)));
+		$vendor_purchase_calibrate_result = $vendor_purchase_calibrate->execute();
+
+		if( ! $vendor_purchase_calibrate_result->success )
+			return $this->_return_error('Error updating vendor purchases: '.$vendor_purchase_calibrate_result->error);
+
+		// Recalibrate any payments tied to these purchases AFTER this transaction date.
+		$vendor_payment_calibrate = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
+		)));
+		$vendor_payment_calibrate_result = $vendor_payment_calibrate->execute();
+
+		if( ! $vendor_payment_calibrate_result->success )
+			return $this->_return_error('Error updating vendor payments: '.$vendor_payment_calibrate_result->error);
+
 		$this->_return_object->data->date_next = date("Y-m-d",strtotime($date." +1 Day"));		
 
 		$account_transaction_search = new Beans_Account_Transaction_Search($this->_beans_data_auth((object)array(
