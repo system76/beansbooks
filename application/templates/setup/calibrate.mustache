@@ -26,9 +26,19 @@
 	{{/calibrate_required}}
 	{{^calibrate_required}}
 		<div class="text-medium bump-down-most form">
-			<div class="row">
+			<div class="row" style="height: auto;">
 				<div class="text-center bump-down-more" id="setup-calibrate-status">
 					Your books are up-to-date!  No calibration required.
+					<br><br>
+					If you would like to manually calibrate your books from a date in the current financial year, please select it and click "start".
+				</div>
+			</div>
+			<div class="row">
+				<div class="text-center bump-down-more">
+					<input type="text" id="setup-calibrate-date" class="datepicker" value="">
+					<a href="#" class="button" id="setup-calibrate-start"><span>Start Calibration</span></a>
+					<a href="#" class="button" id="setup-calibrate-pause" style="display: none;"><span>Pause Calibration</span></a>
+					<a href="#" class="button" id="setup-calibrate-resume" style="display: none;"><span>Resume Calibration</span></a>
 				</div>
 			</div>
 		</div>
