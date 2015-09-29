@@ -44,16 +44,6 @@ class Beans_Customer_Sale_Calibrate extends Beans_Customer_Sale {
 
 	protected function _execute()
 	{
-		if( isset($this->_data->date_after) &&
-			$this->_check_books_closed($this->_data->date_after) ) {
-			throw new Exception("Cannot calibrate books on or before ".$this->_data->date_after." - that fiscal year has been closed.");
-		}
-		
-		if( isset($this->_data->date_before) &&
-			$this->_check_books_closed($this->_data->date_before) ) {
-			throw new Exception("Cannot calibrate books on or before ".$this->_data->date_before." - that fiscal year has been closed.");
-		}
-		
 		$customer_sale_calibrate_create = new Beans_Customer_Sale_Calibrate_Create($this->_beans_data_auth((object)array(
 			'ids' => isset($this->_data->ids) ? $this->_data->ids : NULL,
 			'date_after' => isset($this->_data->date_after) ? $this->_data->date_after : NULL,
