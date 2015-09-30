@@ -118,24 +118,28 @@ class Controller_Accounts extends Controller_View {
 				strlen($this->request->post('date')) )
 				$create_transaction_data->date = date("Y-m-d",strtotime($this->request->post('date')));
 
-			foreach( $this->request->post() as $key => $value ) 
+			$account_transactions_data = json_decode($this->request->post('account_transactions'));
+
+			foreach( $account_transactions_data as $key => $value ) 
 			{
+				$value_numeric = $this->_get_numeric_value($value);
+
 				if( strpos($key, 'account_debit_') !== FALSE AND
-					strlen($value) AND 
-					floatval($value) != 0 ) 
+					strlen($value_numeric) AND
+					floatval($value_numeric) != 0 )
 				{
 					$create_transaction_data->account_transactions[] = (object)array(
 						'account_id' => str_replace('account_debit_', '', $key),
-						'amount' => ( -1 * $value ),
+						'amount' => ( -1 * $value_numeric ),
 					);
 				}
 				else if( 	strpos($key, 'account_credit_') !== FALSE AND
-							strlen($value) AND 
-							floatval($value) != 0 )
+							strlen($value_numeric) AND
+							floatval($value_numeric) != 0 )
 				{
 					$create_transaction_data->account_transactions[] = (object)array(
 						'account_id' => str_replace('account_credit_', '', $key),
-						'amount' => ( $value ),
+						'amount' => ( $value_numeric ),
 					);
 				}
 			}
@@ -267,7 +271,7 @@ class Controller_Accounts extends Controller_View {
 							$account_transactions[] = (object)array(
 								'account_id' => $account_id,
 								'hash' => $i++,
-								'amount' => ( floatval($transaction->TRNAMT) * $account_table_sign ),
+								'amount' => ( $this->_get_numeric_value($transaction->TRNAMT) * $account_table_sign ),
 								'description' => $transaction->NAME,
 								'date' => substr($transaction->DTPOSTED,0,4).'-'.substr($transaction->DTPOSTED,4,2).'-'.substr($transaction->DTPOSTED,6,2),
 								'number' =>  isset($transaction->CHECKNUM) ? $transaction->CHECKNUM : $transaction->TRNTYPE ,

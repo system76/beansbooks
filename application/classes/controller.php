@@ -99,4 +99,9 @@ class Controller extends Kohana_Controller {
 		return $data;
 	}
 
+	protected function _get_numeric_value($value)
+	{
+		return preg_replace('/[^0-9.]*/','', $value);
+	}
+
 }
