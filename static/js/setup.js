@@ -523,7 +523,8 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 			$.post(
 				'/setup/json/calibratedate',
 				{
-					date: $('#setup-calibrate-date').val()
+					date: $('#setup-calibrate-date').val(),
+					manual: $('#setup-calibrate-manual').val()
 				},
 				function (data) {
 					if( ! data.success ) {

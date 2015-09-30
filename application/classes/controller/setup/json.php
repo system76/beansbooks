@@ -432,12 +432,16 @@ class Controller_Setup_Json extends Controller_Json {
 		}
 
 		// Update our latest date in case user pauses and comes back later.
-		$setup_company_update = new Beans_Setup_Company_Update($this->_beans_data_auth((object)array(
-			'settings' => array(
-				'calibrate_date_next' => $this->_return_object->data->date_next,
-			)
-		)));
-		$setup_company_update_result = $setup_company_update->execute();
+		// We only do this if the user isn't manually recalibrating books.
+		if( $this->request->post('manual') === "1" )
+		{
+			$setup_company_update = new Beans_Setup_Company_Update($this->_beans_data_auth((object)array(
+				'settings' => array(
+					'calibrate_date_next' => $this->_return_object->data->date_next,
+				)
+			)));
+			$setup_company_update_result = $setup_company_update->execute();
+		}
 	}
 
 	private function _generate_random_string()

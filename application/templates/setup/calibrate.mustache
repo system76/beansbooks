@@ -17,6 +17,7 @@
 			<div class="row">
 				<div class="text-center bump-down-more">
 					<input type="hidden" id="setup-calibrate-date" value="">
+					<input type="hidden" id="setup-calibrate-manual" name="setup-calibrate-manual" value="0" />
 					<a href="#" class="button" id="setup-calibrate-start"><span>Start Calibration</span></a>
 					<a href="#" class="button" id="setup-calibrate-pause" style="display: none;"><span>Pause Calibration</span></a>
 					<a href="#" class="button" id="setup-calibrate-resume" style="display: none;"><span>Resume Calibration</span></a>
@@ -30,12 +31,13 @@
 				<div class="text-center bump-down-more" id="setup-calibrate-status">
 					Your books are up-to-date!  No calibration required.
 					<br><br>
-					If you would like to manually calibrate your books, please select it and click "start".
+					If you would like to manually calibrate your books, please select a beginning date and click "Start Calibration".
 				</div>
 			</div>
 			<div class="row">
 				<div class="text-center bump-down-more">
-					<input type="text" id="setup-calibrate-date" class="datepicker" value="">
+					<input type="text" id="setup-calibrate-date" class="datepicker" value="" />
+					<input type="hidden" id="setup-calibrate-manual" name="setup-calibrate-manual" value="1" />
 					<a href="#" class="button" id="setup-calibrate-start"><span>Start Calibration</span></a>
 					<a href="#" class="button" id="setup-calibrate-pause" style="display: none;"><span>Pause Calibration</span></a>
 					<a href="#" class="button" id="setup-calibrate-resume" style="display: none;"><span>Resume Calibration</span></a>
