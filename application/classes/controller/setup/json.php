@@ -322,10 +322,36 @@ class Controller_Setup_Json extends Controller_Json {
 	public function action_calibratedate()
 	{
 		$date = $this->request->post('date');
+		$manual = $this->request->post('manual');
 
 		if( ! $date OR 
 			$date != date("Y-m-d",strtotime($date)) )
 			return $this->_return_error('Invalid date provided: '.$date.' expected YYYY-MM-DD');
+
+		// If manual, we don;t want them trying to calibrate pre-fye
+		if( $manual == "1" )
+		{
+			$account_closebooks_check = new Beans_Account_Closebooks_Check($this->_beans_data_auth());
+			$account_closebooks_check_result = $account_closebooks_check->execute();
+
+			if( ! $account_closebooks_check_result->success )
+			{
+				return $this->_return_error(
+					"An unexpected error occurred when trying to validate the date: ".
+					$account_closebooks_check_result->error
+				);
+			}
+
+			if( $account_closebooks_check_result->data->previous_date && 
+				strtotime($date) <= strtotime($account_closebooks_check_result->data->previous_date) )
+			{
+				return $this->_return_error(
+					"The books were closed most recently on ".
+					$account_closebooks_check_result->data->previous_date.". ".
+					"Please choose a date after that to begin manual calibration."
+				);
+			}
+		}
 
 		// This can take a while.
 		set_time_limit(60 * 10);
@@ -350,6 +376,26 @@ class Controller_Setup_Json extends Controller_Json {
 
 		if( ! $customer_payment_calibrate_result->success )
 			return $this->_return_error('Error updating customer payments: '.$customer_payment_calibrate_result->error);
+
+		// Recalibrate Vendor Invoices / Cancellations
+		$vendor_purchase_calibrate = new Beans_Vendor_Purchase_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
+		)));
+		$vendor_purchase_calibrate_result = $vendor_purchase_calibrate->execute();
+
+		if( ! $vendor_purchase_calibrate_result->success )
+			return $this->_return_error('Error updating vendor purchases: '.$vendor_purchase_calibrate_result->error);
+
+		// Recalibrate any payments tied to these purchases AFTER this transaction date.
+		$vendor_payment_calibrate = new Beans_Vendor_Payment_Calibrate($this->_beans_data_auth((object)array(
+			'date_after' => $date,
+			'date_before' => $date,
+		)));
+		$vendor_payment_calibrate_result = $vendor_payment_calibrate->execute();
+
+		if( ! $vendor_payment_calibrate_result->success )
+			return $this->_return_error('Error updating vendor payments: '.$vendor_payment_calibrate_result->error);
 
 		$this->_return_object->data->date_next = date("Y-m-d",strtotime($date." +1 Day"));		
 
@@ -412,12 +458,16 @@ class Controller_Setup_Json extends Controller_Json {
 		}
 
 		// Update our latest date in case user pauses and comes back later.
-		$setup_company_update = new Beans_Setup_Company_Update($this->_beans_data_auth((object)array(
-			'settings' => array(
-				'calibrate_date_next' => $this->_return_object->data->date_next,
-			)
-		)));
-		$setup_company_update_result = $setup_company_update->execute();
+		// We only do this if the user isn't manually recalibrating books.
+		if( $manual !== "1" )
+		{
+			$setup_company_update = new Beans_Setup_Company_Update($this->_beans_data_auth((object)array(
+				'settings' => array(
+					'calibrate_date_next' => $this->_return_object->data->date_next,
+				)
+			)));
+			$setup_company_update_result = $setup_company_update->execute();
+		}
 	}
 
 	private function _generate_random_string()
