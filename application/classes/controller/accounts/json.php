@@ -522,7 +522,9 @@ class Controller_Accounts_Json extends Controller_Json {
 			strlen($this->request->post('date')) )
 			$create_transaction_data->date = date("Y-m-d",strtotime($this->request->post('date')));
 
-		foreach( $this->request->post() as $key => $value ) 
+		$account_transactions_data = json_decode($this->request->post('account_transactions'));
+
+		foreach( $account_transactions_data as $key => $value ) 
 		{
 			$value_numeric = $this->_get_numeric_value($value);
 
