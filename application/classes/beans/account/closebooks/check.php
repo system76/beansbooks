@@ -25,6 +25,8 @@ along with BeansBooks; if not, email info@beansbooks.com.
 @required auth_key
 @required auth_expiration
 @returns ready BOOL 
+@returns fye_date STRING Date in YYYY-MM-DD format of the next book closure that is due to be recorded.
+@returns previous_date STRING Date in YYYY-MM-DD format of the most recent book closure.
 ---BEANSENDSPEC---
 */
 class Beans_Account_Closebooks_Check extends Beans_Account {
@@ -53,10 +55,13 @@ class Beans_Account_Closebooks_Check extends Beans_Account {
 		$last_closebooks = ORM::Factory('transaction')->where('close_books','IS NOT',NULL)->order_by('close_books','desc')->find();
 
 		$fye_date = NULL;
+		$previous_date = NULL;
 		if( $last_closebooks->loaded() )
 		{
 			// Next Year FYE
 			$fye_date = (intval(substr($last_closebooks->close_books,0,4))+1).'-'.$fye;
+
+			$previous_date = date('Y-m-t',strtotime(substr($last_closebooks->close_books,0,7).'-01'));
 		}
 		else
 		{
@@ -67,6 +72,7 @@ class Beans_Account_Closebooks_Check extends Beans_Account {
 				return (object)array(
 					'ready' => FALSE,
 					'fye_date' => FALSE,
+					'previous_date' => $previous_date,
 				);
 
 			$fye_date = substr($first_transaction->date,0,4).'-'.$fye;
@@ -76,6 +82,7 @@ class Beans_Account_Closebooks_Check extends Beans_Account {
 			return (object)array(
 				'ready' => FALSE,
 				'fye_date' => FALSE,
+				'previous_date' => $previous_date,
 			);
 
 		// Prevent from showing on last date of the fiscal year.
@@ -83,6 +90,7 @@ class Beans_Account_Closebooks_Check extends Beans_Account {
 			return (object)array(
 				'ready' => FALSE,
 				'fye_date' => FALSE,
+				'previous_date' => $previous_date,
 			);
 
 		if( strtotime($fye_date) > time() )
@@ -97,6 +105,7 @@ class Beans_Account_Closebooks_Check extends Beans_Account {
 			return (object)array(
 				'ready' => FALSE,
 				'fye_date' => FALSE,
+				'previous_date' => $previous_date,
 			);
 
 		$closebooks_exist = ORM::Factory('transaction')->where('close_books','=',$close_books)->find();
@@ -105,11 +114,13 @@ class Beans_Account_Closebooks_Check extends Beans_Account {
 			return (object)array(
 				'ready' => FALSE,
 				'fye_date' => FALSE,
+				'previous_date' => $previous_date,
 			);
 
 		return (object)array(
 			'ready' => TRUE,
-			'fye_date' => $fye_date
+			'fye_date' => $fye_date,
+			'previous_date' => $previous_date,
 		);
 	}
 
