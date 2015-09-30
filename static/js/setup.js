@@ -530,6 +530,10 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 					if( ! data.success ) {
 						hidePleaseWait();
 						showError(data.error);
+						if( $('#setup-calibrate-manual').length && 
+								$('#setup-calibrate-manual').val() == "1" ) {
+							$('#setup-calibrate-date').show();
+						}
 						return;
 					}
 					if( data.data.date_next ) {
