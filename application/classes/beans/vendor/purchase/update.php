@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 
 /*
 ---BEANSAPISPEC---
-@action Beans_Vendor_Purchase_Create
+@action Beans_Vendor_Purchase_Update
 @description Create a new vendor purchase.
 @required auth_uid
 @required auth_key
