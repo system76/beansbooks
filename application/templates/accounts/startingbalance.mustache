@@ -13,6 +13,7 @@
 <div class="clear"></div>
 
 <form action="/accounts/startingbalance" method="POST">
+	<input type="hidden" name="account_transactions" value="" />
 	<div id="accounts-startingbalance-form" class="row-elements row-elements-alternating-colors">
 		<ul>
 			<li class="accounts-startingbalance-form-account text-bold">
@@ -26,8 +27,8 @@
 					<li class="accounts-startingbalance-form-account {{#top_level}}text-bold{{/top_level}}">
 						<span style="padding-left: {{indent_level_px}}px;" class="accounts-startingbalance-form-account-name">{{name}}</span>
 						{{^top_level}}
-							<span class="accounts-startingbalance-form-account-debit"><input type="text" name="account_debit_{{id}}"></span>
-							<span class="accounts-startingbalance-form-account-credit"><input type="text" name="account_credit_{{id}}" {{#bankaccount}} style="background-color: #e6e6e6;" disabled="disabled"{{/bankaccount}}></span>
+							<span class="accounts-startingbalance-form-account-debit"><input type="text" account-transaction-key="account_debit_{{id}}"></span>
+							<span class="accounts-startingbalance-form-account-credit"><input type="text" account-transaction-key="account_credit_{{id}}" {{#bankaccount}} style="background-color: #e6e6e6;" disabled="disabled"{{/bankaccount}}></span>
 						{{/top_level}}
 						<div class="clear"></div>
 					</li>

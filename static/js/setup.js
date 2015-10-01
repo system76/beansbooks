@@ -360,6 +360,9 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 		// Calibration
 		$('#setup-calibrate-start').live('click', function (e) {
 			e.preventDefault();
+			if( $('#setup-calibrate-date').attr('type') == "text" ) {
+				$('#setup-calibrate-date').hide();
+			};
 			setupCalibrateNextReady = true;
 			setupCalibrateNext();
 			$('#setup-calibrate-start').hide();
@@ -371,6 +374,12 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 			setupCalibrateNextReady = true;
 			setupCalibrateNext();
 		});
+
+		if( $('#setup-calibrate-date').attr('type') == "text" ) {
+			$('#setup-calibrate-date').datepicker({
+				dateFormat: "yy-mm-dd"
+			});
+		}
 
 	});
 
@@ -514,12 +523,17 @@ if ( document.body.className.match(new RegExp('(\\s|^)setup(\\s|$)')) !== null )
 			$.post(
 				'/setup/json/calibratedate',
 				{
-					date: $('#setup-calibrate-date').val()
+					date: $('#setup-calibrate-date').val(),
+					manual: $('#setup-calibrate-manual').val()
 				},
 				function (data) {
 					if( ! data.success ) {
 						hidePleaseWait();
 						showError(data.error);
+						if( $('#setup-calibrate-manual').length && 
+								$('#setup-calibrate-manual').val() == "1" ) {
+							$('#setup-calibrate-date').show();
+						}
 						return;
 					}
 					if( data.data.date_next ) {

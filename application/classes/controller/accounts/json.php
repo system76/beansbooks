@@ -276,7 +276,7 @@ class Controller_Accounts_Json extends Controller_Json {
 
 				$validate_transaction->account_transactions[] = (object)array(
 					'account_id' => $account_id,
-					'amount' => ( Arr::get($importarray,'import-transaction-'.$hash.'-amount') * $account_table_sign ),
+					'amount' => ( $this->_get_numeric_value(Arr::get($importarray,'import-transaction-'.$hash.'-amount')) * $account_table_sign ),
 				);
 
 				if( Arr::get($importarray,'import-transaction-'.$hash.'-transaction-transfer') )
@@ -298,9 +298,9 @@ class Controller_Accounts_Json extends Controller_Json {
 						if( Arr::get($importarray,'import-transaction-'.$hash.'-split-transaction-transfer-'.$split_key) )
 							$validate_transaction->account_transactions[] = (object)array(
 								'account_id' => Arr::get($importarray,'import-transaction-'.$hash.'-split-transaction-transfer-'.$split_key),
-								'amount' => ( Arr::get($importarray,'import-transaction-'.$hash.'-split-credit-'.$split_key) )
-										 ? ( Arr::get($importarray,'import-transaction-'.$hash.'-split-credit-'.$split_key) * $account_table_sign )
-										 : ( Arr::get($importarray,'import-transaction-'.$hash.'-split-debit-'.$split_key) * -1 * $account_table_sign ),
+								'amount' => ( $this->_get_numeric_value(Arr::get($importarray,'import-transaction-'.$hash.'-split-credit-'.$split_key)) )
+										 ? ( $this->_get_numeric_value(Arr::get($importarray,'import-transaction-'.$hash.'-split-credit-'.$split_key)) * $account_table_sign )
+										 : ( $this->_get_numeric_value(Arr::get($importarray,'import-transaction-'.$hash.'-split-debit-'.$split_key)) * -1 * $account_table_sign ),
 							);
 					}
 				}
@@ -339,9 +339,9 @@ class Controller_Accounts_Json extends Controller_Json {
 
 		$new_transaction->account_transactions[] = (object)array(
 			'account_id' => $this->request->post('transaction-account-id'),
-			'amount' => ( $this->request->post('transaction-credit') )
-					 ? ( $this->request->post('transaction-credit') * $this->request->post('transaction-account-table_sign') )
-					 : ( $this->request->post('transaction-debit') * -1 * $this->request->post('transaction-account-table_sign') ),
+			'amount' => ( $this->_get_numeric_value($this->request->post('transaction-credit')) )
+					 ? ( $this->_get_numeric_value($this->request->post('transaction-credit')) * $this->request->post('transaction-account-table_sign') )
+					 : ( $this->_get_numeric_value($this->request->post('transaction-debit')) * -1 * $this->request->post('transaction-account-table_sign') ),
 		);
 
 		if( $this->request->post('transaction-transfer') )
@@ -363,9 +363,9 @@ class Controller_Accounts_Json extends Controller_Json {
 					) )
 					$new_transaction->account_transactions[] = (object)array(
 						'account_id' => $this->request->post('transaction-split-transfer-'.$split_key),
-						'amount' => ( $this->request->post('transaction-split-credit-'.$split_key) )
-								 ? ( $this->request->post('transaction-split-credit-'.$split_key) * $this->request->post('transaction-account-table_sign') )
-								 : ( $this->request->post('transaction-split-debit-'.$split_key) * -1 * $this->request->post('transaction-account-table_sign') ),
+						'amount' => ( $this->_get_numeric_value($this->request->post('transaction-split-credit-'.$split_key)) )
+								 ? ( $this->_get_numeric_value($this->request->post('transaction-split-credit-'.$split_key)) * $this->request->post('transaction-account-table_sign') )
+								 : ( $this->_get_numeric_value($this->request->post('transaction-split-debit-'.$split_key)) * -1 * $this->request->post('transaction-account-table_sign') ),
 					);
 			}
 		}
@@ -416,9 +416,9 @@ class Controller_Accounts_Json extends Controller_Json {
 
 		$new_transaction->account_transactions[] = (object)array(
 			'account_id' => $this->request->post('transaction-account-id'),
-			'amount' => ( $this->request->post('transaction-credit') )
-					 ? ( $this->request->post('transaction-credit') * $this->request->post('transaction-account-table_sign') )
-					 : ( $this->request->post('transaction-debit') * -1 * $this->request->post('transaction-account-table_sign') ),
+			'amount' => ( $this->_get_numeric_value($this->request->post('transaction-credit')) )
+					 ? ( $this->_get_numeric_value($this->request->post('transaction-credit')) * $this->request->post('transaction-account-table_sign') )
+					 : ( $this->_get_numeric_value($this->request->post('transaction-debit')) * -1 * $this->request->post('transaction-account-table_sign') ),
 		);
 
 		if( $this->request->post('transaction-transfer') )
@@ -522,24 +522,28 @@ class Controller_Accounts_Json extends Controller_Json {
 			strlen($this->request->post('date')) )
 			$create_transaction_data->date = date("Y-m-d",strtotime($this->request->post('date')));
 
-		foreach( $this->request->post() as $key => $value ) 
+		$account_transactions_data = json_decode($this->request->post('account_transactions'));
+
+		foreach( $account_transactions_data as $key => $value ) 
 		{
+			$value_numeric = $this->_get_numeric_value($value);
+
 			if( strpos($key, 'account_debit_') !== FALSE AND
-				strlen($value) AND 
-				floatval($value) != 0 ) 
+				strlen($value_numeric) AND
+				floatval($value_numeric) != 0 )
 			{
 				$create_transaction_data->account_transactions[] = (object)array(
 					'account_id' => str_replace('account_debit_', '', $key),
-					'amount' => ( -1 * $value ),
+					'amount' => ( -1 * $value_numeric ),
 				);
 			}
 			else if( 	strpos($key, 'account_credit_') !== FALSE AND
-						strlen($value) AND 
-						floatval($value) != 0 )
+						strlen($value_numeric) AND
+						floatval($value_numeric) != 0 )
 			{
 				$create_transaction_data->account_transactions[] = (object)array(
 					'account_id' => str_replace('account_credit_', '', $key),
-					'amount' => ( $value ),
+					'amount' => ( $value_numeric ),
 				);
 			}
 		}

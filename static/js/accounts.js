@@ -1397,9 +1397,14 @@ if ( document.body.className.match(new RegExp('(\\s|^)accounts(\\s|$)')) !== nul
 		$('#accounts-startingbalance-status-save').click(function() {
 			showPleaseWait();
 			$form = $('#accounts-startingbalance-status-save').closest('form');
+			var account_transactions = {};
+			$form.find('[account-transaction-key]').each(function() {
+				account_transactions[$(this).attr('account-transaction-key')] = $(this).val();
+			});
+			$form.find('input[name="account_transactions"]').val(JSON.stringify(account_transactions));
 			$.post(
 				'/accounts/json/startingbalancevalidate',
-				$form.find('input').serialize(),
+				$form.find('input[name]').serialize(),
 				function(data) {
 					if( ! data.success ) {
 						hidePleaseWait();
