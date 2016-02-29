@@ -3,3 +3,4 @@ application/classes/beans/config.php
 deployfile
 application/classes/controller/test.php
 dev/
+.vagrant

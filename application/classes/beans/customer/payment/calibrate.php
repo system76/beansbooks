@@ -10,7 +10,7 @@ it under the terms of the BeansBooks Public License.
 
 BeansBooks is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the BeansBooks Public License for more details.
 
 You should have received a copy of the BeansBooks Public License
@@ -90,13 +90,13 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		if( isset($this->_data->date_after) ||
 			isset($this->_data->date_before) )
 		{
-			if( ! isset($this->_data->date_after) || 
-				! $this->_data->date_after || 
+			if( ! isset($this->_data->date_after) ||
+				! $this->_data->date_after ||
 				date("Y-m-d",strtotime($this->_data->date_after)) != $this->_data->date_after )
 				throw new Exception("Missing or invalid date_after: must be in YYYY-MM-DD format.");
 
-			if( ! isset($this->_data->date_before) || 
-				! $this->_data->date_before || 
+			if( ! isset($this->_data->date_before) ||
+				! $this->_data->date_before ||
 				date("Y-m-d",strtotime($this->_data->date_before)) != $this->_data->date_before )
 				throw new Exception("Missing or invalid date_before: must be in YYYY-MM-DD format.");
 
@@ -208,23 +208,23 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		$update_transaction_data->description = $payment->description;
 		$update_transaction_data->date = $payment->date;
 		$update_transaction_data->payment = "customer";
-		
+
 		$sale_account_transfers = array();
 		$sale_account_transfers_forms = array();
-		
+
 		$writeoff_account_transfer_total = 0.00;
 		$writeoff_account_transfers_forms = array();
 
 		foreach( $payment_object->sale_payments as $sale_id => $sale_payment )
 		{
 			$sale = $this->_load_customer_sale($sale_id);
-			
+
 			// Get the sale total, tax total, and balance as of the payment date.
 			$sale_line_total = $sale->amount;
 			$sale_tax_total = $this->_beans_round( $sale->total - $sale->amount );
-			
+
 			$sale_balance = $this->_get_form_effective_balance($sale,$update_transaction_data->date,$payment->id);
-		
+
 			// This makes the math a bit easier to read.
 			$sale_paid = $sale->total + $sale_balance;
 
@@ -237,7 +237,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			$sale_writeoff_amount = ( $sale_writeoff_amount )
 								  ? $this->_beans_round( 0.00 - $sale_balance - $sale_transfer_amount )
 								  : FALSE;
-			
+
 			// AR Adjustment
 			$sale_payment_amount = ( $sale_writeoff_amount )
 								  ? $this->_beans_round( $sale_transfer_amount + $sale_writeoff_amount )
@@ -247,10 +247,10 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			$sale_transaction_account_id = FALSE;
 
 			if( (
-					$sale->date_billed AND 
-					$sale->invoice_transaction_id AND 
+					$sale->date_billed AND
+					$sale->invoice_transaction_id AND
 					(
-						strtotime($sale->date_billed) < strtotime($payment_object->date) OR 
+						strtotime($sale->date_billed) < strtotime($payment_object->date) OR
 						(
 							$sale->date_billed == $payment_object->date &&
 							$sale->invoice_transaction_id < $payment->id
@@ -258,16 +258,16 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 					)
 				) OR
 				(
-					$sale->date_cancelled AND 
-					$sale->cancel_transaction_id AND 
+					$sale->date_cancelled AND
+					$sale->cancel_transaction_id AND
 					(
-						strtotime($sale->date_cancelled) < strtotime($payment_object->date) OR 
+						strtotime($sale->date_cancelled) < strtotime($payment_object->date) OR
 						(
 							$sale->date_cancelled == $payment_object->date &&
-							$sale->invoice_transaction_id < $payment->id
+							$sale->cancel_transaction_id < $payment->id
 						)
 					)
-				) ) 
+				) )
 			{
 				// Sale AR
 				$sale_transaction_account_id = $sale->account_id;
@@ -279,7 +279,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 					$sale_account_transfers[$sale_transaction_account_id] +
 					$sale_payment_amount
 				);
-				
+
 				if( ! isset($sale_account_transfers_forms[$sale_transaction_account_id]) )
 					$sale_account_transfers_forms[$sale_transaction_account_id] = array();
 
@@ -294,7 +294,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			else
 			{
 				$deferred_amounts = $this->_calculate_deferred_payment($sale_payment_amount, $sale_paid, $sale_line_total, $sale_tax_total);
-				
+
 				$income_transfer_amount = $deferred_amounts->income_transfer_amount;
 				$tax_transfer_amount = $deferred_amounts->tax_transfer_amount;
 
@@ -312,7 +312,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 					);
 
 					$sale_account_transfers[$this->_transaction_sale_line_account_id] = $this->_beans_round(
-						$sale_account_transfers[$this->_transaction_sale_line_account_id] - 
+						$sale_account_transfers[$this->_transaction_sale_line_account_id] -
 						$income_transfer_amount
 					);
 				}
@@ -331,7 +331,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 					);
 
 					$sale_account_transfers[$this->_transaction_sale_tax_account_id] = $this->_beans_round(
-						$sale_account_transfers[$this->_transaction_sale_tax_account_id] - 
+						$sale_account_transfers[$this->_transaction_sale_tax_account_id] -
 						$tax_transfer_amount
 					);
 				}
@@ -340,7 +340,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 					$sale_account_transfers[$this->_transaction_sale_account_id] = 0.00;
 
 				$sale_account_transfers[$this->_transaction_sale_account_id] = $this->_beans_round(
-					$sale_account_transfers[$this->_transaction_sale_account_id] + 
+					$sale_account_transfers[$this->_transaction_sale_account_id] +
 					$sale_payment_amount
 				);
 
@@ -359,7 +359,7 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			if( $sale_writeoff_amount )
 			{
 				$writeoff_account_transfer_total = $this->_beans_round(
-					$writeoff_account_transfer_total + 
+					$writeoff_account_transfer_total +
 					$sale_writeoff_amount
 				);
 			}
@@ -379,20 +379,20 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 		// But to be on the safe side we're going to do table sign adjustments.
 		foreach( $sale_account_transfers as $account_id => $transfer_amount )
 		{
-			$sale_account_transfers[$account_id] = ( $writeoff_account AND 
+			$sale_account_transfers[$account_id] = ( $writeoff_account AND
 													  $writeoff_account->id == $account_id )
 												  ? ( $transfer_amount * $deposit_account->type->table_sign )
 												  : ( $transfer_amount * -1 * $deposit_account->type->table_sign );
 		}
 
 		$adjustment_account = FALSE;
-		if( $payment_object->adjustment_transaction AND 
+		if( $payment_object->adjustment_transaction AND
 			$payment_object->adjustment_transaction->amount )
 		{
 			$adjustment_account = $payment_object->adjustment_transaction->account;
 			$sale_account_transfers[$payment_object->adjustment_transaction->account->id] = $payment_object->adjustment_transaction->amount;
 		}
-		
+
 		$sale_account_transfers[$deposit_account->id] = $payment_object->deposit_transaction->amount;
 
 		$update_transaction_data->account_transactions = array();
@@ -407,11 +407,11 @@ class Beans_Customer_Payment_Calibrate extends Beans_Customer_Payment {
 			if( $account_transaction->account_id == $deposit_account->id )
 				$account_transaction->transfer = TRUE;
 
-			if( $writeoff_account AND 
+			if( $writeoff_account AND
 				$account_transaction->account_id == $writeoff_account->id )
 				$account_transaction->writeoff = TRUE;
 
-			if( $adjustment_account AND 
+			if( $adjustment_account AND
 				$account_transaction->account_id == $adjustment_account->id )
 				$account_transaction->adjustment = TRUE;
 
