@@ -8,7 +8,7 @@ for running a live environment.  In order to get started, you'll need the
 following:  
 
   *  Apache 2
-  *  PHP 5.3+
+  *  PHP 5 >= 5.3. PHP 7 will **not** work
   *  MySQL 5+
   *  Git Client
 
