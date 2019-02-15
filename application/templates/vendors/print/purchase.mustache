@@ -25,7 +25,7 @@
 				Ship To: {{#vendor}}{{display_name}}{{/vendor}}
 			{{/shipping}}
 		</td>
-		
+
 		<td style="vertical-align: top; padding-right: 5px; width: 36%; {{fontsizenormal}} text-align: right; min-height: 50px; padding-bottom: 10px; white-space: nowrap;">
 			<span style="{{fontsizelarge}} font-weight: bold;">Purchase Order {{purchase_number}}</span><br>
 			<span style="float: left; width: 75px; margin-left: 50px; text-align: right;">PO Date</span> {{purchase_date_formatted}}<br>
@@ -34,13 +34,27 @@
 			{{#quote_number}}<span style="float: left; width: 75px; margin-left: 50px; text-align: right;">Quote Num</span> {{quote_number}}{{/quote_number}}
 		</td>
 	</tr>
-	<tr>
-		<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
-	</tr>
-	<tr>
-		<td style="width:100%; padding-top: 3px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
-	</tr>
+	{{^updated_purchase}}
+		<tr>
+			<td style="width:100%; border: 1px solid {{borderdarkgreen}}; height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+		</tr>
+		<tr>
+			<td style="width:100%; padding-top: 3px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+		</tr>
+	{{/updated_purchase}}
 {{{tableclose}}}
+{{#updated_purchase}}
+	{{{tableopen}}}
+		<tr>
+			<td style="background-color: #bb0404; color: #fff; vertical-align: top; width: 100%; font-weight: bold; {{fontsizenormal}} text-align: center; padding: 10px; white-space: nowrap;">
+				<span style="float: left; width: 100%; text-align: center;">Updated PO aba gaba dooooooooooo</span>
+			</td>
+		</tr>
+		<tr>
+			<td style="width:100%; padding-top: 3px;  height: 0px; line-height: 0px; font-size: 0px;" colspan="3">&nbsp;</td>
+		</tr>
+	{{{tableclose}}}
+{{/updated_purchase}}
 {{{tableopen}}}
 	<tr>
 		<td style="padding-top: 4px; padding-bottom: 4px; width: 69%; {{fontsizenormal}} font-weight: bold; text-align: left; min-height: 24px; padding-left: 5px;">Description</td>

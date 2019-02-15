@@ -10,7 +10,7 @@ it under the terms of the BeansBooks Public License.
 
 BeansBooks is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the BeansBooks Public License for more details.
 
 You should have received a copy of the BeansBooks Public License
@@ -39,7 +39,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			'phone_number' => $this->request->post('phone_number'),
 			'fax_number' => $this->request->post('fax_number'),
 		);
-		
+
 		$vendor_validate = new Beans_Vendor_Create($this->_beans_data_auth((object)$vendor_validate_data));
 		$vendor_validate_result = $vendor_validate->execute();
 
@@ -81,7 +81,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			'phone_number' => $this->request->post('phone_number'),
 			'fax_number' => $this->request->post('fax_number'),
 		);
-		
+
 		$vendor_create = new Beans_Vendor_Create($this->_beans_data_auth((object)$vendor_create_data));
 		$vendor_create_result = $vendor_create->execute();
 
@@ -95,7 +95,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$address_keys[] = str_replace('address-key-', '', $key);
 
 		$default_remit_address_id = FALSE;
-		
+
 		foreach( $address_keys as $address_key )
 		{
 			$vendor_address_create_data = array(
@@ -113,7 +113,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 			if( ! $vendor_address_create_result->success )
 				$this->_return_error("An unexpected error occurred while creating the vendor addresses: <br>".$this->_beans_result_get_error($vendor_address_create_result)."<br>Please refresh the page to ensure no data duplication.");
-			
+
 			if( $this->request->post('default-remit-'.$address_key) )
 				$default_remit_address_id = $vendor_address_create_result->data->address->id;
 
@@ -181,7 +181,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			$vendor_update_data->id = $this->request->post('vendor_id');
 			if( $this->request->post('default-remit') )
 				$vendor_update_data->default_remit_address_id = $vendor_address_create_result->data->address->id;
-			
+
 			$vendor_update = new Beans_Vendor_Update($this->_beans_data_auth($vendor_update_data));
 			$vendor_result = $vendor_update->execute();
 		}
@@ -209,7 +209,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$address->default_remit = ( $this->request->post('default-remit') )
 								  ? TRUE
 								  : FALSE;
-		
+
 		$this->_return_object->data->address = $address;
 	}
 
@@ -237,7 +237,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			$vendor_update_data->id = $this->request->post('vendor_id');
 			if( $this->request->post('default-remit') )
 				$vendor_update_data->default_remit_address_id = $vendor_address_update_result->data->address->id;
-			
+
 			$vendor_update = new Beans_Vendor_Update($this->_beans_data_auth($vendor_update_data));
 			$vendor_result = $vendor_update->execute();
 		}
@@ -251,7 +251,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		if( ! $vendor_result )
 			return $this->_return_error("An unknown error has occurred.");
-		
+
 		if( ! $vendor_result->success )
 			return $this->_return_error("An error has occurred:<br>".$this->_beans_result_get_error($vendor_result));
 
@@ -259,14 +259,14 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$html = new View_Partials_Vendors_Vendor_Address();
 		$html->address = $vendor_address_update_result->data->address;
-		
+
 		$html->vendor = $vendor_result->data->vendor;
 
 		$address->html = $html->render();
 		$address->default_remit = ( $this->request->post('default-remit') )
 								  ? TRUE
 								  : FALSE;
-		
+
 		$this->_return_object->data->address = $address;
 	}
 
@@ -307,11 +307,11 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		// Consider moving this to Beans_Vendor_Address_Shipping_Search
 		$this->_sort_addresses_keywords = $this->request->post('keywords');
-		
+
 		$addresses = $vendor_address_shipping_search_result->data->addresses;
 
 		usort($addresses, array($this,'_sort_addresses'));
-		
+
 		$this->_return_object->data->addresses = $addresses;
 	}
 
@@ -324,18 +324,18 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( ! $this->_sort_addresses_keywords )
 			return ( strcmp($a->standard,$b->standard) <= 0 ? -1 : 1 );
 
-		if( strtolower($a->standard) == substr(strtolower($this->_sort_addresses_keywords),0,strlen($a->standard)) AND 
+		if( strtolower($a->standard) == substr(strtolower($this->_sort_addresses_keywords),0,strlen($a->standard)) AND
 			strtolower($b->standard) != substr(strtolower($this->_sort_addresses_keywords),0,strlen($b->standard)) )
 			return -1;
-		
-		if( strtolower($a->standard) != substr(strtolower($this->_sort_addresses_keywords),0,strlen($a->standard)) AND 
+
+		if( strtolower($a->standard) != substr(strtolower($this->_sort_addresses_keywords),0,strlen($a->standard)) AND
 			strtolower($b->standard) == substr(strtolower($this->_sort_addresses_keywords),0,strlen($b->standard)) )
 			return 1;
-		
-		if( strtolower($a->standard) == substr(strtolower($this->_sort_addresses_keywords),0,strlen($a->standard)) AND 
+
+		if( strtolower($a->standard) == substr(strtolower($this->_sort_addresses_keywords),0,strlen($a->standard)) AND
 			strtolower($b->standard) == substr(strtolower($this->_sort_addresses_keywords),0,strlen($b->standard)) )
 			return 0;
-		
+
 		return ( levenshtein(strtolower($a->standard), $this->_sort_addresses_keywords) < levenshtein(strtolower($b->standard), $this->_sort_addresses_keywords) ? -1 : 1 );
 	}
 
@@ -382,23 +382,23 @@ class Controller_Vendors_Json extends Controller_Json {
 					$search_term == date("Y-m-d",strtotime($search_term)) )
 						$search_parameters->search_date = $search_term;
 		}
-		
+
 		do
 		{
 			$search_parameters->page = $page;
 			$vendor_payments = new Beans_Vendor_Payment_Search($this->_beans_data_auth($search_parameters));
 			$vendor_payments_result = $vendor_payments->execute();
-			
+
 			if( ! $vendor_payments_result->success )
 				return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($vendor_payments_result));
 
-			foreach( $vendor_payments_result->data->payments as $payment ) 
+			foreach( $vendor_payments_result->data->payments as $payment )
 			{
 				if( (
 						strtotime($payment->date) <= strtotime($last_payment_date) AND
-						$payment->id < $last_payment_id 
-					) OR 
-					strtotime($payment->date) < strtotime($last_payment_date) OR 
+						$payment->id < $last_payment_id
+					) OR
+					strtotime($payment->date) < strtotime($last_payment_date) OR
 					! $last_payment_id )
 				{
 					$html = new View_Partials_Vendors_Payments_Payment;
@@ -413,7 +413,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			}
 			$page++;
 		}
-		while( 	$page < $vendor_payments_result->data->pages AND 
+		while( 	$page < $vendor_payments_result->data->pages AND
 				count($this->_return_object->data->payments) < $count );
 	}
 
@@ -424,16 +424,16 @@ class Controller_Vendors_Json extends Controller_Json {
 		$search_parameters = new stdClass;
 		$search_parameters->sort_by = 'newest';
 		$search_parameters->search_name = $search_terms;
-		
+
 		$vendor_search = new Beans_Vendor_Search($this->_beans_data_auth($search_parameters));
 		$vendor_search_result = $vendor_search->execute();
 
 		if( ! $vendor_search_result->success )
 			return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($vendor_search_result));
 
-		foreach( $vendor_search_result->data->vendors as $vendor ) 
+		foreach( $vendor_search_result->data->vendors as $vendor )
 			$this->_return_object->data->vendors[] = $vendor;
-		
+
 	}
 
 	public function action_vendorsloadmore()
@@ -443,14 +443,14 @@ class Controller_Vendors_Json extends Controller_Json {
 		$search_terms = $this->request->post('search_terms');
 		$count = $this->request->post('count');
 
-		if( ! $last_page ) 
+		if( ! $last_page )
 			$last_page = 0;
 
 		if( ! $count )
 			$count = 20;
 
 		$this->_return_object->data->vendors = array();
-		
+
 		$search_parameters = new stdClass;
 		$search_parameters->sort_by = 'newest';
 		$search_parameters->page = $last_page;
@@ -471,7 +471,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 			$this->_return_object->data->last_page = $vendor_search_result->data->page;
 
-			foreach( $vendor_search_result->data->vendors as $vendor ) 
+			foreach( $vendor_search_result->data->vendors as $vendor )
 			{
 				if( $vendor->id < $last_vendor_id OR
 					! $last_vendor_id )
@@ -488,10 +488,10 @@ class Controller_Vendors_Json extends Controller_Json {
 			}
 			$search_parameters->page++;
 		}
-		while( 	$search_parameters->page < $vendor_search_result->data->pages AND 
+		while( 	$search_parameters->page < $vendor_search_result->data->pages AND
 				count($this->_return_object->data->vendors) < $count );
 	}
-	
+
 	public function action_vendoraddresses()
 	{
 		$vendor_id = $this->request->post('vendor_id');
@@ -533,7 +533,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( count($account_info) != 2 )
 			return $this->_return_error("Please select a valid account for this expense.");
 
-		if( ! isset($vendor_info[0]) OR 
+		if( ! isset($vendor_info[0]) OR
 			! strlen($vendor_info[0]) )
 			return $this->_return_error("Please select a valid vendor for this expense.");
 
@@ -544,7 +544,7 @@ class Controller_Vendors_Json extends Controller_Json {
 										   : date("Y-m-d");
 		$create_expense_data->remit_address_id = $this->request->post('remit_address_id');
 		$create_expense_data->account_id = $account_info[0];
-		$create_expense_data->invoice_number = $this->request->post('invoice_number'); 
+		$create_expense_data->invoice_number = $this->request->post('invoice_number');
 		$create_expense_data->so_number = $this->request->post('so_number');
 		$create_expense_data->check_number = $this->request->post('check_number');
 
@@ -569,7 +569,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			else if( 	$this->request->post('line-account_id-'.$line_key) AND
 						$this->request->post('line-description-'.$line_key) AND
 						strlen($this->request->post('line-price-'.$line_key)) AND
-						strlen($this->request->post('line-quantity-'.$line_key)) ) 
+						strlen($this->request->post('line-quantity-'.$line_key)) )
 			{
 				$expense_line = new stdClass;
 				$expense_line->account_id = $this->request->post('line-account_id-'.$line_key);
@@ -580,17 +580,17 @@ class Controller_Vendors_Json extends Controller_Json {
 				$create_expense_data->lines[] = $expense_line;
 			}
 		}
-		
+
 		$create_expense = new Beans_Vendor_Expense_Create($this->_beans_data_auth($create_expense_data));
 		$create_expense_result = $create_expense->execute();
 
 		if( ! $create_expense_result->success )
 			return $this->_return_error("An error occurred when creating that expense:<br>".$this->_beans_result_get_error($create_expense_result));
 
-		if( $this->request->post('print_check') AND 
+		if( $this->request->post('print_check') AND
 			$this->request->post('print_check') == "1" )
 			$this->_print_check_queue_expense_add($create_expense_result->data->expense->id);
-		
+
 		$html = new View_Partials_Vendors_Expenses_Expense;
 		$html->expense = $create_expense_result->data->expense;
 
@@ -628,7 +628,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( count($account_info) != 2 )
 			return $this->_return_error("Please select a valid account for this expense.");
 
-		if( ! isset($vendor_info[0]) OR 
+		if( ! isset($vendor_info[0]) OR
 			! strlen($vendor_info[0]) )
 			return $this->_return_error("Please select a valid vendor for this expense.");
 
@@ -643,7 +643,7 @@ class Controller_Vendors_Json extends Controller_Json {
 									   : date("Y-m-d",strtotime($update_expense_data->date_created.' +'.$account_info[1].' Days'));
 		$update_expense_data->remit_address_id = $this->request->post('remit_address_id');
 		$update_expense_data->account_id = $account_info[0];
-		$update_expense_data->invoice_number = $this->request->post('invoice_number'); 
+		$update_expense_data->invoice_number = $this->request->post('invoice_number');
 		$update_expense_data->so_number = $this->request->post('so_number');
 		$update_expense_data->check_number = $this->request->post('check_number');
 
@@ -668,7 +668,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			else if( 	$this->request->post('line-account_id-'.$line_key) AND
 						$this->request->post('line-description-'.$line_key) AND
 						strlen($this->request->post('line-price-'.$line_key)) AND
-						strlen($this->request->post('line-quantity-'.$line_key)) ) 
+						strlen($this->request->post('line-quantity-'.$line_key)) )
 			{
 				$expense_line = new stdClass;
 				$expense_line->account_id = $this->request->post('line-account_id-'.$line_key);
@@ -686,10 +686,10 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( ! $update_expense_result->success )
 			return $this->_return_error("An error occurred when updating that expense:<br>".$this->_beans_result_get_error($update_expense_result));
 
-		if( $this->request->post('print_check') AND 
+		if( $this->request->post('print_check') AND
 			$this->request->post('print_check') == "1" )
 			$this->_print_check_queue_expense_add($update_expense_result->data->expense->id);
-		
+
 		$html = new View_Partials_Vendors_Expenses_Expense;
 		$html->expense = $update_expense_result->data->expense;
 
@@ -712,7 +712,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( count($account_info) != 2 )
 			return $this->_return_error("Please select a valid account for this expense.");
 
-		if( ! isset($vendor_info[0]) OR 
+		if( ! isset($vendor_info[0]) OR
 			! strlen($vendor_info[0]) )
 			return $this->_return_error("Please select a valid vendor for this expense.");
 
@@ -727,7 +727,7 @@ class Controller_Vendors_Json extends Controller_Json {
 									   : date("Y-m-d",strtotime($refund_expense_data->date_created.' +'.$account_info[1].' Days'));
 		$refund_expense_data->remit_address_id = $this->request->post('remit_address_id');
 		$refund_expense_data->account_id = $account_info[0];
-		$refund_expense_data->invoice_number = $this->request->post('invoice_number'); 
+		$refund_expense_data->invoice_number = $this->request->post('invoice_number');
 		$refund_expense_data->so_number = $this->request->post('so_number');
 		$refund_expense_data->check_number = $this->request->post('check_number');
 
@@ -752,7 +752,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			else if( 	$this->request->post('line-account_id-'.$line_key) AND
 						$this->request->post('line-description-'.$line_key) AND
 						strlen($this->request->post('line-price-'.$line_key)) AND
-						strlen($this->request->post('line-quantity-'.$line_key)) ) 
+						strlen($this->request->post('line-quantity-'.$line_key)) )
 			{
 				$expense_line = new stdClass;
 				$expense_line->account_id = $this->request->post('line-account_id-'.$line_key);
@@ -798,7 +798,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$last_expense_date = $this->request->post('last_expense_date');
 		$search_terms = $this->request->post('search_terms');
 		$search_vendor_id = $this->request->post('search_vendor_id');
-		
+
 		$count = $this->request->post('count');
 
 		if( ! $count )
@@ -827,15 +827,15 @@ class Controller_Vendors_Json extends Controller_Json {
 			$search_parameters->page = $page;
 			$vendor_expenses = new Beans_Vendor_Expense_Search($this->_beans_data_auth($search_parameters));
 			$vendor_expenses_result = $vendor_expenses->execute();
-			
+
 			if( ! $vendor_expenses_result->success )
 				return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($vendor_expenses_result));
 
-			foreach( $vendor_expenses_result->data->expenses as $expense ) 
+			foreach( $vendor_expenses_result->data->expenses as $expense )
 			{
 				if( (
-						strtotime($expense->date_created) <= strtotime($last_expense_date) AND 
-						$expense->id < $last_expense_id 
+						strtotime($expense->date_created) <= strtotime($last_expense_date) AND
+						$expense->id < $last_expense_id
 					) OR
 					strtotime($expense->date_created) < strtotime($last_expense_date) OR
 					! $last_expense_id )
@@ -852,7 +852,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			}
 			$page++;
 		}
-		while( 	$page < $vendor_expenses_result->data->pages AND 
+		while( 	$page < $vendor_expenses_result->data->pages AND
 				count($this->_return_object->data->expenses) < $count );
 
 	}
@@ -860,7 +860,7 @@ class Controller_Vendors_Json extends Controller_Json {
 	/**
 	 * Purchase Order Actions
 	 */
-	
+
 	public function action_purchasecreate()
 	{
 		$line_keys = array();
@@ -874,7 +874,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( count($account_info) != 2 )
 			return $this->_return_error("Please select a valid account for this expense.");
 
-		if( ! isset($vendor_info[0]) OR 
+		if( ! isset($vendor_info[0]) OR
 			! strlen($vendor_info[0]) )
 			return $this->_return_error("Please select a valid vendor for this expense.");
 
@@ -889,7 +889,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$create_purchase_data->remit_address_id = $this->request->post('remit_address_id');
 		$create_purchase_data->shipping_address_id = $this->request->post('shipping_address_id');
 		$create_purchase_data->account_id = $account_info[0];
-		$create_purchase_data->purchase_number = $this->request->post('purchase_number'); 
+		$create_purchase_data->purchase_number = $this->request->post('purchase_number');
 		$create_purchase_data->so_number = $this->request->post('so_number');
 		$create_purchase_data->quote_number = $this->request->post('quote_number');
 
@@ -921,7 +921,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			else if( 	$this->request->post('line-account_id-'.$line_key) AND
 						$this->request->post('line-description-'.$line_key) AND
 						strlen($this->request->post('line-price-'.$line_key)) AND
-						strlen($this->request->post('line-quantity-'.$line_key)) ) 
+						strlen($this->request->post('line-quantity-'.$line_key)) )
 			{
 				$purchase_line = new stdClass;
 				$purchase_line->account_id = $this->request->post('line-account_id-'.$line_key);
@@ -932,7 +932,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$create_purchase_data->lines[] = $purchase_line;
 			}
 		}
-		
+
 		$create_purchase = new Beans_Vendor_Purchase_Create($this->_beans_data_auth($create_purchase_data));
 		$create_purchase_result = $create_purchase->execute();
 
@@ -955,13 +955,13 @@ class Controller_Vendors_Json extends Controller_Json {
 		$send_done = ( $this->request->post('send-done') ? TRUE : FALSE );
 
 		if( ! $send_email AND
-			! $send_mail AND 
+			! $send_mail AND
 			! $send_done )
 			return $this->_return_error("ERROR: Please select at least one option.");
 
 		if( $send_email )
 		{
-			if( ! $email OR 
+			if( ! $email OR
 				! filter_var($email,FILTER_VALIDATE_EMAIL) )
 				return $this->_return_error("Please provide a valid email address.");
 
@@ -973,7 +973,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 			$settings = $company_settings_result->data->settings;
 
-			if( ! isset($settings->company_email) OR 
+			if( ! isset($settings->company_email) OR
 				! strlen($settings->company_email) )
 				return $this->_return_error("Email cannot be sent until you set an email address for your company within 'Setup'.");
 		}
@@ -986,12 +986,13 @@ class Controller_Vendors_Json extends Controller_Json {
 		$email = $this->request->post('email');
 		$send_mail = ( $this->request->post('send-mail') ? TRUE : FALSE );
 		$send_done = ( $this->request->post('send-done') ? TRUE : FALSE );
+		$updated_purchase = ($this->request->post('updated') ? true : false);
 
 		if( ! $purchase_id )
 			return $this->_return_error("ERROR: No purchase ID provided.");
 
 		if( ! $send_email AND
-			! $send_mail AND 
+			! $send_mail AND
 			! $send_done )
 			return $this->_return_error("ERROR: Please select at least one option.");
 
@@ -1002,10 +1003,10 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		if( ! $vendor_purchase_lookup_result->success )
 			return $this->_return_error("An error occurred retrieving that purchase:<br>".$this->_beans_result_get_error($vendor_purchase_lookup_result));
-		
+
 		if( $send_email )
 		{
-			if( ! $email OR 
+			if( ! $email OR
 				! filter_var($email,FILTER_VALIDATE_EMAIL) )
 				return $this->_return_error("Please provide a valid email address.");
 
@@ -1018,27 +1019,28 @@ class Controller_Vendors_Json extends Controller_Json {
 			// Shorten for sanity's sake...
 			$settings = $company_settings_result->data->settings;
 
-			if( ! isset($settings->company_email) OR 
+			if( ! isset($settings->company_email) OR
 				! strlen($settings->company_email) )
 				return $this->_return_error("Email cannot be sent until you set an email address for your company within 'Setup'.");
 
 			$message = Swift_Message::newInstance();
-			
+
 			$message
 			->setSubject($settings->company_name.' - Purchase '.$vendor_purchase_lookup_result->data->purchase->purchase_number)
 			->setFrom(array($settings->company_email))
 			->setTo(array($email));
-			
+
 			$vendors_print_purchase = new View_Vendors_Print_Purchase();
 			$vendors_print_purchase->setup_company_list_result = $company_settings_result;
 			$vendors_print_purchase->purchase = $vendor_purchase_lookup_result->data->purchase;
 			$vendors_print_purchase->swift_email_message = $message;
+			$vendors_print_purchase->updated_purchase = $updated_purchase;
 
 			$message = $vendors_print_purchase->render();
-			
+
 			try
 			{
-				if( ! Email::connect() ) 
+				if( ! Email::connect() )
 					return $this->_return_error("Could not send email. Does your config have correct email settings?");
 
 				if( ! Email::sendMessage($message) )
@@ -1057,8 +1059,8 @@ class Controller_Vendors_Json extends Controller_Json {
 				$send_email AND
 				$send_mail
 			) OR (
-				$send_email AND 
-				$vendor_purchase_lookup_result->data->purchase->sent == "print" 
+				$send_email AND
+				$vendor_purchase_lookup_result->data->purchase->sent == "print"
 			) OR (
 				$send_mail AND
 				$vendor_purchase_lookup_result->data->purchase->sent == "email"
@@ -1114,7 +1116,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( count($account_info) != 2 )
 			return $this->_return_error("Please select a valid account for this expense.");
 
-		if( ! isset($vendor_info[0]) OR 
+		if( ! isset($vendor_info[0]) OR
 			! strlen($vendor_info[0]) )
 			return $this->_return_error("Please select a valid vendor for this expense.");
 
@@ -1130,7 +1132,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$update_purchase_data->remit_address_id = $this->request->post('remit_address_id');
 		$update_purchase_data->shipping_address_id = $this->request->post('shipping_address_id');
 		$update_purchase_data->account_id = $account_info[0];
-		$update_purchase_data->purchase_number = $this->request->post('purchase_number'); 
+		$update_purchase_data->purchase_number = $this->request->post('purchase_number');
 		$update_purchase_data->so_number = $this->request->post('so_number');
 		$update_purchase_data->quote_number = $this->request->post('quote_number');
 
@@ -1161,7 +1163,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			else if( 	$this->request->post('line-account_id-'.$line_key) AND
 						$this->request->post('line-description-'.$line_key) AND
 						strlen($this->request->post('line-price-'.$line_key)) AND
-						strlen($this->request->post('line-quantity-'.$line_key)) ) 
+						strlen($this->request->post('line-quantity-'.$line_key)) )
 			{
 				$purchase_line = new stdClass;
 				$purchase_line->account_id = $this->request->post('line-account_id-'.$line_key);
@@ -1172,7 +1174,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$update_purchase_data->lines[] = $purchase_line;
 			}
 		}
-		
+
 		$update_purchase = new Beans_Vendor_Purchase_Update($this->_beans_data_auth($update_purchase_data));
 		$update_purchase_result = $update_purchase->execute();
 
@@ -1201,7 +1203,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( count($account_info) != 2 )
 			return $this->_return_error("Please select a valid account for this expense.");
 
-		if( ! isset($vendor_info[0]) OR 
+		if( ! isset($vendor_info[0]) OR
 			! strlen($vendor_info[0]) )
 			return $this->_return_error("Please select a valid vendor for this expense.");
 
@@ -1219,7 +1221,7 @@ class Controller_Vendors_Json extends Controller_Json {
 									   : date("Y-m-d",strtotime($refund_purchase_data->date_billed.' +'.$account_info[1].' Days'));
 		$refund_purchase_data->remit_address_id = $this->request->post('remit_address_id');
 		$refund_purchase_data->account_id = $account_info[0];
-		$refund_purchase_data->purchase_number = $this->request->post('purchase_number'); 
+		$refund_purchase_data->purchase_number = $this->request->post('purchase_number');
 		$refund_purchase_data->so_number = $this->request->post('so_number');
 		$refund_purchase_data->quote_number = $this->request->post('quote_number');
 
@@ -1244,7 +1246,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			else if( 	$this->request->post('line-account_id-'.$line_key) AND
 						$this->request->post('line-description-'.$line_key) AND
 						strlen($this->request->post('line-price-'.$line_key)) AND
-						strlen($this->request->post('line-quantity-'.$line_key)) ) 
+						strlen($this->request->post('line-quantity-'.$line_key)) )
 			{
 				$purchase_line = new stdClass;
 				$purchase_line->account_id = $this->request->post('line-account_id-'.$line_key);
@@ -1255,7 +1257,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$refund_purchase_data->lines[] = $purchase_line;
 			}
 		}
-		
+
 		$refund_purchase = new Beans_Vendor_Purchase_Refund($this->_beans_data_auth($refund_purchase_data));
 		$refund_purchase_result = $refund_purchase->execute();
 
@@ -1290,7 +1292,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 			$html = new View_Partials_Vendors_Purchases_Purchase;
 			$html->purchase = $purchase_cancel_result->data->purchase;
-			
+
 			$purchase_cancel_result->data->purchase->html = $html->render();
 
 			$this->_return_object->data->purchase = $purchase_cancel_result->data->purchase;
@@ -1337,14 +1339,14 @@ class Controller_Vendors_Json extends Controller_Json {
 			$search_parameters->page = $page;
 			$vendor_purchases = new Beans_Vendor_Purchase_Search($this->_beans_data_auth($search_parameters));
 			$vendor_purchases_result = $vendor_purchases->execute();
-			
+
 			if( ! $vendor_purchases_result->success )
 				return $this->_return_error("An unexpected error occurred: ".$this->_beans_result_get_error($vendor_purchases_result));
 
-			foreach( $vendor_purchases_result->data->purchases as $purchase ) 
+			foreach( $vendor_purchases_result->data->purchases as $purchase )
 			{
 				if( (
-						strtotime($purchase->date_created) <= strtotime($last_purchase_date) AND 
+						strtotime($purchase->date_created) <= strtotime($last_purchase_date) AND
 						$purchase->id < $last_purchase_id
 					) OR
 					strtotime($purchase->date_created) < strtotime($last_purchase_date) OR
@@ -1362,11 +1364,11 @@ class Controller_Vendors_Json extends Controller_Json {
 			}
 			$page++;
 		}
-		while( 	$page < $vendor_purchases_result->data->pages AND 
+		while( 	$page < $vendor_purchases_result->data->pages AND
 				count($this->_return_object->data->purchases) < $count );
 
 	}
-	
+
 	public function action_paymentpurchases()
 	{
 		$vendor_id = $this->request->post('vendor_id');
@@ -1379,7 +1381,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$search_parameters->has_balance = TRUE;
 		$search_parameters->sort_by = "duesoonest";
 		$search_parameters->page_size = "20";
-		
+
 		$search_parameters->keywords = $search_terms;
 
 		$vendor_purchases_search = new Beans_Vendor_Purchase_Search($this->_beans_data_auth($search_parameters));
@@ -1435,7 +1437,7 @@ class Controller_Vendors_Json extends Controller_Json {
 					'id' => $key,
 					'so_number' => $this->request->post('purchase-so_number-'.$key),
 					'date_billed' => ( $this->request->post('purchase-date_billed-'.$key) )
-								  ? $this->request->post('purchase-date_billed-'.$key) 
+								  ? $this->request->post('purchase-date_billed-'.$key)
 								  : date("Y-m-d"),
 					'invoice_number' => $this->request->post('purchase-invoice_number-'.$key),
 					'invoice_amount' => $this->request->post('purchase-invoice_amount-'.$key),
@@ -1515,7 +1517,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$payment = FALSE;
 
-		if( $this->request->post('replace_transaction_id') AND 
+		if( $this->request->post('replace_transaction_id') AND
 			$this->request->post('replace_transaction_id') != "new" )
 		{
 			$vendor_payment_replace_data = (object)array(
@@ -1587,7 +1589,7 @@ class Controller_Vendors_Json extends Controller_Json {
 					return $this->_return_error("An error occurred when checking for duplicate transactions:<br>".$this->_beans_result_get_error($account_transaction_match_result));
 
 				// There should only be one result to this - and it should match, etc.
-				if( count($account_transaction_match_result->data->account_transactions) AND 
+				if( count($account_transaction_match_result->data->account_transactions) AND
 					$account_transaction_match_result->data->account_transactions[0]->duplicate )
 				{
 					// Duplicate transaction detected.
@@ -1637,7 +1639,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			$payment = $vendor_payment_create_result->data->payment;
 		}
 
-		if( $this->request->post('remit_address_id') AND 
+		if( $this->request->post('remit_address_id') AND
 			$this->request->post('remit_address_id') != "skip" )
 		{
 			foreach( $purchases as $purchase )
@@ -1659,10 +1661,10 @@ class Controller_Vendors_Json extends Controller_Json {
 				"Please try reloading the page and trying again."
 			);
 
-		if( $this->request->post('print_check') AND 
+		if( $this->request->post('print_check') AND
 			$this->request->post('print_check') == "1" )
 			$this->_print_check_queue_payment_add($payment->id);
-		
+
 		$html = new View_Partials_Vendors_Payments_Payment;
 		$html->payment = $payment;
 
@@ -1670,7 +1672,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$this->_return_object->data->payment = $payment;
 	}
-	
+
 	public function action_paymentload()
 	{
 		$payment_id = $this->request->post('payment_id');
@@ -1732,7 +1734,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		// This is the payment we end up creating.
 		$payment = FALSE;
 
-		if( $this->request->post('replace_transaction_id') AND 
+		if( $this->request->post('replace_transaction_id') AND
 			$this->request->post('replace_transaction_id') != "new" )
 		{
 			$vendor_payment_replace_data = (object)array(
@@ -1820,7 +1822,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				}
 
 			}
-			
+
 			$vendor_payment_update_data = (object)array(
 				'id' => $payment_id,
 				'date' => ( $this->request->post('date') ) ? $this->request->post('date') : date("Y-m-d"),
@@ -1855,7 +1857,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		}
 
 		// Update remit address ID
-		if( $this->request->post('remit_address_id') AND 
+		if( $this->request->post('remit_address_id') AND
 			$this->request->post('remit_address_id') != "skip" )
 		{
 			foreach( $purchases as $purchase )
@@ -1873,10 +1875,10 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$this->_print_check_queue_payment_remove($payment_id);
 
-		if( $this->request->post('print_check') AND 
+		if( $this->request->post('print_check') AND
 			$this->request->post('print_check') == "1" )
 			$this->_print_check_queue_payment_add($payment->id);
-		
+
 		$html = new View_Partials_Vendors_Payments_Payment;
 		$html->payment = $payment;
 
@@ -1937,7 +1939,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$payment = FALSE;
 
-		if( $this->request->post('replace_transaction_id') AND 
+		if( $this->request->post('replace_transaction_id') AND
 			$this->request->post('replace_transaction_id') != "new" )
 		{
 			// REPLACE
@@ -2034,16 +2036,16 @@ class Controller_Vendors_Json extends Controller_Json {
 
 			$payment = $tax_payment_create_result->data->payment;
 		}
-		
-		if( $this->request->post("print_check") AND 
+
+		if( $this->request->post("print_check") AND
 			$this->request->post("print_check") == "1" )
 			$this->_print_check_queue_taxpayment_add($payment->id);
 
 		$html = new View_Partials_Taxes_Payments_Payment;
 		$html->payment = $payment;
-		
+
 		$payment->html = $html->render();
-		
+
 		$this->_return_object->data->payment = $payment;
 	}
 
@@ -2065,7 +2067,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		// This is the payment we end up creating.
 		$payment = FALSE;
 
-		if( $this->request->post('replace_transaction_id') AND 
+		if( $this->request->post('replace_transaction_id') AND
 			$this->request->post('replace_transaction_id') != "new" )
 		{
 			$tax_payment_replace_data = (object)array(
@@ -2084,7 +2086,7 @@ class Controller_Vendors_Json extends Controller_Json {
 			$tax_payment_replace_data->validate_only = TRUE;
 			$tax_payment_validate = new Beans_Tax_Payment_Replace($this->_beans_data_auth($tax_payment_replace_data));
 			$tax_payment_validate_result = $tax_payment_validate->execute();
-			
+
 			if( ! $tax_payment_validate_result->success )
 				return $this->_return_error($this->_beans_result_get_error($tax_payment_validate_result));
 
@@ -2183,7 +2185,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$this->_print_check_queue_taxpayment_remove($payment_id);
 
-		if( $this->request->post("print_check") AND 
+		if( $this->request->post("print_check") AND
 			$this->request->post("print_check") == "1" )
 			$this->_print_check_queue_taxpayment_add($payment->id);
 
@@ -2227,7 +2229,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$this->_print_check_queue_taxpayment_remove($payment_id);
 	}
 
-	public function action_taxpaymentsearch() 
+	public function action_taxpaymentsearch()
 	{
 		$search_terms = $this->request->post('search_terms');
 		$count = $this->request->post('count');
@@ -2239,7 +2241,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		$tax_payment_search_data->sort_by = 'newest';
 		$tax_payment_search_data->page_size = $count;
 		$tax_payment_search_data->search_tax_name = $search_terms;
-		
+
 		$tax_payment_search = new Beans_Tax_Payment_Search($this->_beans_data_auth($tax_payment_search_data));
 
 		$tax_payment_search_result = $tax_payment_search->execute();
@@ -2267,7 +2269,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		)));
 		$vendor_expense_line_search_result = $vendor_expense_line_search->execute();
 
-		if( ! $vendor_expense_line_search_result->success ) 
+		if( ! $vendor_expense_line_search_result->success )
 			return $this->_return_error($this->_beans_result_get_error($vendor_expense_line_search_result));
 
 		$this->_return_object->data->lines = $vendor_expense_line_search_result->data->expense_lines;
@@ -2282,7 +2284,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		)));
 		$vendor_purchase_line_search_result = $vendor_purchase_line_search->execute();
 
-		if( ! $vendor_purchase_line_search_result->success ) 
+		if( ! $vendor_purchase_line_search_result->success )
 			return $this->_return_error($this->_beans_result_get_error($vendor_purchase_line_search_result));
 
 		$this->_return_object->data->lines = $vendor_purchase_line_search_result->data->purchase_lines;
@@ -2297,7 +2299,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( ! $count )
 			$count = 5;
 
-		if( ! $page ) 
+		if( ! $page )
 			$page = 0;
 
 		$vendor_payment_search_data = new stdClass;
@@ -2337,7 +2339,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 		$check_number_start = $this->request->post('check_number_start');
 
-		if( ! $check_number_start OR 
+		if( ! $check_number_start OR
 			! is_numeric($check_number_start) OR
 			intval($check_number_start) != $check_number_start )
 			return $this->_return_error("Please provide a valid starting check number.");
@@ -2378,7 +2380,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$print_vendor_checks->expenses[] = $expense_lookup_result->data->expense;
 
 			}
-			
+
 			foreach( $payment_ids as $payment_id )
 			{
 				$payment_lookup = new Beans_Vendor_Payment_Lookup($this->_beans_data_auth((object)array(
@@ -2391,7 +2393,7 @@ class Controller_Vendors_Json extends Controller_Json {
 
 				$print_vendor_checks->payments[] = $payment_lookup_result->data->payment;
 			}
-			
+
 			foreach( $taxpayment_ids as $taxpayment_id )
 			{
 				$tax_payment_lookup = new Beans_Tax_Payment_Lookup($this->_beans_data_auth((object)array(
@@ -2471,7 +2473,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		}
 
 		$this->_return_object->data->next_check_number = $check_number_start;
-		
+
 		// $this->_return_object->data->printhtml = $print_vendor_checks->render();
 	}
 
@@ -2556,7 +2558,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( ! $count )
 			$count = 5;
 
-		if( ! $page ) 
+		if( ! $page )
 			$page = 0;
 
 		$search_parameters = (object)array(
@@ -2570,13 +2572,13 @@ class Controller_Vendors_Json extends Controller_Json {
 		{
 			$term = trim($search_term);
 
-			if( $term AND 
+			if( $term AND
 				is_numeric($search_term) )
 				$search_parameters->check_number = $term;
-			else if( $term AND 
+			else if( $term AND
 				date('Y-m-d',strtotime($term)) == $term )
 				$search_parameters->date = $term;
-			else 
+			else
 				$search_parameters->vendor_keywords .= $term.' ';
 		}
 
@@ -2594,7 +2596,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		{
 			if( isset($transaction->form) AND
 				$transaction->form AND
-				isset($transaction->form->id) AND 
+				isset($transaction->form->id) AND
 				$transaction->form->type == "expense" )
 			{
 				$vendor_expense_lookup = new Beans_Vendor_Expense_Lookup($this->_beans_data_auth((object)array(
@@ -2609,7 +2611,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$vendor_checks_check->expense = $vendor_expense_lookup_result->data->expense;
 				$this->_return_object->data->transactions[$index]->html = $vendor_checks_check->render();
 			}
-			else if( $transaction->payment AND 
+			else if( $transaction->payment AND
 					 $transaction->payment == "vendor" )
 			{
 				$vendor_payment_lookup = new Beans_Vendor_Payment_Lookup($this->_beans_data_auth((object)array(
@@ -2625,7 +2627,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$this->_return_object->data->transactions[$index]->html = $vendor_checks_check->render();
 
 			}
-			else if( $transaction->tax_payment AND 
+			else if( $transaction->tax_payment AND
 					 isset($transaction->tax_payment->id) )
 			{
 				$tax_payment_lookup = new Beans_Tax_Payment_Lookup($this->_beans_data_auth((object)array(
@@ -2659,7 +2661,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( ! $count )
 			$count = 5;
 
-		if( ! $page ) 
+		if( ! $page )
 			$page = 0;
 
 		$search_parameters = (object)array(
@@ -2675,13 +2677,13 @@ class Controller_Vendors_Json extends Controller_Json {
 		{
 			$term = trim($search_term);
 
-			if( $term AND 
+			if( $term AND
 				is_numeric($search_term) )
 				$search_parameters->check_number = $term;
-			else if( $term AND 
+			else if( $term AND
 				date('Y-m-d',strtotime($term)) == $term )
 				$search_parameters->date = $term;
-			
+
 			$search_parameters->keywords .= $term.' ';
 		}
 
@@ -2699,7 +2701,7 @@ class Controller_Vendors_Json extends Controller_Json {
 		{
 			if( isset($transaction->form) AND
 				$transaction->form AND
-				isset($transaction->form->id) AND 
+				isset($transaction->form->id) AND
 				$transaction->form->type == "expense" )
 			{
 				$vendor_expense_lookup = new Beans_Vendor_Expense_Lookup($this->_beans_data_auth((object)array(
@@ -2715,7 +2717,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$vendor_checks_check->expense = $vendor_expense_lookup_result->data->expense;
 				$this->_return_object->data->transactions[$index]->html = $vendor_checks_check->render();
 			}
-			else if( $transaction->payment AND 
+			else if( $transaction->payment AND
 					 $transaction->payment == "vendor" )
 			{
 				$vendor_payment_lookup = new Beans_Vendor_Payment_Lookup($this->_beans_data_auth((object)array(
@@ -2732,7 +2734,7 @@ class Controller_Vendors_Json extends Controller_Json {
 				$this->_return_object->data->transactions[$index]->html = $vendor_checks_check->render();
 
 			}
-			else if( $transaction->tax_payment AND 
+			else if( $transaction->tax_payment AND
 					 isset($transaction->tax_payment->id) )
 			{
 				$tax_payment_lookup = new Beans_Tax_Payment_Lookup($this->_beans_data_auth((object)array(
@@ -2761,7 +2763,7 @@ class Controller_Vendors_Json extends Controller_Json {
 	/**
 	 * Check Printing Queue
 	 */
-	
+
 	protected function _print_check_queue_expense_add($expense_id)
 	{
 		$check_print_queue = Session::instance()->get('check_print_queue');
@@ -2898,8 +2900,8 @@ class Controller_Vendors_Json extends Controller_Json {
 		if( ! $check_print_queue )
 			return 0;
 
-		return 
-			count($check_print_queue->expense_ids) + 
+		return
+			count($check_print_queue->expense_ids) +
 			count($check_print_queue->payment_ids) +
 			count($check_print_queue->taxpayment_ids);
 	}

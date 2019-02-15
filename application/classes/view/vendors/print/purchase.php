@@ -10,7 +10,7 @@ it under the terms of the BeansBooks Public License.
 
 BeansBooks is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the BeansBooks Public License for more details.
 
 You should have received a copy of the BeansBooks Public License
@@ -26,10 +26,10 @@ class View_Vendors_Print_Purchase extends View_Print {
 			'display_name' => $this->purchase->vendor->display_name,
 		);
 	}
-	
+
 	public function remit()
 	{
-		if( ! $this->purchase->remit_address ) 
+		if( ! $this->purchase->remit_address )
 			return FALSE;
 
 		return array(
@@ -48,7 +48,7 @@ class View_Vendors_Print_Purchase extends View_Print {
 
 	public function shipping()
 	{
-		if( ! $this->purchase->shipping_address ) 
+		if( ! $this->purchase->shipping_address )
 			return FALSE;
 
 		return array(
@@ -65,7 +65,7 @@ class View_Vendors_Print_Purchase extends View_Print {
 		);
 	}
 
-	
+
 
 	public function purchase_number()
 	{
@@ -82,22 +82,25 @@ class View_Vendors_Print_Purchase extends View_Print {
 		return $this->purchase->quote_number;
 	}
 
-
+	public function updated_purchase()
+	{
+		return ($this->updated_purchase === true);
+	}
 
 	public function purchase_date_formatted()
 	{
 		return date("F j, Y",strtotime($this->purchase->date_created));
 	}
-	
+
 	public function purchase_total_formatted()
 	{
 		$beans_settings = parent::beans_settings();
-		if( ! isset($beans_settings->company_currency) ) 
+		if( ! isset($beans_settings->company_currency) )
 			return "NO CURRENCY SET";
-		
+
 		return ( $this->purchase->total < 0 ? '-' : '' ).$beans_settings->company_currency.number_format(abs($this->purchase->total),2,'.',',');
 	}
-	
+
 	public function purchase_date_due_formatted()
 	{
 		return date("F j, Y",strtotime($this->purchase->date_due));
