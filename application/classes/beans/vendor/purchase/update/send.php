@@ -76,9 +76,13 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
       return $this->_return_error("Email cannot be sent until you set an email address for your company within 'Setup'.");
     }
 
+		$subject = ((boolean) $this->_data->updated)
+			?	$settings->company_name.' - REVISED Purchase '.$this->_lookup->data->purchase->purchase_number
+			: $settings->company_name.' - Purchase '.$this->_lookup->data->purchase->purchase_number;
+
     $message = Swift_Message::newInstance();
     $message
-      ->setSubject($settings->company_name.' - Purchase '.$this->_lookup->data->purchase->purchase_number)
+      ->setSubject($subject)
       ->setFrom(array($settings->company_email))
       ->setTo(array($this->_data->email));
 
@@ -90,11 +94,7 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
 
     $message = $vendors_print_purchase->render();
 
-    if (!Email::connect()) {
-      return $this->_return_error("Could not send email. Does your config have correct email settings?");
-    }
-
-    if (!Email::sendMessage($message)) {
+    if (!Email::connect() || !Email::sendMessage($message)) {
       return $this->_return_error("Could not send email. Does your config have correct email settings?");
     }
 
@@ -104,12 +104,6 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
 
     $vendor_purchase_update_sent = new Beans_Vendor_Purchase_Update_Sent($this->_beans_data_auth($vendor_purchase_update_sent_data));
     $vendor_purchase_update_sent_result = $vendor_purchase_update_sent->execute();
-
-    if (!$vendor_purchase_update_sent_result->success) {
-      return $this->_return_error("An error occurred when updating that purchase:<br>".$this->_beans_result_get_error($vendor_purchase_update_sent_result));
-    }
-
-		$this->_purchase->save();
 
 		return (object) array(
 			"purchase" => $this->_return_vendor_purchase_element($this->_purchase),
