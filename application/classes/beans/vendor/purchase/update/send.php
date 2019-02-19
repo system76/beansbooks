@@ -31,31 +31,31 @@ along with BeansBooks; if not, email info@beansbooks.com.
 */
 class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
 
-	protected $_auth_role_perm = "vendor_purchase_write";
+  protected $_auth_role_perm = "vendor_purchase_write";
 
-	protected $_data;
-	protected $_id;
-	protected $_purchase;
+  protected $_data;
+  protected $_id;
+  protected $_purchase;
 
-	public function __construct($data = NULL)
-	{
-		parent::__construct($data);
+  public function __construct($data = NULL)
+  {
+    parent::__construct($data);
 
-		$this->_data = $data;
-		$this->_id = (isset($data->id)) ? (int) $data->id : 0;
+    $this->_data = $data;
+    $this->_id = (isset($data->id)) ? (int) $data->id : 0;
 
-		$this->_purchase = $this->_load_vendor_purchase($this->_id);
+    $this->_purchase = $this->_load_vendor_purchase($this->_id);
 
     $vendor_purchase_lookup = new Beans_Vendor_Purchase_Lookup($this->_beans_data_auth((object)array(
       'id' => $this->_id,
     )));
     $this->_lookup = $vendor_purchase_lookup->execute();
-	}
+  }
 
-	protected function _execute()
-	{
-		if (!$this->_purchase->loaded()) {
-			throw new Exception("Purchase could not be found.");
+  protected function _execute()
+  {
+    if (!$this->_purchase->loaded()) {
+      throw new Exception("Purchase could not be found.");
     }
 
     if (!$this->_data->email || !filter_var($this->_data->email, FILTER_VALIDATE_EMAIL)) {
@@ -76,15 +76,15 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
       return $this->_return_error("Email cannot be sent until you set an email address for your company within 'Setup'.");
     }
 
-		$subject = ((boolean) $this->_data->updated)
-			?	$settings->company_name.' - REVISED Purchase '.$this->_lookup->data->purchase->purchase_number
-			: $settings->company_name.' - Purchase '.$this->_lookup->data->purchase->purchase_number;
+    $subject = ((boolean) $this->_data->updated)
+    ?	$settings->company_name.' - REVISED Purchase '.$this->_lookup->data->purchase->purchase_number
+    : $settings->company_name.' - Purchase '.$this->_lookup->data->purchase->purchase_number;
 
     $message = Swift_Message::newInstance();
     $message
-      ->setSubject($subject)
-      ->setFrom(array($settings->company_email))
-      ->setTo(array($this->_data->email));
+    ->setSubject($subject)
+    ->setFrom(array($settings->company_email))
+    ->setTo(array($this->_data->email));
 
     $vendors_print_purchase = new View_Vendors_Print_Purchase();
     $vendors_print_purchase->setup_company_list_result = $company_settings_result;
@@ -105,8 +105,8 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
     $vendor_purchase_update_sent = new Beans_Vendor_Purchase_Update_Sent($this->_beans_data_auth($vendor_purchase_update_sent_data));
     $vendor_purchase_update_sent_result = $vendor_purchase_update_sent->execute();
 
-		return (object) array(
-			"purchase" => $this->_return_vendor_purchase_element($this->_purchase),
-		);
-	}
+    return (object) array(
+      "purchase" => $this->_return_vendor_purchase_element($this->_purchase),
+    );
+  }
 }
