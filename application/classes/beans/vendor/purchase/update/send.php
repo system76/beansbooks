@@ -66,7 +66,7 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
     $company_settings_result = $company_settings->execute();
 
     if (!$company_settings_result->success) {
-      return $this->_return_error($this->_beans_result_get_error($company_settings_result));
+      throw new Exception($this->_beans_result_get_error($company_settings_result));
     }
 
     // Shorten for sanity's sake...
