@@ -101,15 +101,15 @@ Kohana::$config->attach(new Config_File);
 
 $beans_config = array();
 
-if( file_exists(APPPATH.'classes/beans/config.php') AND 
-	filesize(APPPATH.'classes/beans/config.php') > 0 ) 
+if( file_exists(APPPATH.'classes/beans/config.php') AND
+	filesize(APPPATH.'classes/beans/config.php') > 0 )
 	$beans_config = include APPPATH.'classes/beans/config.php';
 
 Cookie::$salt = ( isset($beans_config['cookie_salt']) )
 			  ? $beans_config['cookie_salt']
 			  : "snakeoilsnakeoilsnakeoilsnakeoil";
 
-Session::$default = 'cookie';
+Session::$default = 'database';
 
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
