@@ -59,7 +59,7 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
     }
 
     if (!$this->_data->email || !filter_var($this->_data->email, FILTER_VALIDATE_EMAIL)) {
-      return $this->_return_error("Please provide a valid email address.");
+      throw new Exception("Please provide a valid email address.");
     }
 
     $company_settings = new Beans_Setup_Company_List($this->_beans_data_auth());
@@ -73,7 +73,7 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
     $settings = $company_settings_result->data->settings;
 
     if (!isset($settings->company_email) || !strlen($settings->company_email)) {
-      return $this->_return_error("Email cannot be sent until you set an email address for your company within 'Setup'.");
+      throw new Exception("Email cannot be sent until you set an email address for your company within 'Setup'.");
     }
 
     $subject = ((boolean) $this->_data->updated)
@@ -95,7 +95,7 @@ class Beans_Vendor_Purchase_Update_Send extends Beans_Vendor_Purchase {
     $message = $vendors_print_purchase->render();
 
     if (!Email::connect() || !Email::sendMessage($message)) {
-      return $this->_return_error("Could not send email. Does your config have correct email settings?");
+      throw new Exception("Could not send email. Does your config have correct email settings?");
     }
 
     $vendor_purchase_update_sent_data = new stdClass;
