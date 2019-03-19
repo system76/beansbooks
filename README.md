@@ -1,5 +1,17 @@
 # BeansBooks
 
+---
+
+<div align="center">
+  <h2 align="center">Notice</h2>
+	
+  <p align="center">
+    Beansbooks is available "as is" and will no longer be maintained. We would like to thank everyone who has used and contributed to Beansbooks.
+  </p>
+</div>
+
+---
+
 ## Getting Started
 
 This guide will walk you through getting a local instance of BeansBooks running. 
