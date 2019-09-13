@@ -6,9 +6,9 @@
 	<div class="clear"></div>
 
 	<input type="hidden" name="refund_purchase_id" value="">
-	
+
 	<div class="form bump-down-more">
-		
+
 		<div class="row column-10 labels">
 			<span class="oppa-gangnam-style">Date</span>
 			<span class="ehhh-sexy-lady">
@@ -24,7 +24,7 @@
 				<span class="text-small">( <a href="#" id="vendors-purchases-dialog-shipaddress-create-link">new</a> )</span>
 			</span>
 			<span class="oop">&nbsp;</span>
-			
+
 		</div>
 
 		<div class="row column-10">
@@ -53,7 +53,7 @@
 			<span class="oop-oop-oop">Invoice Number</span>
 			<span class="oop-oop-oop">Invoice Date</span>
 
-			<!-- 
+			<!--
 			<span class="elevator-dance">&nbsp;</span>
 			<span class="oop-oop">&nbsp;</span>
 			-->
@@ -69,7 +69,7 @@
 				{{/purchase_payable_accounts}}
 			</select></span>
 			<span class="oop-oop-oop"><input type="text" name="purchase_number" placeholder="Auto Generate"></span>
-			
+
 			<span class="oop-oop-oop"><input type="text" name="quote_number" placeholder="Optional"></span>
 			<span class="oop-oop-oop"><input type="text" name="so_number" placeholder="Optional"></span>
 
@@ -91,7 +91,7 @@
 		</div>
 
 		<div id="vendors-purchases-create-form-lines">
-			
+
 		</div>
 
 		<div class="row column-6">
@@ -102,7 +102,7 @@
 				<span class="vendors-purchases-create-form-balance-value" id="vendors-purchases-create-form-balance">{{currency_symbol}}0.00</span>
 
 			</span>
-			
+
 			<span class="oop-oop">&nbsp;</span>
 
 			<span class="oop-oop vendor-purchases-create-new-buttons">&nbsp;</span>
@@ -115,7 +115,7 @@
 			<span class="oop vendor-purchases-create-new-buttons">
 				<a href="#" id="vendors-purchases-create-form-save" class="button">Save</a>
 			</span>
-			
+
 			<span class="oop vendor-purchases-create-edit-buttons" style="display:none;">
 				<a href="#" id="vendors-purchases-create-form-editcancel" class="button">Cancel</a>
 			</span>
@@ -208,14 +208,7 @@
 			<option value="">&nbsp;</option>
 			{{#all_accounts_chart_flat}}
 				{{^reserved}}
-					<option value="{{id}}" 
-					{{#type_accountsreceivable}}disabled="disabled"{{/type_accountsreceivable}}
-					{{#type_bankaccount}}disabled="disabled"{{/type_bankaccount}}
-					{{#type_longtermdebt}}disabled="disabled"{{/type_longtermdebt}}
-					{{#type_shorttermdebt}}disabled="disabled"{{/type_shorttermdebt}}
-					{{#type_accountspayable}}disabled="disabled"{{/type_accountspayable}}
-					{{#type_equity}}disabled="disabled"{{/type_equity}}
-					{{#type_income}}disabled="disabled"{{/type_income}}
+					<option value="{{id}}"
 					{{#top_level}}disabled="disabled"{{/top_level}}>{{{name_print}}}</option>
 				{{/reserved}}
 			{{/all_accounts_chart_flat}}
@@ -230,7 +223,7 @@
 <div id="vendors-purchases-send-template" class="hidden">
 	<li class="vendor-purchase vendor-purchase-send color-force-green">
 		<span class="vendor-purchase-send-email">
-			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email 
+			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email
 			<input type="text" name="email" value="">
 		</span>
 		<span class="vendor-purchase-send-mail">
@@ -381,5 +374,3 @@
 		</div>
 	</div>
 </div>
-
-

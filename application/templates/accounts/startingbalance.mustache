@@ -2,12 +2,12 @@
 <div class="text-bold text-medium bump-down">Starting Balance</div>
 
 <div class="text-medium bump-down">
-	Use this tool to enter the starting balances for all of your accounts. 
-	If you are transitioning from another accounting program, you can use 
-	its &quot;Trial Balance&quot; report. You likely want to set the report 
+	Use this tool to enter the starting balances for all of your accounts.
+	If you are transitioning from another accounting program, you can use
+	its &quot;Trial Balance&quot; report. You likely want to set the report
 	date to the last time you reconciled your cash accounts.
 
-	If you are starting a new business, you will likely enter a debit in your 
+	If you are starting a new business, you will likely enter a debit in your
 	checking and savings account and credit &quot;Retained Earnings&quot; the same amount.
 </div>
 <div class="clear"></div>
@@ -28,7 +28,7 @@
 						<span style="padding-left: {{indent_level_px}}px;" class="accounts-startingbalance-form-account-name">{{name}}</span>
 						{{^top_level}}
 							<span class="accounts-startingbalance-form-account-debit"><input type="text" account-transaction-key="account_debit_{{id}}"></span>
-							<span class="accounts-startingbalance-form-account-credit"><input type="text" account-transaction-key="account_credit_{{id}}" {{#bankaccount}} style="background-color: #e6e6e6;" disabled="disabled"{{/bankaccount}}></span>
+							<span class="accounts-startingbalance-form-account-credit"><input type="text" account-transaction-key="account_credit_{{id}}"></span>
 						{{/top_level}}
 						<div class="clear"></div>
 					</li>

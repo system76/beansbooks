@@ -10,7 +10,7 @@ it under the terms of the BeansBooks Public License.
 
 BeansBooks is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the BeansBooks Public License for more details.
 
 You should have received a copy of the BeansBooks Public License
@@ -27,7 +27,7 @@ class Beans_Vendor extends Beans {
 	{
 		parent::__construct($data);
 	}
-	
+
 	protected function _return_vendors_array($vendors)
 	{
 		$return_array = array();
@@ -42,7 +42,7 @@ class Beans_Vendor extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Vendor
 	@description Represents a vendor in the system.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute first_name STRING
 	@attribute last_name STRING
 	@attribute company_name STRING
@@ -87,12 +87,12 @@ class Beans_Vendor extends Beans {
 		$return_object->fax_number = $vendor->fax_number;
 
 		$return_object->default_remit_address_id = $vendor->default_remit_address_id;
-		
+
 		$return_object->default_account = ( $vendor->default_account_id ? $this->_return_account_element($vendor->default_account) : new stdClass );
 
 		// Account Balance AND Past-Due Balance
 		$account_balances = DB::query(Database::SELECT, 'SELECT COUNT(id) as count, SUM(total) AS total, SUM(balance) AS balance, IF(date_due < DATE("'.date('Y-m-d').'"),TRUE,FALSE) as past_due, type as form_type FROM forms WHERE entity_id = "'.$vendor->id.'" GROUP BY past_due,form_type')->execute()->as_array();
-		
+
 		$return_object->expenses_count = 0;
 		$return_object->expenses_total = 0.00;
 		$return_object->purchases_count = 0;
@@ -173,7 +173,7 @@ class Beans_Vendor extends Beans {
 		if( strlen($vendor->company_name) > 64 )
 			throw new Exception("Invalid vendor company nane: maximum of 64 characters.");
 
-		if( $vendor->email AND 
+		if( $vendor->email AND
 			strlen($vendor->email) > 255 )
 			throw new Exception("Invalid vendor email: maximum of 254 characters.");
 
@@ -194,13 +194,13 @@ class Beans_Vendor extends Beans {
 				$default_remit_address->entity_id != $vendor->id )
 				throw new Exception("Invalid vendor default billing address: not found.");
 		}
-		
+
 		if( $vendor->default_account_id )
 		{
 			$default_account = $this->_load_account($vendor->default_account_id);
 			if( ! $default_account->loaded() )
 				throw new Exception("Invalid vendor default account payable: not found.");
-			if( ! $default_account->payable AND 
+			if( ! $default_account->payable AND
 				! $default_account->payment )
 				throw new Exception("Invalid vendor default account payable: must be payable be payable from.");
 		}
@@ -220,7 +220,7 @@ class Beans_Vendor extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Address
 	@description Represents a vendor address.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute first_name STRING
 	@attribute last_name STRING
 	@attribute company_name STRING
@@ -233,12 +233,12 @@ class Beans_Vendor extends Beans {
 	@attribute standard STRING A single-line summary for displaying the address.
 	---BEANSENDSPEC---
 	 */
-	
+
 	/*
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Address_Shipping
 	@description A generic address used for shipping purchases.  These are not tied to a specific vendor, but are all grouped together.  See !Beans_Vendor_Address_Shipping_Create! for an example.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute first_name STRING
 	@attribute last_name STRING
 	@attribute company_name STRING
@@ -275,7 +275,7 @@ class Beans_Vendor extends Beans {
 		$return_object->zip = $address->zip;
 		$return_object->country = $address->country;
 
-		$return_object->standard = 
+		$return_object->standard =
 			( $return_object->first_name ? $return_object->first_name.' ' : '' ).
 			( $return_object->last_name ? $return_object->last_name.' ' : '' ).
 			( $return_object->company_name ? $return_object->company_name.' ' : '' ).
@@ -319,18 +319,18 @@ class Beans_Vendor extends Beans {
 		if( get_class($vendor_address) != "Model_Entity_Address" )
 			throw new Exception("Invalid address.");
 
-		if( ! $ignore_entity AND 
-			$vendor_address->entity_id != 0 ) 
+		if( ! $ignore_entity AND
+			$vendor_address->entity_id != 0 )
 		{
-			if( ! $vendor_address->entity_id OR 
+			if( ! $vendor_address->entity_id OR
 				! strlen($vendor_address->entity_id) )
 				throw new Exception("Invalid address vendor ID (entity_id): none provided.");
 
 			if( ! $this->_load_vendor($vendor_address->entity_id)->loaded() )
 				throw new Exception("Invalid address vendor ID (entity_id): vendor not found.");
 		}
-		
-		if( $vendor_address->entity_id != 0 ) 
+
+		if( $vendor_address->entity_id != 0 )
 		{
 			if( strlen($vendor_address->first_name) > 64 )
 				throw new Exception("Invalid address first name: maximum of 64 characters.");
@@ -347,13 +347,13 @@ class Beans_Vendor extends Beans {
 		}
 		else
 		{
-			if( ! strlen($vendor_address->first_name) AND 
-				! strlen($vendor_address->last_name) AND 
+			if( ! strlen($vendor_address->first_name) AND
+				! strlen($vendor_address->last_name) AND
 				! strlen($vendor_address->company_name) )
 				throw new Exception("Invalid address name: Please provide at least one ship-to name.");
 		}
 
-		if( ! $vendor_address->address1 OR 
+		if( ! $vendor_address->address1 OR
 			! strlen($vendor_address->address1) )
 			throw new Exception("Invalid address primary street: none provided.");
 
@@ -373,26 +373,26 @@ class Beans_Vendor extends Beans {
 		if( strlen($vendor_address->state) > 64 )
 			throw new Exception("Invalid address state: maximum of 64 characters.");
 
-		if( ! $vendor_address->zip OR 
+		if( ! $vendor_address->zip OR
 			! strlen($vendor_address->zip) )
 			throw new Exception("Invalid address postal code: none provided.");
 
 		if( strlen($vendor_address->zip) > 32 )
 			throw new Exception("Invalid address postal code: maximum of 32 characters.");
 
-		if( ! $vendor_address->country OR 
+		if( ! $vendor_address->country OR
 			! strlen($vendor_address->country) )
 			throw new Exception("Invalid address country: none provided.");
 
 		if( strlen($vendor_address->country) != 2 )
 			throw new Exception("Invalid address country: must be 2 characters.");
 	}
-	
+
 
 	protected function _return_vendor_expenses_array($expenses)
 	{
 		$return_array = array();
-		
+
 		foreach( $expenses as $expense )
 			$return_array[] = $this->_return_vendor_expense_element($expense);
 
@@ -403,20 +403,20 @@ class Beans_Vendor extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Expense
 	@description A vendor expense.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute vendor OBJECT The #Beans_Vendor# that this expense belongs to.
 	@attribute account OBJECT The #Beans_Account# that was used to pay the expense.
 	@attribute refund_expense_id INTEGER The ID of the #Beans_Vendor_Expense# that was a refund of ( or refunded ) this.
 	@attribute remit_address OBJECT The remit #Beans_Vendor_Address#.
-	@attribute date_created STRING 
+	@attribute date_created STRING
 	@attribute transaction OBJECT The #Beans_Transaction# representing the account in the journal.
 	@attribute subtotal DECIMAL
 	@attribute total DECIMAL
-	@attribute balance DECIMAL 
+	@attribute balance DECIMAL
 	@attribute expense_number STRING
 	@attribute invoice_number STRING
-	@attribute so_number STRING 
-	@attribute check_number STRING	
+	@attribute so_number STRING
+	@attribute check_number STRING
 	@attribute lines ARRAY An array of #Beans_Vendor_Expense_Line#.
 	---BEANSENDSPEC---
 	 */
@@ -435,10 +435,10 @@ class Beans_Vendor extends Beans {
 
 		$return_object->id = $expense->id;
 		$return_object->vendor = $this->_return_vendor_element($expense->entity);
-		
+
 		// Account Receivable
 		$return_object->account = $this->_return_account_element($expense->account);
-		
+
 		// Refund
 		$return_object->refund_expense_id = ( $expense->refund_form->loaded() )
 										   ? $expense->refund_form->id
@@ -450,14 +450,14 @@ class Beans_Vendor extends Beans {
 
 		$return_object->date_created = $expense->date_created;
 		// $return_object->date_due = $invoice->date_due;
-		
+
 		$return_object->transaction = $this->_return_transaction_element($expense->create_transaction);
 
 		// Technically there's an "amount" field, but it doesn't apply.
 		$return_object->subtotal = $expense->amount;
 		$return_object->total = $expense->total;		// These are the same for now.
 		$return_object->balance = $expense->balance;
-		
+
 		$return_object->expense_number = $expense->code;
 		$return_object->invoice_number = $expense->reference;
 		$return_object->so_number = $expense->alt_reference;
@@ -487,7 +487,7 @@ class Beans_Vendor extends Beans {
 		$expense->alt_reference = NULL;
 		$expense->create_transaction_id = NULL;
 		$expense->invoice_transaction_id = NULL;
-		
+
 		return $expense;
 	}
 
@@ -514,7 +514,7 @@ class Beans_Vendor extends Beans {
 
 		// Verify Account - Must be valid and marked as "receivable"
 		$account = $this->_load_account($expense->account_id);
-		
+
 		if( ! $account->loaded() )
 			throw new Exception("Invalid expense account payment: account not found.");
 
@@ -547,28 +547,28 @@ class Beans_Vendor extends Beans {
 				throw new Exception("Invalid expense remit address: does not belong to vendor.");
 		}
 
-		if( ! $expense->code OR 
+		if( ! $expense->code OR
 			! strlen($expense->code) )
 			throw new Exception("Invalid expense number: none provided.");
-		
+
 		if( strlen($expense->code) > 16 )
 			throw new Exception("Invalid expense number: maximum of 16 characters.");
 
 		if( (
 				$expense->reference OR
 				strlen($expense->reference)
-			) AND 
+			) AND
 			strlen($expense->reference) > 16 )
 			throw new Exception("Invalid expense purchase order number: maximum of 16 characters.");
 
 		if( (
 				$expense->alt_reference OR
 				strlen($expense->alt_reference)
-			) AND 
+			) AND
 			strlen($expense->alt_reference) > 16 )
 			throw new Exception("Invalid expense purchase order number: maximum of 16 characters.");
 
-		if( ! $expense->date_created OR 
+		if( ! $expense->date_created OR
 			! strlen($expense->date_created) )
 			throw new Exception("Invalid expense date: none provided.");
 
@@ -579,7 +579,7 @@ class Beans_Vendor extends Beans {
 			throw new Exception("Expense could not be created.  The financial year has been closed already.");
 
 	}
-	
+
 	protected function _return_vendor_purchases_array($purchases)
 	{
 		$return_array = array();
@@ -594,14 +594,14 @@ class Beans_Vendor extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Purchase
 	@description A vendor purchase order.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute vendor OBJECT The #Beans_Vendor# that this expense belongs to.
 	@attribute account OBJECT The #Beans_Account# that was used to pay the expense.
 	@attribute sent STRING The sent status of the purchase: 'email', 'print', 'both', or NULL
 	@attribute refund_purchase_id INTEGER The ID of the #Beans_Vendor_Expense# that was a refund of ( or refunded ) this.
 	@attribute remit_address OBJECT The remit #Beans_Vendor_Address#.
 	@attribute shipping_address OBJECT The shipping #Beans_Vendor_Address_Shipping#.
-	@attribute date_created STRING 
+	@attribute date_created STRING
 	@attribute create_transaction_id INTEGER The ID of the #Beans_Transaction# to create the purchase.
 	@attribute invoice_transaction_id INTEGER The ID of the #Beans_Transaction# converting it to an invoice.
 	@attribute subtotal DECIMAL
@@ -613,7 +613,7 @@ class Beans_Vendor extends Beans {
 	@attribute invoice_number STRING
 	@attribute lines ARRAY An array of #Beans_Vendor_Purchase_Line#.
 	@attribute payments ARRAY An array of #Beans_Vendor_Payment# tied to this purchase.
-	@attribute status STRING 
+	@attribute status STRING
 	---BEANSENDSPEC---
 	 */
 
@@ -622,7 +622,7 @@ class Beans_Vendor extends Beans {
 	{
 		$return_object = new stdClass;
 
-		if( get_class($purchase) != "Model_Form_Purchase" AND 
+		if( get_class($purchase) != "Model_Form_Purchase" AND
 			$purchase->type != "purchase" )
 			throw new Exception("Invalid Purchase.");
 
@@ -631,14 +631,14 @@ class Beans_Vendor extends Beans {
 
 		$return_object->id = $purchase->id;
 		$return_object->vendor = $this->_return_vendor_element($purchase->entity);
-		
+
 		// Account Payable
 		$return_object->account = $this->_return_account_element($purchase->account);
-		
+
 		$return_object->sent = ( $purchase->sent AND strlen($purchase->sent) )
 							 ? $purchase->sent
 							 : FALSE;
-		
+
 		// Refund
 		$return_object->refund_purchase_id = ( $purchase->refund_form->loaded() )
 										   ? $purchase->refund_form->id
@@ -651,11 +651,11 @@ class Beans_Vendor extends Beans {
 
 		$return_object->create_transaction_id = $purchase->create_transaction_id;
 		$return_object->invoice_transaction_id = $purchase->invoice_transaction_id;
-		
+
 		$return_object->subtotal = $purchase->amount;
-		$return_object->total = $purchase->total;		
+		$return_object->total = $purchase->total;
 		$return_object->balance = $purchase->balance;
-		
+
 		$return_object->purchase_number = $purchase->code;
 		$return_object->quote_number = $purchase->alt_reference;
 		$return_object->so_number = $purchase->reference;
@@ -668,7 +668,7 @@ class Beans_Vendor extends Beans {
 		$return_object->shipping_address = ( $purchase->shipping_address_id )
 										 ? $this->_return_vendor_address_element($purchase->shipping_address)
 										 : NULL;
-		
+
 		$return_object->lines = $this->_return_form_lines_array($purchase->form_lines->find_all());
 
 		$return_object->payments = $this->_return_vendor_purchase_payments_array($purchase->account_transaction_forms->find_all());
@@ -717,7 +717,7 @@ class Beans_Vendor extends Beans {
 			return "Refunded";
 		if( $purchase->balance == 0 )
 			return "Paid";
-		if( ! $purchase->sent AND 
+		if( ! $purchase->sent AND
 			! $purchase->date_billed )
 			return "PO Not Sent";
 		if( $purchase->date_billed )
@@ -757,7 +757,7 @@ class Beans_Vendor extends Beans {
 
 	protected function _validate_vendor_purchase($purchase)
 	{
-		if( get_class($purchase) != "Model_Form_Purchase" AND 
+		if( get_class($purchase) != "Model_Form_Purchase" AND
 			$purchase->type != "purchase" )
 			throw new Exception("Invalid Purchase.");
 
@@ -772,7 +772,7 @@ class Beans_Vendor extends Beans {
 
 		// Verify Account - Must be valid and marked as "receivable"
 		$account = $this->_load_account($purchase->account_id);
-		
+
 		if( ! $account->loaded() )
 			throw new Exception("Invalid purchase account payable: account not found.");
 
@@ -816,7 +816,7 @@ class Beans_Vendor extends Beans {
 				throw new Exception("Invalid purchase shipping address: does not belong to appropriate vendor.");
 		}
 
-		if( ! $purchase->code OR 
+		if( ! $purchase->code OR
 			! strlen($purchase->code) )
 			throw new Exception("Invalid purchase invoice number: none provided.");
 
@@ -826,25 +826,25 @@ class Beans_Vendor extends Beans {
 		if( (
 				$purchase->reference OR
 				strlen($purchase->reference)
-			) AND 
+			) AND
 			strlen($purchase->reference) > 16 )
 			throw new Exception("Invalid purchase quote number: maximum of 16 characters.");
 
 		if( (
 				$purchase->alt_reference OR
 				strlen($purchase->alt_reference)
-			) AND 
+			) AND
 			strlen($purchase->alt_reference) > 16 )
 			throw new Exception("Invalid purchase SO number: maximum of 16 characters.");
 
 		if( (
 				$purchase->aux_reference OR
-				strlen($purchase->aux_reference) 
+				strlen($purchase->aux_reference)
 			) AND
 			strlen($purchase->aux_reference) > 16 )
 			throw new Exception("Invalid purchase vendor invoice number: maximum of 16 characters.");
 
-		if( ! $purchase->date_created OR 
+		if( ! $purchase->date_created OR
 			! strlen($purchase->date_created) )
 			throw new Exception("Invalid purchase date: none provided.");
 
@@ -870,9 +870,9 @@ class Beans_Vendor extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Payment
 	@description A payment for one or more vendor purchases.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute number STRING A reference number
-	@attribute check_number STRING 
+	@attribute check_number STRING
 	@attribute description STRING
 	@attribute date STRING
 	@attribute amount DECIMAL Total received.
@@ -892,7 +892,7 @@ class Beans_Vendor extends Beans {
 		$return_object = new stdClass;
 
 		if( ! $payment->loaded() OR
-			get_class($payment) != "Model_Transaction" OR 
+			get_class($payment) != "Model_Transaction" OR
 			$payment->payment != "vendor" )
 			throw new Exception("Invalid Vendor Purchase Order Payment.");
 
@@ -907,7 +907,7 @@ class Beans_Vendor extends Beans {
 		//$return_object->amount = ( $payment->amount );	// REVERSED - THIS OK ? // Flip the sign - keep it straightforward and behind the scenes.
 		$return_object->amount = 0.00;
 		$return_object->check_number = $payment->reference;
-		
+
 		// Get the vendor for this payment.
 		$vendor_ids = DB::query(Database::SELECT, 'SELECT DISTINCT(forms.entity_id) as vendor_id FROM account_transactions RIGHT JOIN account_transaction_forms ON account_transactions.id = account_transaction_forms.account_transaction_id RIGHT JOIN forms ON account_transaction_forms.form_id = forms.id WHERE account_transactions.transaction_id = "'.$payment->id.'"')->execute()->as_array();
 
@@ -920,7 +920,7 @@ class Beans_Vendor extends Beans {
 		// Does not dump full form information.
 		// see below: _return_account_transaction_element()
 		$return_object->account_transactions = $this->_return_account_transactions_array($payment->account_transactions->find_all());
-		
+
 		$return_object->purchase_payments = $this->_return_vendor_payment_purchases_array($payment->account_transactions->find_all());
 
 		foreach( $return_object->purchase_payments as $purchase_payment )
@@ -928,15 +928,15 @@ class Beans_Vendor extends Beans {
 			if( ! isset($return_object->remit_address) )
 				$return_object->remit_address = $purchase_payment->purchase->remit_address;
 		}
-		
+
 		$return_object->payment_transaction = FALSE;
 		$return_object->writeoff_transaction = FALSE;
 		$return_object->adjustment_transaction = FALSE;
-		
+
 		foreach( $return_object->account_transactions as $account_transaction )
 		{
-			if( isset($account_transaction->transfer) AND 
-				$account_transaction->transfer ) 
+			if( isset($account_transaction->transfer) AND
+				$account_transaction->transfer )
 			{
 				$return_object->payment_transaction = $account_transaction;
 
@@ -946,34 +946,34 @@ class Beans_Vendor extends Beans {
 					$account_transaction->account->type->table_sign
 				);
 			}
-			
-			if( isset($account_transaction->writeoff) AND 
-				$account_transaction->writeoff ) 
+
+			if( isset($account_transaction->writeoff) AND
+				$account_transaction->writeoff )
 			{
 				$return_object->writeoff_transaction = $account_transaction;
 			}
-			
-			if( isset($account_transaction->adjustment) AND 
-				$account_transaction->adjustment ) 
+
+			if( isset($account_transaction->adjustment) AND
+				$account_transaction->adjustment )
 			{
 				$return_object->adjustment_transaction = $account_transaction;
 			}
 		}
-		
+
 		$return_object->amount = $return_object->amount * -1;
 
 		if( ! $return_object->payment_transaction )
 			throw new Exception("Invalid payment - no deposit account found.");
 
 		$return_object->reconciled = FALSE;
-		
+
 		// V2Item
 		// Might want to replace this with a reconciled flag on the transaction model.
 		$i = 0;
 		while( 	! $return_object->reconciled AND $i < count($return_object->account_transactions) )
 			if( $return_object->account_transactions[$i++]->reconciled )
 				$return_object->reconciled = TRUE;
-		
+
 		$this->_return_vendor_payment_element_cache[$payment->id] = $return_object;
 		return $this->_return_vendor_payment_element_cache[$payment->id];
 	}
@@ -986,7 +986,7 @@ class Beans_Vendor extends Beans {
 		$payment->description = NULL;
 		$payment->date = NULL;
 		$payment->payment = "vendor";
-		
+
 		return $payment;
 	}
 
@@ -1010,15 +1010,15 @@ class Beans_Vendor extends Beans {
 		if( $this->_check_books_closed($payment->date) )
 			throw new Exception("Invalid payment date: that financial year is already closed.");
 
-		if( $payment->code AND 
+		if( $payment->code AND
 			strlen($payment->code) > 16 )
 			throw new Exception("Invalid payment number: maximum length of 16 characters.");
 
-		if( $payment->reference AND 
+		if( $payment->reference AND
 			strlen($payment->code) > 16 )
 			throw new Exception("Invalid check number: maximum length of 16 characters.");
 
-		if( $payment->description AND 
+		if( $payment->description AND
 			strlen($payment->description) > 128 )
 			throw new Exception("Invalid payment description: maximum length of 128 characters.");
 	}
@@ -1037,22 +1037,22 @@ class Beans_Vendor extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Expense_Line
 	@description A vendor expense line item.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute account OBJECT The #Beans_Account# to categorize the cost.
-	@attribute description STRING 
+	@attribute description STRING
 	@attribute amount DECIMAL
 	@attribute quantity DECIMAL (up to three decimal places).
 	@attribute total DECIMAL The total from the amount and quantity.
 	---BEANSENDSPEC---
 	 */
-	
+
 	/*
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Purchase_Line
 	@description A vendor purchase line item.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute account OBJECT The #Beans_Account# to categorize the cost.
-	@attribute description STRING 
+	@attribute description STRING
 	@attribute amount DECIMAL
 	@attribute quantity DECIMAL (up to three decimal places).
 	@attribute total DECIMAL The total from the amount and quantity.
@@ -1079,7 +1079,7 @@ class Beans_Vendor extends Beans {
 		$return_object->amount = $line->amount;
 		$return_object->quantity = $line->quantity;
 		$return_object->total = $line->total;
-		
+
 		$this->_return_form_line_element[$line->id] = $return_object;
 		return $this->_return_form_line_element[$line->id];
 	}
@@ -1122,33 +1122,7 @@ class Beans_Vendor extends Beans {
 		if( $account->reserved )
 			throw new Exception("Invalid ".$form_type." line account ID: cannot be a reserved account.");
 
-		// This cannot really happen - written here with the goal of moving up to Class Beans (beans.php) possibly.
-		if( $form_type == "invoice" )
-		{	
-			if( $account->account_type->code != "income" )
-				throw new Exception("Invalid ".$form_type." line account ID: account must be income.");
-		}
-		else if( $form_type == "expense" ) {
-			if( $account->account_type->code == "income" )
-				throw new Exception("Invalid ".$form_type." line account ID: account cannot be income.");
-		}
-		else if( $form_type == "purchase" )
-		{
-			if( $account->account_type->code == "accountsreceivable" OR
-				$account->account_type->code == "bankaccount" OR
-				$account->account_type->code == "longtermdebt" OR
-				$account->account_type->code == "shorttermdebt" OR
-				$account->account_type->code == "accountspayable" OR
-				$account->account_type->code == "equity" OR
-				$account->account_type->code == "income" )
-				throw new Exception("Invalid ".$form_type." line account ID: must be fixed asset, expense, or cost of goods sold.");
-		}
-		else
-		{
-			throw new Exception("Unexpected error: invalid form type.");
-		}
-
-		if( $form_line->adjustment AND 
+		if( $form_line->adjustment AND
 			! $account->writeoff )
 			throw new Exception("Invalid account for adjustment entry: must be a writeoff account.");
 
@@ -1168,7 +1142,7 @@ class Beans_Vendor extends Beans {
 		if( $form_line->quantity <= 0 )
 			throw new Exception("Invalid ".$form_type." line quantity: must be greater than zero.");
 	}
-	
+
 	// *** DUPLICATE FUNCTION ***
 	private $_return_account_element_cache = array();
 	protected function _return_account_element($account)
@@ -1197,21 +1171,21 @@ class Beans_Vendor extends Beans {
 		$return_object->receivable = $account->receivable ? TRUE : FALSE;
 		$return_object->payable = $account->payable ? TRUE : FALSE;
 		$return_object->writeoff = $account->writeoff ? TRUE : FALSE;
-		
+
 		// Account Type
 		$return_object->type = $this->_return_account_type_element($account->account_type);
-		
+
 		$this->_return_account_element[$account->id] = $return_object;
 		return $this->_return_account_element[$account->id];
 	}
 
 
-	// *** DUPLICATE FUNCTION *** 
+	// *** DUPLICATE FUNCTION ***
 	private $_return_transaction_element_cache = array();
 	protected function _return_transaction_element($transaction)
 	{
 		$return_object = new stdClass;
-		
+
 		if( ! $transaction->loaded() OR
 			get_class($transaction) != "Model_Transaction" )
 			throw new Exception("Invalid Transaction.");
@@ -1231,7 +1205,7 @@ class Beans_Vendor extends Beans {
 		$return_object->account_transactions = $this->_return_account_transactions_array($transaction->account_transactions->find_all());
 
 		$return_object->reconciled = FALSE;
-		
+
 		// V2Item
 		// Might want to replace this with a reconciled flag on the transaction model.
 		$i = 0;
@@ -1276,14 +1250,14 @@ class Beans_Vendor extends Beans {
 		$return_object->amount = (float)$account_transaction->amount;
 		$return_object->balance = (float)$account_transaction->balance;
 		$return_object->reconciled = $account_transaction->account_reconcile_id ? TRUE : FALSE;
-		
+
 		$return_object->transfer = ( $account_transaction->transfer ) ? TRUE : FALSE;
 		$return_object->writeoff = ( $account_transaction->writeoff ) ? TRUE : FALSE;
 		$return_object->adjustment = ( $account_transaction->adjustment ) ? TRUE : FALSE;
 
 		// *** FAT ***
 		$return_object->account = $this->_return_account_element($account_transaction->account);
-		
+
 		$this->_return_account_transaction_element_cache[$account_transaction->id] = $return_object;
 		return $this->_return_account_transaction_element_cache[$account_transaction->id];
 
@@ -1293,11 +1267,11 @@ class Beans_Vendor extends Beans {
 	{
 		$return_array = array();
 
-		foreach( $account_transactions as $account_transaction ) 
-			if( ! $account_transaction->transfer AND 
-				! $account_transaction->writeoff AND 
+		foreach( $account_transactions as $account_transaction )
+			if( ! $account_transaction->transfer AND
+				! $account_transaction->writeoff AND
 				! $account_transaction->adjustment )
-				foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form ) 
+				foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form )
 					$return_array[$account_transaction_form->form_id] = $this->_return_vendor_payment_purchase_element($account_transaction_form);
 
 		return $return_array;
@@ -1307,7 +1281,7 @@ class Beans_Vendor extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Vendor_Payment_Purchase
 	@description A payment on a vendor purchase.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute purchase OBJECT The #Beans_Vendor_Purchase# this credit/debit applies to.
 	@attribute amount DECIMAL The amount actually paid to the vendor.
 	@attribute writeoff_amount DECIMAL The writeoff amount ( if any ).
@@ -1368,5 +1342,5 @@ class Beans_Vendor extends Beans {
 		$this->_return_account_type_element_cache[$account_type->id] = $return_object;
 		return $this->_return_account_type_element_cache[$account_type->id];
 	}
-	
+
 }
