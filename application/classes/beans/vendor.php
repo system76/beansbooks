@@ -912,7 +912,7 @@ class Beans_Vendor extends Beans {
 		$vendor_ids = DB::query(Database::SELECT, 'SELECT DISTINCT(forms.entity_id) as vendor_id FROM account_transactions RIGHT JOIN account_transaction_forms ON account_transactions.id = account_transaction_forms.account_transaction_id RIGHT JOIN forms ON account_transaction_forms.form_id = forms.id WHERE account_transactions.transaction_id = "'.$payment->id.'"')->execute()->as_array();
 
 		if( count($vendor_ids) != 1 )
-			throw new Exception("Invalid Vendor Purchase Order Payment: More than one vendor found!");
+			throw new Exception("Invalid Vendor Purchase Order Payment (".$payment->id."): More than one vendor found!");
 
 		$return_object->vendor = $this->_return_vendor_element($this->_load_vendor($vendor_ids[0]['vendor_id']));
 
