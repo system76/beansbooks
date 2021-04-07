@@ -11,9 +11,9 @@
 
 	<input type="hidden" name="refund_sale_id" value="">
 	<input type="hidden" name="invoice_view" value="">
-	
+
 	<div class="form bump-down-more">
-		
+
 		<div class="row column-4 labels">
 			<span class="oop-oop">Date</span>
 			<span class="oop-oop">
@@ -82,7 +82,7 @@
 			<input type="hidden" class="form-tax_ids" name="form-tax_ids" value="">
 		</div>
 
-		
+
 		<div class="row column-6 labels">
 			<span class="ehhh-sexy-lady">Description</span>
 			<span class="oop-oop-oop">Income Account</span>
@@ -93,7 +93,7 @@
 			</span>
 			<span class="oop">Total</span>
 		</div>
-		
+
 		<div id="customers-sales-create-form-lines"></div>
 
 		<div class="row column-6">
@@ -120,7 +120,7 @@
 			<span class="oop customer-sales-create-new-buttons">
 				<a href="#" id="customers-sales-create-form-save" class="button">Save</a>
 			</span>
-			
+
 			<span class="oop customer-sales-create-edit-buttons" style="display:none;">
 				<a href="#" id="customers-sales-create-form-editcancel" class="button">Cancel</a>
 			</span>
@@ -181,8 +181,8 @@
 			<span class="oop"><a href="#" class="button" id="customers-sales-create-form-invoice-submit">Submit</a></span>
 		</div>
 	</div>
-	
-	
+
+
 </div>
 
 
@@ -238,7 +238,7 @@
 			<option value="">&nbsp;</option>
 			{{#sale_income_accounts}}
 				{{^reserved}}
-					<option value="{{id}}" {{^type_income}}disabled="disabled"{{/type_income}} {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
+					<option value="{{id}}" {{#selected}}selected="selected"{{/selected}}>{{{name_print}}}</option>
 				{{/reserved}}
 			{{/sale_income_accounts}}
 		</select></span>
@@ -255,7 +255,7 @@
 <div id="customers-sales-send-template" class="hidden">
 	<li class="customer-sale customer-sale-send color-force-green">
 		<span class="customer-sale-send-email">
-			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email 
+			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email
 			<input type="text" name="email" value="">
 		</span>
 		<span class="customer-sale-send-mail">
@@ -274,7 +274,7 @@
 <div id="customers-sales-invoice-template" class="hidden">
 	<li class="customer-sale customer-sale-invoice color-force-green">
 		<span class="customer-sale-send-email">
-			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email 
+			<div class="checkbox manual"><input type="checkbox" name="send-email" value="1"></div> Send by Email
 			<input type="text" name="email" value="">
 		</span>
 		<span class="customer-sale-send-mail">
@@ -312,7 +312,7 @@
 			<span class="oop-oop">Fax Number</span>
 		</div>
 		<div class="row column-4">
-			
+
 			<span class="oop-oop"><input type="text" name="phone_number"></span>
 			<span class="oop-oop"><input type="text" name="fax_number"></span>
 		</div>
@@ -378,14 +378,14 @@
 <!--
 $('#customers-sales-dialog-customer-create').modaldialog({
 	width: 500,
-	buttons: { 
+	buttons: {
 		"Cancel": function() { $(this).dialog("close"); },
 		"Save Customer": function() { $(this).dialog("close"); }
 	}
 });
 $('#customers-sales-dialog-address-create').modaldialog({
 	width: 500,
-	buttons: { 
+	buttons: {
 		"Cancel": function() { $(this).dialog("close"); },
 		"Save Address": function() { $(this).dialog("close"); }
 	}
