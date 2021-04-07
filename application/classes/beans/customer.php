@@ -10,7 +10,7 @@ it under the terms of the BeansBooks Public License.
 
 BeansBooks is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the BeansBooks Public License for more details.
 
 You should have received a copy of the BeansBooks Public License
@@ -19,7 +19,7 @@ along with BeansBooks; if not, email info@beansbooks.com.
 class Beans_Customer extends Beans {
 
 	protected $_auth_role_perm = "customer_read";
-	
+
 	public function __construct($data = NULL)
 	{
 		parent::__construct($data);
@@ -28,10 +28,10 @@ class Beans_Customer extends Beans {
 	protected function _return_customers_array($customers)
 	{
 		$return_array = array();
-		
+
 		foreach( $customers as $customer )
 			$return_array[] = $this->_return_customer_element($customer);
-		
+
 		return $return_array;
 	}
 
@@ -39,7 +39,7 @@ class Beans_Customer extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Customer
 	@description Represents a customer in the system.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute first_name STRING
 	@attribute last_name STRING
 	@attribute company_name STRING
@@ -83,12 +83,12 @@ class Beans_Customer extends Beans {
 		// Default Shipping and Billing - should these be objects?
 		$return_object->default_billing_address_id = $customer->default_billing_address_id;
 		$return_object->default_shipping_address_id = $customer->default_shipping_address_id;
-		
+
 		$return_object->default_account = ( $customer->default_account_id ? $this->_return_account_element($customer->default_account) : (object)array() );
-		
+
 		// Account Balance AND Past-Due Balance
 		$account_balances = DB::query(Database::SELECT, 'SELECT COUNT(id) as count, SUM(total) AS total, SUM(balance) AS balance, IF(date_due < DATE("'.date('Y-m-d').'"),TRUE,FALSE) as past_due FROM forms WHERE entity_id = "'.$customer->id.'" GROUP BY past_due')->execute()->as_array();
-		
+
 		$return_object->sales_count = 0;
 		$return_object->sales_total = 0.00;
 		$return_object->balance_pending = 0.00;
@@ -121,7 +121,7 @@ class Beans_Customer extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Customer_Address
 	@description Represents a customer address.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute first_name STRING
 	@attribute last_name STRING
 	@attribute company_name STRING
@@ -158,7 +158,7 @@ class Beans_Customer extends Beans {
 		$return_object->zip = $address->zip;
 		$return_object->country = $address->country;
 
-		$return_object->standard = 
+		$return_object->standard =
 			( $return_object->first_name ? $return_object->first_name.' ' : '' ).
 			( $return_object->last_name ? $return_object->last_name.' ' : '' ).
 			( $return_object->company_name ? $return_object->company_name.' ' : '' ).
@@ -204,7 +204,7 @@ class Beans_Customer extends Beans {
 		if( ! $customer->last_name OR
 			! strlen($customer->last_name) )
 			throw new Exception("Invalid customer last name: none provided.");
-		
+
 		if( strlen($customer->last_name) > 64 )
 			throw new Exception("Invalid customer last name: maximum of 64 characters.");
 
@@ -212,16 +212,16 @@ class Beans_Customer extends Beans {
 			throw new Exception("Invalid customer company name: maximum of 64 characters.");
 
 		/*
-		if( ! $customer->email OR 
+		if( ! $customer->email OR
 			! strlen($customer->email) )
 			throw new Exception("Invalid customer email: none provided");
 		*/
-	
-		if( $customer->email AND 
+
+		if( $customer->email AND
 			strlen($customer->email) > 255 )
 			throw new Exception("Invalid customer email: maximum of 254 characters.");
 
-		if( $customer->email AND 
+		if( $customer->email AND
 			! filter_var($customer->email,FILTER_VALIDATE_EMAIL) )
 			throw new Exception("Invalid customer email: invalid email address.");
 
@@ -238,7 +238,7 @@ class Beans_Customer extends Beans {
 				$default_billing_address->entity_id != $customer->id )
 				throw new Exception("Invalid customer default billing address: not found.");
 		}
-		
+
 		if( $customer->default_shipping_address_id )
 		{
 			$default_shipping_address = $this->_load_customer_address($customer->default_shipping_address_id);
@@ -268,7 +268,7 @@ class Beans_Customer extends Beans {
 
 		return ( $sale->type == "sale" ? $sale : ORM::Factory('form_sale',-1) );
 	}
-	
+
 	protected function _default_customer_address()
 	{
 		$customer_address = ORM::Factory('entity_address');
@@ -292,16 +292,16 @@ class Beans_Customer extends Beans {
 		if( get_class($customer_address) != "Model_Entity_Address" )
 			throw new Exception("Invalid address.");
 
-		if( ! $ignore_entity ) 
+		if( ! $ignore_entity )
 		{
-			if( ! $customer_address->entity_id OR 
+			if( ! $customer_address->entity_id OR
 				! strlen($customer_address->entity_id) )
 				throw new Exception("Invalid address customer ID (entity_id): none provided.");
 
 			if( ! $this->_load_customer($customer_address->entity_id)->loaded() )
 				throw new Exception("Invalid address customer ID (entity_id): customer not found.");
 		}
-		
+
 		if( ! $customer_address->first_name OR
 			! strlen($customer_address->first_name) )
 			throw new Exception("Invalid address first name: none provided.");
@@ -319,7 +319,7 @@ class Beans_Customer extends Beans {
 		if( strlen($customer_address->company_name) > 64 )
 			throw new Exception("Invalid address company name: maximum of 64 characters.");
 
-		if( ! $customer_address->address1 OR 
+		if( ! $customer_address->address1 OR
 			! strlen($customer_address->address1) )
 			throw new Exception("Invalid address primary street: none provided.");
 
@@ -339,14 +339,14 @@ class Beans_Customer extends Beans {
 		if( strlen($customer_address->state) > 64 )
 			throw new Exception("Invalid address state: maximum of 64 characters.");
 
-		if( ! $customer_address->zip OR 
+		if( ! $customer_address->zip OR
 			! strlen($customer_address->zip) )
 			throw new Exception("Invalid address postal code: none provided.");
 
 		if( strlen($customer_address->zip) > 32 )
 			throw new Exception("Invalid address postal code: maximum of 32 characters.");
 
-		if( ! $customer_address->country OR 
+		if( ! $customer_address->country OR
 			! strlen($customer_address->country) )
 			throw new Exception("Invalid address country: none provided.");
 
@@ -364,7 +364,7 @@ class Beans_Customer extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Customer_Sale
 	@description A customer sale.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute customer OBJECT The #Beans_Customer# the sale belongs to.
 	@attribute account OBJECT The #Beans_Account# that is the AR for the sale.
 	@attribute sent STRING The sent status of the current state of the sale: 'phone', 'email', 'both', or NULL
@@ -409,9 +409,9 @@ class Beans_Customer extends Beans {
 
 		$return_object->id = $sale->id;
 		$return_object->customer = $this->_return_customer_element($sale->entity);
-		
+
 		$return_object->account = $this->_return_account_element($sale->account);
-		
+
 		$return_object->sent = ( $sale->sent AND strlen($sale->sent) )
 							 ? $sale->sent
 							 : FALSE;
@@ -429,12 +429,12 @@ class Beans_Customer extends Beans {
 		$return_object->create_transaction_id = $sale->create_transaction_id;
 		$return_object->invoice_transaction_id = $sale->invoice_transaction_id;
 		$return_object->cancel_transaction_id = $sale->cancel_transaction_id;
-		
+
 		$return_object->subtotal = $sale->amount;
 		$return_object->total = $sale->total;
 		$return_object->taxestotal = $this->_beans_round( $return_object->total - $return_object->subtotal );
 		$return_object->balance = $sale->balance;
-		
+
 		$return_object->sale_number = $sale->code;
 		$return_object->order_number = $sale->reference;
 		$return_object->po_number = $sale->alt_reference;
@@ -443,7 +443,7 @@ class Beans_Customer extends Beans {
 		$return_object->tax_exempt = $sale->tax_exempt ? TRUE : FALSE;
 		$return_object->tax_exempt_reason = $sale->tax_exempt_reason;
 
-		$return_object->billing_address = ( $sale->billing_address_id ) 
+		$return_object->billing_address = ( $sale->billing_address_id )
 										? $this->_return_customer_address_element($sale->billing_address)
 										: NULL;
 		$return_object->shipping_address = ( $sale->shipping_address_id )
@@ -488,7 +488,7 @@ class Beans_Customer extends Beans {
 
 	protected function _customer_sale_status($sale)
 	{
-		if( $sale->date_cancelled AND 
+		if( $sale->date_cancelled AND
 			$sale->balance != 0 )
 			return "Pending Refund";
 		if( $sale->date_cancelled )
@@ -500,10 +500,10 @@ class Beans_Customer extends Beans {
 			return "Refunded";
 		if( $sale->balance == 0 )
 			return "Paid";
-		if( ! $sale->sent AND 
+		if( ! $sale->sent AND
 			! $sale->date_billed )
 			return "SO Not Sent";
-		if( $sale->date_billed AND 
+		if( $sale->date_billed AND
 			! $sale->sent )
 			return "Invoice Not Sent";
 		if( $sale->date_billed )
@@ -526,7 +526,7 @@ class Beans_Customer extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Customer_Sale_Line
 	@description A line item on a customer sale.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute account OBJECT The #Beans_Account# tied to this line.
 	@attribute tax_exempt BOOLEAN Whether or not this particular line is tax exempt.
 	@attribute description STRING
@@ -576,7 +576,7 @@ class Beans_Customer extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Customer_Sale_Tax
 	@description A summary of a tax applied to one or more lines on a sale.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute tax OBJECT The #Beans_Tax# tied to this tax.
 	@attribute amount DECIMAL The line total of the form that the tax is applied to.
 	@attribute taxable_amount DECIMAL The taxable line total of the form that the tax is applied to.
@@ -595,7 +595,7 @@ class Beans_Customer extends Beans {
 
 		if( isset($this->_return_form_tax_element_cache[$form_tax->id]) )
 			return $this->_return_form_tax_element_cache[$form_tax->id];
-		
+
 		$return_object->id = $form_tax->id;
 		// $return_object->sale_id = $form_tax->form_id; // *** TRIM ***
 		$return_object->tax = $this->_return_tax_element($form_tax->tax);
@@ -603,7 +603,7 @@ class Beans_Customer extends Beans {
 		$return_object->taxable_amount = $form_tax->form_line_taxable_amount;
 		$return_object->total = $form_tax->total;
 		$return_object->percent = $form_tax->tax_percent;
-		
+
 		$this->_return_form_tax_element_cache[$form_tax->id] = $return_object;
 		return $this->_return_form_tax_element_cache[$form_tax->id];
 	}
@@ -613,7 +613,7 @@ class Beans_Customer extends Beans {
 	{
 		$return_object = new stdClass;
 
-		if( get_class($tax) != "Model_Tax" OR 
+		if( get_class($tax) != "Model_Tax" OR
 			! $tax->loaded() )
 			throw new Exception("Invalid Tax Object.");
 
@@ -665,10 +665,10 @@ class Beans_Customer extends Beans {
 		$return_object->receivable = $account->receivable ? TRUE : FALSE;
 		$return_object->payable = $account->payable ? TRUE : FALSE;
 		$return_object->writeoff = $account->writeoff ? TRUE : FALSE;
-		
+
 		// Account Type
 		$return_object->type = $this->_return_account_type_element($account->account_type);
-		
+
 		$this->_return_account_element_cache[$account->id] = $return_object;
 		return $this->_return_account_element_cache[$account->id];
 	}
@@ -682,7 +682,7 @@ class Beans_Customer extends Beans {
 		if( get_class($account_type) != "Model_Account_Type" )
 			throw new Exception("Invalid Account Type.");
 
-		if( isset($this->_return_account_type_element_cache[$account_type->id]) ) 
+		if( isset($this->_return_account_type_element_cache[$account_type->id]) )
 			return $this->_return_account_type_element_cache[$account_type->id];
 
 		$return_object->id = $account_type->id;
@@ -714,7 +714,7 @@ class Beans_Customer extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Customer_Payment
 	@description A payment on one or more customer sales.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute number STRING The check or reference number
 	@attribute description STRING
 	@attribute date STRING
@@ -733,7 +733,7 @@ class Beans_Customer extends Beans {
 	{
 		$return_object = new stdClass;
 
-		if( get_class($payment) != "Model_Transaction" OR 
+		if( get_class($payment) != "Model_Transaction" OR
 			$payment->payment != "customer" )
 			throw new Exception("Invalid Customer Payment.");
 
@@ -747,22 +747,22 @@ class Beans_Customer extends Beans {
 		$return_object->payment = $payment->payment;	// Somewhat redundant.
 		$return_object->amount = 0.00;
 		// $return_object->amount = $payment->amount;
-		
+
 		// This _return_account_transactions_array is different from Beans_Account->_return_account_transactions_array()
 		// Does not dump full form information.
 		// see below: _return_account_transaction_element()
 		$return_object->account_transactions = $this->_return_account_transactions_array($payment->account_transactions->find_all());
-		
+
 		$return_object->sale_payments = $this->_return_customer_payment_sales_array($payment->account_transactions->find_all());
 
 		$return_object->deposit_transaction = FALSE;
 		$return_object->writeoff_transaction = FALSE;
 		$return_object->adjustment_transaction = FALSE;
-		
+
 		foreach( $return_object->account_transactions as $account_transaction )
 		{
-			if( isset($account_transaction->transfer) AND 
-				$account_transaction->transfer ) 
+			if( isset($account_transaction->transfer) AND
+				$account_transaction->transfer )
 			{
 				$return_object->deposit_transaction = $account_transaction;
 
@@ -773,14 +773,14 @@ class Beans_Customer extends Beans {
 				);
 			}
 
-			if( isset($account_transaction->writeoff) AND 
-				$account_transaction->writeoff ) 
+			if( isset($account_transaction->writeoff) AND
+				$account_transaction->writeoff )
 			{
 				$return_object->writeoff_transaction = $account_transaction;
 			}
 
-			if( isset($account_transaction->adjustment) AND 
-				$account_transaction->adjustment ) 
+			if( isset($account_transaction->adjustment) AND
+				$account_transaction->adjustment )
 			{
 				$return_object->adjustment_transaction = $account_transaction;
 			}
@@ -790,19 +790,19 @@ class Beans_Customer extends Beans {
 			throw new Exception("Invalid payment - no deposit account found.");
 
 		$return_object->reconciled = FALSE;
-		
+
 		// V2Item
 		// Might want to replace this with a reconciled flag on the transaction model.
 		$i = 0;
 		while( 	! $return_object->reconciled AND $i < count($return_object->account_transactions) )
 			if( $return_object->account_transactions[$i++]->reconciled )
 				$return_object->reconciled = TRUE;
-		
+
 		$this->_return_customer_payment_element_cache[$payment->id] = $return_object;
 		return $this->_return_customer_payment_element_cache[$payment->id];
 	}
 
-	
+
 	protected function _validate_customer_payment($payment)
 	{
 		if( get_class($payment) != "Model_Transaction" )
@@ -817,15 +817,15 @@ class Beans_Customer extends Beans {
 		if( $this->_check_books_closed($payment->date) )
 			throw new Exception("Invalid payment date: that financial year is already closed.");
 
-		if( $payment->code AND 
+		if( $payment->code AND
 			strlen($payment->code) > 16 )
 			throw new Exception("Invalid payment number: maximum length of 16 characters.");
 
-		if( $payment->description AND 
+		if( $payment->description AND
 			strlen($payment->description) > 128 )
 			throw new Exception("Invalid payment description: maximum length of 128 characters.");
 	}
-	
+
 	protected function _default_customer_payment()
 	{
 		$transaction = ORM::Factory('transaction');
@@ -834,10 +834,10 @@ class Beans_Customer extends Beans {
 		$transaction->description = NULL;
 		$transaction->date = NULL;
 		$transaction->payment = "customer";
-		
+
 		return $transaction;
 	}
-	
+
 	protected function _load_customer_payment($id)
 	{
 		return ORM::Factory('transaction',$id);
@@ -876,11 +876,11 @@ class Beans_Customer extends Beans {
 
 		// *** FAT ***
 		$return_object->account = $this->_return_account_element($account_transaction->account);
-		
+
 		$this->_return_account_transaction_element_cache[$account_transaction->id] = $return_object;
 		return $this->_return_account_transaction_element_cache[$account_transaction->id];
 	}
-	
+
 	protected function _return_customer_payment_sales_array($account_transactions)
 	{
 		$return_array = array();
@@ -888,10 +888,10 @@ class Beans_Customer extends Beans {
 		foreach( $account_transactions as $account_transaction )
 		{
 			if( ! $account_transaction->transfer AND
-				! $account_transaction->writeoff AND 
+				! $account_transaction->writeoff AND
 				! $account_transaction->adjustment )
 			{
-				foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form ) 
+				foreach( $account_transaction->account_transaction_forms->find_all() as $account_transaction_form )
 				{
 					$return_array[$account_transaction_form->form_id] = $this->_return_customer_payment_sale_element($account_transaction_form);
 				}
@@ -905,7 +905,7 @@ class Beans_Customer extends Beans {
 	---BEANSOBJSPEC---
 	@object Beans_Customer_Payment_Sale
 	@description A payment a customer sale.
-	@attribute id INTEGER 
+	@attribute id INTEGER
 	@attribute sale OBJECT The #Beans_Customer_Sale# this credit/debit applies to.
 	@attribute amount DECIMAL The amount actually paid by the customer.
 	@attribute writeoff_amount DECIMAL The writeoff amount ( if any ).
@@ -924,7 +924,7 @@ class Beans_Customer extends Beans {
 			return $this->_return_customer_payment_sale_element_cache[$account_transaction_form->id];
 
 		$return_object->id = $account_transaction_form->id;
-		
+
 		// V2Item - Determine if we can remove sale from this and replace with sale_id
 		$return_object->sale = $this->_return_customer_sale_element($account_transaction_form->form);
 		$return_object->amount = $account_transaction_form->amount - $account_transaction_form->writeoff_amount;
@@ -968,7 +968,7 @@ class Beans_Customer extends Beans {
 
 	protected function _validate_customer_sale($sale)
 	{
-		if( get_class($sale) != "Model_Form_Sale" AND 
+		if( get_class($sale) != "Model_Form_Sale" AND
 			$sale->type != "sale" )
 			throw new Exception("Invalid Sale.");
 
@@ -983,7 +983,7 @@ class Beans_Customer extends Beans {
 
 		// Verify Account - Must be valid and marked as "receivable"
 		$account = $this->_load_account($sale->account_id);
-		
+
 		if( ! $account->loaded() )
 			throw new Exception("Invalid sale account receivable: account not found.");
 
@@ -1026,8 +1026,8 @@ class Beans_Customer extends Beans {
 			if( $shipping_address->entity_id != $sale->entity_id )
 				throw new Exception("Invalid sale shipping address: does not belong to customer.");
 		}
-		
-		if( ! $sale->code OR 
+
+		if( ! $sale->code OR
 			! strlen($sale->code) )
 			throw new Exception("Invalid sale number: none provided.");
 
@@ -1037,21 +1037,21 @@ class Beans_Customer extends Beans {
 		if( (
 				$sale->reference OR
 				strlen($sale->reference)
-			) AND 
+			) AND
 			strlen($sale->reference) > 16 )
 			throw new Exception("Invalid sale order number: maximum of 16 characters.");
 
 		if( (
 				$sale->alt_reference OR
 				strlen($sale->alt_reference)
-			) AND 
+			) AND
 			strlen($sale->alt_reference) > 16 )
 			throw new Exception("Invalid sale purchase order number: maximum of 16 characters.");
 
 		if( (
 				$sale->aux_reference OR
 				strlen($sale->aux_reference)
-			) AND 
+			) AND
 			strlen($sale->aux_reference) > 16 )
 			throw new Exception("Invalid sale quote number: maximum of 16 characters.");
 
@@ -1063,7 +1063,7 @@ class Beans_Customer extends Beans {
 			) )
 			throw new Exception("Invalid sale sent value: must be 'print', 'email', 'both' or NULL.");
 
-		if( ! $sale->date_created OR 
+		if( ! $sale->date_created OR
 			! strlen($sale->date_created) )
 			throw new Exception("Invalid sale date: none provided.");
 
@@ -1072,12 +1072,12 @@ class Beans_Customer extends Beans {
 
 		if( $this->_check_books_closed($sale->date_created) )
 			throw new Exception("Sale could not be created.  The financial year has been closed already.");
-		
+
 		if( $sale->tax_exempt &&
 			! strlen($sale->tax_exempt_reason) )
 			throw new Exception("Please provide a reason for tax exemption.");
 
-		if( strlen($sale->tax_exempt_reason) > 255 ) 
+		if( strlen($sale->tax_exempt_reason) > 255 )
 			throw new Exception("Invalid tax exemption reason: maximum of 255 characters.");
 	}
 
@@ -1119,9 +1119,6 @@ class Beans_Customer extends Beans {
 		if( $account->reserved )
 			throw new Exception("Invalid ".$form_type." line account ID: cannot be a reserved account.");
 
-		if( $account->account_type->code != "income" )
-			throw new Exception("Invalid sale line account ID: account must be income.");
-
 		if( ! $sale_line->description OR
 			! strlen($sale_line->description) )
 			throw new Exception("Invalid sale line description: none provided.");
@@ -1144,7 +1141,7 @@ class Beans_Customer extends Beans {
 	{
 		if( get_class($sale_line_tax) != "Model_Form_Line_Tax" )
 			throw new Exception("Invalid Sale Line Tax.");
-		
+
 		if( ! $sale_line_tax->tax_id )
 			throw new Exception("Invalid sale line tax tax ID: none provided.");
 
@@ -1187,7 +1184,7 @@ class Beans_Customer extends Beans {
 
 		// Taxes currently on the form
 		$form_taxes_tax_ids = DB::query(
-			Database::SELECT, 
+			Database::SELECT,
 			'SELECT DISTINCT(tax_id) AS tax_id'.
 			' FROM form_taxes WHERE'.
 			' form_id = '.$form_id
@@ -1227,7 +1224,7 @@ class Beans_Customer extends Beans {
 				)->execute();
 			}
 		}
-		
+
 		return;
 	}
 
@@ -1319,14 +1316,14 @@ class Beans_Customer extends Beans {
 
 		$tax_item->balance = ( -1 * $tax_item->total );
 		$tax_item->type = $action;
-		
+
 		if( $form->date_cancelled )
 			$tax_item->date = $form->date_cancelled;
 		else
 			$tax_item->date = $form->date_billed;
-		
+
 		$tax_item->save();
-		
+
 		return $tax_item;
 	}
 }
